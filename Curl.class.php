@@ -3,7 +3,7 @@ class Curl {
     const USER_AGENT = 'PHP-Curl-Class/1.0 (+https://github.com/php-curl-class/php-curl-class)';
 
     function __construct() {
-        $this->_ch = curl_init();
+        $this->curl = curl_init();
         $this->setUserAgent(self::USER_AGENT);
         $this->setopt(CURLOPT_RETURNTRANSFER, TRUE);
     }
@@ -61,23 +61,23 @@ class Curl {
     }
 
     function setOpt($option, $value) {
-        return curl_setopt($this->_ch, $option, $value);
+        return curl_setopt($this->curl, $option, $value);
     }
 
     function close() {
-        curl_close($this->_ch);
+        curl_close($this->curl);
     }
 
     function _exec() {
-        $this->response = curl_exec($this->_ch);
-        $this->error_code = curl_errno($this->_ch);
-        $this->error_message = curl_error($this->_ch);
+        $this->response = curl_exec($this->curl);
+        $this->error_code = curl_errno($this->curl);
+        $this->error_message = curl_error($this->curl);
         return $this->error_code;
     }
 
-    private $_ch;
     private $_cookies = array();
 
+    public $curl;
     public $error_code = 0;
     public $error_message = NULL;
     public $response = NULL;
