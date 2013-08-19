@@ -53,4 +53,10 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($json->username === $username);
         $this->assertTrue($json->password === $password);
     }
+
+    public function testReferrer() {
+        $test = new Test();
+        $test->curl->setReferrer('myreferrer');
+        $this->assertTrue($test->server('GET', 'server', 'HTTP_REFERER') === 'myreferrer');
+    }
 }
