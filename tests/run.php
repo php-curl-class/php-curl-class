@@ -12,7 +12,7 @@ class Test {
         $this->curl->setOpt(CURLOPT_SSL_VERIFYHOST, FALSE);
     }
 
-    function server($request_method, $test, $key) {
+    function server($request_method, $test, $key='') {
         $request_method = strtolower($request_method);
         $url = BASE_URL . 'tests/server.php';
         $this->curl->$request_method($url, array(
@@ -38,5 +38,19 @@ class CurlTest extends PHPUnit_Framework_TestCase {
     public function testPost() {
         $test = new Test();
         $this->assertTrue($test->server('POST', 'server', 'REQUEST_METHOD') === 'POST');
+    }
+
+    public function testBasicHttpAuth() {
+        $test = new Test();
+        $this->assertTrue($test->server('GET', 'http_basic_auth') === 'canceled');
+
+        $username = 'myusername';
+        $password = 'mypassword';
+        $test = new Test();
+        $test->curl->setBasicAuthentication($username, $password);
+        $test->server('GET', 'http_basic_auth');
+        $json = json_decode($test->curl->response);
+        $this->assertTrue($json->username === $username);
+        $this->assertTrue($json->password === $password);
     }
 }
