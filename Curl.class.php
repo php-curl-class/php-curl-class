@@ -3,6 +3,10 @@ class Curl {
     const USER_AGENT = 'PHP-Curl-Class/1.0 (+https://github.com/php-curl-class/php-curl-class)';
 
     function __construct() {
+        if (!extension_loaded('curl')) {
+            throw new ErrorException('cURL library is not loaded');
+        }
+
         $this->curl = curl_init();
         $this->setUserAgent(self::USER_AGENT);
         $this->setopt(CURLOPT_RETURNTRANSFER, TRUE);

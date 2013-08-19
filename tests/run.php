@@ -24,6 +24,10 @@ class Test {
 }
 
 class CurlTest extends PHPUnit_Framework_TestCase {
+    public function testExtensionLoaded() {
+        $this->assertTrue(extension_loaded('curl'));
+    }
+
     public function testUserAgent() {
         $test = new Test();
         $test->curl->setUserAgent(Curl::USER_AGENT);
