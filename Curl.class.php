@@ -83,6 +83,7 @@ class Curl {
     private $_cookies = array();
 
     public $curl;
+    public $error = NULL;
     public $error_code = 0;
     public $error_message = NULL;
     public $response = NULL;
