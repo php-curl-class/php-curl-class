@@ -62,4 +62,10 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $test->curl->setReferrer('myreferrer');
         $this->assertTrue($test->server('GET', 'server', 'HTTP_REFERER') === 'myreferrer');
     }
+
+    public function testCookies() {
+        $test = new Test();
+        $test->curl->setCookie('mycookie', 'yum');
+        $this->assertTrue($test->server('GET', 'cookie', 'mycookie') === 'yum');
+    }
 }
