@@ -68,4 +68,12 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $test->curl->setCookie('mycookie', 'yum');
         $this->assertTrue($test->server('GET', 'cookie', 'mycookie') === 'yum');
     }
+
+    public function testError() {
+        $test = new Test();
+        $test->curl->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 2000);
+        $test->curl->get('http://1.2.3.4/');
+        $this->assertTrue($test->curl->error === TRUE);
+        $this->assertTrue($test->curl->error_code === CURLE_OPERATION_TIMEOUTED);
+    }
 }

@@ -72,6 +72,7 @@ class Curl {
         $this->response = curl_exec($this->curl);
         $this->error_code = curl_errno($this->curl);
         $this->error_message = curl_error($this->curl);
+        $this->error = !($this->error_code === 0);
         return $this->error_code;
     }
 
