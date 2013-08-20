@@ -28,9 +28,8 @@ class Curl {
     }
 
     function put($url, $data=array()) {
-        $this->setopt(CURLOPT_URL, $url);
+        $this->setopt(CURLOPT_URL, $url . '?' . http_build_query($data));
         $this->setopt(CURLOPT_CUSTOMREQUEST, 'PUT');
-        $this->setopt(CURLOPT_POSTFIELDS, $data);
         $this->_exec();
     }
 
