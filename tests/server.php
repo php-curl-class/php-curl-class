@@ -1,10 +1,8 @@
 <?php
 $request_method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
-
-$var = '_' . strtoupper($request_method);
-$var = $$var;
-
-$test = isset($var['test']) ? $var['test'] : '';
+$data_values = $request_method === 'POST' ? $_POST : $_GET;
+$test = isset($data_values['test']) ? $data_values['test'] : '';
+$key = isset($data_values['key']) ? $data_values['key'] : '';
 
 if ($test == 'http_basic_auth') {
     if (!isset($_SERVER['PHP_AUTH_USER'])) {
@@ -21,16 +19,18 @@ if ($test == 'http_basic_auth') {
     ));
     exit;
 }
-
-header('Content-Type: text/plain');
-$test = '_' . strtoupper($var['test']);
-$test = $$test;
-//var_dump('test:', $test);
-
-$key = isset($var['key']) ? $var['key'] : '';
-//var_dump('key:', $key);
-
-$value = isset($test[$key]) ? $test[$key] : '';
-//var_dump('value:', $value);
-
-echo $value;
+else if ($test === 'post') {
+    header('Content-Type: text/plain');
+    $value = isset($_POST[$key]) ? $_POST[$key] : '';
+    echo $value;
+}
+else if ($test === 'server') {
+    header('Content-Type: text/plain');
+    $value = isset($_SERVER[$key]) ? $_SERVER[$key] : '';
+    echo $value;
+}
+else if ($test === 'cookie') {
+    header('Content-Type: text/plain');
+    $value = isset($_COOKIE[$key]) ? $_COOKIE[$key] : '';
+    echo $value;
+}
