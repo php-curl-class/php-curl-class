@@ -53,6 +53,11 @@ class Curl {
         $this->setopt(CURLOPT_USERPWD, $username . ':' . $password);
     }
 
+    function setHeader($key, $value) {
+        $this->_headers[$key] = $key . ': ' . $value;
+        $this->setopt(CURLOPT_HTTPHEADER, array_values($this->_headers));
+    }
+
     function setUserAgent($user_agent) {
         $this->setopt(CURLOPT_USERAGENT, $user_agent);
     }
@@ -97,6 +102,7 @@ class Curl {
     }
 
     private $_cookies = array();
+    private $_headers = array();
 
     public $curl;
     public $error = NULL;

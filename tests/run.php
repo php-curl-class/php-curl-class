@@ -80,4 +80,14 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($test->curl->error === TRUE);
         $this->assertTrue($test->curl->error_code === CURLE_OPERATION_TIMEOUTED);
     }
+
+    public function testHeaders() {
+        $test = new Test();
+        $test->curl->setHeader('Content-Type', 'application/json');
+        $test->curl->setHeader('X-Requested-With', 'XMLHttpRequest');
+        $test->curl->setHeader('Accept', 'application/json');
+        $this->assertTrue($test->server('GET', 'server', 'CONTENT_TYPE') === 'application/json');
+        $this->assertTrue($test->server('GET', 'server', 'HTTP_X_REQUESTED_WITH') === 'XMLHttpRequest');
+        $this->assertTrue($test->server('GET', 'server', 'HTTP_ACCEPT') === 'application/json');
+    }
 }
