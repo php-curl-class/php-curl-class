@@ -9,8 +9,9 @@ class Curl {
 
         $this->curl = curl_init();
         $this->setUserAgent(self::USER_AGENT);
-        $this->setopt(CURLOPT_RETURNTRANSFER, TRUE);
         $this->setopt(CURLINFO_HEADER_OUT, TRUE);
+        $this->setopt(CURLOPT_HEADER, TRUE);
+        $this->setopt(CURLOPT_RETURNTRANSFER, TRUE);
     }
 
     function get($url, $data=array()) {
@@ -79,6 +80,15 @@ class Curl {
         $this->error_message = curl_error($this->curl);
         $this->error = !($this->error_code === 0);
         $this->request_headers = preg_split('/\r\n/', curl_getinfo($this->curl, CURLINFO_HEADER_OUT), NULL, PREG_SPLIT_NO_EMPTY);
+        $this->response_headers = '';
+        if (!(strpos($this->response, "\r\n\r\n") === FALSE)) {
+            $parts = explode("\r\n\r\n", $this->response, 3);
+            if (count($parts) === 3 && $parts['0'] === 'HTTP/1.1 100 Continue') {
+                array_shift($parts);
+            }
+            list($this->response_headers, $this->response) = $parts;
+            $this->response_headers = preg_split('/\r\n/', $this->response_headers, NULL, PREG_SPLIT_NO_EMPTY);
+        }
         return $this->error_code;
     }
 
@@ -93,5 +103,6 @@ class Curl {
     public $error_code = 0;
     public $error_message = NULL;
     public $request_headers = NULL;
+    public $response_headers = NULL;
     public $response = NULL;
 }
