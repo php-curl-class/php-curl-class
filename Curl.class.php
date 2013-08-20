@@ -80,6 +80,10 @@ class Curl {
         return $this->error_code;
     }
 
+    function __destruct() {
+        $this->close();
+    }
+
     private $_cookies = array();
 
     public $curl;
