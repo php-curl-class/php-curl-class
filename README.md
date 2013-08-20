@@ -31,6 +31,7 @@ $curl = new Curl();
 $curl->setBasicAuthentication('username', 'password');
 $curl->setUserAgent('');
 $curl->setReferrer('');
+$curl->setHeader('X-Requested-With', 'XMLHttpRequest');
 $curl->setCookie('key', 'value');
 $curl->get('http://www.example.com/');
 
