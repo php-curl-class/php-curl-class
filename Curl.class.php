@@ -10,6 +10,7 @@ class Curl {
         $this->curl = curl_init();
         $this->setUserAgent(self::USER_AGENT);
         $this->setopt(CURLOPT_RETURNTRANSFER, TRUE);
+        $this->setopt(CURLINFO_HEADER_OUT, TRUE);
     }
 
     function get($url, $data=array()) {
@@ -77,6 +78,7 @@ class Curl {
         $this->error_code = curl_errno($this->curl);
         $this->error_message = curl_error($this->curl);
         $this->error = !($this->error_code === 0);
+        $this->request_headers = preg_split('/\r\n/', curl_getinfo($this->curl, CURLINFO_HEADER_OUT), NULL, PREG_SPLIT_NO_EMPTY);
         return $this->error_code;
     }
 
@@ -90,5 +92,6 @@ class Curl {
     public $error = NULL;
     public $error_code = 0;
     public $error_message = NULL;
+    public $request_headers = NULL;
     public $response = NULL;
 }
