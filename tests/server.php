@@ -22,20 +22,14 @@ if ($test == 'http_basic_auth') {
 
 header('Content-Type: text/plain');
 
-if ($test === 'put') {
-    $value = isset($_GET[$key]) ? $_GET[$key] : '';
-}
-else if ($test === 'delete') {
-    $value = isset($_GET[$key]) ? $_GET[$key] : '';
-}
-else if ($test === 'post') {
-    $value = isset($_POST[$key]) ? $_POST[$key] : '';
-}
-else if ($test === 'server') {
-    $value = isset($_SERVER[$key]) ? $_SERVER[$key] : '';
-}
-else if ($test === 'cookie') {
-    $value = isset($_COOKIE[$key]) ? $_COOKIE[$key] : '';
-}
+$data_mapping = array(
+    'cookie' => '_COOKIE',
+    'delete' => '_GET',
+    'post' => '_POST',
+    'put' => '_GET',
+    'server' => '_SERVER',
+);
 
+$data = $$data_mapping[$test];
+$value = isset($data[$key]) ? $data[$key] : '';
 echo $value;
