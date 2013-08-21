@@ -3,9 +3,10 @@
 
 require '../Curl.class.php';
 
-define('BASE_URL', 'https://127.0.0.1/php-curl-class/');
 
 class Test {
+    const TEST_URL = 'https://127.0.0.1/php-curl-class/tests/server.php';
+
     function __construct() {
         $this->curl = new Curl();
         $this->curl->setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -14,8 +15,7 @@ class Test {
 
     function server($request_method, $test, $key='') {
         $request_method = strtolower($request_method);
-        $url = BASE_URL . 'tests/server.php';
-        $this->curl->$request_method($url, array(
+        $this->curl->$request_method(self::TEST_URL, array(
             'test' => $test,
             'key' => $key,
         ));
