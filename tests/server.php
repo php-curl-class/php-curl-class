@@ -25,6 +25,9 @@ header('Content-Type: text/plain');
 if ($test === 'put') {
     $value = isset($_GET[$key]) ? $_GET[$key] : '';
 }
+else if ($test === 'delete') {
+    $value = isset($_GET[$key]) ? $_GET[$key] : '';
+}
 else if ($test === 'post') {
     $value = isset($_POST[$key]) ? $_POST[$key] : '';
 }

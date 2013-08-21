@@ -58,6 +58,9 @@ class CurlTest extends PHPUnit_Framework_TestCase {
     public function testDelete() {
         $test = new Test();
         $this->assertTrue($test->server('DELETE', 'server', 'REQUEST_METHOD') === 'DELETE');
+
+        $test = new Test();
+        $this->assertTrue($test->server('DELETE', 'delete', 'test') === 'delete');
     }
 
     public function testBasicHttpAuth() {
