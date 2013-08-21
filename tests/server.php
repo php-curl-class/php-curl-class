@@ -19,23 +19,20 @@ if ($test == 'http_basic_auth') {
     ));
     exit;
 }
-else if ($test === 'put') {
-    header('Content-Type: text/plain');
+
+header('Content-Type: text/plain');
+
+if ($test === 'put') {
     $value = isset($_GET[$key]) ? $_GET[$key] : '';
-    echo $value;
 }
 else if ($test === 'post') {
-    header('Content-Type: text/plain');
     $value = isset($_POST[$key]) ? $_POST[$key] : '';
-    echo $value;
 }
 else if ($test === 'server') {
-    header('Content-Type: text/plain');
     $value = isset($_SERVER[$key]) ? $_SERVER[$key] : '';
-    echo $value;
 }
 else if ($test === 'cookie') {
-    header('Content-Type: text/plain');
     $value = isset($_COOKIE[$key]) ? $_COOKIE[$key] : '';
-    echo $value;
 }
+
+echo $value;
