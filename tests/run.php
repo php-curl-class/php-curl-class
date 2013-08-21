@@ -72,6 +72,23 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === 'put');
     }
 
+    public function testPutFileHandle() {
+        $png = create_png();
+        $tmp_file = create_tmp_file($png);
+
+        $test = new Test();
+        $test->curl->setopt(CURLOPT_PUT, TRUE);
+        $test->curl->setopt(CURLOPT_INFILE, $tmp_file);
+        $test->curl->setopt(CURLOPT_INFILESIZE, strlen($png));
+        $test->curl->put(Test::TEST_URL, array(
+            'test' => 'put_file_handle',
+        ));
+
+        fclose($tmp_file);
+
+        $this->assertTrue($test->curl->response === 'image/png');
+    }
+
     public function testDelete() {
         $test = new Test();
         $this->assertTrue($test->server('DELETE', array(

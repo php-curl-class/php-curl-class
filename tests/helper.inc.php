@@ -24,6 +24,13 @@ function create_png() {
     return $raw_image;
 }
 
+function create_tmp_file($data) {
+    $tmp_file = tmpfile();
+    fwrite($tmp_file, $data);
+    rewind($tmp_file);
+    return $tmp_file;
+}
+
 function get_png() {
     $tmp_filename = tempnam('/tmp', 'php-curl-class.');
     file_put_contents($tmp_filename, create_png());

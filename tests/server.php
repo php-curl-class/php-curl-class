@@ -23,6 +23,13 @@ else if ($test === 'post_file_path_upload') {
     echo mime_content_type($_FILES[$key]['tmp_name']);
     exit;
 }
+else if ($test === 'put_file_handle') {
+    $tmp_filename = tempnam('/tmp', 'php-curl-class.');
+    file_put_contents($tmp_filename, file_get_contents('php://input'));
+    echo mime_content_type($tmp_filename);
+    unlink($tmp_filename);
+    exit;
+}
 
 header('Content-Type: text/plain');
 
