@@ -19,6 +19,11 @@ if ($test == 'http_basic_auth') {
     ));
     exit;
 }
+else if ($test === 'put') {
+    header('Content-Type: text/plain');
+    $value = isset($_GET[$key]) ? $_GET[$key] : '';
+    echo $value;
+}
 else if ($test === 'post') {
     header('Content-Type: text/plain');
     $value = isset($_POST[$key]) ? $_POST[$key] : '';
