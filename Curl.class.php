@@ -73,6 +73,10 @@ class Curl {
         return curl_setopt($this->curl, $option, $value);
     }
 
+    function verbose($on=TRUE) {
+        $this->setopt(CURLOPT_VERBOSE, $on);
+    }
+
     function close() {
         curl_close($this->curl);
     }
