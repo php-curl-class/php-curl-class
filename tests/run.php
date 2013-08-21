@@ -43,6 +43,20 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === 'post');
     }
 
+    public function testPostFilePathUpload() {
+        $tmp_filename = tempnam('/tmp', 'php-curl-class.');
+        file_put_contents($tmp_filename, get_raw_image());
+
+        $test = new Test();
+        $this->assertTrue($test->server('POST', array(
+            'test' => 'post_file_path_upload',
+            'key' => 'image',
+            'image' => '@' . $tmp_filename,
+        )) === 'image/png');
+
+        unlink($tmp_filename);
+    }
+
     public function testPut() {
         $test = new Test();
         $this->assertTrue($test->server('PUT', array(

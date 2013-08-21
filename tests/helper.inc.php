@@ -14,3 +14,12 @@ class Test {
         return $this->curl->response;
     }
 }
+
+function get_raw_image() {
+    // PNG image data, 1 x 1, 1-bit colormap, non-interlaced
+    ob_start();
+    imagepng(imagecreatefromstring(base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')));
+    $raw_image = ob_get_contents();
+    ob_end_clean();
+    return $raw_image;
+}

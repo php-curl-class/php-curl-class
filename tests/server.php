@@ -19,6 +19,10 @@ if ($test == 'http_basic_auth') {
     ));
     exit;
 }
+else if ($test === 'post_file_path_upload') {
+    echo mime_content_type($_FILES[$key]['tmp_name']);
+    exit;
+}
 
 header('Content-Type: text/plain');
 
