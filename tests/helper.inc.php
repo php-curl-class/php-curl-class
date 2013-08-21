@@ -15,11 +15,17 @@ class Test {
     }
 }
 
-function get_raw_image() {
+function create_png() {
     // PNG image data, 1 x 1, 1-bit colormap, non-interlaced
     ob_start();
     imagepng(imagecreatefromstring(base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')));
     $raw_image = ob_get_contents();
     ob_end_clean();
     return $raw_image;
+}
+
+function get_png() {
+    $tmp_filename = tempnam('/tmp', 'php-curl-class.');
+    file_put_contents($tmp_filename, create_png());
+    return $tmp_filename;
 }
