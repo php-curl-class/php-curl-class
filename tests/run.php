@@ -39,10 +39,12 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($test->server('GET', 'server', 'REQUEST_METHOD') === 'GET');
     }
 
-    public function testPost() {
+    public function testPostRequestMethod() {
         $test = new Test();
         $this->assertTrue($test->server('POST', 'server', 'REQUEST_METHOD') === 'POST');
+    }
 
+    public function testPostData() {
         $test = new Test();
         $this->assertTrue($test->server('POST', 'post', 'test') === 'post');
     }
