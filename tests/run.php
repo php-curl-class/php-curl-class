@@ -13,12 +13,9 @@ class Test {
         $this->curl->setOpt(CURLOPT_SSL_VERIFYHOST, FALSE);
     }
 
-    function server($request_method, $test, $key='') {
+    function server($request_method, $data='') {
         $request_method = strtolower($request_method);
-        $this->curl->$request_method(self::TEST_URL, array(
-            'test' => $test,
-            'key' => $key,
-        ));
+        $this->curl->$request_method(self::TEST_URL, $data);
         return $this->curl->response;
     }
 }
@@ -31,49 +28,77 @@ class CurlTest extends PHPUnit_Framework_TestCase {
     public function testUserAgent() {
         $test = new Test();
         $test->curl->setUserAgent(Curl::USER_AGENT);
-        $this->assertTrue($test->server('GET', 'server', 'HTTP_USER_AGENT') === Curl::USER_AGENT);
+        $this->assertTrue($test->server('GET', array(
+            'test' => 'server',
+            'key' => 'HTTP_USER_AGENT',
+        )) === Curl::USER_AGENT);
     }
 
     public function testGet() {
         $test = new Test();
-        $this->assertTrue($test->server('GET', 'server', 'REQUEST_METHOD') === 'GET');
+        $this->assertTrue($test->server('GET', array(
+            'test' => 'server',
+            'key' => 'REQUEST_METHOD',
+        )) === 'GET');
     }
 
     public function testPostRequestMethod() {
         $test = new Test();
-        $this->assertTrue($test->server('POST', 'server', 'REQUEST_METHOD') === 'POST');
+        $this->assertTrue($test->server('POST', array(
+            'test' => 'server',
+            'key' => 'REQUEST_METHOD',
+        )) === 'POST');
     }
 
     public function testPostData() {
         $test = new Test();
-        $this->assertTrue($test->server('POST', 'post', 'test') === 'post');
+        $this->assertTrue($test->server('POST', array(
+            'test' => 'post',
+            'key' => 'test',
+        )) === 'post');
     }
 
     public function testPut() {
         $test = new Test();
-        $this->assertTrue($test->server('PUT', 'server', 'REQUEST_METHOD') === 'PUT');
+        $this->assertTrue($test->server('PUT', array(
+            'test' => 'server',
+            'key' => 'REQUEST_METHOD',
+        )) === 'PUT');
 
         $test = new Test();
-        $this->assertTrue($test->server('PUT', 'put', 'test') === 'put');
+        $this->assertTrue($test->server('PUT', array(
+            'test' => 'put',
+            'key' => 'test',
+        )) === 'put');
     }
 
     public function testDelete() {
         $test = new Test();
-        $this->assertTrue($test->server('DELETE', 'server', 'REQUEST_METHOD') === 'DELETE');
+        $this->assertTrue($test->server('DELETE', array(
+            'test' => 'server',
+            'key' => 'REQUEST_METHOD',
+        )) === 'DELETE');
 
         $test = new Test();
-        $this->assertTrue($test->server('DELETE', 'delete', 'test') === 'delete');
+        $this->assertTrue($test->server('DELETE', array(
+            'test' => 'delete',
+            'key' => 'test',
+        )) === 'delete');
     }
 
     public function testBasicHttpAuth() {
         $test = new Test();
-        $this->assertTrue($test->server('GET', 'http_basic_auth') === 'canceled');
+        $this->assertTrue($test->server('GET', array(
+            'test' => 'http_basic_auth',
+        )) === 'canceled');
 
         $username = 'myusername';
         $password = 'mypassword';
         $test = new Test();
         $test->curl->setBasicAuthentication($username, $password);
-        $test->server('GET', 'http_basic_auth');
+        $test->server('GET', array(
+            'test' => 'http_basic_auth',
+        ));
         $json = json_decode($test->curl->response);
         $this->assertTrue($json->username === $username);
         $this->assertTrue($json->password === $password);
@@ -82,13 +107,19 @@ class CurlTest extends PHPUnit_Framework_TestCase {
     public function testReferrer() {
         $test = new Test();
         $test->curl->setReferrer('myreferrer');
-        $this->assertTrue($test->server('GET', 'server', 'HTTP_REFERER') === 'myreferrer');
+        $this->assertTrue($test->server('GET', array(
+            'test' => 'server',
+            'key' => 'HTTP_REFERER',
+        )) === 'myreferrer');
     }
 
     public function testCookies() {
         $test = new Test();
         $test->curl->setCookie('mycookie', 'yum');
-        $this->assertTrue($test->server('GET', 'cookie', 'mycookie') === 'yum');
+        $this->assertTrue($test->server('GET', array(
+            'test' => 'cookie',
+            'key' => 'mycookie',
+        )) === 'yum');
     }
 
     public function testError() {
@@ -104,8 +135,17 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $test->curl->setHeader('Content-Type', 'application/json');
         $test->curl->setHeader('X-Requested-With', 'XMLHttpRequest');
         $test->curl->setHeader('Accept', 'application/json');
-        $this->assertTrue($test->server('GET', 'server', 'CONTENT_TYPE') === 'application/json');
-        $this->assertTrue($test->server('GET', 'server', 'HTTP_X_REQUESTED_WITH') === 'XMLHttpRequest');
-        $this->assertTrue($test->server('GET', 'server', 'HTTP_ACCEPT') === 'application/json');
+        $this->assertTrue($test->server('GET', array(
+            'test' => 'server',
+            'key' => 'CONTENT_TYPE',
+        )) === 'application/json');
+        $this->assertTrue($test->server('GET', array(
+            'test' => 'server',
+            'key' => 'HTTP_X_REQUESTED_WITH',
+        )) === 'XMLHttpRequest');
+        $this->assertTrue($test->server('GET', array(
+            'test' => 'server',
+            'key' => 'HTTP_ACCEPT',
+        )) === 'application/json');
     }
 }
