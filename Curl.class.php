@@ -83,9 +83,13 @@ class Curl {
 
     function _exec() {
         $this->response = curl_exec($this->curl);
-        $this->error_code = curl_errno($this->curl);
-        $this->error_message = curl_error($this->curl);
-        $this->error = !($this->error_code === 0);
+        $this->curl_error_code = curl_errno($this->curl);
+        $this->curl_error_message = curl_error($this->curl);
+        $this->curl_error = !($this->curl_error_code === 0);
+        $this->http_error_code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
+        $this->http_error = in_array(floor($this->http_error_code / 100), array(4, 5));
+        $this->error = $this->curl_error || $this->http_error;
+
         $this->request_headers = preg_split('/\r\n/', curl_getinfo($this->curl, CURLINFO_HEADER_OUT), NULL, PREG_SPLIT_NO_EMPTY);
         $this->response_headers = '';
         if (!(strpos($this->response, "\r\n\r\n") === FALSE)) {
@@ -96,6 +100,7 @@ class Curl {
             list($this->response_headers, $this->response) = $parts;
             $this->response_headers = preg_split('/\r\n/', $this->response_headers, NULL, PREG_SPLIT_NO_EMPTY);
         }
+
         return $this->error_code;
     }
 
