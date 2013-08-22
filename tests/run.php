@@ -144,6 +144,7 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $test->curl->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 2000);
         $test->curl->get('http://1.2.3.4/');
         $this->assertTrue($test->curl->error === TRUE);
+        $this->assertTrue($test->curl->curl_error === TRUE);
         $this->assertTrue($test->curl->curl_error_code === CURLE_OPERATION_TIMEOUTED);
     }
 
