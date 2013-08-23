@@ -120,7 +120,7 @@ class Curl {
 
     public $curl_error = FALSE;
     public $curl_error_code = 0;
-    public $curl_error_message = '';
+    public $curl_error_message = NULL;
 
     public $http_error = FALSE;
     public $http_error_code = NULL;
