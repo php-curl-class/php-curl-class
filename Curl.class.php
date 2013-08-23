@@ -90,6 +90,7 @@ class Curl {
         $this->http_error = in_array(floor($this->http_error_code / 100), array(4, 5));
         $this->error = $this->curl_error || $this->http_error;
         $this->error_code = $this->curl_error ? $this->curl_error_code : $this->http_error_code;
+        $this->error_message = $this->curl_error ? $this->curl_error_message : $this->http_error_message;
 
         $this->request_headers = preg_split('/\r\n/', curl_getinfo($this->curl, CURLINFO_HEADER_OUT), NULL, PREG_SPLIT_NO_EMPTY);
         $this->response_headers = '';
