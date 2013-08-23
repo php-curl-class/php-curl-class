@@ -89,6 +89,7 @@ class Curl {
         $this->http_error_code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
         $this->http_error = in_array(floor($this->http_error_code / 100), array(4, 5));
         $this->error = $this->curl_error || $this->http_error;
+        $this->error_code = $this->curl_error ? $this->curl_error_code : $this->http_error_code;
 
         $this->request_headers = preg_split('/\r\n/', curl_getinfo($this->curl, CURLINFO_HEADER_OUT), NULL, PREG_SPLIT_NO_EMPTY);
         $this->response_headers = '';
@@ -112,10 +113,19 @@ class Curl {
     private $_headers = array();
 
     public $curl;
-    public $error = NULL;
+
+    public $error = FALSE;
     public $error_code = 0;
     public $error_message = NULL;
+
+    public $curl_error = FALSE;
+    public $curl_error_code = 0;
+    public $curl_error_message = '';
+
+    public $http_error = FALSE;
+    public $http_error_code = NULL;
+
     public $request_headers = NULL;
-    public $response_headers = NULL;
     public $response = NULL;
+    public $response_headers = NULL;
 }
