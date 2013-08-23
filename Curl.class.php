@@ -94,12 +94,11 @@ class Curl {
         $this->request_headers = preg_split('/\r\n/', curl_getinfo($this->curl, CURLINFO_HEADER_OUT), NULL, PREG_SPLIT_NO_EMPTY);
         $this->response_headers = '';
         if (!(strpos($this->response, "\r\n\r\n") === FALSE)) {
-            $parts = explode("\r\n\r\n", $this->response, 3);
-            if (count($parts) === 3 && $parts['0'] === 'HTTP/1.1 100 Continue') {
-                array_shift($parts);
+            list($response_header, $this->response) = explode("\r\n\r\n", $this->response, 2);
+            if ($response_header === 'HTTP/1.1 100 Continue') {
+                list($response_header, $this->response) = explode("\r\n\r\n", $this->response, 2);
             }
-            list($this->response_headers, $this->response) = $parts;
-            $this->response_headers = preg_split('/\r\n/', $this->response_headers, NULL, PREG_SPLIT_NO_EMPTY);
+            $this->response_headers = preg_split('/\r\n/', $response_header, NULL, PREG_SPLIT_NO_EMPTY);
         }
 
         $this->http_error_message = $this->error ? (isset($this->response_headers['0']) ? $this->response_headers['0'] : '') : '';
