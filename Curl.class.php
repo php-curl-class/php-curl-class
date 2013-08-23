@@ -130,6 +130,6 @@ class Curl {
     public $http_error_message = NULL;
 
     public $request_headers = NULL;
-    public $response = NULL;
     public $response_headers = NULL;
+    public $response = NULL;
 }
