@@ -53,7 +53,7 @@ class CurlTest extends PHPUnit_Framework_TestCase {
                 'wubble',
                 'wobble',
             ),
-        )) === '{"test":"post_multidimensional","key":"file","file":["wibble","wubble","wobble"]}');
+        )) === 'test=post_multidimensional&key=file&file%5B%5D=wibble&file%5B%5D=wubble&file%5B%5D=wobble');
     }
 
     public function testPostFilePathUpload() {

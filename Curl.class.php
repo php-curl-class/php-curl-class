@@ -23,7 +23,7 @@ class Curl {
     function post($url, $data=array()) {
         $this->setopt(CURLOPT_URL, $url);
         $this->setopt(CURLOPT_POST, TRUE);
-        $this->setopt(CURLOPT_POSTFIELDS, $data);
+        $this->setopt(CURLOPT_POSTFIELDS, $this->_postfields($data));
         $this->_exec();
     }
 
@@ -79,6 +79,31 @@ class Curl {
 
     function close() {
         curl_close($this->curl);
+    }
+
+    function http_build_multi_query($data, $key=NULL) {
+        $query = array();
+
+        foreach ($data as $k => $value) {
+            if (is_string($value)) {
+                $query[] = urlencode(is_null($key) ? $k : $key) . '=' . urlencode($value);
+            }
+            else if (is_array($value)) {
+                $query[] = $this->http_build_multi_query($value, $k . '[]');
+            }
+        }
+
+        return implode('&', $query);
+    }
+
+    function _postfields($data) {
+        $multidimensional = !(count($data) === count($data, COUNT_RECURSIVE));
+
+        if ($multidimensional) {
+            $data = $this->http_build_multi_query($data);
+        }
+
+        return $data;
     }
 
     function _exec() {
