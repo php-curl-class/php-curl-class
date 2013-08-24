@@ -43,6 +43,19 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === 'post');
     }
 
+    public function testPostMultidimensionalData() {
+        $test = new Test();
+        $this->assertTrue($test->server('POST', array(
+            'test' => 'post_multidimensional',
+            'key' => 'file',
+            'file' => array(
+                'wibble',
+                'wubble',
+                'wobble',
+            ),
+        )) === '{"test":"post_multidimensional","key":"file","file":["wibble","wubble","wobble"]}');
+    }
+
     public function testPostFilePathUpload() {
         $file_path = get_png();
 
