@@ -86,7 +86,7 @@ class Curl {
 
         foreach ($data as $k => $value) {
             if (is_string($value)) {
-                $query[] = urlencode(is_null($key) ? $k : $key) . '=' . urlencode($value);
+                $query[] = urlencode(is_null($key) ? $k : $key) . '=' . rawurlencode($value);
             }
             else if (is_array($value)) {
                 $query[] = $this->http_build_multi_query($value, $k . '[]');
