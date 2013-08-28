@@ -97,10 +97,22 @@ class Curl {
     }
 
     function _postfields($data) {
-        $multidimensional = !(count($data) === count($data, COUNT_RECURSIVE));
+        if (is_array($data)) {
+            $multidimensional = !(count($data) === count($data, COUNT_RECURSIVE));
 
-        if ($multidimensional) {
-            $data = $this->http_build_multi_query($data);
+            if ($multidimensional) {
+                $data = $this->http_build_multi_query($data);
+            }
+            else {
+                // Fix "Notice: Array to string conversion" when $value in
+                // curl_setopt($ch, CURLOPT_POSTFIELDS, $value) is an array
+                // that contains an empty array.
+                foreach ($data as &$value) {
+                    if (is_array($value) && empty($value)) {
+                        $value = '';
+                    }
+                }
+            }
         }
 
         return $data;
