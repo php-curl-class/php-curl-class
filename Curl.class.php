@@ -98,9 +98,7 @@ class Curl {
 
     function _postfields($data) {
         if (is_array($data)) {
-            $multidimensional = !(count($data) === count($data, COUNT_RECURSIVE));
-
-            if ($multidimensional) {
+            if (is_array_multidim($data)) {
                 $data = $this->http_build_multi_query($data);
             }
             else {
@@ -168,4 +166,12 @@ class Curl {
     public $request_headers = NULL;
     public $response_headers = NULL;
     public $response = NULL;
+}
+
+function is_array_multidim($array) {
+    if (!is_array($array)) {
+        return FALSE;
+    }
+
+    return !(count($array) === count($array, COUNT_RECURSIVE));
 }
