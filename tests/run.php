@@ -10,6 +10,22 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(extension_loaded('curl'));
     }
 
+    public function testArrayAssociative() {
+        $this->assertTrue(is_array_assoc(array(
+            'foo' => 'wibble',
+            'bar' => 'wubble',
+            'baz' => 'wobble',
+        )));
+    }
+
+    public function testArrayIndexed() {
+        $this->assertFalse(is_array_assoc(array(
+            'wibble',
+            'wubble',
+            'wobble',
+        )));
+    }
+
     public function testUserAgent() {
         $test = new Test();
         $test->curl->setUserAgent(Curl::USER_AGENT);
@@ -41,6 +57,20 @@ class CurlTest extends PHPUnit_Framework_TestCase {
             'test' => 'post',
             'key' => 'test',
         )) === 'post');
+    }
+
+    public function testPostAssociativeArrayData() {
+        $test = new Test();
+        $this->assertTrue($test->server('POST', array(
+            'test' => 'post_multidimensional',
+            'username' => 'myusername',
+            'password' => 'mypassword',
+            'more_data' => array(
+                'param1' => 'something',
+                'param2' => 'other thing',
+                'param3' => '123',
+            ),
+        )) === 'test=post_multidimensional&username=myusername&password=mypassword&more_data%5Bparam1%5D=something&more_data%5Bparam2%5D=other%20thing&more_data%5Bparam3%5D=123');
     }
 
     public function testPostMultidimensionalData() {

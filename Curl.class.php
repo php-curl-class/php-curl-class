@@ -84,9 +84,12 @@ class Curl {
     function http_build_multi_query($data, $key=NULL) {
         $query = array();
 
+        $is_array_assoc = is_array_assoc($data);
+
         foreach ($data as $k => $value) {
-            if (is_string($value) || is_int($value)) {
-                $query[] = urlencode(is_null($key) ? $k : $key.'['.$k.']') . '=' . rawurlencode($value);
+            if (is_string($value)) {
+                $brackets = $is_array_assoc ? '[' . $k . ']' : '[]';
+                $query[] = urlencode(is_null($key) ? $k : $key . $brackets) . '=' . rawurlencode($value);
             }
             else if (is_array($value)) {
                 $query[] = $this->http_build_multi_query($value, $k);
@@ -166,6 +169,10 @@ class Curl {
     public $request_headers = NULL;
     public $response_headers = NULL;
     public $response = NULL;
+}
+
+function is_array_assoc($array) {
+    return (bool)count(array_filter(array_keys($array), 'is_string'));
 }
 
 function is_array_multidim($array) {
