@@ -85,7 +85,7 @@ class Curl {
         $query = array();
 
         foreach ($data as $k => $value) {
-            if (is_string($value)) {
+            if (is_string($value) || is_int($value)) {
                 $query[] = urlencode(is_null($key) ? $k : $key.'['.$k.']') . '=' . rawurlencode($value);
             }
             else if (is_array($value)) {
