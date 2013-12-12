@@ -87,7 +87,7 @@ class Curl {
         $is_array_assoc = is_array_assoc($data);
 
         foreach ($data as $k => $value) {
-            if (is_string($value)) {
+            if (is_string($value) || is_int($value)) {
                 $brackets = $is_array_assoc ? '[' . $k . ']' : '[]';
                 $query[] = urlencode(is_null($key) ? $k : $key . $brackets) . '=' . rawurlencode($value);
             }
