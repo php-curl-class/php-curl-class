@@ -84,12 +84,15 @@ class Curl {
     function http_build_multi_query($data, $key=NULL) {
         $query = array();
 
+        $is_array_assoc = is_array_assoc($data);
+
         foreach ($data as $k => $value) {
             if (is_string($value)) {
-                $query[] = urlencode(is_null($key) ? $k : $key) . '=' . rawurlencode($value);
+                $brackets = $is_array_assoc ? '[' . $k . ']' : '[]';
+                $query[] = urlencode(is_null($key) ? $k : $key . $brackets) . '=' . rawurlencode($value);
             }
             else if (is_array($value)) {
-                $query[] = $this->http_build_multi_query($value, $k . '[]');
+                $query[] = $this->http_build_multi_query($value, $k);
             }
         }
 

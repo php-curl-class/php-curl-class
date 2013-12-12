@@ -59,6 +59,20 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === 'post');
     }
 
+    public function testPostAssociativeArrayData() {
+        $test = new Test();
+        $this->assertTrue($test->server('POST', array(
+            'test' => 'post_multidimensional',
+            'username' => 'myusername',
+            'password' => 'mypassword',
+            'more_data' => array(
+                'param1' => 'something',
+                'param2' => 'other thing',
+                'param3' => '123',
+            ),
+        )) === 'test=post_multidimensional&username=myusername&password=mypassword&more_data%5Bparam1%5D=something&more_data%5Bparam2%5D=other%20thing&more_data%5Bparam3%5D=123');
+    }
+
     public function testPostMultidimensionalData() {
         $test = new Test();
         $this->assertTrue($test->server('POST', array(
