@@ -10,6 +10,22 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(extension_loaded('curl'));
     }
 
+    public function testArrayAssociative() {
+        $this->assertTrue(is_array_assoc(array(
+            'foo' => 'wibble',
+            'bar' => 'wubble',
+            'baz' => 'wobble',
+        )));
+    }
+
+    public function testArrayIndexed() {
+        $this->assertFalse(is_array_assoc(array(
+            'wibble',
+            'wubble',
+            'wobble',
+        )));
+    }
+
     public function testUserAgent() {
         $test = new Test();
         $test->curl->setUserAgent(Curl::USER_AGENT);

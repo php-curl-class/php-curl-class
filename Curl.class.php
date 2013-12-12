@@ -168,6 +168,10 @@ class Curl {
     public $response = NULL;
 }
 
+function is_array_assoc($array) {
+    return (bool)count(array_filter(array_keys($array), 'is_string'));
+}
+
 function is_array_multidim($array) {
     if (!is_array($array)) {
         return FALSE;
