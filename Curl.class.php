@@ -92,7 +92,8 @@ class Curl {
                 $query[] = urlencode(is_null($key) ? $k : $key . $brackets) . '=' . rawurlencode($value);
             }
             else if (is_array($value)) {
-                $query[] = $this->http_build_multi_query($value, $k);
+                $nested = (is_null($key)) ? $k : $key."[".$k."]";
+                $query[] = $this->http_build_multi_query($value, $nested);
             }
         }
 
