@@ -1,7 +1,7 @@
 <?php
 $request_method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
 $data_values = $request_method === 'POST' ? $_POST : $_GET;
-$test = isset($data_values['test']) ? $data_values['test'] : '';
+$test = isset($_SERVER['HTTP_X_DEBUG_TEST']) ? $_SERVER['HTTP_X_DEBUG_TEST'] : '';
 $key = isset($data_values['key']) ? $data_values['key'] : '';
 
 if ($test == 'http_basic_auth') {
@@ -17,6 +17,10 @@ if ($test == 'http_basic_auth') {
         'username' => $_SERVER['PHP_AUTH_USER'],
         'password' => $_SERVER['PHP_AUTH_PW'],
     ));
+    exit;
+}
+else if ($test === 'post') {
+    echo http_build_query($_POST);
     exit;
 }
 else if ($test === 'post_multidimensional') {
