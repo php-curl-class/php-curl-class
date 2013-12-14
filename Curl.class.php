@@ -2,6 +2,27 @@
 class Curl {
     const USER_AGENT = 'PHP-Curl-Class/1.0 (+https://github.com/php-curl-class/php-curl-class)';
 
+    private $_cookies = array();
+    private $_headers = array();
+
+    public $curl;
+
+    public $error = FALSE;
+    public $error_code = 0;
+    public $error_message = NULL;
+
+    public $curl_error = FALSE;
+    public $curl_error_code = 0;
+    public $curl_error_message = NULL;
+
+    public $http_error = FALSE;
+    public $http_status_code = 0;
+    public $http_error_message = NULL;
+
+    public $request_headers = NULL;
+    public $response_headers = NULL;
+    public $response = NULL;
+
     function __construct() {
         if (!extension_loaded('curl')) {
             throw new ErrorException('cURL library is not loaded');
@@ -148,27 +169,6 @@ class Curl {
     function __destruct() {
         $this->close();
     }
-
-    private $_cookies = array();
-    private $_headers = array();
-
-    public $curl;
-
-    public $error = FALSE;
-    public $error_code = 0;
-    public $error_message = NULL;
-
-    public $curl_error = FALSE;
-    public $curl_error_code = 0;
-    public $curl_error_message = NULL;
-
-    public $http_error = FALSE;
-    public $http_status_code = 0;
-    public $http_error_message = NULL;
-
-    public $request_headers = NULL;
-    public $response_headers = NULL;
-    public $response = NULL;
 }
 
 function is_array_assoc($array) {
