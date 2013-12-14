@@ -8,7 +8,7 @@ class Test {
         $this->curl->setOpt(CURLOPT_SSL_VERIFYHOST, FALSE);
     }
 
-    function server($request_method, $data='') {
+    function server($request_method, $data=array()) {
         $request_method = strtolower($request_method);
         $this->curl->$request_method(self::TEST_URL, $data);
         return $this->curl->response;
