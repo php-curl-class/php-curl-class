@@ -36,13 +36,13 @@ class Curl {
     }
 
     public function get($url, $data=array()) {
-        $this->setopt(CURLOPT_URL, $url . '?' . http_build_query($data));
+        $this->setopt(CURLOPT_URL, $this->_buildURL($url, $data));
         $this->setopt(CURLOPT_HTTPGET, TRUE);
         return $this->_exec();
     }
 
     public function post($url, $data=array()) {
-        $this->setopt(CURLOPT_URL, $url);
+        $this->setopt(CURLOPT_URL, $this->_buildURL($url));
         $this->setopt(CURLOPT_POST, TRUE);
         $this->setopt(CURLOPT_POSTFIELDS, $this->_postfields($data));
         return $this->_exec();
@@ -56,14 +56,14 @@ class Curl {
     }
 
     public function patch($url, $data=array()) {
-        $this->setopt(CURLOPT_URL, $url);
+        $this->setopt(CURLOPT_URL, $this->_buildURL($url));
         $this->setopt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $this->setopt(CURLOPT_POSTFIELDS, $data);
         return $this->_exec();
     }
 
     public function delete($url, $data=array()) {
-        $this->setopt(CURLOPT_URL, $url . '?' . http_build_query($data));
+        $this->setopt(CURLOPT_URL, $this->_buildURL($url, $data));
         $this->setopt(CURLOPT_CUSTOMREQUEST, 'DELETE');
         return $this->_exec();
     }
@@ -119,6 +119,10 @@ class Curl {
         }
 
         return implode('&', $query);
+    }
+
+    private function _buildURL($url, $data=array()) {
+        return $url . (empty($data) ? '' : '?' . http_build_query($data));
     }
 
     private function _postfields($data) {

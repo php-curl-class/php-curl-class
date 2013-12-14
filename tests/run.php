@@ -191,8 +191,14 @@ class CurlTest extends PHPUnit_Framework_TestCase {
 
     public function testRequestURL() {
         $test = new Test();
+        $this->assertFalse(substr($test->server('request_uri', 'GET'), -1) === '?');
+        $test = new Test();
         $this->assertFalse(substr($test->server('request_uri', 'POST'), -1) === '?');
         $test = new Test();
-        $this->assertFalse(substr($test->server('request_uri', 'GET'), -1) === '?');
+        $this->assertFalse(substr($test->server('request_uri', 'PUT'), -1) === '?');
+        $test = new Test();
+        $this->assertFalse(substr($test->server('request_uri', 'PATCH'), -1) === '?');
+        $test = new Test();
+        $this->assertFalse(substr($test->server('request_uri', 'DELETE'), -1) === '?');
     }
 }
