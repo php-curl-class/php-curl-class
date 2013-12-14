@@ -38,33 +38,33 @@ class Curl {
     public function get($url, $data=array()) {
         $this->setopt(CURLOPT_URL, $url . '?' . http_build_query($data));
         $this->setopt(CURLOPT_HTTPGET, TRUE);
-        $this->_exec();
+        return $this->_exec();
     }
 
     public function post($url, $data=array()) {
         $this->setopt(CURLOPT_URL, $url);
         $this->setopt(CURLOPT_POST, TRUE);
         $this->setopt(CURLOPT_POSTFIELDS, $this->_postfields($data));
-        $this->_exec();
+        return $this->_exec();
     }
 
     public function put($url, $data=array()) {
         $this->setopt(CURLOPT_URL, $url . '?' . http_build_query($data));
         $this->setopt(CURLOPT_CUSTOMREQUEST, 'PUT');
-        $this->_exec();
+        return $this->_exec();
     }
 
     public function patch($url, $data=array()) {
         $this->setopt(CURLOPT_URL, $url);
         $this->setopt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $this->setopt(CURLOPT_POSTFIELDS, $data);
-        $this->_exec();
+        return $this->_exec();
     }
 
     public function delete($url, $data=array()) {
         $this->setopt(CURLOPT_URL, $url . '?' . http_build_query($data));
         $this->setopt(CURLOPT_CUSTOMREQUEST, 'DELETE');
-        $this->_exec();
+        return $this->_exec();
     }
 
     public function setBasicAuthentication($username, $password) {
