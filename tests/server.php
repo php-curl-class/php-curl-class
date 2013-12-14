@@ -43,6 +43,10 @@ else if ($test === 'request_method') {
     echo $request_method;
     exit;
 }
+else if ($test === 'request_uri') {
+    echo $_SERVER['REQUEST_URI'];
+    exit;
+}
 
 header('Content-Type: text/plain');
 

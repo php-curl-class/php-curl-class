@@ -188,4 +188,11 @@ class CurlTest extends PHPUnit_Framework_TestCase {
             'key' => 'HTTP_ACCEPT',
         )) === 'application/json');
     }
+
+    public function testRequestURL() {
+        $test = new Test();
+        $this->assertFalse(substr($test->server('request_uri', 'POST'), -1) === '?');
+        $test = new Test();
+        $this->assertFalse(substr($test->server('request_uri', 'GET'), -1) === '?');
+    }
 }
