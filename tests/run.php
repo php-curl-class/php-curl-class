@@ -95,16 +95,14 @@ class CurlTest extends PHPUnit_Framework_TestCase {
 
     public function testPutRequestMethod() {
         $test = new Test();
-        $this->assertTrue($test->server('server', 'PUT', array(
-            'key' => 'REQUEST_METHOD',
-        )) === 'PUT');
+        $this->assertTrue($test->server('request_method', 'PUT') === 'PUT');
     }
 
     public function testPutData() {
         $test = new Test();
         $this->assertTrue($test->server('put', 'PUT', array(
-            'key' => 'test',
-        )) === 'test');
+            'key' => 'value',
+        )) === 'key=value');
     }
 
     public function testPutFileHandle() {

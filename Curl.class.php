@@ -49,8 +49,9 @@ class Curl {
     }
 
     public function put($url, $data=array()) {
-        $this->setopt(CURLOPT_URL, $url . '?' . http_build_query($data));
+        $this->setopt(CURLOPT_URL, $url);
         $this->setopt(CURLOPT_CUSTOMREQUEST, 'PUT');
+        $this->setopt(CURLOPT_POSTFIELDS, http_build_query($data));
         return $this->_exec();
     }
 
