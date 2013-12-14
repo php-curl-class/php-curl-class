@@ -23,7 +23,7 @@ class Curl {
     public $response_headers = NULL;
     public $response = NULL;
 
-    function __construct() {
+    public function __construct() {
         if (!extension_loaded('curl')) {
             throw new ErrorException('cURL library is not loaded');
         }
@@ -35,74 +35,74 @@ class Curl {
         $this->setopt(CURLOPT_RETURNTRANSFER, TRUE);
     }
 
-    function get($url, $data=array()) {
+    public function get($url, $data=array()) {
         $this->setopt(CURLOPT_URL, $url . '?' . http_build_query($data));
         $this->setopt(CURLOPT_HTTPGET, TRUE);
         $this->_exec();
     }
 
-    function post($url, $data=array()) {
+    public function post($url, $data=array()) {
         $this->setopt(CURLOPT_URL, $url);
         $this->setopt(CURLOPT_POST, TRUE);
         $this->setopt(CURLOPT_POSTFIELDS, $this->_postfields($data));
         $this->_exec();
     }
 
-    function put($url, $data=array()) {
+    public function put($url, $data=array()) {
         $this->setopt(CURLOPT_URL, $url . '?' . http_build_query($data));
         $this->setopt(CURLOPT_CUSTOMREQUEST, 'PUT');
         $this->_exec();
     }
 
-    function patch($url, $data=array()) {
+    public function patch($url, $data=array()) {
         $this->setopt(CURLOPT_URL, $url);
         $this->setopt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $this->setopt(CURLOPT_POSTFIELDS, $data);
         $this->_exec();
     }
 
-    function delete($url, $data=array()) {
+    public function delete($url, $data=array()) {
         $this->setopt(CURLOPT_URL, $url . '?' . http_build_query($data));
         $this->setopt(CURLOPT_CUSTOMREQUEST, 'DELETE');
         $this->_exec();
     }
 
-    function setBasicAuthentication($username, $password) {
+    public function setBasicAuthentication($username, $password) {
         $this->setopt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         $this->setopt(CURLOPT_USERPWD, $username . ':' . $password);
     }
 
-    function setHeader($key, $value) {
+    public function setHeader($key, $value) {
         $this->_headers[$key] = $key . ': ' . $value;
         $this->setopt(CURLOPT_HTTPHEADER, array_values($this->_headers));
     }
 
-    function setUserAgent($user_agent) {
+    public function setUserAgent($user_agent) {
         $this->setopt(CURLOPT_USERAGENT, $user_agent);
     }
 
-    function setReferrer($referrer) {
+    public function setReferrer($referrer) {
         $this->setopt(CURLOPT_REFERER, $referrer);
     }
 
-    function setCookie($key, $value) {
+    public function setCookie($key, $value) {
         $this->_cookies[$key] = $value;
         $this->setopt(CURLOPT_COOKIE, http_build_query($this->_cookies, '', '; '));
     }
 
-    function setOpt($option, $value) {
+    public function setOpt($option, $value) {
         return curl_setopt($this->curl, $option, $value);
     }
 
-    function verbose($on=TRUE) {
+    public function verbose($on=TRUE) {
         $this->setopt(CURLOPT_VERBOSE, $on);
     }
 
-    function close() {
+    public function close() {
         curl_close($this->curl);
     }
 
-    function http_build_multi_query($data, $key=NULL) {
+    private function http_build_multi_query($data, $key=NULL) {
         $query = array();
 
         $is_array_assoc = is_array_assoc($data);
@@ -120,7 +120,7 @@ class Curl {
         return implode('&', $query);
     }
 
-    function _postfields($data) {
+    private function _postfields($data) {
         if (is_array($data)) {
             if (is_array_multidim($data)) {
                 $data = $this->http_build_multi_query($data);
@@ -140,7 +140,7 @@ class Curl {
         return $data;
     }
 
-    function _exec() {
+    private function _exec() {
         $this->response = curl_exec($this->curl);
         $this->curl_error_code = curl_errno($this->curl);
         $this->curl_error_message = curl_error($this->curl);
@@ -166,7 +166,7 @@ class Curl {
         return $this->error_code;
     }
 
-    function __destruct() {
+    public function __destruct() {
         $this->close();
     }
 }
