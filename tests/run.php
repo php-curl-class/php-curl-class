@@ -201,4 +201,23 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $test = new Test();
         $this->assertFalse(substr($test->server('request_uri', 'DELETE'), -1) === '?');
     }
+
+    public function testNestedData() {
+        $test = new Test();
+        $data = array(
+            'username' => 'myusername',
+            'password' => 'mypassword',
+            'more_data' => array(
+                'param1' => 'something',
+                'param2' => 'other thing',
+                'another' => array(
+                    'extra' => 'level',
+                    'because' => 'I need it',
+                ),
+            ),
+        );
+        $this->assertTrue(
+            $test->server('post', 'POST', $data) === http_build_query($data)
+        );
+    }
 }
