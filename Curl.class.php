@@ -145,7 +145,7 @@ class Curl {
         return $data;
     }
 
-    private function _exec() {
+    protected function _exec() {
         $this->response = curl_exec($this->curl);
         $this->curl_error_code = curl_errno($this->curl);
         $this->curl_error_message = curl_error($this->curl);
