@@ -220,4 +220,25 @@ class CurlTest extends PHPUnit_Framework_TestCase {
             $test->server('post', 'POST', $data) === http_build_query($data)
         );
     }
+
+    public function testPostContentTypes() {
+        $test = new Test();
+        $test->server('server', 'POST', 'foo=bar');
+        $this->assertTrue(in_array(
+            'Content-Type: application/x-www-form-urlencoded',
+            $test->curl->request_headers
+        ));
+
+        $test = new Test();
+        $test->server('server', 'POST', array(
+            'foo' => 'bar',
+        ));
+        $this->assertTrue(in_array(
+            'Expect: 100-continue',
+            $test->curl->request_headers
+        ));
+        $content_type = preg_grep('/^Content-Type: multipart\/form-data; boundary=/',
+            $test->curl->request_headers);
+        $this->assertTrue(!empty($content_type));
+    }
 }
