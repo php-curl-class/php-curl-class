@@ -276,4 +276,25 @@ class CurlTest extends PHPUnit_Framework_TestCase {
             'foo=bar&baz[qux]=&baz[wibble]=wobble'
         );
     }
+
+    public function testParallelRequests() {
+        $curl = new Curl();
+        $curl->beforeSend(function($instance) {
+            $instance->setHeader('X-DEBUG-TEST', 'request_uri');
+            $instance->setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
+            $instance->setOpt(CURLOPT_SSL_VERIFYHOST, FALSE);
+        });
+        $curl->get(array(
+            Test::TEST_URL . '/a/',
+            Test::TEST_URL . '/b/',
+            Test::TEST_URL . '/c/',
+        ), array(
+            'foo' => 'bar',
+        ));
+
+        $len = strlen('/a/?foo=bar');
+        $this->assertTrue(substr($curl->curls['0']->response, - $len) === '/a/?foo=bar');
+        $this->assertTrue(substr($curl->curls['1']->response, - $len) === '/b/?foo=bar');
+        $this->assertTrue(substr($curl->curls['2']->response, - $len) === '/c/?foo=bar');
+    }
 }
