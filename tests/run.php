@@ -241,4 +241,14 @@ class CurlTest extends PHPUnit_Framework_TestCase {
             $test->curl->request_headers);
         $this->assertTrue(!empty($content_type));
     }
+
+    public function testArrayToStringConversion() {
+        $test = new Test();
+        $test->server('post', 'POST', array(
+            'foo' => 'bar',
+            'baz' => array(
+            ),
+        ));
+        $this->assertTrue($test->curl->response === 'foo=bar&baz=');
+    }
 }
