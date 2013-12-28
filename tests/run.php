@@ -250,5 +250,30 @@ class CurlTest extends PHPUnit_Framework_TestCase {
             ),
         ));
         $this->assertTrue($test->curl->response === 'foo=bar&baz=');
+
+        $test = new Test();
+        $test->server('post', 'POST', array(
+            'foo' => 'bar',
+            'baz' => array(
+                'qux' => array(
+                ),
+            ),
+        ));
+        $this->assertTrue(urldecode($test->curl->response) ===
+            'foo=bar&baz[qux]='
+        );
+
+        $test = new Test();
+        $test->server('post', 'POST', array(
+            'foo' => 'bar',
+            'baz' => array(
+                'qux' => array(
+                ),
+                'wibble' => 'wobble',
+            ),
+        ));
+        $this->assertTrue(urldecode($test->curl->response) ===
+            'foo=bar&baz[qux]=&baz[wibble]=wobble'
+        );
     }
 }

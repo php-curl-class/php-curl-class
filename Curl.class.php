@@ -106,6 +106,10 @@ class Curl {
     private function http_build_multi_query($data, $key=NULL) {
         $query = array();
 
+        if (empty($data)) {
+            return $key . '=';
+        }
+
         $is_array_assoc = is_array_assoc($data);
 
         foreach ($data as $k => $value) {
