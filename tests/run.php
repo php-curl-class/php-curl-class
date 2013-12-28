@@ -111,9 +111,9 @@ class CurlTest extends PHPUnit_Framework_TestCase {
 
         $test = new Test();
         $test->curl->setHeader('X-DEBUG-TEST', 'put_file_handle');
-        $test->curl->setopt(CURLOPT_PUT, TRUE);
-        $test->curl->setopt(CURLOPT_INFILE, $tmp_file);
-        $test->curl->setopt(CURLOPT_INFILESIZE, strlen($png));
+        $test->curl->setOpt(CURLOPT_PUT, TRUE);
+        $test->curl->setOpt(CURLOPT_INFILE, $tmp_file);
+        $test->curl->setOpt(CURLOPT_INFILESIZE, strlen($png));
         $test->curl->put(Test::TEST_URL);
 
         fclose($tmp_file);
