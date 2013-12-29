@@ -337,6 +337,53 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($complete_called);
     }
 
+    public function testParallelSuccessCallback() {
+        $success_called = FALSE;
+        $error_called = FALSE;
+        $complete_called = FALSE;
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'get');
+        $curl->setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
+        $curl->setOpt(CURLOPT_SSL_VERIFYHOST, FALSE);
+
+        $curl->success(function($instance) use (&$success_called, &$error_called, &$complete_called) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertFalse($success_called);
+            PHPUnit_Framework_Assert::assertFalse($error_called);
+            PHPUnit_Framework_Assert::assertFalse($complete_called);
+            $success_called = TRUE;
+        });
+        $curl->error(function($instance) use (&$success_called, &$error_called, &$complete_called, &$curl) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertFalse($success_called);
+            PHPUnit_Framework_Assert::assertFalse($error_called);
+            PHPUnit_Framework_Assert::assertFalse($complete_called);
+            $error_called = TRUE;
+        });
+        $curl->complete(function($instance) use (&$success_called, &$error_called, &$complete_called) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertTrue($success_called);
+            PHPUnit_Framework_Assert::assertFalse($error_called);
+            PHPUnit_Framework_Assert::assertFalse($complete_called);
+            $complete_called = TRUE;
+
+            PHPUnit_Framework_Assert::assertTrue($success_called);
+            PHPUnit_Framework_Assert::assertFalse($error_called);
+            PHPUnit_Framework_Assert::assertTrue($complete_called);
+
+            $success_called = FALSE;
+            $error_called = FALSE;
+            $complete_called = FALSE;
+        });
+
+        $curl->get(array(
+            Test::TEST_URL . '/a/',
+            Test::TEST_URL . '/b/',
+            Test::TEST_URL . '/c/',
+        ));
+    }
+
     public function testErrorCallback() {
         $success_called = FALSE;
         $error_called = FALSE;
