@@ -76,7 +76,7 @@ class Curl {
         else {
             $this->setopt(CURLOPT_URL, $this->_buildURL($url_mixed, $data));
             $this->setopt(CURLOPT_HTTPGET, TRUE);
-            return $this->_exec($this);
+            return $this->_exec();
         }
     }
 
@@ -176,6 +176,18 @@ class Curl {
         return implode('&', $query);
     }
 
+    public function success($callback) {
+        $this->_success = $callback;
+    }
+
+    public function error($callback) {
+        $this->_error = $callback;
+    }
+
+    public function complete($callback) {
+        $this->_complete = $callback;
+    }
+
     private function _buildURL($url, $data=array()) {
         return $url . (empty($data) ? '' : '?' . http_build_query($data));
     }
@@ -232,13 +244,13 @@ class Curl {
         $ch->error_message = $ch->curl_error ? $ch->curl_error_message : $ch->http_error_message;
 
         if (!$ch->error) {
-            $ch->_call($ch->_success);
+            $ch->_call($ch->_success, $ch);
         }
         else {
-            $ch->_call($ch->_error);
+            $ch->_call($ch->_error, $ch);
         }
 
-        $ch->_call($ch->_complete);
+        $ch->_call($ch->_complete, $ch);
 
         return $ch->error_code;
     }

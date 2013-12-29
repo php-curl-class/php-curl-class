@@ -1,6 +1,7 @@
 <?php
 class Test {
     const TEST_URL = 'https://127.0.0.1/php-curl-class/tests/server.php';
+    const ERROR_URL = 'https://1.2.3.4/';
 
     function __construct() {
         $this->curl = new Curl();
