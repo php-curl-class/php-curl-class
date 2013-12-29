@@ -5,7 +5,15 @@ class Curl {
     private $_cookies = array();
     private $_headers = array();
 
+    private $_multi_parent = FALSE;
+    private $_multi_child = FALSE;
+    private $_before_send = NULL;
+    private $_success = NULL;
+    private $_error = NULL;
+    private $_complete = NULL;
+
     public $curl;
+    public $curls;
 
     public $error = FALSE;
     public $error_code = 0;
@@ -35,10 +43,41 @@ class Curl {
         $this->setOpt(CURLOPT_RETURNTRANSFER, TRUE);
     }
 
-    public function get($url, $data=array()) {
-        $this->setOpt(CURLOPT_URL, $this->_buildURL($url, $data));
-        $this->setOpt(CURLOPT_HTTPGET, TRUE);
-        return $this->_exec();
+    public function get($url_mixed, $data=array()) {
+        if (is_array($url_mixed)) {
+            $curl_multi = curl_multi_init();
+            $this->_multi_parent = TRUE;
+
+            $this->curls = array();
+
+            foreach ($url_mixed as $url) {
+                $curl = new Curl();
+                $curl->_multi_child = TRUE;
+                $curl->setOpt(CURLOPT_URL, $this->_buildURL($url, $data), $curl->curl);
+                $curl->setOpt(CURLOPT_HTTPGET, TRUE);
+                $this->_call($this->_before_send, $curl);
+                $this->curls[] = $curl;
+
+                $curlm_error_code = curl_multi_add_handle($curl_multi, $curl->curl);
+                if (!($curlm_error_code === CURLM_OK)) {
+                    throw new ErrorException('cURL multi add handle error: ' .
+                        curl_multi_strerror($curlm_error_code));
+                }
+            }
+
+            do {
+                $status = curl_multi_exec($curl_multi, $active);
+            } while ($status === CURLM_CALL_MULTI_PERFORM || $active);
+
+            foreach ($this->curls as $ch) {
+                $this->_exec($ch);
+            }
+        }
+        else {
+            $this->setopt(CURLOPT_URL, $this->_buildURL($url_mixed, $data));
+            $this->setopt(CURLOPT_HTTPGET, TRUE);
+            return $this->_exec($this);
+        }
     }
 
     public function post($url, $data=array()) {
@@ -91,8 +130,9 @@ class Curl {
         $this->setOpt(CURLOPT_COOKIE, http_build_query($this->_cookies, '', '; '));
     }
 
-    public function setOpt($option, $value) {
-        return curl_setopt($this->curl, $option, $value);
+    public function setOpt($option, $value, $_ch=NULL) {
+        $ch = is_null($_ch) ? $this->curl : $_ch;
+        return curl_setopt($ch, $option, $value);
     }
 
     public function verbose($on=TRUE) {
@@ -100,7 +140,17 @@ class Curl {
     }
 
     public function close() {
+        if ($this->_multi_parent) {
+            foreach ($this->curls as $curl) {
+                curl_close($curl->curl);
+            }
+        }
+
         curl_close($this->curl);
+    }
+
+    public function beforeSend($function) {
+        $this->_before_send = $function;
     }
 
     private function http_build_multi_query($data, $key=NULL) {
@@ -150,30 +200,55 @@ class Curl {
         return $data;
     }
 
-    protected function _exec() {
-        $this->response = curl_exec($this->curl);
-        $this->curl_error_code = curl_errno($this->curl);
-        $this->curl_error_message = curl_error($this->curl);
-        $this->curl_error = !($this->curl_error_code === 0);
-        $this->http_status_code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
-        $this->http_error = in_array(floor($this->http_status_code / 100), array(4, 5));
-        $this->error = $this->curl_error || $this->http_error;
-        $this->error_code = $this->error ? ($this->curl_error ? $this->curl_error_code : $this->http_status_code) : 0;
+    protected function _exec($_ch=NULL) {
+        $ch = is_null($_ch) ? $this : $_ch;
 
-        $this->request_headers = preg_split('/\r\n/', curl_getinfo($this->curl, CURLINFO_HEADER_OUT), NULL, PREG_SPLIT_NO_EMPTY);
-        $this->response_headers = '';
-        if (!(strpos($this->response, "\r\n\r\n") === FALSE)) {
-            list($response_header, $this->response) = explode("\r\n\r\n", $this->response, 2);
-            if ($response_header === 'HTTP/1.1 100 Continue') {
-                list($response_header, $this->response) = explode("\r\n\r\n", $this->response, 2);
-            }
-            $this->response_headers = preg_split('/\r\n/', $response_header, NULL, PREG_SPLIT_NO_EMPTY);
+        if ($ch->_multi_child) {
+            $ch->response = curl_multi_getcontent($ch->curl);
+        }
+        else {
+            $ch->response = curl_exec($ch->curl);
         }
 
-        $this->http_error_message = $this->error ? (isset($this->response_headers['0']) ? $this->response_headers['0'] : '') : '';
-        $this->error_message = $this->curl_error ? $this->curl_error_message : $this->http_error_message;
+        $ch->curl_error_code = curl_errno($ch->curl);
+        $ch->curl_error_message = curl_error($ch->curl);
+        $ch->curl_error = !($ch->curl_error_code === 0);
+        $ch->http_status_code = curl_getinfo($ch->curl, CURLINFO_HTTP_CODE);
+        $ch->http_error = in_array(floor($ch->http_status_code / 100), array(4, 5));
+        $ch->error = $ch->curl_error || $ch->http_error;
+        $ch->error_code = $ch->error ? ($ch->curl_error ? $ch->curl_error_code : $ch->http_status_code) : 0;
 
-        return $this->error_code;
+        $ch->request_headers = preg_split('/\r\n/', curl_getinfo($ch->curl, CURLINFO_HEADER_OUT), NULL, PREG_SPLIT_NO_EMPTY);
+        $ch->response_headers = '';
+        if (!(strpos($ch->response, "\r\n\r\n") === FALSE)) {
+            list($response_header, $ch->response) = explode("\r\n\r\n", $ch->response, 2);
+            if ($response_header === 'HTTP/1.1 100 Continue') {
+                list($response_header, $ch->response) = explode("\r\n\r\n", $ch->response, 2);
+            }
+            $ch->response_headers = preg_split('/\r\n/', $response_header, NULL, PREG_SPLIT_NO_EMPTY);
+        }
+
+        $ch->http_error_message = $ch->error ? (isset($ch->response_headers['0']) ? $ch->response_headers['0'] : '') : '';
+        $ch->error_message = $ch->curl_error ? $ch->curl_error_message : $ch->http_error_message;
+
+        if (!$ch->error) {
+            $ch->_call($ch->_success);
+        }
+        else {
+            $ch->_call($ch->_error);
+        }
+
+        $ch->_call($ch->_complete);
+
+        return $ch->error_code;
+    }
+
+    private function _call($function) {
+        if (is_callable($function)) {
+            $args = func_get_args();
+            array_shift($args);
+            call_user_func_array($function, $args);
+        }
     }
 
     public function __destruct() {
