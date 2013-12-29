@@ -84,3 +84,33 @@ $curl->close();
 curl_set_opt($curl->curl, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1');
 curl_close($curl->curl);
 ```
+
+```php
+// Requests in parallel with callback functions.
+$curl = new Curl();
+$curl->setOpt(CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1');
+
+$curl->success(function($instance) {
+    echo 'call was successful. response was' . "\n";
+    echo $instance->response . "\n";
+});
+$curl->error(function($instance) {
+    echo 'call was unsuccessful.' . "\n";
+    echo 'error code:' . $instance->error_code . "\n";
+    echo 'error message:' . $instance->error_message . "\n";
+});
+$curl->complete(function($instance) {
+    echo 'call completed' . "\n";
+});
+
+$curl->get(array(
+    'https://duckduckgo.com/',
+    'https://search.yahoo.com/search',
+    'http://www.bing.com/search',
+    'http://www.dogpile.com/search/web',
+    'https://www.google.com/search',
+    'https://www.wolframalpha.com/input/',
+), array(
+    'q' => 'hello world',
+));
+```
