@@ -244,13 +244,13 @@ class Curl {
         $ch->error_message = $ch->curl_error ? $ch->curl_error_message : $ch->http_error_message;
 
         if (!$ch->error) {
-            $ch->_call($ch->_success, $ch);
+            $ch->_call($this->_success, $ch);
         }
         else {
-            $ch->_call($ch->_error, $ch);
+            $ch->_call($this->_error, $ch);
         }
 
-        $ch->_call($ch->_complete, $ch);
+        $ch->_call($this->_complete, $ch);
 
         return $ch->error_code;
     }
