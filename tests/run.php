@@ -336,4 +336,44 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($error_called);
         $this->assertTrue($complete_called);
     }
+
+    public function testErrorCallback() {
+        $success_called = FALSE;
+        $error_called = FALSE;
+        $complete_called = FALSE;
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'get');
+        $curl->setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
+        $curl->setOpt(CURLOPT_SSL_VERIFYHOST, FALSE);
+        $curl->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 2000);
+
+        $curl->success(function($instance) use (&$success_called, &$error_called, &$complete_called) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertFalse($success_called);
+            PHPUnit_Framework_Assert::assertFalse($error_called);
+            PHPUnit_Framework_Assert::assertFalse($complete_called);
+            $success_called = TRUE;
+        });
+        $curl->error(function($instance) use (&$success_called, &$error_called, &$complete_called, &$curl) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertFalse($success_called);
+            PHPUnit_Framework_Assert::assertFalse($error_called);
+            PHPUnit_Framework_Assert::assertFalse($complete_called);
+            $error_called = TRUE;
+        });
+        $curl->complete(function($instance) use (&$success_called, &$error_called, &$complete_called) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertFalse($success_called);
+            PHPUnit_Framework_Assert::assertTrue($error_called);
+            PHPUnit_Framework_Assert::assertFalse($complete_called);
+            $complete_called = TRUE;
+        });
+
+        $curl->get(Test::ERROR_URL);
+
+        $this->assertFalse($success_called);
+        $this->assertTrue($error_called);
+        $this->assertTrue($complete_called);
+    }
 }
