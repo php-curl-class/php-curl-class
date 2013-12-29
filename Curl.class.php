@@ -4,6 +4,7 @@ class Curl {
 
     private $_cookies = array();
     private $_headers = array();
+    private $_options = array();
 
     private $_multi_parent = FALSE;
     private $_multi_child = FALSE;
@@ -62,6 +63,12 @@ class Curl {
                 if (!($curlm_error_code === CURLM_OK)) {
                     throw new ErrorException('cURL multi add handle error: ' .
                         curl_multi_strerror($curlm_error_code));
+                }
+            }
+
+            foreach ($this->curls as $ch) {
+                foreach ($this->_options as $key => $value) {
+                    $ch->setOpt($key, $value);
                 }
             }
 
@@ -132,6 +139,7 @@ class Curl {
 
     public function setOpt($option, $value, $_ch=NULL) {
         $ch = is_null($_ch) ? $this->curl : $_ch;
+        $this->_options[$option] = $value;
         return curl_setopt($ch, $option, $value);
     }
 

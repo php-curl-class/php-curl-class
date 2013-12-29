@@ -298,6 +298,22 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(substr($curl->curls['2']->response, - $len) === '/c/?foo=bar');
     }
 
+    public function testParallelSetOptions() {
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'server');
+        $curl->setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
+        $curl->setOpt(CURLOPT_SSL_VERIFYHOST, FALSE);
+        $curl->setOpt(CURLOPT_USERAGENT, 'useragent');
+        $curl->complete(function($instance) {
+            PHPUnit_Framework_Assert::assertTrue($instance->response === 'useragent');
+        });
+        $curl->get(array(
+            Test::TEST_URL,
+        ), array(
+            'key' => 'HTTP_USER_AGENT',
+        ));
+    }
+
     public function testSuccessCallback() {
         $success_called = FALSE;
         $error_called = FALSE;
