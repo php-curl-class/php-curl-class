@@ -19,6 +19,10 @@ if ($test == 'http_basic_auth') {
     ));
     exit;
 }
+else if ($test === 'get') {
+    echo http_build_query($_GET);
+    exit;
+}
 else if ($test === 'post') {
     echo http_build_query($_POST);
     exit;
