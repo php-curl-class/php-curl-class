@@ -35,7 +35,7 @@ class Curl {
 
     public function __construct() {
         if (!extension_loaded('curl')) {
-            throw new ErrorException('cURL library is not loaded');
+            throw new \ErrorException('cURL library is not loaded');
         }
 
         $this->curl = curl_init();
@@ -62,7 +62,7 @@ class Curl {
 
                 $curlm_error_code = curl_multi_add_handle($curl_multi, $curl->curl);
                 if (!($curlm_error_code === CURLM_OK)) {
-                    throw new ErrorException('cURL multi add handle error: ' .
+                    throw new \ErrorException('cURL multi add handle error: ' .
                         curl_multi_strerror($curlm_error_code));
                 }
             }
