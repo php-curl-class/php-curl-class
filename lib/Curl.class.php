@@ -162,29 +162,6 @@ class Curl {
         $this->_before_send = $function;
     }
 
-    private function _http_build_multi_query($data, $key=NULL) {
-        $query = array();
-
-        if (empty($data)) {
-            return $key . '=';
-        }
-
-        $is_array_assoc = is_array_assoc($data);
-
-        foreach ($data as $k => $value) {
-            if (is_string($value) || is_numeric($value)) {
-                $brackets = $is_array_assoc ? '[' . $k . ']' : '[]';
-                $query[] = urlencode(is_null($key) ? $k : $key . $brackets) . '=' . rawurlencode($value);
-            }
-            else if (is_array($value)) {
-                $nested = is_null($key) ? $k : $key . '[' . $k . ']';
-                $query[] = $this->_http_build_multi_query($value, $nested);
-            }
-        }
-
-        return implode('&', $query);
-    }
-
     public function success($callback) {
         $this->_success = $callback;
     }
@@ -204,7 +181,7 @@ class Curl {
     private function _postfields($data) {
         if (is_array($data)) {
             if (is_array_multidim($data)) {
-                $data = $this->_http_build_multi_query($data);
+                $data = http_build_multi_query($data);
             }
             else {
                 // Fix "Notice: Array to string conversion" when $value in
@@ -287,4 +264,27 @@ function is_array_multidim($array) {
     }
 
     return !(count($array) === count($array, COUNT_RECURSIVE));
+}
+
+function http_build_multi_query($data, $key=NULL) {
+    $query = array();
+
+    if (empty($data)) {
+        return $key . '=';
+    }
+
+    $is_array_assoc = is_array_assoc($data);
+
+    foreach ($data as $k => $value) {
+        if (is_string($value) || is_numeric($value)) {
+            $brackets = $is_array_assoc ? '[' . $k . ']' : '[]';
+            $query[] = urlencode(is_null($key) ? $k : $key . $brackets) . '=' . rawurlencode($value);
+        }
+        else if (is_array($value)) {
+            $nested = is_null($key) ? $k : $key . '[' . $k . ']';
+            $query[] = http_build_multi_query($value, $nested);
+        }
+    }
+
+    return implode('&', $query);
 }
