@@ -162,7 +162,7 @@ class Curl {
         $this->_before_send = $function;
     }
 
-    private function http_build_multi_query($data, $key=NULL) {
+    private function _http_build_multi_query($data, $key=NULL) {
         $query = array();
 
         if (empty($data)) {
@@ -178,7 +178,7 @@ class Curl {
             }
             else if (is_array($value)) {
                 $nested = is_null($key) ? $k : $key . '[' . $k . ']';
-                $query[] = $this->http_build_multi_query($value, $nested);
+                $query[] = $this->_http_build_multi_query($value, $nested);
             }
         }
 
@@ -204,7 +204,7 @@ class Curl {
     private function _postfields($data) {
         if (is_array($data)) {
             if (is_array_multidim($data)) {
-                $data = $this->http_build_multi_query($data);
+                $data = $this->_http_build_multi_query($data);
             }
             else {
                 // Fix "Notice: Array to string conversion" when $value in
