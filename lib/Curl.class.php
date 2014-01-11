@@ -7,31 +7,31 @@ class Curl {
     private $_headers = array();
     private $_options = array();
 
-    private $_multi_parent = FALSE;
-    private $_multi_child = FALSE;
-    private $_before_send = NULL;
-    private $_success = NULL;
-    private $_error = NULL;
-    private $_complete = NULL;
+    private $_multi_parent = false;
+    private $_multi_child = false;
+    private $_before_send = null;
+    private $_success = null;
+    private $_error = null;
+    private $_complete = null;
 
     public $curl;
     public $curls;
 
-    public $error = FALSE;
+    public $error = false;
     public $error_code = 0;
-    public $error_message = NULL;
+    public $error_message = null;
 
-    public $curl_error = FALSE;
+    public $curl_error = false;
     public $curl_error_code = 0;
-    public $curl_error_message = NULL;
+    public $curl_error_message = null;
 
-    public $http_error = FALSE;
+    public $http_error = false;
     public $http_status_code = 0;
-    public $http_error_message = NULL;
+    public $http_error_message = null;
 
-    public $request_headers = NULL;
-    public $response_headers = NULL;
-    public $response = NULL;
+    public $request_headers = null;
+    public $response_headers = null;
+    public $response = null;
 
     public function __construct() {
         if (!extension_loaded('curl')) {
@@ -40,23 +40,23 @@ class Curl {
 
         $this->curl = curl_init();
         $this->setUserAgent(self::USER_AGENT);
-        $this->setOpt(CURLINFO_HEADER_OUT, TRUE);
-        $this->setOpt(CURLOPT_HEADER, TRUE);
-        $this->setOpt(CURLOPT_RETURNTRANSFER, TRUE);
+        $this->setOpt(CURLINFO_HEADER_OUT, true);
+        $this->setOpt(CURLOPT_HEADER, true);
+        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
     }
 
     public function get($url_mixed, $data=array()) {
         if (is_array($url_mixed)) {
             $curl_multi = curl_multi_init();
-            $this->_multi_parent = TRUE;
+            $this->_multi_parent = true;
 
             $this->curls = array();
 
             foreach ($url_mixed as $url) {
                 $curl = new Curl();
-                $curl->_multi_child = TRUE;
+                $curl->_multi_child = true;
                 $curl->setOpt(CURLOPT_URL, $this->_buildURL($url, $data), $curl->curl);
-                $curl->setOpt(CURLOPT_HTTPGET, TRUE);
+                $curl->setOpt(CURLOPT_HTTPGET, true);
                 $this->_call($this->_before_send, $curl);
                 $this->curls[] = $curl;
 
@@ -83,14 +83,14 @@ class Curl {
         }
         else {
             $this->setopt(CURLOPT_URL, $this->_buildURL($url_mixed, $data));
-            $this->setopt(CURLOPT_HTTPGET, TRUE);
+            $this->setopt(CURLOPT_HTTPGET, true);
             return $this->_exec();
         }
     }
 
     public function post($url, $data=array()) {
         $this->setOpt(CURLOPT_URL, $this->_buildURL($url));
-        $this->setOpt(CURLOPT_POST, TRUE);
+        $this->setOpt(CURLOPT_POST, true);
         $this->setOpt(CURLOPT_POSTFIELDS, $this->_postfields($data));
         return $this->_exec();
     }
@@ -138,13 +138,13 @@ class Curl {
         $this->setOpt(CURLOPT_COOKIE, http_build_query($this->_cookies, '', '; '));
     }
 
-    public function setOpt($option, $value, $_ch=NULL) {
+    public function setOpt($option, $value, $_ch=null) {
         $ch = is_null($_ch) ? $this->curl : $_ch;
         $this->_options[$option] = $value;
         return curl_setopt($ch, $option, $value);
     }
 
-    public function verbose($on=TRUE) {
+    public function verbose($on=true) {
         $this->setOpt(CURLOPT_VERBOSE, $on);
     }
 
@@ -198,7 +198,7 @@ class Curl {
         return $data;
     }
 
-    protected function _exec($_ch=NULL) {
+    protected function _exec($_ch=null) {
         $ch = is_null($_ch) ? $this : $_ch;
 
         if ($ch->_multi_child) {
@@ -216,14 +216,14 @@ class Curl {
         $ch->error = $ch->curl_error || $ch->http_error;
         $ch->error_code = $ch->error ? ($ch->curl_error ? $ch->curl_error_code : $ch->http_status_code) : 0;
 
-        $ch->request_headers = preg_split('/\r\n/', curl_getinfo($ch->curl, CURLINFO_HEADER_OUT), NULL, PREG_SPLIT_NO_EMPTY);
+        $ch->request_headers = preg_split('/\r\n/', curl_getinfo($ch->curl, CURLINFO_HEADER_OUT), null, PREG_SPLIT_NO_EMPTY);
         $ch->response_headers = '';
-        if (!(strpos($ch->response, "\r\n\r\n") === FALSE)) {
+        if (!(strpos($ch->response, "\r\n\r\n") === false)) {
             list($response_header, $ch->response) = explode("\r\n\r\n", $ch->response, 2);
             if ($response_header === 'HTTP/1.1 100 Continue') {
                 list($response_header, $ch->response) = explode("\r\n\r\n", $ch->response, 2);
             }
-            $ch->response_headers = preg_split('/\r\n/', $response_header, NULL, PREG_SPLIT_NO_EMPTY);
+            $ch->response_headers = preg_split('/\r\n/', $response_header, null, PREG_SPLIT_NO_EMPTY);
         }
 
         $ch->http_error_message = $ch->error ? (isset($ch->response_headers['0']) ? $ch->response_headers['0'] : '') : '';
@@ -260,13 +260,13 @@ function is_array_assoc($array) {
 
 function is_array_multidim($array) {
     if (!is_array($array)) {
-        return FALSE;
+        return false;
     }
 
     return !(count($array) === count($array, COUNT_RECURSIVE));
 }
 
-function http_build_multi_query($data, $key=NULL) {
+function http_build_multi_query($data, $key=null) {
     $query = array();
 
     if (empty($data)) {
