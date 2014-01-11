@@ -106,7 +106,7 @@ $curl->complete(function($instance) {
 $curl->get(array(
     'https://duckduckgo.com/',
     'https://search.yahoo.com/search',
-    'http://www.bing.com/search',
+    'https://www.bing.com/search',
     'http://www.dogpile.com/search/web',
     'https://www.google.com/search',
     'https://www.wolframalpha.com/input/',
