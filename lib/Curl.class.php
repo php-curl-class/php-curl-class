@@ -78,13 +78,13 @@ class Curl {
             } while ($status === CURLM_CALL_MULTI_PERFORM || $active);
 
             foreach ($this->curls as $ch) {
-                $this->_exec($ch);
+                $this->exec($ch);
             }
         }
         else {
             $this->setopt(CURLOPT_URL, $this->_buildURL($url_mixed, $data));
             $this->setopt(CURLOPT_HTTPGET, true);
-            return $this->_exec();
+            return $this->exec();
         }
     }
 
@@ -92,27 +92,27 @@ class Curl {
         $this->setOpt(CURLOPT_URL, $this->_buildURL($url));
         $this->setOpt(CURLOPT_POST, true);
         $this->setOpt(CURLOPT_POSTFIELDS, $this->_postfields($data));
-        return $this->_exec();
+        return $this->exec();
     }
 
     public function put($url, $data=array()) {
         $this->setOpt(CURLOPT_URL, $url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
         $this->setOpt(CURLOPT_POSTFIELDS, http_build_query($data));
-        return $this->_exec();
+        return $this->exec();
     }
 
     public function patch($url, $data=array()) {
         $this->setOpt(CURLOPT_URL, $this->_buildURL($url));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $this->setOpt(CURLOPT_POSTFIELDS, $data);
-        return $this->_exec();
+        return $this->exec();
     }
 
     public function delete($url, $data=array()) {
         $this->setOpt(CURLOPT_URL, $this->_buildURL($url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
-        return $this->_exec();
+        return $this->exec();
     }
 
     public function setBasicAuthentication($username, $password) {
@@ -198,7 +198,7 @@ class Curl {
         return $data;
     }
 
-    protected function _exec($_ch=null) {
+    protected function exec($_ch=null) {
         $ch = is_null($_ch) ? $this : $_ch;
 
         if ($ch->_multi_child) {
