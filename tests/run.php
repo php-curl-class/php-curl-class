@@ -1,7 +1,7 @@
 <?php
 // Usage: phpunit --verbose run.php
 
-require '../Curl.class.php';
+require '../lib/Curl.class.php';
 require 'helper.inc.php';
 
 
