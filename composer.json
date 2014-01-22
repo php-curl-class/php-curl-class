@@ -1,5 +1,5 @@
 {
-    "name": "php-curl-class/php-curl-class",
+    "name": "citizennet/php-curl-class",
     "description": "PHP Curl Class is an object-oriented wrapper of the PHP cURL extension.",
     "autoload": {
         "classmap": ["lib/"]
