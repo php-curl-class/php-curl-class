@@ -138,6 +138,14 @@ class Curl {
         $this->setOpt(CURLOPT_COOKIE, http_build_query($this->_cookies, '', '; '));
     }
 
+    public function setCookieFile($cookie_file) {
+        $this->setOpt(CURLOPT_COOKIEFILE, $cookie_file);
+    }
+
+    public function setCookieJar($cookie_jar) {
+        $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
+    }
+
     public function setOpt($option, $value, $_ch=null) {
         $ch = is_null($_ch) ? $this->curl : $_ch;
 
