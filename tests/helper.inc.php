@@ -5,8 +5,8 @@ class Test {
 
     function __construct() {
         $this->curl = new Curl();
-        $this->curl->setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
-        $this->curl->setOpt(CURLOPT_SSL_VERIFYHOST, FALSE);
+        $this->curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
+        $this->curl->setOpt(CURLOPT_SSL_VERIFYHOST, false);
     }
 
     function server($test, $request_method, $data=array()) {
