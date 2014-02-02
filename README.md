@@ -52,7 +52,6 @@ var_dump($curl->response_headers);
 
 ```php
 $curl = new Curl();
-$curl->setOpt(CURLOPT_RETURNTRANSFER, TRUE);
 $curl->setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
 $curl->get('https://encrypted.example.com/');
 ```

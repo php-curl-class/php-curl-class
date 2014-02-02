@@ -467,4 +467,28 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $curl->close();
         $this->assertFalse(is_resource($curl->curl));
     }
+
+    /**
+     * @expectedException PHPUnit_Framework_Error_Warning
+     */
+    public function testRequiredOptionCurlInfoHeaderOutEmitsWarning() {
+        $curl = new Curl();
+        $curl->setOpt(CURLINFO_HEADER_OUT, false);
+    }
+
+    /**
+     * @expectedException PHPUnit_Framework_Error_Warning
+     */
+    public function testRequiredOptionCurlOptHeaderEmitsWarning() {
+        $curl = new Curl();
+        $curl->setOpt(CURLOPT_HEADER, false);
+    }
+
+    /**
+     * @expectedException PHPUnit_Framework_Error_Warning
+     */
+    public function testRequiredOptionCurlOptReturnTransferEmitsWarning() {
+        $curl = new Curl();
+        $curl->setOpt(CURLOPT_RETURNTRANSFER, false);
+    }
 }

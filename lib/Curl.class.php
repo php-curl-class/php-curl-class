@@ -140,6 +140,17 @@ class Curl {
 
     public function setOpt($option, $value, $_ch=null) {
         $ch = is_null($_ch) ? $this->curl : $_ch;
+
+        $required_options = array(
+            CURLINFO_HEADER_OUT    => 'CURLINFO_HEADER_OUT',
+            CURLOPT_HEADER         => 'CURLOPT_HEADER',
+            CURLOPT_RETURNTRANSFER => 'CURLOPT_RETURNTRANSFER',
+        );
+
+        if (in_array($option, array_keys($required_options), true) && !($value === true)) {
+            trigger_error($required_options[$option] . ' is a required option', E_USER_WARNING);
+        }
+
         $this->_options[$option] = $value;
         return curl_setopt($ch, $option, $value);
     }
