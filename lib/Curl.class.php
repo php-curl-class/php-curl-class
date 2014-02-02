@@ -160,6 +160,39 @@ class Curl {
         }
     }
 
+    // add enable cookie session
+    public function session($on=true) {
+        $this->setOpt(CURLOPT_COOKIESESSION, true);
+    }
+
+    /**
+     * added option session cookie file
+     * this maybe required for some site that needed cookie file
+     * @uses $curl = new Curl;
+     *       $curl->setCookieFile('/path/of/your/cookiefile', 86400*2); 
+     * = define in seconds use * if want multiplication , value X multiplication value or other math 
+     */
+    public function setCookieFile($cookiefile, $time=86400) { // 86400 as one day is default
+        if (file_exists($cookiefile)) {
+            // return blank if cookie file exist
+         } else {
+            // check cookie file is writable by server
+            $handle = @fopen($cookiefile, 'w+');
+            if(!$handle){
+                throw new \ErrorException('The cookie file could not be opened. Make sure this directory permissions is rewritable');
+            }
+            fclose($handle);
+        }
+
+        // if file is not exist or is file exist and file size is less or equal zero and time is more than time of of cookie,
+        // will be @return CURLOPT_COOKIEJAR => as get new fresh cookie records 
+        if( !file_exists($cookiefile) || file_exists($cookiefile) && time() - filemtime($cookiefile) <= $time && filesize($cookiefile) <= 0 ) { // cookie file size bigger or equal zero
+            $this->setOpt(CURLOPT_COOKIEJAR, $cookiefile);
+        }
+
+        $this->setOpt(CURLOPT_COOKIEFILE, $cookiefile);
+    }
+
     public function beforeSend($function) {
         $this->_before_send = $function;
     }
