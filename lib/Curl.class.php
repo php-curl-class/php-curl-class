@@ -155,7 +155,9 @@ class Curl {
             }
         }
 
-        curl_close($this->curl);
+        if (is_resource($this->curl)) {
+            curl_close($this->curl);
+        }
     }
 
     public function beforeSend($function) {

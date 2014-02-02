@@ -459,4 +459,12 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($error_called);
         $this->assertTrue($complete_called);
     }
+
+    public function testClose() {
+        $curl = new Curl();
+        $curl->post(Test::TEST_URL);
+        $this->assertTrue(is_resource($curl->curl));
+        $curl->close();
+        $this->assertFalse(is_resource($curl->curl));
+    }
 }
