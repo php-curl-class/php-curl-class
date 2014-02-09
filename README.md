@@ -124,3 +124,22 @@ $curl->get(array(
     'q' => 'hello world',
 ));
 ```
+```php
+// request with enable cookies jar file ( http cookies ) see : http://curl.haxx.se/docs/http-cookies.html
+// or see example : http://curl.haxx.se/libcurl/php/examples/cookiejar.html
+$curl = new Curl;
+// value = 604800 as seconds,  1 week or 7 days
+// dirname(__FILE__).'/mycookiefile' is for diretcory of this script write and the cookie file is mycookiefile
+$curl->setCookieFile(dirname(__FILE__).'/mycookiefile', 604800);
+$curl->setReferrer('http://www.thereferrer.com/');
+$curl->setUserAgent('Mozilla/5.0 (Windows NT 6.2; rv:26.0) Gecko/20100101 Firefox/26.0');
+$curl->setOpt(CURLOPT_RETURNTRANSFER, TRUE);
+$curl->setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
+$curl->post('http://www.thedomaintarget.com/', array(
+    'name1' => 'value-name1',
+    'name2' => 'value-name2',
+    ));
+```
+```php
+$curl->close();
+```
