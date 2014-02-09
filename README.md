@@ -79,6 +79,13 @@ $curl->delete('http://api.example.com/user/', array(
 ```
 
 ```php
+// Enable gzip compression.
+$curl = new Curl();
+$curl->setOpt(CURLOPT_ENCODING , 'gzip');
+$curl->get('https://www.example.com/image.png');
+```
+
+```php
 $curl->close();
 ```
 
