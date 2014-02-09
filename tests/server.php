@@ -51,6 +51,10 @@ else if ($test === 'request_uri') {
     echo $_SERVER['REQUEST_URI'];
     exit;
 }
+else if ($test === 'cookiejar') {
+    setcookie('mycookie', 'yum');
+    exit;
+}
 
 header('Content-Type: text/plain');
 

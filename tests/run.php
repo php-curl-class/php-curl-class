@@ -164,6 +164,42 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === 'yum');
     }
 
+    public function testCookieFile() {
+        $cookie_file = dirname(__FILE__) . '/cookies.txt';
+        $cookie_data = implode("\t", array(
+            '127.0.0.1', // domain
+            'FALSE',     // tailmatch
+            '/',         // path
+            'FALSE',     // secure
+            '0',         // expires
+            'mycookie',  // name
+            'yum',       // value
+        ));
+        file_put_contents($cookie_file, $cookie_data);
+
+        $test = new Test();
+        $test->curl->setCookieFile($cookie_file);
+        $this->assertTrue($test->server('cookie', 'GET', array(
+            'key' => 'mycookie',
+        )) === 'yum');
+
+        unlink($cookie_file);
+        $this->assertFalse(file_exists($cookie_file));
+    }
+
+    public function testCookieJar() {
+        $cookie_file = dirname(__FILE__) . '/cookies.txt';
+
+        $test = new Test();
+        $test->curl->setCookieJar($cookie_file);
+        $test->server('cookiejar', 'GET');
+        $test->curl->close();
+
+        $this->assertTrue(!(strpos(file_get_contents($cookie_file), "\t" . 'mycookie' . "\t" . 'yum') === false));
+        unlink($cookie_file);
+        $this->assertFalse(file_exists($cookie_file));
+    }
+
     public function testError() {
         $test = new Test();
         $test->curl->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 2000);
