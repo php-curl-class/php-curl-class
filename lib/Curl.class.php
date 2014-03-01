@@ -46,6 +46,7 @@ class Curl {
     }
 
     public function get($url_mixed, $data=array()) {
+        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         if (is_array($url_mixed)) {
             $curl_multi = curl_multi_init();
             $this->_multi_parent = true;
@@ -90,6 +91,7 @@ class Curl {
 
     public function post($url, $data=array()) {
         $this->setOpt(CURLOPT_URL, $this->_buildURL($url));
+        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         $this->setOpt(CURLOPT_POST, true);
         $this->setOpt(CURLOPT_POSTFIELDS, $this->_postfields($data));
         return $this->exec();
