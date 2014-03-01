@@ -1,6 +1,13 @@
 <?php
 $request_method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
-$data_values = $request_method === 'POST' ? $_POST : $_GET;
+$data_values = $_GET;
+if ($request_method === 'POST') {
+    $data_values = $_POST;
+}
+else if ($request_method === 'PUT') {
+    $_PUT = file_get_contents('php://input');
+    parse_str($_PUT, $data_values);
+}
 $test = isset($_SERVER['HTTP_X_DEBUG_TEST']) ? $_SERVER['HTTP_X_DEBUG_TEST'] : '';
 $key = isset($data_values['key']) ? $data_values['key'] : '';
 
@@ -27,7 +34,11 @@ else if ($test === 'post') {
     echo http_build_query($_POST);
     exit;
 }
-else if ($test === 'post_multidimensional' || $test === 'put') {
+else if ($test === 'put') {
+    echo $_PUT;
+    exit;
+}
+else if ($test === 'post_multidimensional') {
     $http_raw_post_data = file_get_contents('php://input');
     echo $http_raw_post_data;
     exit;
@@ -38,7 +49,7 @@ else if ($test === 'post_file_path_upload') {
 }
 else if ($test === 'put_file_handle') {
     $tmp_filename = tempnam('/tmp', 'php-curl-class.');
-    file_put_contents($tmp_filename, file_get_contents('php://input'));
+    file_put_contents($tmp_filename, $_PUT);
     echo mime_content_type($tmp_filename);
     unlink($tmp_filename);
     exit;
@@ -62,7 +73,7 @@ $data_mapping = array(
     'cookie' => '_COOKIE',
     'delete' => '_GET',
     'post' => '_POST',
-    'put' => '_GET',
+    'put' => '_PUT',
     'server' => '_SERVER',
 );
 
