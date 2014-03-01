@@ -17,6 +17,13 @@ class Test {
     }
 }
 
+function test($instance, $before, $after) {
+    $instance->server('server', $before, array('key' => 'REQUEST_METHOD'));
+    PHPUnit_Framework_Assert::assertTrue($instance->curl->response === $before);
+    $instance->server('server', $after, array('key' => 'REQUEST_METHOD'));
+    PHPUnit_Framework_Assert::assertTrue($instance->curl->response === $after);
+}
+
 function create_png() {
     // PNG image data, 1 x 1, 1-bit colormap, non-interlaced
     ob_start();
