@@ -527,4 +527,31 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $curl = new Curl();
         $curl->setOpt(CURLOPT_RETURNTRANSFER, false);
     }
+
+    public function testRequestMethodSuccessiveRequests() {
+        $test = new Test();
+
+        function test($instance, $before, $after) {
+            $instance->server('server', $before, array('key' => 'REQUEST_METHOD'));
+            PHPUnit_Framework_Assert::assertTrue($instance->curl->response === $before);
+            $instance->server('server', $after, array('key' => 'REQUEST_METHOD'));
+            PHPUnit_Framework_Assert::assertTrue($instance->curl->response === $after);
+        }
+
+        test($test, 'GET', 'POST');
+        test($test, 'GET', 'PUT');
+        test($test, 'GET', 'DELETE');
+
+        test($test, 'POST', 'GET');
+        test($test, 'POST', 'PUT');
+        test($test, 'POST', 'DELETE');
+
+        test($test, 'PUT', 'GET');
+        test($test, 'PUT', 'POST');
+        test($test, 'PUT', 'DELETE');
+
+        test($test, 'DELETE', 'GET');
+        test($test, 'DELETE', 'POST');
+        test($test, 'DELETE', 'PUT');
+    }
 }

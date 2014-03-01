@@ -46,7 +46,6 @@ class Curl {
     }
 
     public function get($url_mixed, $data=array()) {
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         if (is_array($url_mixed)) {
             $curl_multi = curl_multi_init();
             $this->_multi_parent = true;
@@ -57,6 +56,7 @@ class Curl {
                 $curl = new Curl();
                 $curl->_multi_child = true;
                 $curl->setOpt(CURLOPT_URL, $this->_buildURL($url, $data), $curl->curl);
+                $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
                 $curl->setOpt(CURLOPT_HTTPGET, true);
                 $this->_call($this->_before_send, $curl);
                 $this->curls[] = $curl;
@@ -84,6 +84,7 @@ class Curl {
         }
         else {
             $this->setopt(CURLOPT_URL, $this->_buildURL($url_mixed, $data));
+            $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
             $this->setopt(CURLOPT_HTTPGET, true);
             return $this->exec();
         }
