@@ -537,6 +537,7 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $test = new Test();
         test($test, 'GET', 'POST');
         test($test, 'GET', 'PUT');
+        test($test, 'GET', 'PATCH');
         test($test, 'GET', 'DELETE');
     }
 
@@ -544,6 +545,7 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $test = new Test();
         test($test, 'POST', 'GET');
         test($test, 'POST', 'PUT');
+        test($test, 'POST', 'PATCH');
         test($test, 'POST', 'DELETE');
     }
 
@@ -551,7 +553,16 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $test = new Test();
         test($test, 'PUT', 'GET');
         test($test, 'PUT', 'POST');
+        test($test, 'PUT', 'PATCH');
         test($test, 'PUT', 'DELETE');
+    }
+
+    public function testRequestMethodSuccessivePatchRequests() {
+        $test = new Test();
+        test($test, 'PATCH', 'GET');
+        test($test, 'PATCH', 'POST');
+        test($test, 'PATCH', 'PUT');
+        test($test, 'PATCH', 'DELETE');
     }
 
     public function testRequestMethodSuccessiveDeleteRequests() {
@@ -559,5 +570,6 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         test($test, 'DELETE', 'GET');
         test($test, 'DELETE', 'POST');
         test($test, 'DELETE', 'PUT');
+        test($test, 'DELETE', 'PATCH');
     }
 }

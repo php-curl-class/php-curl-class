@@ -18,9 +18,9 @@ class Test {
 }
 
 function test($instance, $before, $after) {
-    $instance->server('server', $before, array('key' => 'REQUEST_METHOD'));
+    $instance->server('request_method', $before);
     PHPUnit_Framework_Assert::assertTrue($instance->curl->response === $before);
-    $instance->server('server', $after, array('key' => 'REQUEST_METHOD'));
+    $instance->server('request_method', $after);
     PHPUnit_Framework_Assert::assertTrue($instance->curl->response === $after);
 }
 
