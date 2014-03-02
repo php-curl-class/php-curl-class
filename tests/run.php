@@ -319,11 +319,10 @@ class CurlTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testParallelRequests() {
-        $curl = new Curl();
+        $test = new Test();
+        $curl = $test->curl;
         $curl->beforeSend(function($instance) {
             $instance->setHeader('X-DEBUG-TEST', 'request_uri');
-            $instance->setOpt(CURLOPT_SSL_VERIFYPEER, false);
-            $instance->setOpt(CURLOPT_SSL_VERIFYHOST, false);
         });
         $curl->get(array(
             Test::TEST_URL . '/a/',
@@ -340,10 +339,9 @@ class CurlTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testParallelSetOptions() {
-        $curl = new Curl();
+        $test = new Test();
+        $curl = $test->curl;
         $curl->setHeader('X-DEBUG-TEST', 'server');
-        $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
-        $curl->setOpt(CURLOPT_SSL_VERIFYHOST, false);
         $curl->setOpt(CURLOPT_USERAGENT, 'useragent');
         $curl->complete(function($instance) {
             PHPUnit_Framework_Assert::assertTrue($instance->response === 'useragent');
@@ -360,10 +358,9 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $error_called = false;
         $complete_called = false;
 
-        $curl = new Curl();
+        $test = new Test();
+        $curl = $test->curl;
         $curl->setHeader('X-DEBUG-TEST', 'get');
-        $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
-        $curl->setOpt(CURLOPT_SSL_VERIFYHOST, false);
 
         $curl->success(function($instance) use (&$success_called, &$error_called, &$complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
@@ -403,10 +400,9 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $error_called_once = false;
         $complete_called_once = false;
 
-        $curl = new Curl();
+        $test = new Test();
+        $curl = $test->curl;
         $curl->setHeader('X-DEBUG-TEST', 'get');
-        $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
-        $curl->setOpt(CURLOPT_SSL_VERIFYHOST, false);
 
         $curl->success(function($instance) use (&$success_called,
                                                 &$error_called,
@@ -466,10 +462,9 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $error_called = false;
         $complete_called = false;
 
-        $curl = new Curl();
+        $test = new Test();
+        $curl = $test->curl;
         $curl->setHeader('X-DEBUG-TEST', 'get');
-        $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
-        $curl->setOpt(CURLOPT_SSL_VERIFYHOST, false);
         $curl->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 2000);
 
         $curl->success(function($instance) use (&$success_called, &$error_called, &$complete_called) {
