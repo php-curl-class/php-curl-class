@@ -4,17 +4,22 @@ $_PUT = array();
 $_PATCH = array();
 
 $request_method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
+$content_type = isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : '';
 $data_values = $_GET;
 if ($request_method === 'POST') {
     $data_values = $_POST;
 }
 else if ($request_method === 'PUT') {
-    parse_str($http_raw_post_data, $_PUT);
-    $data_values = $_PUT;
+    if (strpos($content_type, 'application/x-www-form-urlencoded') === 0) {
+        parse_str($http_raw_post_data, $_PUT);
+        $data_values = $_PUT;
+    }
 }
 else if ($request_method === 'PATCH') {
-    parse_str($http_raw_post_data, $_PATCH);
-    $data_values = $_PATCH;
+    if (strpos($content_type, 'application/x-www-form-urlencoded') === 0) {
+        parse_str($http_raw_post_data, $_PATCH);
+        $data_values = $_PATCH;
+    }
 }
 
 $test = isset($_SERVER['HTTP_X_DEBUG_TEST']) ? $_SERVER['HTTP_X_DEBUG_TEST'] : '';
