@@ -173,7 +173,7 @@ class Curl {
     public function close() {
         if ($this->_multi_parent) {
             foreach ($this->curls as $curl) {
-                curl_close($curl->curl);
+                $curl->close();
             }
         }
 
