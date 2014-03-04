@@ -3,4 +3,8 @@ php:
   - 5.5
   - 5.4
   - 5.3
-before_script: cd tests
+before_script:
+  - php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
+script:
+  - cd tests
+  - phpunit --configuration phpunit.xml
