@@ -215,6 +215,11 @@ class Curl {
                     if (is_array($value) && empty($value)) {
                         $data[$key] = '';
                     }
+                    else if (is_string($value) && strpos($value, '@') === 0) {
+                        if (function_exists('curl_file_create')) {
+                            $data[$key] = new CURLFile($value);
+                        }
+                    }
                 }
             }
         }
