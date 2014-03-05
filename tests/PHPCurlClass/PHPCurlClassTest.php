@@ -140,10 +140,12 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === 'delete');
     }
 
-    public function testBasicHttpAuth() {
+    public function testBasicHttpAuth401Unauthorized() {
         $test = new Test();
         $this->assertTrue($test->server('http_basic_auth', 'GET') === 'canceled');
+    }
 
+    public function testBasicHttpAuthSuccess() {
         $username = 'myusername';
         $password = 'mypassword';
         $test = new Test();
