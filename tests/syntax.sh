@@ -1,5 +1,5 @@
 # FIXME: Use ruleset.xml
-phpcs ../lib/Curl.class.php | \
+phpcs ../src/Curl.class.php | \
     grep -v "| ERROR   | Expected \"} else {\\\n\"; found \"}\\\n" | \
     grep -v "| ERROR   | Missing class doc comment"                | \
     grep -v "| ERROR   | Missing file doc comment"                 | \
