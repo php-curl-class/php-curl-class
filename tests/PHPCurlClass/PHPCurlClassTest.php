@@ -94,6 +94,21 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse(file_exists($file_path));
     }
 
+    public function testPostCurlFileUpload() {
+        if (class_exists('CURLFile')) {
+            $file_path = get_png();
+
+            $test = new Test();
+            $this->assertTrue($test->server('post_file_path_upload', 'POST', array(
+                'key' => 'image',
+                'image' => new CURLFile($file_path),
+            )) === 'image/png');
+
+            unlink($file_path);
+            $this->assertFalse(file_exists($file_path));
+        }
+    }
+
     public function testPutRequestMethod() {
         $test = new Test();
         $this->assertTrue($test->server('request_method', 'PUT') === 'PUT');
