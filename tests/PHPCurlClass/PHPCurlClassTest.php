@@ -91,6 +91,7 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === 'image/png');
 
         unlink($file_path);
+        $this->assertFalse(file_exists($file_path));
     }
 
     public function testPutRequestMethod() {
