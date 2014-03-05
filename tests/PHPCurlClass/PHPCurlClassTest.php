@@ -326,9 +326,9 @@ class CurlTest extends PHPUnit_Framework_TestCase {
             $instance->setHeader('X-DEBUG-TEST', 'request_uri');
         });
         $curl->get(array(
-            Test::TEST_URL . '/a/',
-            Test::TEST_URL . '/b/',
-            Test::TEST_URL . '/c/',
+            Test::TEST_URL . 'a/',
+            Test::TEST_URL . 'b/',
+            Test::TEST_URL . 'c/',
         ), array(
             'foo' => 'bar',
         ));
@@ -449,9 +449,9 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         });
 
         $curl->get(array(
-            Test::TEST_URL . '/a/',
-            Test::TEST_URL . '/b/',
-            Test::TEST_URL . '/c/',
+            Test::TEST_URL . 'a/',
+            Test::TEST_URL . 'b/',
+            Test::TEST_URL . 'c/',
         ));
 
         PHPUnit_Framework_Assert::assertTrue($success_called_once || $error_called_once);
