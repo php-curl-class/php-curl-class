@@ -500,7 +500,9 @@ class CurlTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testClose() {
-        $curl = new Curl();
+        $test = new Test();
+        $curl = $test->curl;
+        $curl->setHeader('X-DEBUG-TEST', 'post');
         $curl->post(Test::TEST_URL);
         $this->assertTrue(is_resource($curl->curl));
         $curl->close();
