@@ -295,9 +295,9 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $response_headers = $test->curl->response_headers;
 
         $this->assertEquals($request_headers['Content-Type'], $content_type);
-        $this->assertEquals($request_headers['Content-Type'], $content_type);
         $this->assertEquals($request_headers['content-type'], $content_type);
         $this->assertEquals($request_headers['CONTENT-TYPE'], $content_type);
+        $this->assertEquals($request_headers['cOnTeNt-TyPe'], $content_type);
 
         $etag = $response_headers['ETag'];
         $this->assertEquals($response_headers['ETAG'], $etag);
