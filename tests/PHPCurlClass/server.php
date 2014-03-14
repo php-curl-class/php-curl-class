@@ -79,6 +79,11 @@ else if ($test === 'cookiejar') {
     setcookie('mycookie', 'yum');
     exit;
 }
+else if ($test === 'response_header') {
+    header('Content-Type: application/json');
+    header('ETag: ' . md5('worldpeace'));
+    exit;
+}
 
 header('Content-Type: text/plain');
 

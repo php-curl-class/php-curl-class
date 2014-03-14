@@ -26,6 +26,43 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )));
     }
 
+    public function testCaseInsensitiveArrayGet() {
+        $array = new CaseInsensitiveArray();
+        $this->assertTrue(is_object($array));
+        $this->assertCount(0, $array);
+        $this->assertNull($array[(string)rand()]);
+
+        $array['foo'] = 'bar';
+        $this->assertNotEmpty($array);
+        $this->assertCount(1, $array);
+    }
+
+    public function testCaseInsensitiveArraySet() {
+        function assertions($array, $count=1) {
+            PHPUnit_Framework_Assert::assertCount($count, $array);
+            PHPUnit_Framework_Assert::assertTrue($array['foo'] === 'bar');
+            PHPUnit_Framework_Assert::assertTrue($array['Foo'] === 'bar');
+            PHPUnit_Framework_Assert::assertTrue($array['FOo'] === 'bar');
+            PHPUnit_Framework_Assert::assertTrue($array['FOO'] === 'bar');
+        }
+
+        $array = new CaseInsensitiveArray();
+        $array['foo'] = 'bar';
+        assertions($array);
+
+        $array['Foo'] = 'bar';
+        assertions($array);
+
+        $array['FOo'] = 'bar';
+        assertions($array);
+
+        $array['FOO'] = 'bar';
+        assertions($array);
+
+        $array['baz'] = 'qux';
+        assertions($array, 2);
+    }
+
     public function testUserAgent() {
         $test = new Test();
         $test->curl->setUserAgent(Curl::USER_AGENT);
@@ -246,6 +283,27 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($test->server('server', 'GET', array(
             'key' => 'HTTP_ACCEPT',
         )) === 'application/json');
+    }
+
+    public function testHeaderCaseSensitivity() {
+        $content_type = 'application/json';
+        $test = new Test();
+        $test->curl->setHeader('Content-Type', $content_type);
+        $test->server('response_header', 'GET');
+
+        $request_headers = $test->curl->request_headers;
+        $response_headers = $test->curl->response_headers;
+
+        $this->assertEquals($request_headers['Content-Type'], $content_type);
+        $this->assertEquals($request_headers['Content-Type'], $content_type);
+        $this->assertEquals($request_headers['content-type'], $content_type);
+        $this->assertEquals($request_headers['CONTENT-TYPE'], $content_type);
+
+        $etag = $response_headers['ETag'];
+        $this->assertEquals($response_headers['ETAG'], $etag);
+        $this->assertEquals($response_headers['etag'], $etag);
+        $this->assertEquals($response_headers['eTAG'], $etag);
+        $this->assertEquals($response_headers['eTaG'], $etag);
     }
 
     public function testRequestURL() {
