@@ -202,6 +202,25 @@ class Curl {
         return $url . (empty($data) ? '' : '?' . http_build_query($data));
     }
 
+    private function _parseHeaders($raw_headers) {
+        $raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
+        $http_headers = array();
+
+        for ($i = 1; $i < count($raw_headers); $i++) {
+            list($key, $value) = explode(':', $raw_headers[$i], 2);
+            $key = trim($key);
+            $value = trim($value);
+            if (array_key_exists($key, $http_headers)) {
+                $http_headers[$key] .= ',' . $value;
+            }
+            else {
+                $http_headers[$key] = $value;
+            }
+        }
+
+        return $http_headers;
+    }
+
     private function _postfields($data) {
         if (is_array($data)) {
             if (is_array_multidim($data)) {
@@ -248,14 +267,14 @@ class Curl {
         $ch->error = $ch->curl_error || $ch->http_error;
         $ch->error_code = $ch->error ? ($ch->curl_error ? $ch->curl_error_code : $ch->http_status_code) : 0;
 
-        $ch->request_headers = preg_split('/\r\n/', curl_getinfo($ch->curl, CURLINFO_HEADER_OUT), null, PREG_SPLIT_NO_EMPTY);
+        $ch->request_headers = $this->_parseHeaders(curl_getinfo($ch->curl, CURLINFO_HEADER_OUT));
         $ch->response_headers = '';
         if (!(strpos($ch->response, "\r\n\r\n") === false)) {
             list($response_header, $ch->response) = explode("\r\n\r\n", $ch->response, 2);
             if ($response_header === 'HTTP/1.1 100 Continue') {
                 list($response_header, $ch->response) = explode("\r\n\r\n", $ch->response, 2);
             }
-            $ch->response_headers = preg_split('/\r\n/', $response_header, null, PREG_SPLIT_NO_EMPTY);
+            $ch->response_headers = $this->_parseHeaders($response_header);
         }
 
         $ch->http_error_message = $ch->error ? (isset($ch->response_headers['0']) ? $ch->response_headers['0'] : '') : '';
