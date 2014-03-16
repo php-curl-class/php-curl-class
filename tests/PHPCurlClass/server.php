@@ -84,6 +84,21 @@ else if ($test === 'response_header') {
     header('ETag: ' . md5('worldpeace'));
     exit;
 }
+else if ($test === 'json_response') {
+    $key = $_POST['key'];
+    $value = $_POST['value'];
+    header($key . ': ' . $value);
+    echo json_encode(array(
+        'null' => null,
+        'true' => true,
+        'false' => false,
+        'integer' => 1,
+        'float' => 3.14,
+        'empty' => '',
+        'string' => 'string',
+    ));
+    exit;
+}
 
 header('Content-Type: text/plain');
 

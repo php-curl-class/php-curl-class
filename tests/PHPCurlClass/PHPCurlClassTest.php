@@ -203,7 +203,7 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $test = new Test();
         $test->curl->setBasicAuthentication($username, $password);
         $test->server('http_basic_auth', 'GET');
-        $json = json_decode($test->curl->response);
+        $json = $test->curl->response;
         $this->assertTrue($json->username === $username);
         $this->assertTrue($json->password === $password);
     }
@@ -350,6 +350,33 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($test->curl->request_headers['Expect'], '100-continue');
         preg_match('/^multipart\/form-data; boundary=/', $test->curl->request_headers['Content-Type'], $content_type);
         $this->assertTrue(!empty($content_type));
+    }
+
+    public function testJSONResponse() {
+        function assertion($key, $value) {
+            $test = new Test();
+            $test->server('json_response', 'POST', array(
+                'key' => $key,
+                'value' => $value,
+            ));
+
+            $response = $test->curl->response;
+            PHPUnit_Framework_Assert::assertNotNull($response);
+            PHPUnit_Framework_Assert::assertNull($response->null);
+            PHPUnit_Framework_Assert::assertTrue($response->true);
+            PHPUnit_Framework_Assert::assertFalse($response->false);
+            PHPUnit_Framework_Assert::assertTrue(is_int($response->integer));
+            PHPUnit_Framework_Assert::assertTrue(is_float($response->float));
+            PHPUnit_Framework_Assert::assertEmpty($response->empty);
+            PHPUnit_Framework_Assert::assertTrue(is_string($response->string));
+        }
+
+        assertion('Content-Type', 'application/json; charset=utf-8');
+        assertion('content-type', 'application/json; charset=utf-8');
+        assertion('Content-Type', 'application/json');
+        assertion('content-type', 'application/json');
+        assertion('CONTENT-TYPE', 'application/json');
+        assertion('CONTENT-TYPE', 'APPLICATION/JSON');
     }
 
     public function testArrayToStringConversion() {

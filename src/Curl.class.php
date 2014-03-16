@@ -275,6 +275,15 @@ class Curl {
                 list($response_header, $ch->response) = explode("\r\n\r\n", $ch->response, 2);
             }
             $ch->response_headers = $this->_parseHeaders($response_header);
+
+            if (isset($ch->response_headers['Content-Type'])) {
+                if (preg_match('/^application\/json/i', $ch->response_headers['Content-Type'])) {
+                    $json_obj = json_decode($ch->response, false);
+                    if (!is_null($json_obj)) {
+                        $ch->response = $json_obj;
+                    }
+                }
+            }
         }
 
         $ch->http_error_message = $ch->error ? (isset($ch->response_headers['0']) ? $ch->response_headers['0'] : '') : '';
