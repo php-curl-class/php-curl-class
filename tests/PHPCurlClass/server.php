@@ -99,6 +99,15 @@ else if ($test === 'json_response') {
     ));
     exit;
 }
+else if ($test === 'error_message') {
+    if (function_exists('http_response_code')) {
+        http_response_code(401);
+    }
+    else {
+        header('HTTP/1.1 401 Unauthorized');
+    }
+    exit;
+}
 
 header('Content-Type: text/plain');
 

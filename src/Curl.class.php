@@ -238,7 +238,29 @@ class Curl
             }
         }
 
-        return $http_headers;
+        return array(isset($raw_headers['0']) ? $raw_headers['0'] : '', $http_headers);
+    }
+
+    private function parseRequestHeaders($raw_headers)
+    {
+        $request_headers = new CaseInsensitiveArray();
+        list($first_line, $headers) = $this->parseHeaders($raw_headers);
+        $request_headers['Request-Line'] = $first_line;
+        foreach ($headers as $key => $value) {
+            $request_headers[$key] = $value;
+        }
+        return $request_headers;
+    }
+
+    private function parseResponseHeaders($raw_headers)
+    {
+        $response_headers = new CaseInsensitiveArray();
+        list($first_line, $headers) = $this->parseHeaders($raw_headers);
+        $response_headers['Status-Line'] = $first_line;
+        foreach ($headers as $key => $value) {
+            $response_headers[$key] = $value;
+        }
+        return $response_headers;
     }
 
     private function postfields($data)
@@ -286,14 +308,14 @@ class Curl
         $ch->error = $ch->curl_error || $ch->http_error;
         $ch->error_code = $ch->error ? ($ch->curl_error ? $ch->curl_error_code : $ch->http_status_code) : 0;
 
-        $ch->request_headers = $this->parseHeaders(curl_getinfo($ch->curl, CURLINFO_HEADER_OUT));
+        $ch->request_headers = $this->parseRequestHeaders(curl_getinfo($ch->curl, CURLINFO_HEADER_OUT));
         $ch->response_headers = '';
         if (!(strpos($ch->response, "\r\n\r\n") === false)) {
             list($response_header, $ch->response) = explode("\r\n\r\n", $ch->response, 2);
             if ($response_header === 'HTTP/1.1 100 Continue') {
                 list($response_header, $ch->response) = explode("\r\n\r\n", $ch->response, 2);
             }
-            $ch->response_headers = $this->parseHeaders($response_header);
+            $ch->response_headers = $this->parseResponseHeaders($response_header);
 
             if (isset($ch->response_headers['Content-Type'])) {
                 if (preg_match('/^application\/json/i', $ch->response_headers['Content-Type'])) {
@@ -307,8 +329,8 @@ class Curl
 
         $ch->http_error_message = '';
         if ($ch->error) {
-            if (isset($ch->response_headers['0'])) {
-                $ch->http_error_message = $ch->response_headers['0'];
+            if (isset($ch->response_headers['Status-Line'])) {
+                $ch->http_error_message = $ch->response_headers['Status-Line'];
             }
         }
         $ch->error_message = $ch->curl_error ? $ch->curl_error_message : $ch->http_error_message;
@@ -339,7 +361,7 @@ class Curl
     }
 }
 
-class CaseInsensitiveArray implements ArrayAccess, Countable
+class CaseInsensitiveArray implements ArrayAccess, Countable, Iterator
 {
     private $container = array();
 
@@ -375,6 +397,31 @@ class CaseInsensitiveArray implements ArrayAccess, Countable
     public function count()
     {
         return count($this->container);
+    }
+
+    public function current()
+    {
+        return current($this->container);
+    }
+
+    public function next()
+    {
+        return next($this->container);
+    }
+
+    public function key()
+    {
+        return key($this->container);
+    }
+
+    public function valid()
+    {
+        return !($this->current() === false);
+    }
+
+    public function rewind()
+    {
+        reset($this->container);
     }
 }
 

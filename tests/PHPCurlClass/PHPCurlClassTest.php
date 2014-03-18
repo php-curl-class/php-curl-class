@@ -264,9 +264,15 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $test = new Test();
         $test->curl->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 2000);
         $test->curl->get(Test::ERROR_URL);
-        $this->assertTrue($test->curl->error === true);
-        $this->assertTrue($test->curl->curl_error === true);
+        $this->assertTrue($test->curl->error);
+        $this->assertTrue($test->curl->curl_error);
         $this->assertTrue($test->curl->curl_error_code === CURLE_OPERATION_TIMEOUTED);
+    }
+
+    public function testErrorMessage() {
+        $test = new Test();
+        $test->server('error_message', 'GET');
+        $this->assertTrue($test->curl->error_message === 'HTTP/1.1 401 Unauthorized');
     }
 
     public function testHeaders() {
