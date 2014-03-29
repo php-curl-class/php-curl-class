@@ -68,6 +68,7 @@ else if ($test === 'put_file_handle') {
     exit;
 }
 else if ($test === 'request_method') {
+    header('X-REQUEST-METHOD: ' . $request_method);
     echo $request_method;
     exit;
 }

@@ -19,9 +19,9 @@ class Test {
 
 function test($instance, $before, $after) {
     $instance->server('request_method', $before);
-    PHPUnit_Framework_Assert::assertTrue($instance->curl->response === $before);
+    PHPUnit_Framework_Assert::assertEquals($instance->curl->response_headers['X-REQUEST-METHOD'], $before);
     $instance->server('request_method', $after);
-    PHPUnit_Framework_Assert::assertTrue($instance->curl->response === $after);
+    PHPUnit_Framework_Assert::assertEquals($instance->curl->response_headers['X-REQUEST-METHOD'], $after);
 }
 
 function create_png() {

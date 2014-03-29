@@ -123,6 +123,21 @@ class Curl
         return $this->exec();
     }
 
+    public function head($url, $data = array())
+    {
+        $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
+        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
+        $this->setOpt(CURLOPT_NOBODY, true);
+        return $this->exec();
+    }
+
+    public function options($url, $data = array())
+    {
+        $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
+        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
+        return $this->exec();
+    }
+
     public function setBasicAuthentication($username, $password)
     {
         $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);

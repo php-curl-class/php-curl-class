@@ -192,6 +192,23 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === 'delete');
     }
 
+    public function testHeadRequestMethod() {
+        $test = new Test();
+        $test->server('request_method', 'HEAD', array(
+            'key' => 'REQUEST_METHOD',
+        ));
+        $this->assertEquals($test->curl->response_headers['X-REQUEST-METHOD'], 'HEAD');
+        $this->assertEmpty($test->curl->response);
+    }
+
+    public function testOptionsRequestMethod() {
+        $test = new Test();
+        $test->server('request_method', 'OPTIONS', array(
+            'key' => 'REQUEST_METHOD',
+        ));
+        $this->assertEquals($test->curl->response_headers['X-REQUEST-METHOD'], 'OPTIONS');
+    }
+
     public function testBasicHttpAuth401Unauthorized() {
         $test = new Test();
         $this->assertTrue($test->server('http_basic_auth', 'GET') === 'canceled');
@@ -638,6 +655,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         test($test, 'GET', 'PUT');
         test($test, 'GET', 'PATCH');
         test($test, 'GET', 'DELETE');
+        test($test, 'GET', 'HEAD');
+        test($test, 'GET', 'OPTIONS');
     }
 
     public function testRequestMethodSuccessivePostRequests() {
@@ -646,6 +665,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         test($test, 'POST', 'PUT');
         test($test, 'POST', 'PATCH');
         test($test, 'POST', 'DELETE');
+        test($test, 'POST', 'HEAD');
+        test($test, 'POST', 'OPTIONS');
     }
 
     public function testRequestMethodSuccessivePutRequests() {
@@ -654,6 +675,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         test($test, 'PUT', 'POST');
         test($test, 'PUT', 'PATCH');
         test($test, 'PUT', 'DELETE');
+        test($test, 'PUT', 'HEAD');
+        test($test, 'PUT', 'OPTIONS');
     }
 
     public function testRequestMethodSuccessivePatchRequests() {
@@ -662,6 +685,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         test($test, 'PATCH', 'POST');
         test($test, 'PATCH', 'PUT');
         test($test, 'PATCH', 'DELETE');
+        test($test, 'PATCH', 'HEAD');
+        test($test, 'PATCH', 'OPTIONS');
     }
 
     public function testRequestMethodSuccessiveDeleteRequests() {
@@ -670,5 +695,27 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         test($test, 'DELETE', 'POST');
         test($test, 'DELETE', 'PUT');
         test($test, 'DELETE', 'PATCH');
+        test($test, 'DELETE', 'HEAD');
+        test($test, 'DELETE', 'OPTIONS');
+    }
+
+    public function testRequestMethodSuccessiveHeadRequests() {
+        $test = new Test();
+        test($test, 'HEAD', 'GET');
+        test($test, 'HEAD', 'POST');
+        test($test, 'HEAD', 'PUT');
+        test($test, 'HEAD', 'PATCH');
+        test($test, 'HEAD', 'DELETE');
+        test($test, 'HEAD', 'OPTIONS');
+    }
+
+    public function testRequestMethodSuccessiveOptionsRequests() {
+        $test = new Test();
+        test($test, 'OPTIONS', 'GET');
+        test($test, 'OPTIONS', 'POST');
+        test($test, 'OPTIONS', 'PUT');
+        test($test, 'OPTIONS', 'PATCH');
+        test($test, 'OPTIONS', 'DELETE');
+        test($test, 'OPTIONS', 'HEAD');
     }
 }
