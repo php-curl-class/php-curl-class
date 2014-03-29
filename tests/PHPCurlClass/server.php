@@ -80,6 +80,11 @@ else if ($test === 'cookiejar') {
     setcookie('mycookie', 'yum');
     exit;
 }
+else if ($test === 'multiple_cookie') {
+    setcookie('cookie1', 'scrumptious');
+    setcookie('cookie2', 'mouthwatering');
+    exit;
+}
 else if ($test === 'response_header') {
     header('Content-Type: application/json');
     header('ETag: ' . md5('worldpeace'));

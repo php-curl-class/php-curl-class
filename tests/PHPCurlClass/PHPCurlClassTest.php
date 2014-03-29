@@ -277,6 +277,12 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse(file_exists($cookie_file));
     }
 
+    public function testMultipleCookieResponse() {
+        $test = new Test();
+        $test->server('multiple_cookie', 'GET');
+        $this->assertEquals($test->curl->response_headers['Set-Cookie'], 'cookie1=scrumptious,cookie2=mouthwatering');
+    }
+
     public function testError() {
         $test = new Test();
         $test->curl->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 2000);

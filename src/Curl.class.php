@@ -246,7 +246,8 @@ class Curl
             list($key, $value) = explode(':', $raw_headers[$i], 2);
             $key = trim($key);
             $value = trim($value);
-            if (array_key_exists($key, $http_headers)) {
+            // Use isset() as array_key_exists() and ArrayAccess are not compatible.
+            if (isset($http_headers[$key])) {
                 $http_headers[$key] .= ',' . $value;
             } else {
                 $http_headers[$key] = $value;
