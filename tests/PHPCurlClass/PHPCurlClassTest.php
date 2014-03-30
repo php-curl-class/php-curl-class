@@ -285,7 +285,7 @@ class CurlTest extends PHPUnit_Framework_TestCase {
 
     public function testError() {
         $test = new Test();
-        $test->curl->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 2000);
+        $test->curl->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 4000);
         $test->curl->get(Test::ERROR_URL);
         $this->assertTrue($test->curl->error);
         $this->assertTrue($test->curl->curl_error);
