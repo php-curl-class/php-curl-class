@@ -388,7 +388,8 @@ class CaseInsensitiveArray implements ArrayAccess, Countable, Iterator
         } else {
             $index = array_search(strtolower($offset), array_keys(array_change_key_case($this->container, CASE_LOWER)));
             if (!($index === false)) {
-                unset($this->container[array_keys($this->container)[$index]]);
+                $keys = array_keys($this->container);
+                unset($this->container[$keys[$index]]);
             }
             $this->container[$offset] = $value;
         }
@@ -407,7 +408,12 @@ class CaseInsensitiveArray implements ArrayAccess, Countable, Iterator
     public function offsetGet($offset)
     {
         $index = array_search(strtolower($offset), array_keys(array_change_key_case($this->container, CASE_LOWER)));
-        return $index === false ? null : array_values($this->container)[$index];
+        if ($index === false) {
+            return null;
+        }
+
+        $values = array_values($this->container);
+        return $values[$index];
     }
 
     public function count()
