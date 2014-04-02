@@ -13,6 +13,4 @@ before_script:
   - php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 script:
   - php -l src/*
-  - if [[ "$TRAVIS_PHP_VERSION" != "5.3" ]]; then
-      cd tests && phpunit --configuration phpunit.xml
-    fi
+  - if [[ "$TRAVIS_PHP_VERSION" != "5.3" ]]; then cd tests && phpunit --configuration phpunit.xml; fi
