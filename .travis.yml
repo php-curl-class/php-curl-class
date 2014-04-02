@@ -11,4 +11,5 @@ matrix:
 before_script:
   - php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 script:
+  - php -l src/*
   - cd tests && phpunit --configuration phpunit.xml
