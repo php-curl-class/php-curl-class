@@ -2,6 +2,10 @@ language: php
 php:
   - 5.5
   - 5.4
+  - hhvm
+matrix:
+  allow_failures:
+    - php: hhvm
 before_script:
   - php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 script:
