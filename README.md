@@ -88,6 +88,14 @@ $curl->get('https://www.example.com/image.png');
 ```
 
 ```php
+// Case-insensitive access to headers.
+$curl = new Curl();
+$curl->get('https://www.example.com/image.png');
+echo $curl->response_headers['Content-Type'] . "\n"; // image/png
+echo $curl->response_headers['CoNTeNT-TYPE'] . "\n"; // image/png
+```
+
+```php
 $curl->close();
 ```
 
