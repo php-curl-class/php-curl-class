@@ -1,3 +1,7 @@
+Log {
+  Level = Verbose
+}
+
 Server {
   DefaultDocument = index.php
 }
