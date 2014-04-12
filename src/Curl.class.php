@@ -2,7 +2,7 @@
 
 class Curl
 {
-    const USER_AGENT = 'PHP-Curl-Class/1.0 (+https://github.com/php-curl-class/php-curl-class)';
+    const USER_AGENT = 'PHP-Curl-Class/2.0 (+https://github.com/php-curl-class/php-curl-class)';
 
     private $cookies = array();
     private $headers = array();
