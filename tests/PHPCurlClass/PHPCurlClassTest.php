@@ -278,9 +278,16 @@ class CurlTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testMultipleCookieResponse() {
+        $expected_response = 'cookie1=scrumptious,cookie2=mouthwatering';
+
+        // github.com/facebook/hhvm/issues/2345
+        if (defined('HHVM_VERSION')) {
+            $expected_response = 'cookie2=mouthwatering,cookie1=scrumptious';
+        }
+
         $test = new Test();
         $test->server('multiple_cookie', 'GET');
-        $this->assertEquals($test->curl->response_headers['Set-Cookie'], 'cookie1=scrumptious,cookie2=mouthwatering');
+        $this->assertEquals($test->curl->response_headers['Set-Cookie'], $expected_response);
     }
 
     public function testError() {
@@ -295,7 +302,13 @@ class CurlTest extends PHPUnit_Framework_TestCase {
     public function testErrorMessage() {
         $test = new Test();
         $test->server('error_message', 'GET');
-        $this->assertTrue($test->curl->error_message === 'HTTP/1.1 401 Unauthorized');
+
+        $expected_response = 'HTTP/1.1 401 Unauthorized';
+        if (defined('HHVM_VERSION')) {
+            $expected_response = 'HTTP/1.1 401';
+        }
+
+        $this->assertEquals($test->curl->error_message, $expected_response);
     }
 
     public function testHeaders() {

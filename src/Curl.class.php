@@ -93,6 +93,10 @@ class Curl
 
     public function post($url, $data = array())
     {
+        if (is_array($data) && empty($data)) {
+            $this->setHeader('Content-Length');
+        }
+
         $this->setOpt(CURLOPT_URL, $this->buildURL($url));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         $this->setOpt(CURLOPT_POST, true);
@@ -104,12 +108,17 @@ class Curl
     {
         $this->setOpt(CURLOPT_URL, $url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
-        $this->setOpt(CURLOPT_POSTFIELDS, http_build_query($data));
+        $put_data = http_build_query($data);
+        if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
+            $this->setHeader('Content-Length', strlen($put_data));
+        }
+        $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
         return $this->exec();
     }
 
     public function patch($url, $data = array())
     {
+        $this->setHeader('Content-Length');
         $this->setOpt(CURLOPT_URL, $this->buildURL($url));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $this->setOpt(CURLOPT_POSTFIELDS, $data);
@@ -118,6 +127,7 @@ class Curl
 
     public function delete($url, $data = array())
     {
+        $this->setHeader('Content-Length');
         $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
         return $this->exec();
@@ -133,6 +143,7 @@ class Curl
 
     public function options($url, $data = array())
     {
+        $this->setHeader('Content-Length');
         $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         return $this->exec();
@@ -144,7 +155,7 @@ class Curl
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
 
-    public function setHeader($key, $value)
+    public function setHeader($key, $value = '')
     {
         $this->headers[$key] = $key . ': ' . $value;
         $this->setOpt(CURLOPT_HTTPHEADER, array_values($this->headers));
