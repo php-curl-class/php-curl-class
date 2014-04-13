@@ -105,6 +105,28 @@ else if ($test === 'json_response') {
     ));
     exit;
 }
+else if ($test === 'xml_response') {
+    $key = $_POST['key'];
+    $value = $_POST['value'];
+    header($key . ': ' . $value);
+    $doc = new DOMDocument();
+    $doc->formatOutput = true;
+    $rss = $doc->appendChild($doc->createElement('rss'));
+    $rss->setAttribute('version', '2.0');
+    $channel = $doc->createElement('channel');
+    $title = $doc->createElement('title');
+    $title->appendChild($doc->createTextNode('Title'));
+    $channel->appendChild($title);
+    $link = $doc->createElement('link');
+    $link->appendChild($doc->createTextNode('Link'));
+    $channel->appendChild($link);
+    $description = $doc->createElement('description');
+    $description->appendChild($doc->createTextNode('Description'));
+    $channel->appendChild($description);
+    $rss->appendChild($channel);
+    echo $doc->saveXML();
+    exit;
+}
 else if ($test === 'error_message') {
     if (function_exists('http_response_code')) {
         http_response_code(401);

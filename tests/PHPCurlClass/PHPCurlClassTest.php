@@ -421,6 +421,31 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         assertion('CONTENT-TYPE', 'APPLICATION/JSON');
     }
 
+    public function testXMLResponse() {
+        function xml_assertion($key, $value) {
+            $test = new Test();
+            $test->server('xml_response', 'POST', array(
+                'key' => $key,
+                'value' => $value,
+            ));
+
+            PHPUnit_Framework_Assert::assertInstanceOf('SimpleXMLElement', $test->curl->response);
+        }
+
+        xml_assertion('Content-Type', 'application/xml; charset=utf-8');
+        xml_assertion('content-type', 'application/xml; charset=utf-8');
+        xml_assertion('Content-Type', 'application/xml');
+        xml_assertion('content-type', 'application/xml');
+        xml_assertion('CONTENT-TYPE', 'application/xml');
+        xml_assertion('CONTENT-TYPE', 'application/xml');
+        xml_assertion('Content-Type', 'text/xml; charset=utf-8');
+        xml_assertion('content-type', 'text/xml; charset=utf-8');
+        xml_assertion('Content-Type', 'text/xml');
+        xml_assertion('content-type', 'text/xml');
+        xml_assertion('CONTENT-TYPE', 'text/xml');
+        xml_assertion('CONTENT-TYPE', 'text/xml');
+    }
+
     public function testArrayToStringConversion() {
         $test = new Test();
         $test->server('post', 'POST', array(

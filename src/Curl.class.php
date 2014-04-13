@@ -350,6 +350,12 @@ class Curl
                     if (!is_null($json_obj)) {
                         $ch->response = $json_obj;
                     }
+                } elseif (preg_match('/^application\/xml/i', $ch->response_headers['Content-Type']) ||
+                          preg_match('/^text\/xml/i', $ch->response_headers['Content-Type'])) {
+                    $xml_obj = @simplexml_load_string($ch->response);
+                    if (!($xml_obj === false)) {
+                        $ch->response = $xml_obj;
+                    }
                 }
             }
         }
