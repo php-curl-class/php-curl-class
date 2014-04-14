@@ -432,6 +432,12 @@ class CurlTest extends PHPUnit_Framework_TestCase {
             PHPUnit_Framework_Assert::assertInstanceOf('SimpleXMLElement', $test->curl->response);
         }
 
+        xml_assertion('Content-Type', 'application/rss+xml; charset=utf-8');
+        xml_assertion('content-type', 'application/rss+xml; charset=utf-8');
+        xml_assertion('Content-Type', 'application/rss+xml');
+        xml_assertion('content-type', 'application/rss+xml');
+        xml_assertion('CONTENT-TYPE', 'application/rss+xml');
+        xml_assertion('CONTENT-TYPE', 'application/rss+xml');
         xml_assertion('Content-Type', 'application/xml; charset=utf-8');
         xml_assertion('content-type', 'application/xml; charset=utf-8');
         xml_assertion('Content-Type', 'application/xml');
