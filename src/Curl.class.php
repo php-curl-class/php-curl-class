@@ -279,6 +279,36 @@ class Curl
         return $request_headers;
     }
 
+    private function parseResponse($response)
+    {
+        $response_headers = '';
+        if (!(strpos($response, "\r\n\r\n") === false)) {
+            list($response_header, $response) = explode("\r\n\r\n", $response, 2);
+            if ($response_header === 'HTTP/1.1 100 Continue') {
+                list($response_header, $response) = explode("\r\n\r\n", $response, 2);
+            }
+            $response_headers = $this->parseResponseHeaders($response_header);
+
+            if (isset($response_headers['Content-Type'])) {
+                if (preg_match('/^application\/json/i', $response_headers['Content-Type'])) {
+                    $json_obj = json_decode($response, false);
+                    if (!is_null($json_obj)) {
+                        $response = $json_obj;
+                    }
+                } elseif (preg_match('/^application\/rss\+xml/i', $response_headers['Content-Type']) ||
+                          preg_match('/^application\/xml/i', $response_headers['Content-Type']) ||
+                          preg_match('/^text\/xml/i', $response_headers['Content-Type'])) {
+                    $xml_obj = @simplexml_load_string($response);
+                    if (!($xml_obj === false)) {
+                        $response = $xml_obj;
+                    }
+                }
+            }
+        }
+
+        return array($response_headers, $response);
+    }
+
     private function parseResponseHeaders($raw_headers)
     {
         $response_headers = new CaseInsensitiveArray();
@@ -336,30 +366,7 @@ class Curl
         $ch->error_code = $ch->error ? ($ch->curl_error ? $ch->curl_error_code : $ch->http_status_code) : 0;
 
         $ch->request_headers = $this->parseRequestHeaders(curl_getinfo($ch->curl, CURLINFO_HEADER_OUT));
-        $ch->response_headers = '';
-        if (!(strpos($ch->response, "\r\n\r\n") === false)) {
-            list($response_header, $ch->response) = explode("\r\n\r\n", $ch->response, 2);
-            if ($response_header === 'HTTP/1.1 100 Continue') {
-                list($response_header, $ch->response) = explode("\r\n\r\n", $ch->response, 2);
-            }
-            $ch->response_headers = $this->parseResponseHeaders($response_header);
-
-            if (isset($ch->response_headers['Content-Type'])) {
-                if (preg_match('/^application\/json/i', $ch->response_headers['Content-Type'])) {
-                    $json_obj = json_decode($ch->response, false);
-                    if (!is_null($json_obj)) {
-                        $ch->response = $json_obj;
-                    }
-                } elseif (preg_match('/^application\/rss\+xml/i', $ch->response_headers['Content-Type']) ||
-                          preg_match('/^application\/xml/i', $ch->response_headers['Content-Type']) ||
-                          preg_match('/^text\/xml/i', $ch->response_headers['Content-Type'])) {
-                    $xml_obj = @simplexml_load_string($ch->response);
-                    if (!($xml_obj === false)) {
-                        $ch->response = $xml_obj;
-                    }
-                }
-            }
-        }
+        list($ch->response_headers, $ch->response) = $this->parseResponse($ch->response);
 
         $ch->http_error_message = '';
         if ($ch->error) {
