@@ -85,6 +85,39 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === 'POST');
     }
 
+    public function testPostContinueResponse() {
+        // 100 Continue responses may contain additional optional headers per
+        // RFC 2616, Section 10.1:
+        // This class of status code indicates a provisional response,
+        // consisting only of the Status-Line and optional headers, and is
+        // terminated by an empty line.
+        $response =
+            'HTTP/1.1 100 Continue' . "\r\n" .
+            'Date: Fri, 01 Jan 1990 00:00:00 GMT' . "\r\n" .
+            'Server: PHP-Curl-Class' . "\r\n" .
+            "\r\n" .
+            'HTTP/1.1 200 OK' . "\r\n" .
+            'Date: Fri, 01 Jan 1990 00:00:00 GMT' . "\r\n" .
+            'Cache-Control: private' . "\r\n" .
+            'Vary: Accept-Encoding' . "\r\n" .
+            'Content-Length: 2' . "\r\n" .
+            'Content-Type: text/plain;charset=UTF-8' . "\r\n" .
+            'Server: PHP-Curl-Class' . "\r\n" .
+            'Connection: keep-alive' . "\r\n" .
+            "\r\n" .
+            'OK';
+
+        $reflector = new ReflectionClass('Curl');
+        $reflection_method = $reflector->getMethod('parseResponse');
+        $reflection_method->setAccessible(true);
+
+        $curl = new Curl();
+        list($response_headers, $response) = $reflection_method->invoke($curl, $response);
+
+        $this->assertEquals($response_headers['Status-Line'], 'HTTP/1.1 200 OK');
+        $this->assertEquals($response, 'OK');
+    }
+
     public function testPostData() {
         $test = new Test();
         $this->assertTrue($test->server('post', 'POST', array(
