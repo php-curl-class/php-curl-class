@@ -284,10 +284,7 @@ class Curl
         $response_headers = '';
         if (!(strpos($response, "\r\n\r\n") === false)) {
             list($response_header, $response) = explode("\r\n\r\n", $response, 2);
-            $response_headers = array($response_header);
-            if (!(strpos($response_header, "\r\n") === false)) {
-                $response_headers = explode("\r\n", $response_header);
-            }
+            $response_headers = explode("\r\n", $response_header);
             if (in_array('HTTP/1.1 100 Continue', $response_headers)) {
                 list($response_header, $response) = explode("\r\n\r\n", $response, 2);
             }
