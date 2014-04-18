@@ -350,7 +350,7 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $test->curl->setHeader('X-Requested-With', 'XMLHttpRequest');
         $test->curl->setHeader('Accept', 'application/json');
         $this->assertTrue($test->server('server', 'GET', array(
-            'key' => 'HTTP_CONTENT_TYPE', // OR "CONTENT_TYPE".
+            'key' => 'CONTENT_TYPE',
         )) === 'application/json');
         $this->assertTrue($test->server('server', 'GET', array(
             'key' => 'HTTP_X_REQUESTED_WITH',
