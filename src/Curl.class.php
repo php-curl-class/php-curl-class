@@ -283,7 +283,14 @@ class Curl
     {
         $response_headers = '';
         if (!(strpos($response, "\r\n\r\n") === false)) {
-            list($response_header, $response) = explode("\r\n\r\n", $response, 2);
+            $response_array = (explode("\r\n\r\n", $response));
+            for($i = count($response_array) - 1; $i>=0 ;$i--){
+                if (stripos($response_array[$i],'HTTP') === 0){
+                    $response_header = $response_array[$i];
+                    $response = implode("\r\n\r\n", array_splice($response_array, $i+1));
+                    break;
+                }
+            }
             $response_headers = explode("\r\n", $response_header);
             if (in_array('HTTP/1.1 100 Continue', $response_headers)) {
                 list($response_header, $response) = explode("\r\n\r\n", $response, 2);
