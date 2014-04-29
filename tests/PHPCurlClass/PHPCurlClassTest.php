@@ -5,12 +5,15 @@ require '../src/Curl.class.php';
 require 'helper.inc.php';
 
 
-class CurlTest extends PHPUnit_Framework_TestCase {
-    public function testExtensionLoaded() {
+class CurlTest extends PHPUnit_Framework_TestCase
+{
+    public function testExtensionLoaded()
+    {
         $this->assertTrue(extension_loaded('curl'));
     }
 
-    public function testArrayAssociative() {
+    public function testArrayAssociative()
+    {
         $this->assertTrue(is_array_assoc(array(
             'foo' => 'wibble',
             'bar' => 'wubble',
@@ -18,7 +21,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )));
     }
 
-    public function testArrayIndexed() {
+    public function testArrayIndexed()
+    {
         $this->assertFalse(is_array_assoc(array(
             'wibble',
             'wubble',
@@ -26,7 +30,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )));
     }
 
-    public function testCaseInsensitiveArrayGet() {
+    public function testCaseInsensitiveArrayGet()
+    {
         $array = new CaseInsensitiveArray();
         $this->assertTrue(is_object($array));
         $this->assertCount(0, $array);
@@ -37,8 +42,10 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertCount(1, $array);
     }
 
-    public function testCaseInsensitiveArraySet() {
-        function assertions($array, $count=1) {
+    public function testCaseInsensitiveArraySet()
+    {
+        public function assertions($array, $count = 1)
+        {
             PHPUnit_Framework_Assert::assertCount($count, $array);
             PHPUnit_Framework_Assert::assertTrue($array['foo'] === 'bar');
             PHPUnit_Framework_Assert::assertTrue($array['Foo'] === 'bar');
@@ -63,7 +70,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         assertions($array, 2);
     }
 
-    public function testUserAgent() {
+    public function testUserAgent()
+    {
         $test = new Test();
         $test->curl->setUserAgent(Curl::USER_AGENT);
         $this->assertTrue($test->server('server', 'GET', array(
@@ -71,21 +79,24 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === Curl::USER_AGENT);
     }
 
-    public function testGet() {
+    public function testGet()
+    {
         $test = new Test();
         $this->assertTrue($test->server('server', 'GET', array(
             'key' => 'REQUEST_METHOD',
         )) === 'GET');
     }
 
-    public function testPostRequestMethod() {
+    public function testPostRequestMethod()
+    {
         $test = new Test();
         $this->assertTrue($test->server('server', 'POST', array(
             'key' => 'REQUEST_METHOD',
         )) === 'POST');
     }
 
-    public function testPostContinueResponse() {
+    public function testPostContinueResponse()
+    {
         // 100 Continue responses may contain additional optional headers per
         // RFC 2616, Section 10.1:
         // This class of status code indicates a provisional response,
@@ -118,16 +129,19 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($response, 'OK');
     }
 
-    public function testPostData() {
+    public function testPostData()
+    {
         $test = new Test();
         $this->assertTrue($test->server('post', 'POST', array(
             'key' => 'value',
         )) === 'key=value');
     }
 
-    public function testPostAssociativeArrayData() {
+    public function testPostAssociativeArrayData()
+    {
         $test = new Test();
-        $this->assertTrue($test->server('post_multidimensional', 'POST', array(
+        $this->assertTrue(
+            $test->server('post_multidimensional', 'POST', array(
             'username' => 'myusername',
             'password' => 'mypassword',
             'more_data' => array(
@@ -136,10 +150,19 @@ class CurlTest extends PHPUnit_Framework_TestCase {
                 'param3' => 123,
                 'param4' => 3.14,
             ),
-        )) === 'username=myusername&password=mypassword&more_data%5Bparam1%5D=something&more_data%5Bparam2%5D=other%20thing&more_data%5Bparam3%5D=123&more_data%5Bparam4%5D=3.14');
+        )) ===
+            'username=myusername' .
+            '&password=mypassword' .
+            '&more_data%5B' .
+            'param1%5D=something' .
+            '&more_data%5Bparam2%5D=other%20thing' .
+            '&more_data%5Bparam3%5D=123' .
+            '&more_data%5Bparam4%5D=3.14'
+        );
     }
 
-    public function testPostMultidimensionalData() {
+    public function testPostMultidimensionalData()
+    {
         $test = new Test();
         $this->assertTrue($test->server('post_multidimensional', 'POST', array(
             'key' => 'file',
@@ -151,7 +174,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === 'key=file&file%5B%5D=wibble&file%5B%5D=wubble&file%5B%5D=wobble');
     }
 
-    public function testPostFilePathUpload() {
+    public function testPostFilePathUpload()
+    {
         $file_path = get_png();
 
         $test = new Test();
@@ -164,7 +188,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse(file_exists($file_path));
     }
 
-    public function testPostCurlFileUpload() {
+    public function testPostCurlFileUpload()
+    {
         if (class_exists('CURLFile')) {
             $file_path = get_png();
 
@@ -179,19 +204,22 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    public function testPutRequestMethod() {
+    public function testPutRequestMethod()
+    {
         $test = new Test();
         $this->assertTrue($test->server('request_method', 'PUT') === 'PUT');
     }
 
-    public function testPutData() {
+    public function testPutData()
+    {
         $test = new Test();
         $this->assertTrue($test->server('put', 'PUT', array(
             'key' => 'value',
         )) === 'key=value');
     }
 
-    public function testPutFileHandle() {
+    public function testPutFileHandle()
+    {
         $png = create_png();
         $tmp_file = create_tmp_file($png);
 
@@ -207,12 +235,14 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($test->curl->response === 'image/png');
     }
 
-    public function testPatchRequestMethod() {
+    public function testPatchRequestMethod()
+    {
         $test = new Test();
         $this->assertTrue($test->server('request_method', 'PATCH') === 'PATCH');
     }
 
-    public function testDelete() {
+    public function testDelete()
+    {
         $test = new Test();
         $this->assertTrue($test->server('server', 'DELETE', array(
             'key' => 'REQUEST_METHOD',
@@ -225,7 +255,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === 'delete');
     }
 
-    public function testHeadRequestMethod() {
+    public function testHeadRequestMethod()
+    {
         $test = new Test();
         $test->server('request_method', 'HEAD', array(
             'key' => 'REQUEST_METHOD',
@@ -234,7 +265,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertEmpty($test->curl->response);
     }
 
-    public function testOptionsRequestMethod() {
+    public function testOptionsRequestMethod()
+    {
         $test = new Test();
         $test->server('request_method', 'OPTIONS', array(
             'key' => 'REQUEST_METHOD',
@@ -242,12 +274,14 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($test->curl->response_headers['X-REQUEST-METHOD'], 'OPTIONS');
     }
 
-    public function testBasicHttpAuth401Unauthorized() {
+    public function testBasicHttpAuth401Unauthorized()
+    {
         $test = new Test();
         $this->assertTrue($test->server('http_basic_auth', 'GET') === 'canceled');
     }
 
-    public function testBasicHttpAuthSuccess() {
+    public function testBasicHttpAuthSuccess()
+    {
         $username = 'myusername';
         $password = 'mypassword';
         $test = new Test();
@@ -258,7 +292,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($json->password === $password);
     }
 
-    public function testReferrer() {
+    public function testReferrer()
+    {
         $test = new Test();
         $test->curl->setReferrer('myreferrer');
         $this->assertTrue($test->server('server', 'GET', array(
@@ -266,7 +301,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === 'myreferrer');
     }
 
-    public function testCookies() {
+    public function testCookies()
+    {
         $test = new Test();
         $test->curl->setCookie('mycookie', 'yum');
         $this->assertTrue($test->server('cookie', 'GET', array(
@@ -274,7 +310,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === 'yum');
     }
 
-    public function testCookieFile() {
+    public function testCookieFile()
+    {
         $cookie_file = dirname(__FILE__) . '/cookies.txt';
         $cookie_data = implode("\t", array(
             '127.0.0.1', // domain
@@ -297,7 +334,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse(file_exists($cookie_file));
     }
 
-    public function testCookieJar() {
+    public function testCookieJar()
+    {
         $cookie_file = dirname(__FILE__) . '/cookies.txt';
 
         $test = new Test();
@@ -310,7 +348,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse(file_exists($cookie_file));
     }
 
-    public function testMultipleCookieResponse() {
+    public function testMultipleCookieResponse()
+    {
         $expected_response = 'cookie1=scrumptious,cookie2=mouthwatering';
 
         // github.com/facebook/hhvm/issues/2345
@@ -323,7 +362,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($test->curl->response_headers['Set-Cookie'], $expected_response);
     }
 
-    public function testError() {
+    public function testError()
+    {
         $test = new Test();
         $test->curl->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 4000);
         $test->curl->get(Test::ERROR_URL);
@@ -332,7 +372,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($test->curl->curl_error_code === CURLE_OPERATION_TIMEOUTED);
     }
 
-    public function testErrorMessage() {
+    public function testErrorMessage()
+    {
         $test = new Test();
         $test->server('error_message', 'GET');
 
@@ -344,7 +385,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($test->curl->error_message, $expected_response);
     }
 
-    public function testHeaders() {
+    public function testHeaders()
+    {
         $test = new Test();
         $test->curl->setHeader('Content-Type', 'application/json');
         $test->curl->setHeader('X-Requested-With', 'XMLHttpRequest');
@@ -360,7 +402,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         )) === 'application/json');
     }
 
-    public function testHeaderCaseSensitivity() {
+    public function testHeaderCaseSensitivity()
+    {
         $content_type = 'application/json';
         $test = new Test();
         $test->curl->setHeader('Content-Type', $content_type);
@@ -381,14 +424,16 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($response_headers['eTaG'], $etag);
     }
 
-    public function testHeaderRedirect() {
+    public function testHeaderRedirect()
+    {
         $test = new Test();
         $test->curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
         $test->server('redirect', 'GET');
         $this->assertEquals($test->curl->response, 'OK');
     }
 
-    public function testRequestURL() {
+    public function testRequestURL()
+    {
         $test = new Test();
         $this->assertFalse(substr($test->server('request_uri', 'GET'), -1) === '?');
         $test = new Test();
@@ -401,7 +446,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse(substr($test->server('request_uri', 'DELETE'), -1) === '?');
     }
 
-    public function testNestedData() {
+    public function testNestedData()
+    {
         $test = new Test();
         $data = array(
             'username' => 'myusername',
@@ -420,7 +466,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         );
     }
 
-    public function testPostContentTypes() {
+    public function testPostContentTypes()
+    {
         $test = new Test();
         $test->server('server', 'POST', 'foo=bar');
         $this->assertEquals($test->curl->request_headers['Content-Type'], 'application/x-www-form-urlencoded');
@@ -434,8 +481,10 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(!empty($content_type));
     }
 
-    public function testJSONResponse() {
-        function assertion($key, $value) {
+    public function testJSONResponse()
+    {
+        public function assertion($key, $value)
+        {
             $test = new Test();
             $test->server('json_response', 'POST', array(
                 'key' => $key,
@@ -461,8 +510,10 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         assertion('CONTENT-TYPE', 'APPLICATION/JSON');
     }
 
-    public function testXMLResponse() {
-        function xml_assertion($key, $value) {
+    public function testXMLResponse()
+    {
+        public function xmlAssertion($key, $value)
+        {
             $test = new Test();
             $test->server('xml_response', 'POST', array(
                 'key' => $key,
@@ -472,27 +523,28 @@ class CurlTest extends PHPUnit_Framework_TestCase {
             PHPUnit_Framework_Assert::assertInstanceOf('SimpleXMLElement', $test->curl->response);
         }
 
-        xml_assertion('Content-Type', 'application/rss+xml; charset=utf-8');
-        xml_assertion('content-type', 'application/rss+xml; charset=utf-8');
-        xml_assertion('Content-Type', 'application/rss+xml');
-        xml_assertion('content-type', 'application/rss+xml');
-        xml_assertion('CONTENT-TYPE', 'application/rss+xml');
-        xml_assertion('CONTENT-TYPE', 'application/rss+xml');
-        xml_assertion('Content-Type', 'application/xml; charset=utf-8');
-        xml_assertion('content-type', 'application/xml; charset=utf-8');
-        xml_assertion('Content-Type', 'application/xml');
-        xml_assertion('content-type', 'application/xml');
-        xml_assertion('CONTENT-TYPE', 'application/xml');
-        xml_assertion('CONTENT-TYPE', 'application/xml');
-        xml_assertion('Content-Type', 'text/xml; charset=utf-8');
-        xml_assertion('content-type', 'text/xml; charset=utf-8');
-        xml_assertion('Content-Type', 'text/xml');
-        xml_assertion('content-type', 'text/xml');
-        xml_assertion('CONTENT-TYPE', 'text/xml');
-        xml_assertion('CONTENT-TYPE', 'text/xml');
+        xmlAssertion('Content-Type', 'application/rss+xml; charset=utf-8');
+        xmlAssertion('content-type', 'application/rss+xml; charset=utf-8');
+        xmlAssertion('Content-Type', 'application/rss+xml');
+        xmlAssertion('content-type', 'application/rss+xml');
+        xmlAssertion('CONTENT-TYPE', 'application/rss+xml');
+        xmlAssertion('CONTENT-TYPE', 'application/rss+xml');
+        xmlAssertion('Content-Type', 'application/xml; charset=utf-8');
+        xmlAssertion('content-type', 'application/xml; charset=utf-8');
+        xmlAssertion('Content-Type', 'application/xml');
+        xmlAssertion('content-type', 'application/xml');
+        xmlAssertion('CONTENT-TYPE', 'application/xml');
+        xmlAssertion('CONTENT-TYPE', 'application/xml');
+        xmlAssertion('Content-Type', 'text/xml; charset=utf-8');
+        xmlAssertion('content-type', 'text/xml; charset=utf-8');
+        xmlAssertion('Content-Type', 'text/xml');
+        xmlAssertion('content-type', 'text/xml');
+        xmlAssertion('CONTENT-TYPE', 'text/xml');
+        xmlAssertion('CONTENT-TYPE', 'text/xml');
     }
 
-    public function testArrayToStringConversion() {
+    public function testArrayToStringConversion()
+    {
         $test = new Test();
         $test->server('post', 'POST', array(
             'foo' => 'bar',
@@ -509,7 +561,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
         ));
-        $this->assertTrue(urldecode($test->curl->response) ===
+        $this->assertTrue(
+            urldecode($test->curl->response) ===
             'foo=bar&baz[qux]='
         );
 
@@ -522,15 +575,17 @@ class CurlTest extends PHPUnit_Framework_TestCase {
                 'wibble' => 'wobble',
             ),
         ));
-        $this->assertTrue(urldecode($test->curl->response) ===
+        $this->assertTrue(
+            urldecode($test->curl->response) ===
             'foo=bar&baz[qux]=&baz[wibble]=wobble'
         );
     }
 
-    public function testParallelRequests() {
+    public function testParallelRequests()
+    {
         $test = new Test();
         $curl = $test->curl;
-        $curl->beforeSend(function($instance) {
+        $curl->beforeSend(function ($instance) {
             $instance->setHeader('X-DEBUG-TEST', 'request_uri');
         });
         $curl->get(array(
@@ -547,12 +602,13 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(substr($curl->curls['2']->response, - $len) === '/c/?foo=bar');
     }
 
-    public function testParallelSetOptions() {
+    public function testParallelSetOptions()
+    {
         $test = new Test();
         $curl = $test->curl;
         $curl->setHeader('X-DEBUG-TEST', 'server');
         $curl->setOpt(CURLOPT_USERAGENT, 'useragent');
-        $curl->complete(function($instance) {
+        $curl->complete(function ($instance) {
             PHPUnit_Framework_Assert::assertTrue($instance->response === 'useragent');
         });
         $curl->get(array(
@@ -562,7 +618,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         ));
     }
 
-    public function testSuccessCallback() {
+    public function testSuccessCallback()
+    {
         $success_called = false;
         $error_called = false;
         $complete_called = false;
@@ -571,21 +628,34 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $curl = $test->curl;
         $curl->setHeader('X-DEBUG-TEST', 'get');
 
-        $curl->success(function($instance) use (&$success_called, &$error_called, &$complete_called) {
+        $curl->success(function ($instance) use (
+            &$success_called,
+            &$error_called,
+            &$complete_called
+        ) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
             PHPUnit_Framework_Assert::assertFalse($complete_called);
             $success_called = true;
         });
-        $curl->error(function($instance) use (&$success_called, &$error_called, &$complete_called, &$curl) {
+        $curl->error(function ($instance) use (
+            &$success_called,
+            &$error_called,
+            &$complete_called,
+            &$curl
+        ) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
             PHPUnit_Framework_Assert::assertFalse($complete_called);
             $error_called = true;
         });
-        $curl->complete(function($instance) use (&$success_called, &$error_called, &$complete_called) {
+        $curl->complete(function ($instance) use (
+            &$success_called,
+            &$error_called,
+            &$complete_called
+        ) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
             PHPUnit_Framework_Assert::assertTrue($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
@@ -600,7 +670,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($complete_called);
     }
 
-    public function testParallelSuccessCallback() {
+    public function testParallelSuccessCallback()
+    {
         $success_called = false;
         $error_called = false;
         $complete_called = false;
@@ -613,10 +684,12 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $curl = $test->curl;
         $curl->setHeader('X-DEBUG-TEST', 'get');
 
-        $curl->success(function($instance) use (&$success_called,
-                                                &$error_called,
-                                                &$complete_called,
-                                                &$success_called_once) {
+        $curl->success(function ($instance) use (
+            &$success_called,
+            &$error_called,
+            &$complete_called,
+            &$success_called_once
+        ) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
@@ -624,11 +697,13 @@ class CurlTest extends PHPUnit_Framework_TestCase {
             $success_called = true;
             $success_called_once = true;
         });
-        $curl->error(function($instance) use (&$success_called,
-                                              &$error_called,
-                                              &$complete_called,
-                                              &$curl,
-                                              &$error_called_once) {
+        $curl->error(function ($instance) use (
+            &$success_called,
+            &$error_called,
+            &$complete_called,
+            &$curl,
+            &$error_called_once
+        ) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
@@ -636,10 +711,12 @@ class CurlTest extends PHPUnit_Framework_TestCase {
             $error_called = true;
             $error_called_once = true;
         });
-        $curl->complete(function($instance) use (&$success_called,
-                                                 &$error_called,
-                                                 &$complete_called,
-                                                 &$complete_called_once) {
+        $curl->complete(function ($instance) use (
+            &$success_called,
+            &$error_called,
+            &$complete_called,
+            &$complete_called_once
+        ) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
             PHPUnit_Framework_Assert::assertTrue($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
@@ -666,7 +743,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         PHPUnit_Framework_Assert::assertTrue($complete_called_once);
     }
 
-    public function testErrorCallback() {
+    public function testErrorCallback()
+    {
         $success_called = false;
         $error_called = false;
         $complete_called = false;
@@ -676,21 +754,21 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 2000);
 
-        $curl->success(function($instance) use (&$success_called, &$error_called, &$complete_called) {
+        $curl->success(function ($instance) use (&$success_called, &$error_called, &$complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
             PHPUnit_Framework_Assert::assertFalse($complete_called);
             $success_called = true;
         });
-        $curl->error(function($instance) use (&$success_called, &$error_called, &$complete_called, &$curl) {
+        $curl->error(function ($instance) use (&$success_called, &$error_called, &$complete_called, &$curl) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
             PHPUnit_Framework_Assert::assertFalse($complete_called);
             $error_called = true;
         });
-        $curl->complete(function($instance) use (&$success_called, &$error_called, &$complete_called) {
+        $curl->complete(function ($instance) use (&$success_called, &$error_called, &$complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($success_called);
             PHPUnit_Framework_Assert::assertTrue($error_called);
@@ -705,7 +783,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($complete_called);
     }
 
-    public function testClose() {
+    public function testClose()
+    {
         $test = new Test();
         $curl = $test->curl;
         $curl->setHeader('X-DEBUG-TEST', 'post');
@@ -718,7 +797,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
     /**
      * @expectedException PHPUnit_Framework_Error_Warning
      */
-    public function testRequiredOptionCurlInfoHeaderOutEmitsWarning() {
+    public function testRequiredOptionCurlInfoHeaderOutEmitsWarning()
+    {
         $curl = new Curl();
         $curl->setOpt(CURLINFO_HEADER_OUT, false);
     }
@@ -726,7 +806,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
     /**
      * @expectedException PHPUnit_Framework_Error_Warning
      */
-    public function testRequiredOptionCurlOptHeaderEmitsWarning() {
+    public function testRequiredOptionCurlOptHeaderEmitsWarning()
+    {
         $curl = new Curl();
         $curl->setOpt(CURLOPT_HEADER, false);
     }
@@ -734,12 +815,14 @@ class CurlTest extends PHPUnit_Framework_TestCase {
     /**
      * @expectedException PHPUnit_Framework_Error_Warning
      */
-    public function testRequiredOptionCurlOptReturnTransferEmitsWarning() {
+    public function testRequiredOptionCurlOptReturnTransferEmitsWarning()
+    {
         $curl = new Curl();
         $curl->setOpt(CURLOPT_RETURNTRANSFER, false);
     }
 
-    public function testRequestMethodSuccessiveGetRequests() {
+    public function testRequestMethodSuccessiveGetRequests()
+    {
         $test = new Test();
         test($test, 'GET', 'POST');
         test($test, 'GET', 'PUT');
@@ -749,7 +832,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         test($test, 'GET', 'OPTIONS');
     }
 
-    public function testRequestMethodSuccessivePostRequests() {
+    public function testRequestMethodSuccessivePostRequests()
+    {
         $test = new Test();
         test($test, 'POST', 'GET');
         test($test, 'POST', 'PUT');
@@ -759,7 +843,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         test($test, 'POST', 'OPTIONS');
     }
 
-    public function testRequestMethodSuccessivePutRequests() {
+    public function testRequestMethodSuccessivePutRequests()
+    {
         $test = new Test();
         test($test, 'PUT', 'GET');
         test($test, 'PUT', 'POST');
@@ -769,7 +854,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         test($test, 'PUT', 'OPTIONS');
     }
 
-    public function testRequestMethodSuccessivePatchRequests() {
+    public function testRequestMethodSuccessivePatchRequests()
+    {
         $test = new Test();
         test($test, 'PATCH', 'GET');
         test($test, 'PATCH', 'POST');
@@ -779,7 +865,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         test($test, 'PATCH', 'OPTIONS');
     }
 
-    public function testRequestMethodSuccessiveDeleteRequests() {
+    public function testRequestMethodSuccessiveDeleteRequests()
+    {
         $test = new Test();
         test($test, 'DELETE', 'GET');
         test($test, 'DELETE', 'POST');
@@ -789,7 +876,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         test($test, 'DELETE', 'OPTIONS');
     }
 
-    public function testRequestMethodSuccessiveHeadRequests() {
+    public function testRequestMethodSuccessiveHeadRequests()
+    {
         $test = new Test();
         test($test, 'HEAD', 'GET');
         test($test, 'HEAD', 'POST');
@@ -799,7 +887,8 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         test($test, 'HEAD', 'OPTIONS');
     }
 
-    public function testRequestMethodSuccessiveOptionsRequests() {
+    public function testRequestMethodSuccessiveOptionsRequests()
+    {
         $test = new Test();
         test($test, 'OPTIONS', 'GET');
         test($test, 'OPTIONS', 'POST');
