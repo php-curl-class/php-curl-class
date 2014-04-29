@@ -285,7 +285,7 @@ class Curl
         if (!(strpos($response, "\r\n\r\n") === false)) {
             $response_array = explode("\r\n\r\n", $response);
             for ($i = count($response_array) - 1; $i >= 0; $i--) {
-                if (stripos($response_array[$i], 'HTTP') === 0) {
+                if (stripos($response_array[$i], 'HTTP/') === 0) {
                     $response_header = $response_array[$i];
                     $response = implode("\r\n\r\n", array_splice($response_array, $i + 1));
                     break;
