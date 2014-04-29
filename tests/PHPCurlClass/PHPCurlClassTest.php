@@ -381,6 +381,13 @@ class CurlTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($response_headers['eTaG'], $etag);
     }
 
+    public function testHeaderRedirect() {
+        $test = new Test();
+        $test->curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+        $test->server('redirect', 'GET');
+        $this->assertEquals($test->curl->response, 'OK');
+    }
+
     public function testRequestURL() {
         $test = new Test();
         $this->assertFalse(substr($test->server('request_uri', 'GET'), -1) === '?');

@@ -139,6 +139,15 @@ else if ($test === 'error_message') {
     }
     exit;
 }
+else if ($test === 'redirect') {
+    if (!isset($_GET['redirect'])) {
+        header('Location: ?redirect');
+        exit;
+    }
+
+    echo 'OK';
+    exit;
+}
 
 header('Content-Type: text/plain');
 
