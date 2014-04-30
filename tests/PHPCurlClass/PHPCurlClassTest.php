@@ -44,7 +44,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testCaseInsensitiveArraySet()
     {
-        public function assertions($array, $count = 1)
+        function assertions($array, $count = 1)
         {
             PHPUnit_Framework_Assert::assertCount($count, $array);
             PHPUnit_Framework_Assert::assertTrue($array['foo'] === 'bar');
@@ -142,15 +142,15 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $test = new Test();
         $this->assertTrue(
             $test->server('post_multidimensional', 'POST', array(
-            'username' => 'myusername',
-            'password' => 'mypassword',
-            'more_data' => array(
-                'param1' => 'something',
-                'param2' => 'other thing',
-                'param3' => 123,
-                'param4' => 3.14,
-            ),
-        )) ===
+                'username' => 'myusername',
+                'password' => 'mypassword',
+                'more_data' => array(
+                    'param1' => 'something',
+                    'param2' => 'other thing',
+                    'param3' => 123,
+                    'param4' => 3.14,
+                ),
+            )) ===
             'username=myusername' .
             '&password=mypassword' .
             '&more_data%5B' .
@@ -483,7 +483,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testJSONResponse()
     {
-        public function assertion($key, $value)
+        function assertion($key, $value)
         {
             $test = new Test();
             $test->server('json_response', 'POST', array(
@@ -512,7 +512,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testXMLResponse()
     {
-        public function xmlAssertion($key, $value)
+        function xmlAssertion($key, $value)
         {
             $test = new Test();
             $test->server('xml_response', 'POST', array(
