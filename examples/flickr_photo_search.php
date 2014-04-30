@@ -2,7 +2,8 @@
 require '../src/Curl.class.php';
 
 
-function construct_url($photo, $size = 's', $ext = 'jpg') {
+function construct_url($photo, $size = 's', $ext = 'jpg')
+{
     $url = 'http://farm' . $photo->farm . '.staticflickr.com/' .  $photo->server . '/' .
         $photo->id . '_' . $photo->secret . '_' . $size . '.' . $ext;
 
