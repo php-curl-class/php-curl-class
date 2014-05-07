@@ -45,6 +45,7 @@ class Curl
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_HEADER, true);
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
+        $this->setOpt(CURLOPT_TIMEOUT, 5);
     }
 
     public function get($url_mixed, $data = array())
