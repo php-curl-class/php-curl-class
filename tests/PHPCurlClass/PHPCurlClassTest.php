@@ -466,12 +466,15 @@ class CurlTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testPostContentTypes()
+    public function testPostUrlEncodedContentType()
     {
         $test = new Test();
         $test->server('server', 'POST', 'foo=bar');
         $this->assertEquals($test->curl->request_headers['Content-Type'], 'application/x-www-form-urlencoded');
+    }
 
+    public function testPostFormDataContentType()
+    {
         $test = new Test();
         $test->server('server', 'POST', array(
             'foo' => 'bar',
