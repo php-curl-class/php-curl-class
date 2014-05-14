@@ -94,7 +94,7 @@ class Curl
     public function post($url, $data = array())
     {
         if (is_array($data) && empty($data)) {
-            $this->setHeader('Content-Length');
+            $this->unsetHeader('Content-Length');
         }
 
         $this->setOpt(CURLOPT_URL, $this->buildURL($url));
@@ -118,7 +118,7 @@ class Curl
 
     public function patch($url, $data = array())
     {
-        $this->setHeader('Content-Length');
+        $this->unsetHeader('Content-Length');
         $this->setOpt(CURLOPT_URL, $this->buildURL($url));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $this->setOpt(CURLOPT_POSTFIELDS, $data);
@@ -127,7 +127,7 @@ class Curl
 
     public function delete($url, $data = array())
     {
-        $this->setHeader('Content-Length');
+        $this->unsetHeader('Content-Length');
         $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
         return $this->exec();
@@ -143,7 +143,7 @@ class Curl
 
     public function options($url, $data = array())
     {
-        $this->setHeader('Content-Length');
+        $this->unsetHeader('Content-Length');
         $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         return $this->exec();
@@ -155,10 +155,16 @@ class Curl
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
 
-    public function setHeader($key, $value = '')
+    public function setHeader($key, $value)
     {
         $this->headers[$key] = $key . ': ' . $value;
         $this->setOpt(CURLOPT_HTTPHEADER, array_values($this->headers));
+    }
+
+    public function unsetHeader($key)
+    {
+        $this->setHeader($key, '');
+        unset($this->headers[$key]);
     }
 
     public function setUserAgent($user_agent)
