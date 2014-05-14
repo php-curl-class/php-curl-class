@@ -334,6 +334,7 @@ class Curl
             if (is_array_multidim($data)) {
                 $data = http_build_multi_query($data);
             } else {
+                $binary_data = false;
                 foreach ($data as $key => $value) {
                     // Fix "Notice: Array to string conversion" when $value in
                     // curl_setopt($ch, CURLOPT_POSTFIELDS, $value) is an array
@@ -344,10 +345,17 @@ class Curl
                     // file uploading is deprecated. Please use the CURLFile
                     // class instead".
                     } elseif (is_string($value) && strpos($value, '@') === 0) {
+                        $binary_data = true;
                         if (class_exists('CURLFile')) {
                             $data[$key] = new CURLFile(substr($value, 1));
                         }
+                    } elseif ($value instanceof CURLFile) {
+                        $binary_data = true;
                     }
+                }
+
+                if (!$binary_data) {
+                    $data = http_build_query($data);
                 }
             }
         }

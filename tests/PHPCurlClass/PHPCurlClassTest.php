@@ -466,22 +466,54 @@ class CurlTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testPostUrlEncodedContentType()
+    public function testPostStringUrlEncodedContentType()
     {
         $test = new Test();
         $test->server('server', 'POST', 'foo=bar');
         $this->assertEquals($test->curl->request_headers['Content-Type'], 'application/x-www-form-urlencoded');
     }
 
-    public function testPostFormDataContentType()
+    public function testPostArrayUrlEncodedContentType()
     {
         $test = new Test();
         $test->server('server', 'POST', array(
             'foo' => 'bar',
         ));
+        $this->assertEquals($test->curl->request_headers['Content-Type'], 'application/x-www-form-urlencoded');
+    }
+
+    public function testPostFileFormDataContentType()
+    {
+        $file_path = get_png();
+
+        $test = new Test();
+        $test->server('server', 'POST', array(
+            'image' => '@' . $file_path,
+        ));
         $this->assertEquals($test->curl->request_headers['Expect'], '100-continue');
         preg_match('/^multipart\/form-data; boundary=/', $test->curl->request_headers['Content-Type'], $content_type);
         $this->assertTrue(!empty($content_type));
+
+        unlink($file_path);
+        $this->assertFalse(file_exists($file_path));
+    }
+
+    public function testPostCurlFileFormDataContentType()
+    {
+        if (class_exists('CURLFile')) {
+            $file_path = get_png();
+
+            $test = new Test();
+            $test->server('server', 'POST', array(
+                'image' => new CURLFile($file_path),
+            ));
+            $this->assertEquals($test->curl->request_headers['Expect'], '100-continue');
+            preg_match('/^multipart\/form-data; boundary=/', $test->curl->request_headers['Content-Type'], $content_type);
+            $this->assertTrue(!empty($content_type));
+
+            unlink($file_path);
+            $this->assertFalse(file_exists($file_path));
+        }
     }
 
     public function testJSONResponse()
