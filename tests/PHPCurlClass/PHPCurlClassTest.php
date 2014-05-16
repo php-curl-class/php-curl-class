@@ -572,24 +572,35 @@ class CurlTest extends PHPUnit_Framework_TestCase
             PHPUnit_Framework_Assert::assertInstanceOf('SimpleXMLElement', $test->curl->response);
         }
 
-        xmlAssertion('Content-Type', 'application/rss+xml; charset=utf-8');
-        xmlAssertion('content-type', 'application/rss+xml; charset=utf-8');
         xmlAssertion('Content-Type', 'application/rss+xml');
-        xmlAssertion('content-type', 'application/rss+xml');
-        xmlAssertion('CONTENT-TYPE', 'application/rss+xml');
-        xmlAssertion('CONTENT-TYPE', 'application/rss+xml');
-        xmlAssertion('Content-Type', 'application/xml; charset=utf-8');
-        xmlAssertion('content-type', 'application/xml; charset=utf-8');
+        xmlAssertion('Content-Type', 'application/rss+xml; charset=utf-8');
+        xmlAssertion('Content-Type', 'application/rss+xml;charset=utf-8');
         xmlAssertion('Content-Type', 'application/xml');
-        xmlAssertion('content-type', 'application/xml');
-        xmlAssertion('CONTENT-TYPE', 'application/xml');
-        xmlAssertion('CONTENT-TYPE', 'application/xml');
-        xmlAssertion('Content-Type', 'text/xml; charset=utf-8');
-        xmlAssertion('content-type', 'text/xml; charset=utf-8');
+        xmlAssertion('Content-Type', 'application/xml; charset=utf-8');
+        xmlAssertion('Content-Type', 'application/xml;charset=utf-8');
         xmlAssertion('Content-Type', 'text/xml');
+        xmlAssertion('Content-Type', 'text/xml; charset=utf-8');
+        xmlAssertion('Content-Type', 'text/xml;charset=utf-8');
+
+        xmlAssertion('content-type', 'application/rss+xml');
+        xmlAssertion('content-type', 'application/rss+xml; charset=utf-8');
+        xmlAssertion('content-type', 'application/rss+xml;charset=utf-8');
+        xmlAssertion('content-type', 'application/xml');
+        xmlAssertion('content-type', 'application/xml; charset=utf-8');
+        xmlAssertion('content-type', 'application/xml;charset=utf-8');
         xmlAssertion('content-type', 'text/xml');
+        xmlAssertion('content-type', 'text/xml; charset=utf-8');
+        xmlAssertion('content-type', 'text/xml;charset=utf-8');
+
+        xmlAssertion('CONTENT-TYPE', 'application/rss+xml');
+        xmlAssertion('CONTENT-TYPE', 'application/rss+xml; charset=utf-8');
+        xmlAssertion('CONTENT-TYPE', 'application/rss+xml;charset=utf-8');
+        xmlAssertion('CONTENT-TYPE', 'application/xml');
+        xmlAssertion('CONTENT-TYPE', 'application/xml; charset=utf-8');
+        xmlAssertion('CONTENT-TYPE', 'application/xml;charset=utf-8');
         xmlAssertion('CONTENT-TYPE', 'text/xml');
-        xmlAssertion('CONTENT-TYPE', 'text/xml');
+        xmlAssertion('CONTENT-TYPE', 'text/xml; charset=utf-8');
+        xmlAssertion('CONTENT-TYPE', 'text/xml;charset=utf-8');
     }
 
     public function testArrayToStringConversion()
