@@ -537,12 +537,26 @@ class CurlTest extends PHPUnit_Framework_TestCase
             PHPUnit_Framework_Assert::assertTrue(is_string($response->string));
         }
 
-        assertion('Content-Type', 'application/json; charset=utf-8');
-        assertion('content-type', 'application/json; charset=utf-8');
+        assertion('Content-Type', 'APPLICATION/JSON');
+        assertion('Content-Type', 'APPLICATION/JSON; CHARSET=UTF-8');
+        assertion('Content-Type', 'APPLICATION/JSON;CHARSET=UTF-8');
         assertion('Content-Type', 'application/json');
+        assertion('Content-Type', 'application/json; charset=utf-8');
+        assertion('Content-Type', 'application/json;charset=UTF-8');
+
+        assertion('content-type', 'APPLICATION/JSON');
+        assertion('content-type', 'APPLICATION/JSON; CHARSET=UTF-8');
+        assertion('content-type', 'APPLICATION/JSON;CHARSET=UTF-8');
         assertion('content-type', 'application/json');
-        assertion('CONTENT-TYPE', 'application/json');
+        assertion('content-type', 'application/json; charset=utf-8');
+        assertion('content-type', 'application/json;charset=UTF-8');
+
         assertion('CONTENT-TYPE', 'APPLICATION/JSON');
+        assertion('CONTENT-TYPE', 'APPLICATION/JSON; CHARSET=UTF-8');
+        assertion('CONTENT-TYPE', 'APPLICATION/JSON;CHARSET=UTF-8');
+        assertion('CONTENT-TYPE', 'application/json');
+        assertion('CONTENT-TYPE', 'application/json; charset=utf-8');
+        assertion('CONTENT-TYPE', 'application/json;charset=UTF-8');
     }
 
     public function testXMLResponse()
