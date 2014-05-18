@@ -309,7 +309,8 @@ class Curl
                     if (!is_null($json_obj)) {
                         $response = $json_obj;
                     }
-                } elseif (preg_match('/^application\/rss\+xml/i', $response_headers['Content-Type']) ||
+                } elseif (preg_match('/^application\/atom\+xml/i', $response_headers['Content-Type']) ||
+                          preg_match('/^application\/rss\+xml/i', $response_headers['Content-Type']) ||
                           preg_match('/^application\/xml/i', $response_headers['Content-Type']) ||
                           preg_match('/^text\/xml/i', $response_headers['Content-Type'])) {
                     $xml_obj = @simplexml_load_string($response);
