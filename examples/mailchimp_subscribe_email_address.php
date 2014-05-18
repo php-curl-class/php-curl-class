@@ -3,7 +3,8 @@ require '../src/Curl.class.php';
 
 
 define('MAILCHIMP_API_KEY', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-XXX');
-define('MAILCHIMP_BASE_URL', 'https://' . explode('-', MAILCHIMP_API_KEY)['1'] . '.api.mailchimp.com/2.0/');
+$parts = explode('-', MAILCHIMP_API_KEY);
+define('MAILCHIMP_BASE_URL', 'https://' . $parts['1'] . '.api.mailchimp.com/2.0/');
 
 
 $curl = new Curl();
@@ -29,7 +30,6 @@ $curl->post(MAILCHIMP_BASE_URL . '/lists/subscribe.format', array(
 
 if ($curl->error) {
     echo $curl->response->name . ': ' . $curl->response->error . "\n";
-}
-else {
+} else {
     echo 'Subscribed ' . $curl->response->email . '.' . "\n";
 }
