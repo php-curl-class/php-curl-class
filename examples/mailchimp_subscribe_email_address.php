@@ -20,7 +20,7 @@ if ($curl->response->total === 0) {
 $lists = $curl->response->data;
 $list = $lists['0'];
 
-$curl->post(MAILCHIMP_BASE_URL . '/lists/subscribe.format', array(
+$curl->post(MAILCHIMP_BASE_URL . '/lists/subscribe.json', array(
     'apikey' => MAILCHIMP_API_KEY,
     'id' => $list->id,
     'email' => array(
