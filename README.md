@@ -75,6 +75,13 @@ $curl->patch('http://api.example.com/profile/', array(
 
 ```php
 $curl = new Curl();
+$curl->patch('http://api.example.com/profile/', array(
+    'image' => new CURLFile('path/to/file.jpg'),
+));
+```
+
+```php
+$curl = new Curl();
 $curl->delete('http://api.example.com/user/', array(
     'id' => '1234',
 ));
