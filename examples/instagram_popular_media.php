@@ -42,7 +42,7 @@ if (isset($_SESSION['access_token'])) {
     ));
     foreach ($curl->response->data as $media) {
         echo
-            '<a href="' . $media->link . '" target="blank">' .
+            '<a href="' . $media->link . '" target="_blank">' .
                 '<img alt="" src="' . $media->images->thumbnail->url . '" />' .
             '</a>';
     }
