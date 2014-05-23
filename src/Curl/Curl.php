@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const USER_AGENT = 'PHP-Curl-Class/2.1.0 (+https://github.com/php-curl-class/php-curl-class)';
+    const VERSION = '2.1.0';
 
     private $cookies = array();
     private $headers = array();
@@ -43,7 +43,7 @@ class Curl
         }
 
         $this->curl = curl_init();
-        $this->setUserAgent(self::USER_AGENT);
+        $this->setDefaultUserAgent();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_HEADER, true);
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
@@ -167,6 +167,15 @@ class Curl
     {
         $this->setHeader($key, '');
         unset($this->headers[$key]);
+    }
+
+    public function setDefaultUserAgent()
+    {
+        $user_agent = 'PHP-Curl-Class/' . self::VERSION . ' (+https://github.com/php-curl-class/php-curl-class)';
+        $user_agent .= ' PHP/' . PHP_VERSION;
+        $curl_version = curl_version();
+        $user_agent .= ' curl/' . $curl_version['version'];
+        $this->setUserAgent($user_agent);
     }
 
     public function setUserAgent($user_agent)

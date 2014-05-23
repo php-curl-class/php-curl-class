@@ -73,11 +73,14 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testUserAgent()
     {
+        $php_version = 'PHP\/' . PHP_VERSION;
+        $curl_version = curl_version();
+        $curl_version = 'curl\/' . $curl_version['version'];
+
         $test = new Test();
-        $test->curl->setUserAgent(Curl::USER_AGENT);
-        $this->assertTrue($test->server('server', 'GET', array(
-            'key' => 'HTTP_USER_AGENT',
-        )) === Curl::USER_AGENT);
+        $user_agent = $test->server('server', 'GET', array('key' => 'HTTP_USER_AGENT'));
+        $this->assertRegExp('/' . $php_version . '/', $user_agent);
+        $this->assertRegExp('/' . $curl_version . '/', $user_agent);
     }
 
     public function testGet()
