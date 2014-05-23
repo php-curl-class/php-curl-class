@@ -42,7 +42,7 @@ $curl->setCookie('key', 'value');
 $curl->get('http://www.example.com/');
 
 if ($curl->error) {
-    echo "ERROR: " . $curl->error_code . ": " . $curl->error_message;
+    echo 'Error: ' . $curl->error_code . ': ' . $curl->error_message;
 }
 else {
     echo $curl->response;
