@@ -1,4 +1,8 @@
 <?php
+namespace Helper;
+
+use Curl\Curl;
+
 class Test
 {
     const TEST_URL = 'http://127.0.0.1:8000/';
@@ -23,9 +27,9 @@ class Test
 function test($instance, $before, $after)
 {
     $instance->server('request_method', $before);
-    PHPUnit_Framework_Assert::assertEquals($instance->curl->response_headers['X-REQUEST-METHOD'], $before);
+    \PHPUnit_Framework_Assert::assertEquals($instance->curl->response_headers['X-REQUEST-METHOD'], $before);
     $instance->server('request_method', $after);
-    PHPUnit_Framework_Assert::assertEquals($instance->curl->response_headers['X-REQUEST-METHOD'], $after);
+    \PHPUnit_Framework_Assert::assertEquals($instance->curl->response_headers['X-REQUEST-METHOD'], $after);
 }
 
 function create_png()

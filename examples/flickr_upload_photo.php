@@ -1,7 +1,8 @@
 <?php
-require '../src/Curl.class.php';
+require '../src/Curl/Curl.php';
 require 'Flickr.class.php';
 
+use \Curl\Curl;
 
 $flickr = new Flickr();
 $flickr->authenticate();

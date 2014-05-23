@@ -1,5 +1,7 @@
 <?php
 
+namespace Curl;
+
 class Curl
 {
     const USER_AGENT = 'PHP-Curl-Class/2.0 (+https://github.com/php-curl-class/php-curl-class)';
@@ -338,8 +340,8 @@ class Curl
     private function postfields($data)
     {
         if (is_array($data)) {
-            if (is_array_multidim($data)) {
-                $data = http_build_multi_query($data);
+            if (self::is_array_multidim($data)) {
+                $data = self::http_build_multi_query($data);
             } else {
                 $binary_data = false;
                 foreach ($data as $key => $value) {
@@ -354,9 +356,9 @@ class Curl
                     } elseif (is_string($value) && strpos($value, '@') === 0) {
                         $binary_data = true;
                         if (class_exists('CURLFile')) {
-                            $data[$key] = new CURLFile(substr($value, 1));
+                            $data[$key] = new \CURLFile(substr($value, 1));
                         }
-                    } elseif ($value instanceof CURLFile) {
+                    } elseif ($value instanceof \CURLFile) {
                         $binary_data = true;
                     }
                 }
@@ -423,9 +425,46 @@ class Curl
     {
         $this->close();
     }
+
+    public static function is_array_assoc($array)
+    {
+        return (bool)count(array_filter(array_keys($array), 'is_string'));
+    }
+
+    public static function is_array_multidim($array)
+    {
+        if (!is_array($array)) {
+            return false;
+        }
+
+        return !(count($array) === count($array, COUNT_RECURSIVE));
+    }
+
+    public static function http_build_multi_query($data, $key = null)
+    {
+        $query = array();
+
+        if (empty($data)) {
+            return $key . '=';
+        }
+
+        $is_array_assoc = self::is_array_assoc($data);
+
+        foreach ($data as $k => $value) {
+            if (is_string($value) || is_numeric($value)) {
+                $brackets = $is_array_assoc ? '[' . $k . ']' : '[]';
+                $query[] = urlencode(is_null($key) ? $k : $key . $brackets) . '=' . rawurlencode($value);
+            } elseif (is_array($value)) {
+                $nested = is_null($key) ? $k : $key . '[' . $k . ']';
+                $query[] = self::http_build_multi_query($value, $nested);
+            }
+        }
+
+        return implode('&', $query);
+    }
 }
 
-class CaseInsensitiveArray implements ArrayAccess, Countable, Iterator
+class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
 {
     private $container = array();
 
@@ -493,41 +532,4 @@ class CaseInsensitiveArray implements ArrayAccess, Countable, Iterator
     {
         reset($this->container);
     }
-}
-
-function is_array_assoc($array)
-{
-    return (bool)count(array_filter(array_keys($array), 'is_string'));
-}
-
-function is_array_multidim($array)
-{
-    if (!is_array($array)) {
-        return false;
-    }
-
-    return !(count($array) === count($array, COUNT_RECURSIVE));
-}
-
-function http_build_multi_query($data, $key = null)
-{
-    $query = array();
-
-    if (empty($data)) {
-        return $key . '=';
-    }
-
-    $is_array_assoc = is_array_assoc($data);
-
-    foreach ($data as $k => $value) {
-        if (is_string($value) || is_numeric($value)) {
-            $brackets = $is_array_assoc ? '[' . $k . ']' : '[]';
-            $query[] = urlencode(is_null($key) ? $k : $key . $brackets) . '=' . rawurlencode($value);
-        } elseif (is_array($value)) {
-            $nested = is_null($key) ? $k : $key . '[' . $k . ']';
-            $query[] = http_build_multi_query($value, $nested);
-        }
-    }
-
-    return implode('&', $query);
 }

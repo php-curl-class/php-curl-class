@@ -1,6 +1,7 @@
 <?php
-require '../src/Curl.class.php';
+require '../src/Curl/Curl.php';
 
+use \Curl\Curl;
 
 function construct_url($photo, $size = 's', $ext = 'jpg')
 {

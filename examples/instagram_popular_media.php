@@ -1,6 +1,7 @@
 <?php
-require '../src/Curl.class.php';
+require '../src/Curl/Curl.php';
 
+use \Curl\Curl;
 
 define('INSTAGRAM_CLIENT_ID', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
 define('INSTAGRAM_CLIENT_SECRET', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
@@ -46,8 +47,7 @@ if (isset($_SESSION['access_token'])) {
                 '<img alt="" src="' . $media->images->thumbnail->url . '" />' .
             '</a>';
     }
-}
-else {
+} else {
     header('Location: https://api.instagram.com/oauth/authorize/?' . http_build_query(array(
         'client_id' => INSTAGRAM_CLIENT_ID,
         'redirect_uri' => $redirect_uri,

@@ -1,6 +1,7 @@
 <?php
-require '../src/Curl.class.php';
+require '../src/Curl/Curl.php';
 
+use \Curl\Curl;
 
 $video_ids = array(
     '9bZkp7q19f0',

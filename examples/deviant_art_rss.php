@@ -1,6 +1,7 @@
 <?php
-require '../src/Curl.class.php';
+require '../src/Curl/Curl.php';
 
+use \Curl\Curl;
 
 $curl = new Curl();
 $curl->get('http://backend.deviantart.com/rss.xml', array(

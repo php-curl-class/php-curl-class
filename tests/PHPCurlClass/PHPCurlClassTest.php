@@ -1,9 +1,10 @@
 <?php
-// Usage: phpunit --verbose run.php
+require '../src/Curl/Curl.php';
+require 'Helper.php';
 
-require '../src/Curl.class.php';
-require 'helper.inc.php';
-
+use \Curl\Curl;
+use \Curl\CaseInsensitiveArray;
+use \Helper\Test;
 
 class CurlTest extends PHPUnit_Framework_TestCase
 {
@@ -14,7 +15,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testArrayAssociative()
     {
-        $this->assertTrue(is_array_assoc(array(
+        $this->assertTrue(Curl::is_array_assoc(array(
             'foo' => 'wibble',
             'bar' => 'wubble',
             'baz' => 'wobble',
@@ -23,7 +24,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testArrayIndexed()
     {
-        $this->assertFalse(is_array_assoc(array(
+        $this->assertFalse(Curl::is_array_assoc(array(
             'wibble',
             'wubble',
             'wobble',
@@ -118,7 +119,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
             "\r\n" .
             'OK';
 
-        $reflector = new ReflectionClass('Curl');
+        $reflector = new ReflectionClass('\Curl\Curl');
         $reflection_method = $reflector->getMethod('parseResponse');
         $reflection_method->setAccessible(true);
 
@@ -176,7 +177,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testPostFilePathUpload()
     {
-        $file_path = get_png();
+        $file_path = Helper\get_png();
 
         $test = new Test();
         $this->assertTrue($test->server('post_file_path_upload', 'POST', array(
@@ -191,7 +192,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
     public function testPostCurlFileUpload()
     {
         if (class_exists('CURLFile')) {
-            $file_path = get_png();
+            $file_path = Helper\get_png();
 
             $test = new Test();
             $this->assertTrue($test->server('post_file_path_upload', 'POST', array(
@@ -220,8 +221,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testPutFileHandle()
     {
-        $png = create_png();
-        $tmp_file = create_tmp_file($png);
+        $png = Helper\create_png();
+        $tmp_file = Helper\create_tmp_file($png);
 
         $test = new Test();
         $test->curl->setHeader('X-DEBUG-TEST', 'put_file_handle');
@@ -484,7 +485,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testPostFileFormDataContentType()
     {
-        $file_path = get_png();
+        $file_path = Helper\get_png();
 
         $test = new Test();
         $test->server('server', 'POST', array(
@@ -504,7 +505,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
             return;
         }
 
-        $file_path = get_png();
+        $file_path = Helper\get_png();
 
         $test = new Test();
         $test->server('server', 'POST', array(
@@ -701,7 +702,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
             &$error_called,
             &$complete_called
         ) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
             PHPUnit_Framework_Assert::assertFalse($complete_called);
@@ -713,7 +714,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
             &$complete_called,
             &$curl
         ) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
             PHPUnit_Framework_Assert::assertFalse($complete_called);
@@ -724,7 +725,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
             &$error_called,
             &$complete_called
         ) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertTrue($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
             PHPUnit_Framework_Assert::assertFalse($complete_called);
@@ -758,7 +759,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
             &$complete_called,
             &$success_called_once
         ) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
             PHPUnit_Framework_Assert::assertFalse($complete_called);
@@ -772,7 +773,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
             &$curl,
             &$error_called_once
         ) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
             PHPUnit_Framework_Assert::assertFalse($complete_called);
@@ -785,7 +786,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
             &$complete_called,
             &$complete_called_once
         ) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertTrue($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
             PHPUnit_Framework_Assert::assertFalse($complete_called);
@@ -823,21 +824,21 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 2000);
 
         $curl->success(function ($instance) use (&$success_called, &$error_called, &$complete_called) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
             PHPUnit_Framework_Assert::assertFalse($complete_called);
             $success_called = true;
         });
         $curl->error(function ($instance) use (&$success_called, &$error_called, &$complete_called, &$curl) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($success_called);
             PHPUnit_Framework_Assert::assertFalse($error_called);
             PHPUnit_Framework_Assert::assertFalse($complete_called);
             $error_called = true;
         });
         $curl->complete(function ($instance) use (&$success_called, &$error_called, &$complete_called) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl', $instance);
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($success_called);
             PHPUnit_Framework_Assert::assertTrue($error_called);
             PHPUnit_Framework_Assert::assertFalse($complete_called);
@@ -892,77 +893,77 @@ class CurlTest extends PHPUnit_Framework_TestCase
     public function testRequestMethodSuccessiveGetRequests()
     {
         $test = new Test();
-        test($test, 'GET', 'POST');
-        test($test, 'GET', 'PUT');
-        test($test, 'GET', 'PATCH');
-        test($test, 'GET', 'DELETE');
-        test($test, 'GET', 'HEAD');
-        test($test, 'GET', 'OPTIONS');
+        Helper\test($test, 'GET', 'POST');
+        Helper\test($test, 'GET', 'PUT');
+        Helper\test($test, 'GET', 'PATCH');
+        Helper\test($test, 'GET', 'DELETE');
+        Helper\test($test, 'GET', 'HEAD');
+        Helper\test($test, 'GET', 'OPTIONS');
     }
 
     public function testRequestMethodSuccessivePostRequests()
     {
         $test = new Test();
-        test($test, 'POST', 'GET');
-        test($test, 'POST', 'PUT');
-        test($test, 'POST', 'PATCH');
-        test($test, 'POST', 'DELETE');
-        test($test, 'POST', 'HEAD');
-        test($test, 'POST', 'OPTIONS');
+        Helper\test($test, 'POST', 'GET');
+        Helper\test($test, 'POST', 'PUT');
+        Helper\test($test, 'POST', 'PATCH');
+        Helper\test($test, 'POST', 'DELETE');
+        Helper\test($test, 'POST', 'HEAD');
+        Helper\test($test, 'POST', 'OPTIONS');
     }
 
     public function testRequestMethodSuccessivePutRequests()
     {
         $test = new Test();
-        test($test, 'PUT', 'GET');
-        test($test, 'PUT', 'POST');
-        test($test, 'PUT', 'PATCH');
-        test($test, 'PUT', 'DELETE');
-        test($test, 'PUT', 'HEAD');
-        test($test, 'PUT', 'OPTIONS');
+        Helper\test($test, 'PUT', 'GET');
+        Helper\test($test, 'PUT', 'POST');
+        Helper\test($test, 'PUT', 'PATCH');
+        Helper\test($test, 'PUT', 'DELETE');
+        Helper\test($test, 'PUT', 'HEAD');
+        Helper\test($test, 'PUT', 'OPTIONS');
     }
 
     public function testRequestMethodSuccessivePatchRequests()
     {
         $test = new Test();
-        test($test, 'PATCH', 'GET');
-        test($test, 'PATCH', 'POST');
-        test($test, 'PATCH', 'PUT');
-        test($test, 'PATCH', 'DELETE');
-        test($test, 'PATCH', 'HEAD');
-        test($test, 'PATCH', 'OPTIONS');
+        Helper\test($test, 'PATCH', 'GET');
+        Helper\test($test, 'PATCH', 'POST');
+        Helper\test($test, 'PATCH', 'PUT');
+        Helper\test($test, 'PATCH', 'DELETE');
+        Helper\test($test, 'PATCH', 'HEAD');
+        Helper\test($test, 'PATCH', 'OPTIONS');
     }
 
     public function testRequestMethodSuccessiveDeleteRequests()
     {
         $test = new Test();
-        test($test, 'DELETE', 'GET');
-        test($test, 'DELETE', 'POST');
-        test($test, 'DELETE', 'PUT');
-        test($test, 'DELETE', 'PATCH');
-        test($test, 'DELETE', 'HEAD');
-        test($test, 'DELETE', 'OPTIONS');
+        Helper\test($test, 'DELETE', 'GET');
+        Helper\test($test, 'DELETE', 'POST');
+        Helper\test($test, 'DELETE', 'PUT');
+        Helper\test($test, 'DELETE', 'PATCH');
+        Helper\test($test, 'DELETE', 'HEAD');
+        Helper\test($test, 'DELETE', 'OPTIONS');
     }
 
     public function testRequestMethodSuccessiveHeadRequests()
     {
         $test = new Test();
-        test($test, 'HEAD', 'GET');
-        test($test, 'HEAD', 'POST');
-        test($test, 'HEAD', 'PUT');
-        test($test, 'HEAD', 'PATCH');
-        test($test, 'HEAD', 'DELETE');
-        test($test, 'HEAD', 'OPTIONS');
+        Helper\test($test, 'HEAD', 'GET');
+        Helper\test($test, 'HEAD', 'POST');
+        Helper\test($test, 'HEAD', 'PUT');
+        Helper\test($test, 'HEAD', 'PATCH');
+        Helper\test($test, 'HEAD', 'DELETE');
+        Helper\test($test, 'HEAD', 'OPTIONS');
     }
 
     public function testRequestMethodSuccessiveOptionsRequests()
     {
         $test = new Test();
-        test($test, 'OPTIONS', 'GET');
-        test($test, 'OPTIONS', 'POST');
-        test($test, 'OPTIONS', 'PUT');
-        test($test, 'OPTIONS', 'PATCH');
-        test($test, 'OPTIONS', 'DELETE');
-        test($test, 'OPTIONS', 'HEAD');
+        Helper\test($test, 'OPTIONS', 'GET');
+        Helper\test($test, 'OPTIONS', 'POST');
+        Helper\test($test, 'OPTIONS', 'PUT');
+        Helper\test($test, 'OPTIONS', 'PATCH');
+        Helper\test($test, 'OPTIONS', 'DELETE');
+        Helper\test($test, 'OPTIONS', 'HEAD');
     }
 }
