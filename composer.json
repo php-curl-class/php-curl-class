@@ -11,7 +11,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "*"
-    }
+    },
     "autoload": {
         "classmap": ["src/"]
     }
