@@ -82,6 +82,19 @@ class Curl
                 $status = curl_multi_exec($curl_multi, $active);
             } while ($status === CURLM_CALL_MULTI_PERFORM || $active);
 
+            //getting curl_error_codes of children
+            while (($info_array = curl_multi_info_read($curl_multi)) !== FALSE) {
+                if ($info_array['msg'] !== CURLMSG_DONE) {
+                    continue;
+                }
+                foreach ($this->curls as $ch) {
+                    if ($ch->curl === $info_array['handle']) {
+                        $ch->curl_error_code = $info_array['result'];
+                        break;
+                    }
+                }
+            }
+
             foreach ($this->curls as $ch) {
                 $this->exec($ch);
             }
@@ -387,11 +400,13 @@ class Curl
 
         if ($ch->multi_child) {
             $ch->response = curl_multi_getcontent($ch->curl);
+            //curl_errno() cannot be used with multi child handle
+            //Alternatively, use curl_multi_info_read() on parent handle (see get())
         } else {
             $ch->response = curl_exec($ch->curl);
+            $ch->curl_error_code = curl_errno($ch->curl);
         }
 
-        $ch->curl_error_code = curl_errno($ch->curl);
         $ch->curl_error_message = curl_error($ch->curl);
         $ch->curl_error = !($ch->curl_error_code === 0);
         $ch->http_status_code = curl_getinfo($ch->curl, CURLINFO_HTTP_CODE);
