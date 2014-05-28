@@ -674,6 +674,23 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(substr($curl->curls['2']->response, - $len) === '/c/?foo=bar');
     }
 
+    public function testParallelRequestErrors()
+    {
+        $test = new Test();
+        $curl = $test->curl;
+        $curl->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 4000);
+        $curl->complete(function ($instance) use (&$success_called, &$error_called, &$complete_called) {
+            PHPUnit_Framework_Assert::assertTrue($instance->error);
+            PHPUnit_Framework_Assert::assertTrue($instance->curl_error);
+            PHPUnit_Framework_Assert::assertTrue($instance->curl_error_code === CURLE_OPERATION_TIMEOUTED);
+        });
+        $curl->get(array(
+            Test::ERROR_URL . 'a/',
+            Test::ERROR_URL . 'b/',
+            Test::ERROR_URL . 'c/',
+        ));
+    }
+
     public function testParallelSetOptions()
     {
         $test = new Test();
