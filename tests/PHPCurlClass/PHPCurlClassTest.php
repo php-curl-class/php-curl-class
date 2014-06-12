@@ -541,6 +541,15 @@ class CurlTest extends PHPUnit_Framework_TestCase
             PHPUnit_Framework_Assert::assertTrue(is_float($response->float));
             PHPUnit_Framework_Assert::assertEmpty($response->empty);
             PHPUnit_Framework_Assert::assertTrue(is_string($response->string));
+            PHPUnit_Framework_Assert::assertEquals($test->curl->raw_response, json_encode(array(
+                'null' => null,
+                'true' => true,
+                'false' => false,
+                'integer' => 1,
+                'float' => 3.14,
+                'empty' => '',
+                'string' => 'string',
+            )));
         }
 
         assertion('Content-Type', 'APPLICATION/JSON');
@@ -576,6 +585,24 @@ class CurlTest extends PHPUnit_Framework_TestCase
             ));
 
             PHPUnit_Framework_Assert::assertInstanceOf('SimpleXMLElement', $test->curl->response);
+
+            $doc = new DOMDocument();
+            $doc->formatOutput = true;
+            $rss = $doc->appendChild($doc->createElement('rss'));
+            $rss->setAttribute('version', '2.0');
+            $channel = $doc->createElement('channel');
+            $title = $doc->createElement('title');
+            $title->appendChild($doc->createTextNode('Title'));
+            $channel->appendChild($title);
+            $link = $doc->createElement('link');
+            $link->appendChild($doc->createTextNode('Link'));
+            $channel->appendChild($link);
+            $description = $doc->createElement('description');
+            $description->appendChild($doc->createTextNode('Description'));
+            $channel->appendChild($description);
+            $rss->appendChild($channel);
+            $xml = $doc->saveXML();
+            PHPUnit_Framework_Assert::assertEquals($test->curl->raw_response, $xml);
         }
 
         xmlAssertion('Content-Type', 'application/atom+xml; charset=UTF-8');

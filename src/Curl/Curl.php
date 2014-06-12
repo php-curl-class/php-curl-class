@@ -35,6 +35,7 @@ class Curl
     public $request_headers = null;
     public $response_headers = null;
     public $response = null;
+    public $raw_response = null;
 
     public function __construct()
     {
@@ -311,6 +312,7 @@ class Curl
     private function parseResponse($response)
     {
         $response_headers = '';
+        $raw_response = $response;
         if (!(strpos($response, "\r\n\r\n") === false)) {
             $response_array = explode("\r\n\r\n", $response);
             for ($i = count($response_array) - 1; $i >= 0; $i--) {
@@ -325,6 +327,7 @@ class Curl
                 list($response_header, $response) = explode("\r\n\r\n", $response, 2);
             }
             $response_headers = $this->parseResponseHeaders($response_header);
+            $raw_response = $response;
 
             if (isset($response_headers['Content-Type'])) {
                 if (preg_match('/^application\/json/i', $response_headers['Content-Type'])) {
@@ -344,7 +347,7 @@ class Curl
             }
         }
 
-        return array($response_headers, $response);
+        return array($response_headers, $response, $raw_response);
     }
 
     private function parseResponseHeaders($raw_headers)
@@ -398,9 +401,9 @@ class Curl
         $ch = is_null($_ch) ? $this : $_ch;
 
         if ($ch->multi_child) {
-            $ch->response = curl_multi_getcontent($ch->curl);
+            $ch->raw_response = curl_multi_getcontent($ch->curl);
         } else {
-            $ch->response = curl_exec($ch->curl);
+            $ch->raw_response = curl_exec($ch->curl);
             $ch->curl_error_code = curl_errno($ch->curl);
         }
 
@@ -412,7 +415,7 @@ class Curl
         $ch->error_code = $ch->error ? ($ch->curl_error ? $ch->curl_error_code : $ch->http_status_code) : 0;
 
         $ch->request_headers = $this->parseRequestHeaders(curl_getinfo($ch->curl, CURLINFO_HEADER_OUT));
-        list($ch->response_headers, $ch->response) = $this->parseResponse($ch->response);
+        list($ch->response_headers, $ch->response, $ch->raw_response) = $this->parseResponse($ch->raw_response);
 
         $ch->http_error_message = '';
         if ($ch->error) {
