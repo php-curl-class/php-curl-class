@@ -175,6 +175,21 @@ class Curl
         $this->headers[$key] = $key . ': ' . $value;
         $this->setOpt(CURLOPT_HTTPHEADER, array_values($this->headers));
     }
+    
+    public function getHeader($header = false)
+    {
+    	if($header) {
+    		foreach($this->response_headers as $key => $value) {
+    			if($key == $header)
+    				$header = $value;
+    		}
+    	} else {
+    		foreach($this->response_headers as $key => $value)
+            	$header[$key] = $value;
+    	}
+		
+    	return $header;
+    }
 
     public function unsetHeader($key)
     {
