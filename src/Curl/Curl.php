@@ -179,16 +179,17 @@ class Curl
     public function getHeader($header = false)
     {
     	if($header) {
+    		$result = false;
     		foreach($this->response_headers as $key => $value) {
     			if($key == $header)
-    				$header = $value;
+    				$result = $value;
     		}
     	} else {
     		foreach($this->response_headers as $key => $value)
-            	$header[$key] = $value;
+            	$result[$key] = $value;
     	}
-		
-    	return $header;
+
+    	return $result;
     }
 
     public function unsetHeader($key)
