@@ -433,7 +433,7 @@ class Curl
 
         $ch->call($this->complete_function, $ch);
 
-        return $ch->error_code;
+        return $ch->response;
     }
 
     private function call($function)

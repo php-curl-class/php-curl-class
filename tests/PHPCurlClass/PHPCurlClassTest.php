@@ -305,6 +305,15 @@ class CurlTest extends PHPUnit_Framework_TestCase
         )) === 'myreferrer');
     }
 
+    public function testResponseBody()
+    {
+        foreach (array('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS') as $request_method) {
+            $curl = new Curl();
+            $curl->setHeader('X-DEBUG-TEST', 'response_body');
+            $this->assertTrue($curl->$request_method(Test::TEST_URL) === 'OK');
+        }
+    }
+
     public function testCookies()
     {
         $test = new Test();

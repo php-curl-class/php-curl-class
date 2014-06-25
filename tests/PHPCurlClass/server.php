@@ -79,6 +79,9 @@ if ($test == 'http_basic_auth') {
     header('Content-Type: application/json');
     header('ETag: ' . md5('worldpeace'));
     exit;
+} elseif ($test === 'response_body') {
+    echo 'OK';
+    exit;
 } elseif ($test === 'json_response') {
     $key = $_POST['key'];
     $value = $_POST['value'];
