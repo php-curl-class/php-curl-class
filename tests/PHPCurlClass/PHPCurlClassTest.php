@@ -307,10 +307,18 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testResponseBody()
     {
-        foreach (array('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS') as $request_method) {
+        foreach (array(
+            'GET' => 'OK',
+            'POST' => 'OK',
+            'PUT' => 'OK',
+            'PATCH' => 'OK',
+            'DELETE' => 'OK',
+            'HEAD' => '',
+            'OPTIONS' => 'OK',
+            ) as $request_method => $expected_response) {
             $curl = new Curl();
             $curl->setHeader('X-DEBUG-TEST', 'response_body');
-            $this->assertTrue($curl->$request_method(Test::TEST_URL) === 'OK');
+            $this->assertTrue($curl->$request_method(Test::TEST_URL) === $expected_response);
         }
     }
 
