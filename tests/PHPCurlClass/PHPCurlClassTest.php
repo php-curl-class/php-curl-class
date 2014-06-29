@@ -331,6 +331,18 @@ class CurlTest extends PHPUnit_Framework_TestCase
         )) === 'yum');
     }
 
+    public function testCookieEncoding()
+    {
+        $curl = new Curl();
+        $curl->setCookie('cookie', 'Om nom nom nom');
+
+        $reflectionClass = new ReflectionClass('\Curl\Curl');
+        $reflectionProperty = $reflectionClass->getProperty('options');
+        $reflectionProperty->setAccessible(true);
+        $options = $reflectionProperty->getValue($curl);
+        $this->assertEquals('cookie=Om%20nom%20nom%20nom', $options[CURLOPT_COOKIE]);
+    }
+
     public function testCookieFile()
     {
         $cookie_file = dirname(__FILE__) . '/cookies.txt';

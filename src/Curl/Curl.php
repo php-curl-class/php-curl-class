@@ -204,7 +204,7 @@ class Curl
     public function setCookie($key, $value)
     {
         $this->cookies[$key] = $value;
-        $this->setOpt(CURLOPT_COOKIE, http_build_query($this->cookies, '', '; '));
+        $this->setOpt(CURLOPT_COOKIE, http_build_query($this->cookies, '', '; ', PHP_QUERY_RFC3986));
     }
 
     public function setCookieFile($cookie_file)
