@@ -1,9 +1,8 @@
 server_tokens off;
 
 server {
-    listen      80;
     server_name phpcurlclass.com;
-    return      301 http://www.phpcurlclass.com$request_uri;
+    return 301 $scheme://www.phpcurlclass.com$request_uri;
 }
 
 server {
