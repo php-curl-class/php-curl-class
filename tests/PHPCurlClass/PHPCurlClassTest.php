@@ -157,8 +157,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
             )),
             'username=myusername' .
             '&password=mypassword' .
-            '&more_data%5B' .
-            'param1%5D=something' .
+            '&more_data%5Bparam1%5D=something' .
             '&more_data%5Bparam2%5D=other%20thing' .
             '&more_data%5Bparam3%5D=123' .
             '&more_data%5Bparam4%5D=3.14'
