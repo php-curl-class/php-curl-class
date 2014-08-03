@@ -219,7 +219,7 @@ class Curl
 
     public function setOpt($option, $value, $_ch = null)
     {
-        $ch = is_null($_ch) ? $this->curl : $_ch;
+        $ch = $_ch === null ? $this->curl : $_ch;
 
         $required_options = array(
             CURLINFO_HEADER_OUT    => 'CURLINFO_HEADER_OUT',
@@ -330,15 +330,12 @@ class Curl
             $raw_response = $response;
 
             if (isset($response_headers['Content-Type'])) {
-                if (preg_match('/^application\/json/i', $response_headers['Content-Type'])) {
+                if (stripos($response_headers['Content-Type'], 'application/json') === 0) {
                     $json_obj = json_decode($response, false);
-                    if (!is_null($json_obj)) {
+                    if ($json_obj !== null) {
                         $response = $json_obj;
                     }
-                } elseif (preg_match('/^application\/atom\+xml/i', $response_headers['Content-Type']) ||
-                          preg_match('/^application\/rss\+xml/i', $response_headers['Content-Type']) ||
-                          preg_match('/^application\/xml/i', $response_headers['Content-Type']) ||
-                          preg_match('/^text\/xml/i', $response_headers['Content-Type'])) {
+                } elseif (preg_match('~^(?:text/|application/(?:atom\+|rss\+)?)xml~i', $response_headers['Content-Type'])) {
                     $xml_obj = @simplexml_load_string($response);
                     if (!($xml_obj === false)) {
                         $response = $xml_obj;
@@ -398,7 +395,7 @@ class Curl
 
     protected function exec($_ch = null)
     {
-        $ch = is_null($_ch) ? $this : $_ch;
+        $ch = $_ch === null ? $this : $_ch;
 
         if ($ch->multi_child) {
             $ch->raw_response = curl_multi_getcontent($ch->curl);
@@ -461,7 +458,7 @@ class Curl
             return false;
         }
 
-        return !(count($array) === count($array, COUNT_RECURSIVE));
+        return (bool)count(array_filter($array, 'is_array'));
     }
 
     public static function http_build_multi_query($data, $key = null)
@@ -477,9 +474,9 @@ class Curl
         foreach ($data as $k => $value) {
             if (is_string($value) || is_numeric($value)) {
                 $brackets = $is_array_assoc ? '[' . $k . ']' : '[]';
-                $query[] = urlencode(is_null($key) ? $k : $key . $brackets) . '=' . rawurlencode($value);
+                $query[] = urlencode($key === null ? $k : $key . $brackets) . '=' . rawurlencode($value);
             } elseif (is_array($value)) {
-                $nested = is_null($key) ? $k : $key . '[' . $k . ']';
+                $nested = $key === null ? $k : $key . '[' . $k . ']';
                 $query[] = self::http_build_multi_query($value, $nested);
             }
         }
@@ -494,7 +491,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
 
     public function offsetSet($offset, $value)
     {
-        if (is_null($offset)) {
+        if ($offset === null) {
             $this->container[] = $value;
         } else {
             $index = array_search(strtolower($offset), array_keys(array_change_key_case($this->container, CASE_LOWER)));
