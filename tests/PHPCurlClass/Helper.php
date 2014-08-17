@@ -27,9 +27,9 @@ class Test
 function test($instance, $before, $after)
 {
     $instance->server('request_method', $before);
-    \PHPUnit_Framework_Assert::assertEquals($instance->curl->response_headers['X-REQUEST-METHOD'], $before);
+    \PHPUnit_Framework_Assert::assertEquals($before, $instance->curl->response_headers['X-REQUEST-METHOD']);
     $instance->server('request_method', $after);
-    \PHPUnit_Framework_Assert::assertEquals($instance->curl->response_headers['X-REQUEST-METHOD'], $after);
+    \PHPUnit_Framework_Assert::assertEquals($after, $instance->curl->response_headers['X-REQUEST-METHOD']);
 }
 
 function create_png()
