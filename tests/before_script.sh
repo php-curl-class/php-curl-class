@@ -11,7 +11,7 @@ server {
     index index.php;
     server_name localhost;
     location / {
-        try_files \$uri \$uri/ /index.php =404;
+        rewrite ^ /index.php last;
     }
     location ~ \.php$ {
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
