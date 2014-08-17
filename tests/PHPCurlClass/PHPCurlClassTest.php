@@ -8,9 +8,10 @@ use \Helper\Test;
 
 class CurlTest extends PHPUnit_Framework_TestCase
 {
-    public function testExtensionLoaded()
+    public function testExtensionsLoaded()
     {
         $this->assertTrue(extension_loaded('curl'));
+        $this->assertTrue(extension_loaded('gd'));
     }
 
     public function testArrayAssociative()
