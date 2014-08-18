@@ -385,16 +385,9 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testMultipleCookieResponse()
     {
-        $expected_response = 'cookie1=scrumptious,cookie2=mouthwatering';
-
-        // github.com/facebook/hhvm/issues/2345
-        if (defined('HHVM_VERSION')) {
-            $expected_response = 'cookie2=mouthwatering,cookie1=scrumptious';
-        }
-
         $test = new Test();
         $test->server('multiple_cookie', 'GET');
-        $this->assertEquals($expected_response, $test->curl->response_headers['Set-Cookie']);
+        $this->assertEquals('cookie1=scrumptious,cookie2=mouthwatering', $test->curl->response_headers['Set-Cookie']);
     }
 
     public function testError()

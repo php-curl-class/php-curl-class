@@ -32,11 +32,17 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "hhvm" ]]; then
     sudo add-apt-repository -y ppa:nginx/stable
     sudo apt-get update
     sudo apt-get install -y nginx
-    sudo /usr/share/hhvm/install_fastcgi.sh
     root="$(pwd)/tests/PHPCurlClass"
-    root="${root//\//\\/}"
-    sudo sed --in-place --regexp-extended 's/listen 80 default_server;/listen 8000 default_server;/' /etc/nginx/sites-enabled/default
-    sudo sed --in-place --regexp-extended "s/root \/usr\/share\/nginx\/html;/root ${root};/" /etc/nginx/sites-enabled/default
-    sudo sed --in-place --regexp-extended 's/index index.html index.htm;/index index.php;/' /etc/nginx/sites-enabled/default
-    sudo /etc/init.d/nginx restart
+    sudo tee /etc/nginx/sites-enabled/default <<EOF
+server {
+    listen 8000 default_server;
+    root ${root};
+    index index.php;
+    server_name localhost;
+    location / {
+        rewrite ^ /index.php last;
+    }
+}
+EOF
+    sudo /usr/share/hhvm/install_fastcgi.sh
 fi
