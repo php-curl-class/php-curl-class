@@ -1,19 +1,19 @@
 language: php
+
 php:
   - 5.3
   - 5.4
   - 5.5
   - 5.6
   - hhvm
+
 matrix:
   allow_failures:
     - php: 5.6
     - php: hhvm
+
 before_script:
-  - if [[ "$TRAVIS_PHP_VERSION" == "5.4" ]]; then sh -c "php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &"; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == "5.5" ]]; then sh -c "php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &"; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == "5.6" ]]; then sh -c "php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &"; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == "hhvm" ]]; then sh -c "cd tests && hhvm --mode server --port 8000 --config PHPCurlClass/server.hdf &"; fi
+  - bash tests/before_script.sh
+
 script:
-  - php -l src/*
-  - if [[ "$TRAVIS_PHP_VERSION" != "5.3" ]]; then sh -c "cd tests && phpunit --configuration phpunit.xml"; fi
+  - bash tests/script.sh

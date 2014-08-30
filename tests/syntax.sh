@@ -1,1 +1,1 @@
-phpcs --standard=PSR2 ../src/Curl.class.php
+phpcs --standard=PSR2 --extensions=php ..

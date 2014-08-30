@@ -1,8 +1,10 @@
 <?php
 
+namespace Curl;
+
 class Curl
 {
-    const USER_AGENT = 'PHP-Curl-Class/2.0 (+https://github.com/php-curl-class/php-curl-class)';
+    const VERSION = '2.1.0';
 
     private $cookies = array();
     private $headers = array();
@@ -33,6 +35,7 @@ class Curl
     public $request_headers = null;
     public $response_headers = null;
     public $response = null;
+    public $raw_response = null;
 
     public function __construct()
     {
@@ -41,7 +44,7 @@ class Curl
         }
 
         $this->curl = curl_init();
-        $this->setUserAgent(self::USER_AGENT);
+        $this->setDefaultUserAgent();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_HEADER, true);
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
@@ -80,6 +83,18 @@ class Curl
                 $status = curl_multi_exec($curl_multi, $active);
             } while ($status === CURLM_CALL_MULTI_PERFORM || $active);
 
+            while (!($info_array = curl_multi_info_read($curl_multi)) === false) {
+                if (!($info_array['msg'] === CURLMSG_DONE)) {
+                    continue;
+                }
+                foreach ($this->curls as $ch) {
+                    if ($ch->curl === $info_array['handle']) {
+                        $ch->curl_error_code = $info_array['result'];
+                        break;
+                    }
+                }
+            }
+
             foreach ($this->curls as $ch) {
                 $this->exec($ch);
             }
@@ -94,7 +109,7 @@ class Curl
     public function post($url, $data = array())
     {
         if (is_array($data) && empty($data)) {
-            $this->setHeader('Content-Length');
+            $this->unsetHeader('Content-Length');
         }
 
         $this->setOpt(CURLOPT_URL, $this->buildURL($url));
@@ -118,7 +133,7 @@ class Curl
 
     public function patch($url, $data = array())
     {
-        $this->setHeader('Content-Length');
+        $this->unsetHeader('Content-Length');
         $this->setOpt(CURLOPT_URL, $this->buildURL($url));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $this->setOpt(CURLOPT_POSTFIELDS, $data);
@@ -127,7 +142,7 @@ class Curl
 
     public function delete($url, $data = array())
     {
-        $this->setHeader('Content-Length');
+        $this->unsetHeader('Content-Length');
         $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
         return $this->exec();
@@ -143,22 +158,37 @@ class Curl
 
     public function options($url, $data = array())
     {
-        $this->setHeader('Content-Length');
+        $this->unsetHeader('Content-Length');
         $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         return $this->exec();
     }
 
-    public function setBasicAuthentication($username, $password)
+    public function setBasicAuthentication($username, $password = '')
     {
         $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
 
-    public function setHeader($key, $value = '')
+    public function setHeader($key, $value)
     {
         $this->headers[$key] = $key . ': ' . $value;
         $this->setOpt(CURLOPT_HTTPHEADER, array_values($this->headers));
+    }
+
+    public function unsetHeader($key)
+    {
+        $this->setHeader($key, '');
+        unset($this->headers[$key]);
+    }
+
+    public function setDefaultUserAgent()
+    {
+        $user_agent = 'PHP-Curl-Class/' . self::VERSION . ' (+https://github.com/php-curl-class/php-curl-class)';
+        $user_agent .= ' PHP/' . PHP_VERSION;
+        $curl_version = curl_version();
+        $user_agent .= ' curl/' . $curl_version['version'];
+        $this->setUserAgent($user_agent);
     }
 
     public function setUserAgent($user_agent)
@@ -174,7 +204,7 @@ class Curl
     public function setCookie($key, $value)
     {
         $this->cookies[$key] = $value;
-        $this->setOpt(CURLOPT_COOKIE, http_build_query($this->cookies, '', '; '));
+        $this->setOpt(CURLOPT_COOKIE, str_replace('+', '%20', http_build_query($this->cookies, '', '; ')));
     }
 
     public function setCookieFile($cookie_file)
@@ -189,7 +219,7 @@ class Curl
 
     public function setOpt($option, $value, $_ch = null)
     {
-        $ch = is_null($_ch) ? $this->curl : $_ch;
+        $ch = $_ch === null ? $this->curl : $_ch;
 
         $required_options = array(
             CURLINFO_HEADER_OUT    => 'CURLINFO_HEADER_OUT',
@@ -282,12 +312,13 @@ class Curl
     private function parseResponse($response)
     {
         $response_headers = '';
+        $raw_response = $response;
         if (!(strpos($response, "\r\n\r\n") === false)) {
-            $response_array = (explode("\r\n\r\n", $response));
-            for($i = count($response_array) - 1; $i>=0 ;$i--){
-                if (stripos($response_array[$i],'HTTP') === 0){
+            $response_array = explode("\r\n\r\n", $response);
+            for ($i = count($response_array) - 1; $i >= 0; $i--) {
+                if (stripos($response_array[$i], 'HTTP/') === 0) {
                     $response_header = $response_array[$i];
-                    $response = implode("\r\n\r\n", array_splice($response_array, $i+1));
+                    $response = implode("\r\n\r\n", array_splice($response_array, $i + 1));
                     break;
                 }
             }
@@ -296,16 +327,15 @@ class Curl
                 list($response_header, $response) = explode("\r\n\r\n", $response, 2);
             }
             $response_headers = $this->parseResponseHeaders($response_header);
+            $raw_response = $response;
 
             if (isset($response_headers['Content-Type'])) {
-                if (preg_match('/^application\/json/i', $response_headers['Content-Type'])) {
+                if (stripos($response_headers['Content-Type'], 'application/json') === 0) {
                     $json_obj = json_decode($response, false);
-                    if (!is_null($json_obj)) {
+                    if ($json_obj !== null) {
                         $response = $json_obj;
                     }
-                } elseif (preg_match('/^application\/rss\+xml/i', $response_headers['Content-Type']) ||
-                          preg_match('/^application\/xml/i', $response_headers['Content-Type']) ||
-                          preg_match('/^text\/xml/i', $response_headers['Content-Type'])) {
+                } elseif (preg_match('~^(?:text/|application/(?:atom\+|rss\+)?)xml~i', $response_headers['Content-Type'])) {
                     $xml_obj = @simplexml_load_string($response);
                     if (!($xml_obj === false)) {
                         $response = $xml_obj;
@@ -314,7 +344,7 @@ class Curl
             }
         }
 
-        return array($response_headers, $response);
+        return array($response_headers, $response, $raw_response);
     }
 
     private function parseResponseHeaders($raw_headers)
@@ -331,9 +361,10 @@ class Curl
     private function postfields($data)
     {
         if (is_array($data)) {
-            if (is_array_multidim($data)) {
-                $data = http_build_multi_query($data);
+            if (self::is_array_multidim($data)) {
+                $data = self::http_build_multi_query($data);
             } else {
+                $binary_data = false;
                 foreach ($data as $key => $value) {
                     // Fix "Notice: Array to string conversion" when $value in
                     // curl_setopt($ch, CURLOPT_POSTFIELDS, $value) is an array
@@ -344,10 +375,17 @@ class Curl
                     // file uploading is deprecated. Please use the CURLFile
                     // class instead".
                     } elseif (is_string($value) && strpos($value, '@') === 0) {
+                        $binary_data = true;
                         if (class_exists('CURLFile')) {
-                            $data[$key] = new CURLFile(substr($value, 1));
+                            $data[$key] = new \CURLFile(substr($value, 1));
                         }
+                    } elseif ($value instanceof \CURLFile) {
+                        $binary_data = true;
                     }
+                }
+
+                if (!$binary_data) {
+                    $data = http_build_query($data);
                 }
             }
         }
@@ -357,15 +395,15 @@ class Curl
 
     protected function exec($_ch = null)
     {
-        $ch = is_null($_ch) ? $this : $_ch;
+        $ch = $_ch === null ? $this : $_ch;
 
         if ($ch->multi_child) {
-            $ch->response = curl_multi_getcontent($ch->curl);
+            $ch->raw_response = curl_multi_getcontent($ch->curl);
         } else {
-            $ch->response = curl_exec($ch->curl);
+            $ch->raw_response = curl_exec($ch->curl);
+            $ch->curl_error_code = curl_errno($ch->curl);
         }
 
-        $ch->curl_error_code = curl_errno($ch->curl);
         $ch->curl_error_message = curl_error($ch->curl);
         $ch->curl_error = !($ch->curl_error_code === 0);
         $ch->http_status_code = curl_getinfo($ch->curl, CURLINFO_HTTP_CODE);
@@ -374,7 +412,7 @@ class Curl
         $ch->error_code = $ch->error ? ($ch->curl_error ? $ch->curl_error_code : $ch->http_status_code) : 0;
 
         $ch->request_headers = $this->parseRequestHeaders(curl_getinfo($ch->curl, CURLINFO_HEADER_OUT));
-        list($ch->response_headers, $ch->response) = $this->parseResponse($ch->response);
+        list($ch->response_headers, $ch->response, $ch->raw_response) = $this->parseResponse($ch->raw_response);
 
         $ch->http_error_message = '';
         if ($ch->error) {
@@ -392,7 +430,7 @@ class Curl
 
         $ch->call($this->complete_function, $ch);
 
-        return $ch->error_code;
+        return $ch->response;
     }
 
     private function call($function)
@@ -408,15 +446,52 @@ class Curl
     {
         $this->close();
     }
+
+    public static function is_array_assoc($array)
+    {
+        return (bool)count(array_filter(array_keys($array), 'is_string'));
+    }
+
+    public static function is_array_multidim($array)
+    {
+        if (!is_array($array)) {
+            return false;
+        }
+
+        return (bool)count(array_filter($array, 'is_array'));
+    }
+
+    public static function http_build_multi_query($data, $key = null)
+    {
+        $query = array();
+
+        if (empty($data)) {
+            return $key . '=';
+        }
+
+        $is_array_assoc = self::is_array_assoc($data);
+
+        foreach ($data as $k => $value) {
+            if (is_string($value) || is_numeric($value)) {
+                $brackets = $is_array_assoc ? '[' . $k . ']' : '[]';
+                $query[] = urlencode($key === null ? $k : $key . $brackets) . '=' . rawurlencode($value);
+            } elseif (is_array($value)) {
+                $nested = $key === null ? $k : $key . '[' . $k . ']';
+                $query[] = self::http_build_multi_query($value, $nested);
+            }
+        }
+
+        return implode('&', $query);
+    }
 }
 
-class CaseInsensitiveArray implements ArrayAccess, Countable, Iterator
+class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
 {
     private $container = array();
 
     public function offsetSet($offset, $value)
     {
-        if (is_null($offset)) {
+        if ($offset === null) {
             $this->container[] = $value;
         } else {
             $index = array_search(strtolower($offset), array_keys(array_change_key_case($this->container, CASE_LOWER)));
@@ -478,41 +553,4 @@ class CaseInsensitiveArray implements ArrayAccess, Countable, Iterator
     {
         reset($this->container);
     }
-}
-
-function is_array_assoc($array)
-{
-    return (bool)count(array_filter(array_keys($array), 'is_string'));
-}
-
-function is_array_multidim($array)
-{
-    if (!is_array($array)) {
-        return false;
-    }
-
-    return !(count($array) === count($array, COUNT_RECURSIVE));
-}
-
-function http_build_multi_query($data, $key = null)
-{
-    $query = array();
-
-    if (empty($data)) {
-        return $key . '=';
-    }
-
-    $is_array_assoc = is_array_assoc($data);
-
-    foreach ($data as $k => $value) {
-        if (is_string($value) || is_numeric($value)) {
-            $brackets = $is_array_assoc ? '[' . $k . ']' : '[]';
-            $query[] = urlencode(is_null($key) ? $k : $key . $brackets) . '=' . rawurlencode($value);
-        } elseif (is_array($value)) {
-            $nested = is_null($key) ? $k : $key . '[' . $k . ']';
-            $query[] = http_build_multi_query($value, $nested);
-        }
-    }
-
-    return implode('&', $query);
 }

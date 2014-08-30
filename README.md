@@ -11,7 +11,9 @@ PHP Curl Class is an object-oriented wrapper of the PHP cURL extension.
 ### Quick Start and Examples
 
 ```php
-require 'Curl.class.php';
+require 'Curl.php';
+
+use \Curl\Curl;
 
 $curl = new Curl();
 $curl->get('http://www.example.com/');
@@ -42,7 +44,7 @@ $curl->setCookie('key', 'value');
 $curl->get('http://www.example.com/');
 
 if ($curl->error) {
-    echo $curl->error_code;
+    echo 'Error: ' . $curl->error_code . ': ' . $curl->error_message;
 }
 else {
     echo $curl->response;
@@ -70,6 +72,13 @@ $curl->put('http://api.example.com/user/', array(
 $curl = new Curl();
 $curl->patch('http://api.example.com/profile/', array(
     'image' => '@path/to/file.jpg',
+));
+```
+
+```php
+$curl = new Curl();
+$curl->patch('http://api.example.com/profile/', array(
+    'image' => new CURLFile('path/to/file.jpg'),
 ));
 ```
 

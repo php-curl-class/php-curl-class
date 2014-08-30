@@ -11,14 +11,12 @@ $content_type = isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : '';
 $data_values = $_GET;
 if ($request_method === 'POST') {
     $data_values = $_POST;
-}
-else if ($request_method === 'PUT') {
+} elseif ($request_method === 'PUT') {
     if (strpos($content_type, 'application/x-www-form-urlencoded') === 0) {
         parse_str($http_raw_post_data, $_PUT);
         $data_values = $_PUT;
     }
-}
-else if ($request_method === 'PATCH') {
+} elseif ($request_method === 'PATCH') {
     if (strpos($content_type, 'application/x-www-form-urlencoded') === 0) {
         parse_str($http_raw_post_data, $_PATCH);
         $data_values = $_PATCH;
@@ -42,58 +40,49 @@ if ($test == 'http_basic_auth') {
         'password' => $_SERVER['PHP_AUTH_PW'],
     ));
     exit;
-}
-else if ($test === 'get') {
+} elseif ($test === 'get') {
     echo http_build_query($_GET);
     exit;
-}
-else if ($test === 'post') {
+} elseif ($test === 'post') {
     echo http_build_query($_POST);
     exit;
-}
-else if ($test === 'put') {
+} elseif ($test === 'put') {
     echo $http_raw_post_data;
     exit;
-}
-else if ($test === 'post_multidimensional') {
+} elseif ($test === 'post_multidimensional') {
     echo $http_raw_post_data;
     exit;
-}
-else if ($test === 'post_file_path_upload') {
+} elseif ($test === 'post_file_path_upload') {
     echo mime_content_type($_FILES[$key]['tmp_name']);
     exit;
-}
-else if ($test === 'put_file_handle') {
+} elseif ($test === 'put_file_handle') {
     $tmp_filename = tempnam('/tmp', 'php-curl-class.');
     file_put_contents($tmp_filename, $http_raw_post_data);
     echo mime_content_type($tmp_filename);
     unlink($tmp_filename);
     exit;
-}
-else if ($test === 'request_method') {
+} elseif ($test === 'request_method') {
     header('X-REQUEST-METHOD: ' . $request_method);
     echo $request_method;
     exit;
-}
-else if ($test === 'request_uri') {
+} elseif ($test === 'request_uri') {
     echo $_SERVER['REQUEST_URI'];
     exit;
-}
-else if ($test === 'cookiejar') {
+} elseif ($test === 'cookiejar') {
     setcookie('mycookie', 'yum');
     exit;
-}
-else if ($test === 'multiple_cookie') {
+} elseif ($test === 'multiple_cookie') {
     setcookie('cookie1', 'scrumptious');
     setcookie('cookie2', 'mouthwatering');
     exit;
-}
-else if ($test === 'response_header') {
+} elseif ($test === 'response_header') {
     header('Content-Type: application/json');
     header('ETag: ' . md5('worldpeace'));
     exit;
-}
-else if ($test === 'json_response') {
+} elseif ($test === 'response_body') {
+    echo 'OK';
+    exit;
+} elseif ($test === 'json_response') {
     $key = $_POST['key'];
     $value = $_POST['value'];
     header($key . ': ' . $value);
@@ -107,8 +96,7 @@ else if ($test === 'json_response') {
         'string' => 'string',
     ));
     exit;
-}
-else if ($test === 'xml_response') {
+} elseif ($test === 'xml_response') {
     $key = $_POST['key'];
     $value = $_POST['value'];
     header($key . ': ' . $value);
@@ -129,14 +117,20 @@ else if ($test === 'xml_response') {
     $rss->appendChild($channel);
     echo $doc->saveXML();
     exit;
-}
-else if ($test === 'error_message') {
+} elseif ($test === 'error_message') {
     if (function_exists('http_response_code')) {
         http_response_code(401);
-    }
-    else {
+    } else {
         header('HTTP/1.1 401 Unauthorized');
     }
+    exit;
+} elseif ($test === 'redirect') {
+    if (!isset($_GET['redirect'])) {
+        header('Location: ?redirect');
+        exit;
+    }
+
+    echo 'OK';
     exit;
 }
 
