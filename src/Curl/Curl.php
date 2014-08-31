@@ -115,6 +115,7 @@ class Curl
             $this->unsetHeader('Content-Length');
         }
 
+        $this->setUrl($url);
         $this->setOpt(CURLOPT_URL, $this->buildURL($url));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         $this->setOpt(CURLOPT_POST, true);
@@ -124,6 +125,7 @@ class Curl
 
     public function put($url, $data = array())
     {
+        $this->setUrl($url);
         $this->setOpt(CURLOPT_URL, $url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
         $put_data = http_build_query($data);
@@ -136,6 +138,7 @@ class Curl
 
     public function patch($url, $data = array())
     {
+        $this->setUrl($url);
         $this->unsetHeader('Content-Length');
         $this->setOpt(CURLOPT_URL, $this->buildURL($url));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
@@ -145,6 +148,7 @@ class Curl
 
     public function delete($url, $data = array())
     {
+        $this->setUrl($url);
         $this->unsetHeader('Content-Length');
         $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
@@ -153,6 +157,7 @@ class Curl
 
     public function head($url, $data = array())
     {
+        $this->setUrl($url);
         $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
         $this->setOpt(CURLOPT_NOBODY, true);
@@ -162,6 +167,7 @@ class Curl
     public function options($url, $data = array())
     {
         $this->unsetHeader('Content-Length');
+        $this->setUrl($url);
         $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         return $this->exec();
