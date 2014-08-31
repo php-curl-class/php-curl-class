@@ -749,8 +749,10 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $test = new Test();
         $curl = $test->curl;
         $curl->setHeader('X-DEBUG-TEST', 'server');
+        $curl->setOpt(CURLOPT_USERAGENT, 'useragent');
         $curl->complete(function ($instance) {
-            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->getOpt(CURLOPT_URL));
+            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->getUrl());
+            PHPUnit_Framework_Assert::assertEquals('useragent', $instance->getOpt(CURLOPT_USERAGENT));
         });
         $curl->get(array(
             Test::TEST_URL,
