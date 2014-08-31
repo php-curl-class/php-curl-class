@@ -744,6 +744,21 @@ class CurlTest extends PHPUnit_Framework_TestCase
         ));
     }
 
+    public function testParallelGetOptions()
+    {
+        $test = new Test();
+        $curl = $test->curl;
+        $curl->setHeader('X-DEBUG-TEST', 'server');
+        $curl->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->getOpt(CURLOPT_URL));
+        });
+        $curl->get(array(
+            Test::TEST_URL,
+        ), array(
+            'key' => 'HTTP_USER_AGENT',
+        ));
+    }
+    
     public function testSuccessCallback()
     {
         $success_called = false;
