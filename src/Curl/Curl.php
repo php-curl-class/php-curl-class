@@ -10,6 +10,7 @@ class Curl
     private $headers = array();
     private $options = array();
 
+    private $url = null;
     private $multi_parent = false;
     private $multi_child = false;
     private $before_send_function = null;
@@ -61,6 +62,7 @@ class Curl
             foreach ($url_mixed as $url) {
                 $curl = new Curl();
                 $curl->multi_child = true;
+                $curl->setUrl($url);
                 $curl->setOpt(CURLOPT_URL, $this->buildURL($url, $data), $curl->curl);
                 $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
                 $curl->setOpt(CURLOPT_HTTPGET, true);
@@ -238,6 +240,16 @@ class Curl
     public function getOpt($option)
     {
         return $this->options[$option];
+    }
+    
+    public function setUrl($url)
+    {
+        $this->url = $url;
+    }
+    
+    public function getUrl()
+    {
+        return $this->url;
     }
 
     public function verbose($on = true)
