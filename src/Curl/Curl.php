@@ -234,6 +234,11 @@ class Curl
         $this->options[$option] = $value;
         return curl_setopt($ch, $option, $value);
     }
+    
+    public function getOpt($option)
+    {
+        return $this->options[$option];
+    }
 
     public function verbose($on = true)
     {
