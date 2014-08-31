@@ -101,6 +101,7 @@ class Curl
                 $this->exec($ch);
             }
         } else {
+            $this->setUrl($url_mixed);
             $this->setopt(CURLOPT_URL, $this->buildURL($url_mixed, $data));
             $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
             $this->setopt(CURLOPT_HTTPGET, true);
