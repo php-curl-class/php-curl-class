@@ -743,6 +743,21 @@ class CurlTest extends PHPUnit_Framework_TestCase
             'key' => 'HTTP_USER_AGENT',
         ));
     }
+    
+    public function testParallelGetUrl()
+    {
+        $test = new Test();
+        $curl = $test->curl;
+        $curl->setHeader('X-DEBUG-TEST', 'server');
+        $curl->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->getUrl());
+        });
+        $curl->get(array(
+            Test::TEST_URL,
+        ), array(
+            'somedata' => 'thatchangesquerystringbutnotoriginaltesturl'
+        ));
+    }
 
     public function testParallelGetOptions()
     {
@@ -751,13 +766,10 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl->setHeader('X-DEBUG-TEST', 'server');
         $curl->setOpt(CURLOPT_USERAGENT, 'useragent');
         $curl->complete(function ($instance) {
-            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->getUrl());
             PHPUnit_Framework_Assert::assertEquals('useragent', $instance->getOpt(CURLOPT_USERAGENT));
         });
         $curl->get(array(
             Test::TEST_URL,
-        ), array(
-            'key' => 'HTTP_USER_AGENT',
         ));
     }
     
