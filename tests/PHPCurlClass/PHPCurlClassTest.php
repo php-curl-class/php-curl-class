@@ -91,6 +91,18 @@ class CurlTest extends PHPUnit_Framework_TestCase
             'key' => 'REQUEST_METHOD',
         )));
     }
+    
+    public function testGetUrl()
+    {
+        $test = new Test();
+        $verbs = array('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS');
+        
+        foreach ($verbs as $verb) {
+            $test->server('server', $verb);
+            $this->assertEquals(Test::TEST_URL, $test->curl->getUrl());
+            $test->curl->setUrl(''); // reset url in case of the verb method doesn't set url
+        }
+    }
 
     public function testPostRequestMethod()
     {
