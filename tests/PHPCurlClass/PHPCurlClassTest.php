@@ -91,17 +91,45 @@ class CurlTest extends PHPUnit_Framework_TestCase
             'key' => 'REQUEST_METHOD',
         )));
     }
-    
+
     public function testGetUrl()
     {
+        $data = array('foo' => 'bar');
+
+        // curl -v --get "http://127.0.0.1:8000/" -d "foo=bar"
         $test = new Test();
-        $verbs = array('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS');
-        
-        foreach ($verbs as $verb) {
-            $test->server('server', $verb);
-            $this->assertEquals(Test::TEST_URL, $test->curl->getUrl());
-            $test->curl->setUrl(''); // reset url in case of the verb method doesn't set url
-        }
+        $test->server('server', 'GET', $data);
+        $this->assertEquals(Test::TEST_URL . '?' . http_build_query($data), $test->curl->getUrl());
+
+        // curl -v --request POST "http://127.0.0.1:8000/" -d "foo=bar"
+        $test = new Test();
+        $test->server('server', 'POST', $data);
+        $this->assertEquals(Test::TEST_URL, $test->curl->getUrl());
+
+        // curl -v --request PUT "http://127.0.0.1:8000/" -d "foo=bar"
+        $test = new Test();
+        $test->server('server', 'PUT', $data);
+        $this->assertEquals(Test::TEST_URL, $test->curl->getUrl());
+
+        // curl -v --request PATCH "http://127.0.0.1:8000/" -d "foo=bar"
+        $test = new Test();
+        $test->server('server', 'PATCH', $data);
+        $this->assertEquals(Test::TEST_URL, $test->curl->getUrl());
+
+        // curl -v --request DELETE "http://127.0.0.1:8000/" -d "foo=bar"
+        $test = new Test();
+        $test->server('server', 'DELETE', $data);
+        $this->assertEquals(Test::TEST_URL, $test->curl->getUrl());
+
+        // curl -v --head --get "http://127.0.0.1:8000/" -d "foo=bar"
+        $test = new Test();
+        $test->server('server', 'HEAD', $data);
+        $this->assertEquals(Test::TEST_URL . '?' . http_build_query($data), $test->curl->getUrl());
+
+        // curl -v --request OPTIONS "http://127.0.0.1:8000/" -d "foo=bar"
+        $test = new Test();
+        $test->server('server', 'OPTIONS', $data);
+        $this->assertEquals(Test::TEST_URL, $test->curl->getUrl());
     }
 
     public function testPostRequestMethod()
@@ -755,20 +783,20 @@ class CurlTest extends PHPUnit_Framework_TestCase
             'key' => 'HTTP_USER_AGENT',
         ));
     }
-    
+
     public function testParallelGetUrl()
     {
+        $data = array('foo' => 'bar');
+
         $test = new Test();
         $curl = $test->curl;
         $curl->setHeader('X-DEBUG-TEST', 'server');
-        $curl->complete(function ($instance) {
-            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->getUrl());
+        $curl->complete(function ($instance) use ($data) {
+            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL . '?' . http_build_query($data), $instance->getUrl());
         });
         $curl->get(array(
             Test::TEST_URL,
-        ), array(
-            'somedata' => 'thatchangesquerystringbutnotoriginaltesturl'
-        ));
+        ), $data);
     }
 
     public function testParallelGetOptions()
@@ -784,7 +812,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
             Test::TEST_URL,
         ));
     }
-    
+
     public function testSuccessCallback()
     {
         $success_called = false;

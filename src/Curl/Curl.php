@@ -62,8 +62,10 @@ class Curl
             foreach ($url_mixed as $url) {
                 $curl = new Curl();
                 $curl->multi_child = true;
+
+                $url = $this->buildURL($url, $data);
                 $curl->setUrl($url);
-                $curl->setOpt(CURLOPT_URL, $this->buildURL($url, $data), $curl->curl);
+                $curl->setOpt(CURLOPT_URL, $url, $curl->curl);
                 $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
                 $curl->setOpt(CURLOPT_HTTPGET, true);
                 $this->call($this->before_send_function, $curl);
@@ -101,8 +103,9 @@ class Curl
                 $this->exec($ch);
             }
         } else {
-            $this->setUrl($url_mixed);
-            $this->setopt(CURLOPT_URL, $this->buildURL($url_mixed, $data));
+            $url = $this->buildURL($url_mixed, $data);
+            $this->setUrl($url);
+            $this->setopt(CURLOPT_URL, $url);
             $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
             $this->setopt(CURLOPT_HTTPGET, true);
             return $this->exec();
@@ -157,8 +160,9 @@ class Curl
 
     public function head($url, $data = array())
     {
+        $url = $this->buildURL($url, $data);
         $this->setUrl($url);
-        $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
+        $this->setOpt(CURLOPT_URL, $url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
         $this->setOpt(CURLOPT_NOBODY, true);
         return $this->exec();
@@ -243,17 +247,17 @@ class Curl
         $this->options[$option] = $value;
         return curl_setopt($ch, $option, $value);
     }
-    
+
     public function getOpt($option)
     {
         return $this->options[$option];
     }
-    
+
     public function setUrl($url)
     {
         $this->url = $url;
     }
-    
+
     public function getUrl()
     {
         return $this->url;
