@@ -32,6 +32,7 @@ class Curl
     public $http_status_code = 0;
     public $http_error_message = null;
 
+    public $base_url = null;
     public $url = null;
     public $request_headers = null;
     public $response_headers = null;
@@ -63,6 +64,7 @@ class Curl
                 $curl = new Curl();
                 $curl->multi_child = true;
 
+                $curl->base_url = $url;
                 $curl->url = $this->buildURL($url, $data);
                 $curl->setOpt(CURLOPT_URL, $curl->url, $curl->curl);
                 $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
@@ -102,6 +104,7 @@ class Curl
                 $this->exec($ch);
             }
         } else {
+            $this->base_url = $url_mixed;
             $this->url = $this->buildURL($url_mixed, $data);
             $this->setopt(CURLOPT_URL, $this->url);
             $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
@@ -116,6 +119,7 @@ class Curl
             $this->unsetHeader('Content-Length');
         }
 
+        $this->base_url = $url;
         $this->url = $url;
         $this->setOpt(CURLOPT_URL, $this->url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
@@ -126,6 +130,7 @@ class Curl
 
     public function put($url, $data = array())
     {
+        $this->base_url = $url;
         $this->url = $url;
         $this->setOpt(CURLOPT_URL, $this->url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -139,6 +144,7 @@ class Curl
 
     public function patch($url, $data = array())
     {
+        $this->base_url = $url;
         $this->url = $url;
         $this->unsetHeader('Content-Length');
         $this->setOpt(CURLOPT_URL, $this->url);
@@ -149,6 +155,7 @@ class Curl
 
     public function delete($url, $data = array())
     {
+        $this->base_url = $url;
         $this->url = $url;
         $this->unsetHeader('Content-Length');
         $this->setOpt(CURLOPT_URL, $this->buildURL($this->url, $data));
@@ -158,6 +165,7 @@ class Curl
 
     public function head($url, $data = array())
     {
+        $this->base_url = $url;
         $this->url = $this->buildURL($url, $data);
         $this->setOpt(CURLOPT_URL, $this->url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
@@ -168,6 +176,7 @@ class Curl
     public function options($url, $data = array())
     {
         $this->unsetHeader('Content-Length');
+        $this->base_url = $url;
         $this->url = $url;
         $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
