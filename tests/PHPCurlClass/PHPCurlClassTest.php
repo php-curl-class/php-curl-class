@@ -99,37 +99,37 @@ class CurlTest extends PHPUnit_Framework_TestCase
         // curl -v --get "http://127.0.0.1:8000/" -d "foo=bar"
         $test = new Test();
         $test->server('server', 'GET', $data);
-        $this->assertEquals(Test::TEST_URL . '?' . http_build_query($data), $test->curl->getUrl());
+        $this->assertEquals(Test::TEST_URL . '?' . http_build_query($data), $test->curl->url);
 
         // curl -v --request POST "http://127.0.0.1:8000/" -d "foo=bar"
         $test = new Test();
         $test->server('server', 'POST', $data);
-        $this->assertEquals(Test::TEST_URL, $test->curl->getUrl());
+        $this->assertEquals(Test::TEST_URL, $test->curl->url);
 
         // curl -v --request PUT "http://127.0.0.1:8000/" -d "foo=bar"
         $test = new Test();
         $test->server('server', 'PUT', $data);
-        $this->assertEquals(Test::TEST_URL, $test->curl->getUrl());
+        $this->assertEquals(Test::TEST_URL, $test->curl->url);
 
         // curl -v --request PATCH "http://127.0.0.1:8000/" -d "foo=bar"
         $test = new Test();
         $test->server('server', 'PATCH', $data);
-        $this->assertEquals(Test::TEST_URL, $test->curl->getUrl());
+        $this->assertEquals(Test::TEST_URL, $test->curl->url);
 
         // curl -v --request DELETE "http://127.0.0.1:8000/" -d "foo=bar"
         $test = new Test();
         $test->server('server', 'DELETE', $data);
-        $this->assertEquals(Test::TEST_URL, $test->curl->getUrl());
+        $this->assertEquals(Test::TEST_URL, $test->curl->url);
 
         // curl -v --head --get "http://127.0.0.1:8000/" -d "foo=bar"
         $test = new Test();
         $test->server('server', 'HEAD', $data);
-        $this->assertEquals(Test::TEST_URL . '?' . http_build_query($data), $test->curl->getUrl());
+        $this->assertEquals(Test::TEST_URL . '?' . http_build_query($data), $test->curl->url);
 
         // curl -v --request OPTIONS "http://127.0.0.1:8000/" -d "foo=bar"
         $test = new Test();
         $test->server('server', 'OPTIONS', $data);
-        $this->assertEquals(Test::TEST_URL, $test->curl->getUrl());
+        $this->assertEquals(Test::TEST_URL, $test->curl->url);
     }
 
     public function testPostRequestMethod()
@@ -792,7 +792,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl = $test->curl;
         $curl->setHeader('X-DEBUG-TEST', 'server');
         $curl->complete(function ($instance) use ($data) {
-            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL . '?' . http_build_query($data), $instance->getUrl());
+            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL . '?' . http_build_query($data), $instance->url);
         });
         $curl->get(array(
             Test::TEST_URL,

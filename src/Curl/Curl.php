@@ -10,7 +10,6 @@ class Curl
     private $headers = array();
     private $options = array();
 
-    private $url = null;
     private $multi_parent = false;
     private $multi_child = false;
     private $before_send_function = null;
@@ -33,6 +32,7 @@ class Curl
     public $http_status_code = 0;
     public $http_error_message = null;
 
+    public $url = null;
     public $request_headers = null;
     public $response_headers = null;
     public $response = null;
@@ -63,9 +63,8 @@ class Curl
                 $curl = new Curl();
                 $curl->multi_child = true;
 
-                $url = $this->buildURL($url, $data);
-                $curl->setUrl($url);
-                $curl->setOpt(CURLOPT_URL, $url, $curl->curl);
+                $curl->url = $this->buildURL($url, $data);
+                $curl->setOpt(CURLOPT_URL, $curl->url, $curl->curl);
                 $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
                 $curl->setOpt(CURLOPT_HTTPGET, true);
                 $this->call($this->before_send_function, $curl);
@@ -103,9 +102,8 @@ class Curl
                 $this->exec($ch);
             }
         } else {
-            $url = $this->buildURL($url_mixed, $data);
-            $this->setUrl($url);
-            $this->setopt(CURLOPT_URL, $url);
+            $this->url = $this->buildURL($url_mixed, $data);
+            $this->setopt(CURLOPT_URL, $this->url);
             $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
             $this->setopt(CURLOPT_HTTPGET, true);
             return $this->exec();
@@ -118,8 +116,8 @@ class Curl
             $this->unsetHeader('Content-Length');
         }
 
-        $this->setUrl($url);
-        $this->setOpt(CURLOPT_URL, $this->buildURL($url));
+        $this->url = $url;
+        $this->setOpt(CURLOPT_URL, $this->url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         $this->setOpt(CURLOPT_POST, true);
         $this->setOpt(CURLOPT_POSTFIELDS, $this->postfields($data));
@@ -128,8 +126,8 @@ class Curl
 
     public function put($url, $data = array())
     {
-        $this->setUrl($url);
-        $this->setOpt(CURLOPT_URL, $url);
+        $this->url = $url;
+        $this->setOpt(CURLOPT_URL, $this->url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
         $put_data = http_build_query($data);
         if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
@@ -141,9 +139,9 @@ class Curl
 
     public function patch($url, $data = array())
     {
-        $this->setUrl($url);
+        $this->url = $url;
         $this->unsetHeader('Content-Length');
-        $this->setOpt(CURLOPT_URL, $this->buildURL($url));
+        $this->setOpt(CURLOPT_URL, $this->url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $this->setOpt(CURLOPT_POSTFIELDS, $data);
         return $this->exec();
@@ -151,18 +149,17 @@ class Curl
 
     public function delete($url, $data = array())
     {
-        $this->setUrl($url);
+        $this->url = $url;
         $this->unsetHeader('Content-Length');
-        $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
+        $this->setOpt(CURLOPT_URL, $this->buildURL($this->url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
         return $this->exec();
     }
 
     public function head($url, $data = array())
     {
-        $url = $this->buildURL($url, $data);
-        $this->setUrl($url);
-        $this->setOpt(CURLOPT_URL, $url);
+        $this->url = $this->buildURL($url, $data);
+        $this->setOpt(CURLOPT_URL, $this->url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
         $this->setOpt(CURLOPT_NOBODY, true);
         return $this->exec();
@@ -171,7 +168,7 @@ class Curl
     public function options($url, $data = array())
     {
         $this->unsetHeader('Content-Length');
-        $this->setUrl($url);
+        $this->url = $url;
         $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         return $this->exec();
@@ -251,16 +248,6 @@ class Curl
     public function getOpt($option)
     {
         return $this->options[$option];
-    }
-
-    public function setUrl($url)
-    {
-        $this->url = $url;
-    }
-
-    public function getUrl()
-    {
-        return $this->url;
     }
 
     public function verbose($on = true)
