@@ -354,7 +354,7 @@ class Curl
             $raw_response = $response;
 
             if (isset($response_headers['Content-Type'])) {
-                if (stripos($response_headers['Content-Type'], 'application/json') === 0) {
+                if (in_array($response_headers['Content-Type'], array('application/json', 'application/vnd.api+json'))) {
                     $json_obj = json_decode($response, false);
                     if ($json_obj !== null) {
                         $response = $json_obj;
