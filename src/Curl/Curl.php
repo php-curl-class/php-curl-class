@@ -354,7 +354,7 @@ class Curl
             $raw_response = $response;
 
             if (isset($response_headers['Content-Type'])) {
-                if (stripos($response_headers['Content-Type'], 'application/json') === 0) {
+                if (preg_match('~^application/(?:json|vnd\.api\+json)~i', $response_headers['Content-Type'])) {
                     $json_obj = json_decode($response, false);
                     if ($json_obj !== null) {
                         $response = $json_obj;
