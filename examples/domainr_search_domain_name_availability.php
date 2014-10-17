@@ -4,7 +4,8 @@ require '../src/Curl/Curl.php';
 use \Curl\Curl;
 
 $curl = new Curl();
-$curl->get('https://domai.nr/api/json/search', array(
+$curl->get('https://domainr.com/api/json/search', array(
+    'client_id' => 'php_curl_class',
     'q' => 'example',
 ));
 
