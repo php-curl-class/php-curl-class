@@ -3,8 +3,8 @@ require '../src/Curl/Curl.php';
 
 use \Curl\Curl;
 
-define('GITTIP_USERNAME', 'XXXXXXXXXX');
-define('GITTIP_API_KEY', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX');
+define('GRATIPAY_USERNAME', 'XXXXXXXXXX');
+define('GRATIPAY_API_KEY', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX');
 
 $data = array(
     array(
@@ -21,8 +21,8 @@ $data = array(
 
 $curl = new Curl();
 $curl->setHeader('Content-Type', 'application/json');
-$curl->setBasicAuthentication(GITTIP_API_KEY);
-$curl->post('https://www.gittip.com/' . GITTIP_USERNAME . '/tips.json', json_encode($data));
+$curl->setBasicAuthentication(GRATIPAY_API_KEY);
+$curl->post('https://www.gittip.com/' . GRATIPAY_USERNAME . '/tips.json', json_encode($data));
 
 foreach ($curl->response as $tip) {
     echo $tip->amount . ' given to ' . $tip->username . '.' . "\n";
