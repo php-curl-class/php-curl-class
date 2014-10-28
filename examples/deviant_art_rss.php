@@ -17,6 +17,5 @@ foreach ($curl->response->channel->item as $entry) {
             '<a href="' . $entry->link . '">' .
                 '<img alt="" src="' . $img->url . '" height="' . $img->height . '" width="' . $img->width . '" />' .
             '</a>';
-        break;
     }
 }
