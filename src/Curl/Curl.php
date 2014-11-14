@@ -215,6 +215,11 @@ class Curl
         $this->setOpt(CURLOPT_USERAGENT, $user_agent);
     }
 
+    public function setReferer($referer)
+    {
+        $this->setReferrer($referer);
+    }
+
     public function setReferrer($referrer)
     {
         $this->setOpt(CURLOPT_REFERER, $referrer);

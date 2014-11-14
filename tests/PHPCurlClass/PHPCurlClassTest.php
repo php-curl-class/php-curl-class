@@ -352,6 +352,12 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('myreferrer', $test->server('server', 'GET', array(
             'key' => 'HTTP_REFERER',
         )));
+
+        $test = new Test();
+        $test->curl->setReferer('myreferer');
+        $this->assertEquals('myreferer', $test->server('server', 'GET', array(
+            'key' => 'HTTP_REFERER',
+        )));
     }
 
     public function testResponseBody()
