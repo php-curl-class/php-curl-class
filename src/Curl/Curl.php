@@ -341,6 +341,7 @@ class Curl
     private function parseResponse($response)
     {
         $response_headers = '';
+        $response_header  = '';
         $raw_response = $response;
         if (!(strpos($response, "\r\n\r\n") === false)) {
             $response_array = explode("\r\n\r\n", $response);
