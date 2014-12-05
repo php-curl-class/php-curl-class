@@ -341,10 +341,10 @@ class Curl
     private function parseResponse($response)
     {
         $response_headers = '';
-        $response_header  = '';
         $raw_response = $response;
         if (!(strpos($response, "\r\n\r\n") === false)) {
             $response_array = explode("\r\n\r\n", $response);
+            $response_header  = '';
             for ($i = count($response_array) - 1; $i >= 0; $i--) {
                 if (stripos($response_array[$i], 'HTTP/') === 0) {
                     $response_header = $response_array[$i];
