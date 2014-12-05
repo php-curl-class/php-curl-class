@@ -269,6 +269,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('key=value', $test->server('put', 'PUT', array(
             'key' => 'value',
         )));
+
+        $test = new Test();
+        $this->assertEquals('{"key":"value"}', $test->server('put', 'PUT', json_encode(array(
+            'key' => 'value',
+        ))));
     }
 
     public function testPutFileHandle()
