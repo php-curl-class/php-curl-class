@@ -716,6 +716,18 @@ class CurlTest extends PHPUnit_Framework_TestCase
         xmlAssertion('CONTENT-TYPE', 'text/xml;charset=utf-8');
     }
 
+    public function testEmptyResponse()
+    {
+        $response = "\r\n\r\n";
+
+        $reflector = new ReflectionClass('\Curl\Curl');
+        $reflection_method = $reflector->getMethod('parseResponse');
+        $reflection_method->setAccessible(true);
+
+        $curl = new Curl();
+        $reflection_method->invoke($curl, $response);
+    }
+
     public function testArrayToStringConversion()
     {
         $test = new Test();
