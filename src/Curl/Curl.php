@@ -106,9 +106,9 @@ class Curl
         } else {
             $this->base_url = $url_mixed;
             $this->url = $this->buildURL($url_mixed, $data);
-            $this->setopt(CURLOPT_URL, $this->url);
+            $this->setOpt(CURLOPT_URL, $this->url);
             $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
-            $this->setopt(CURLOPT_HTTPGET, true);
+            $this->setOpt(CURLOPT_HTTPGET, true);
             return $this->exec();
         }
     }
