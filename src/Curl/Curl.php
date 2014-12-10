@@ -52,6 +52,39 @@ class Curl
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
     }
 
+	/**
+	 * Download file from $url to $downloadPath with filename = $filename
+	 * @param string $url
+	 * @param string $filename
+	 * @param string $downloadPath
+	 * @param int    $chmod
+	 *
+	 * @return bool
+	 */
+	public function download($url, $filename, $downloadPath, $chmod = 0775)
+	{
+
+		$downloadPath = rtrim($downloadPath,'/').'/';
+
+		$fp = fopen ($downloadPath.$filename, 'w+');
+
+		if (!(file_exists($downloadPath)&&is_dir($downloadPath)))
+			@mkdir($downloadPath,$chmod,true);
+
+		curl_setopt($this->curl, CURLOPT_URL, $url);
+		curl_setopt($this->curl, CURLOPT_FILE, $fp);
+		curl_setopt($this->curl, CURLOPT_BINARYTRANSFER, true);
+
+		curl_exec($this->curl);
+
+		fclose($fp);
+
+		curl_setopt($this->curl, CURLOPT_FILE, NULL);
+		curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($this->curl, CURLOPT_BINARYTRANSFER, false);
+		return curl_errno($this->curl)==0;
+	}
+
     public function get($url_mixed, $data = array())
     {
         if (is_array($url_mixed)) {
