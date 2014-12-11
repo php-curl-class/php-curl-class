@@ -460,13 +460,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
     {
         $test = new Test();
         $test->server('error_message', 'GET');
-
-        $expected_response = 'HTTP/1.1 401 Unauthorized';
-        if (defined('HHVM_VERSION')) {
-            $expected_response = 'HTTP/1.1 401';
-        }
-
-        $this->assertEquals($expected_response, $test->curl->error_message);
+        $this->assertEquals('HTTP/1.1 401 Unauthorized', $test->curl->error_message);
     }
 
     public function testHeaders()
