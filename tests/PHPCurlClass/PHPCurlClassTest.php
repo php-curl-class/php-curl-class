@@ -147,7 +147,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         )));
     }
 
-    public function testPostContinueResponse()
+    public function testPostContinueResponseHeader()
     {
         // 100 Continue responses may contain additional optional headers per
         // RFC 2616, Section 10.1:
@@ -167,18 +167,16 @@ class CurlTest extends PHPUnit_Framework_TestCase
             'Content-Type: text/plain;charset=UTF-8' . "\r\n" .
             'Server: PHP-Curl-Class' . "\r\n" .
             'Connection: keep-alive' . "\r\n" .
-            "\r\n" .
-            'OK';
+            "\r\n";
 
         $reflector = new ReflectionClass('\Curl\Curl');
-        $reflection_method = $reflector->getMethod('parseResponse');
+        $reflection_method = $reflector->getMethod('parseResponseHeaders');
         $reflection_method->setAccessible(true);
 
         $curl = new Curl();
-        list($response_headers, $response) = $reflection_method->invoke($curl, $response);
+        $response_headers = $reflection_method->invoke($curl, $response);
 
         $this->assertEquals('HTTP/1.1 200 OK', $response_headers['Status-Line']);
-        $this->assertEquals('OK', $response);
     }
 
     public function testPostData()
@@ -721,7 +719,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $response = "\r\n\r\n";
 
         $reflector = new ReflectionClass('\Curl\Curl');
-        $reflection_method = $reflector->getMethod('parseResponse');
+        $reflection_method = $reflector->getMethod('parseResponseHeaders');
         $reflection_method->setAccessible(true);
 
         $curl = new Curl();
@@ -1027,15 +1025,6 @@ class CurlTest extends PHPUnit_Framework_TestCase
     {
         $curl = new Curl();
         $curl->setOpt(CURLINFO_HEADER_OUT, false);
-    }
-
-    /**
-     * @expectedException PHPUnit_Framework_Error_Warning
-     */
-    public function testRequiredOptionCurlOptHeaderEmitsWarning()
-    {
-        $curl = new Curl();
-        $curl->setOpt(CURLOPT_HEADER, false);
     }
 
     /**

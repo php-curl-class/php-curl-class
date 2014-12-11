@@ -48,7 +48,6 @@ class Curl
         $this->curl = curl_init();
         $this->setDefaultUserAgent();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
-        $this->setOpt(CURLOPT_HEADER, true);
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
     }
 
@@ -247,7 +246,6 @@ class Curl
 
         $required_options = array(
             CURLINFO_HEADER_OUT    => 'CURLINFO_HEADER_OUT',
-            CURLOPT_HEADER         => 'CURLOPT_HEADER',
             CURLOPT_RETURNTRANSFER => 'CURLOPT_RETURNTRANSFER',
         );
 
@@ -338,49 +336,40 @@ class Curl
         return $request_headers;
     }
 
-    private function parseResponse($response)
+    private function parseResponse($response_headers, $raw_response)
     {
-        $response_headers = '';
-        $raw_response = $response;
-        if (!(strpos($response, "\r\n\r\n") === false)) {
-            $response_array = explode("\r\n\r\n", $response);
-            $response_header  = '';
-            for ($i = count($response_array) - 1; $i >= 0; $i--) {
-                if (stripos($response_array[$i], 'HTTP/') === 0) {
-                    $response_header = $response_array[$i];
-                    $response = implode("\r\n\r\n", array_splice($response_array, $i + 1));
-                    break;
-                }
-            }
-            $response_headers = explode("\r\n", $response_header);
-            if (in_array('HTTP/1.1 100 Continue', $response_headers)) {
-                list($response_header, $response) = explode("\r\n\r\n", $response, 2);
-            }
-            $response_headers = $this->parseResponseHeaders($response_header);
-            $raw_response = $response;
 
-            if (isset($response_headers['Content-Type'])) {
-                if (preg_match('~^application/(?:json|vnd\.api\+json)~i', $response_headers['Content-Type'])) {
-                    $json_obj = json_decode($response, false);
-                    if ($json_obj !== null) {
-                        $response = $json_obj;
-                    }
-                } elseif (preg_match('~^(?:text/|application/(?:atom\+|rss\+)?)xml~i', $response_headers['Content-Type'])) {
-                    $xml_obj = @simplexml_load_string($response);
-                    if (!($xml_obj === false)) {
-                        $response = $xml_obj;
-                    }
+        $response = $raw_response;
+        if (isset($response_headers['Content-Type'])) {
+            if (preg_match('~^application/(?:json|vnd\.api\+json)~i', $response_headers['Content-Type'])) {
+                $json_obj = json_decode($response, false);
+                if ($json_obj !== null) {
+                    $response = $json_obj;
+                }
+            } elseif (preg_match('~^(?:text/|application/(?:atom\+|rss\+)?)xml~i', $response_headers['Content-Type'])) {
+                $xml_obj = @simplexml_load_string($response);
+                if (!($xml_obj === false)) {
+                    $response = $xml_obj;
                 }
             }
         }
 
-        return array($response_headers, $response, $raw_response);
+        return array($response, $raw_response);
     }
 
-    private function parseResponseHeaders($raw_headers)
+    private function parseResponseHeaders($raw_response_headers)
     {
+        $response_header_array = explode("\r\n\r\n", $raw_response_headers);
+        $response_header  = '';
+        for ($i = count($response_header_array) - 1; $i >= 0; $i--) {
+            if (stripos($response_header_array[$i], 'HTTP/') === 0) {
+                $response_header = $response_header_array[$i];
+                break;
+            }
+        }
+
         $response_headers = new CaseInsensitiveArray();
-        list($first_line, $headers) = $this->parseHeaders($raw_headers);
+        list($first_line, $headers) = $this->parseHeaders($response_header);
         $response_headers['Status-Line'] = $first_line;
         foreach ($headers as $key => $value) {
             $response_headers[$key] = $value;
@@ -427,12 +416,19 @@ class Curl
     {
         $ch = $_ch === null ? $this : $_ch;
 
+        $response_headers_fh = fopen('php://memory', 'wb+');
+        $ch->setOpt(CURLOPT_WRITEHEADER, $response_headers_fh);
+
         if ($ch->multi_child) {
             $ch->raw_response = curl_multi_getcontent($ch->curl);
         } else {
             $ch->raw_response = curl_exec($ch->curl);
             $ch->curl_error_code = curl_errno($ch->curl);
         }
+
+        rewind($response_headers_fh);
+        $ch->raw_response_headers = stream_get_contents($response_headers_fh);
+        fclose($response_headers_fh);
 
         $ch->curl_error_message = curl_error($ch->curl);
         $ch->curl_error = !($ch->curl_error_code === 0);
@@ -442,7 +438,8 @@ class Curl
         $ch->error_code = $ch->error ? ($ch->curl_error ? $ch->curl_error_code : $ch->http_status_code) : 0;
 
         $ch->request_headers = $this->parseRequestHeaders(curl_getinfo($ch->curl, CURLINFO_HEADER_OUT));
-        list($ch->response_headers, $ch->response, $ch->raw_response) = $this->parseResponse($ch->raw_response);
+        $ch->response_headers = $this->parseResponseHeaders($ch->raw_response_headers);
+        list($ch->response, $ch->raw_response) = $this->parseResponse($ch->response_headers, $ch->raw_response);
 
         $ch->http_error_message = '';
         if ($ch->error) {
