@@ -330,6 +330,27 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('OPTIONS', $test->curl->response_headers['X-REQUEST-METHOD']);
     }
 
+    public function testDownload()
+    {
+        $save_to_path = tempnam('/tmp', 'php-curl-class.');
+        $file_path = Helper\get_png();
+
+        $test = new Test();
+        $test->curl->setHeader('X-DEBUG-TEST', 'download_response');
+        $this->assertTrue($test->curl->download(Test::TEST_URL, $save_to_path));
+        $this->assertEquals(filesize($file_path), filesize($save_to_path));
+        $this->assertEquals(md5_file($file_path), md5_file($save_to_path));
+        $this->assertEquals(md5_file($file_path), $test->curl->response_headers['ETag']);
+
+        $test->curl->setHeader('X-DEBUG-TEST', 'get');
+        $test->curl->get(Test::TEST_URL);
+
+        unlink($file_path);
+        unlink($save_to_path);
+        $this->assertFalse(file_exists($file_path));
+        $this->assertFalse(file_exists($save_to_path));
+    }
+
     public function testBasicHttpAuth401Unauthorized()
     {
         $test = new Test();

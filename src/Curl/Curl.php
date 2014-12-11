@@ -182,6 +182,16 @@ class Curl
         return $this->exec();
     }
 
+    public function download($url, $filename)
+    {
+        $fh = fopen($filename, 'wb');
+        $this->setOpt(CURLOPT_FILE, $fh);
+        $this->get($url);
+        fclose($fh);
+        $this->setOpt(CURLOPT_FILE, STDOUT);
+        return ! $this->error;
+    }
+
     public function setBasicAuthentication($username, $password = '')
     {
         $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);

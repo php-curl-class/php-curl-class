@@ -1,4 +1,8 @@
 <?php
+require 'Helper.php';
+
+use \Helper\Test;
+
 $http_raw_post_data = file_get_contents('php://input');
 $_PUT = array();
 $_PATCH = array();
@@ -116,6 +120,14 @@ if ($test == 'http_basic_auth') {
     $channel->appendChild($description);
     $rss->appendChild($channel);
     echo $doc->saveXML();
+    exit;
+} elseif ($test === 'download_response') {
+    $png = Helper\create_png();
+    header('Content-Type: image/png');
+    header('Content-Disposition: attachment; filename="image.png"');
+    header('Content-Length: ' . strlen($png));
+    header('ETag: ' . md5($png));
+    echo $png;
     exit;
 } elseif ($test === 'error_message') {
     if (function_exists('http_response_code')) {
