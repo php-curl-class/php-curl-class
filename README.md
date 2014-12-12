@@ -99,7 +99,7 @@ $curl->download('https://www.example.com/image.png', '/tmp/myimage.png');
 ```php
 // Case-insensitive access to headers.
 $curl = new Curl();
-$curl->get('https://www.example.com/image.png');
+$curl->download('https://www.example.com/image.png', '/tmp/myimage.png');
 echo $curl->response_headers['Content-Type'] . "\n"; // image/png
 echo $curl->response_headers['CoNTeNT-TyPE'] . "\n"; // image/png
 ```
@@ -117,7 +117,7 @@ curl_close($curl->curl);
 ```php
 // Requests in parallel with callback functions.
 $curl = new Curl();
-$curl->setOpt(CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1');
+$curl->setUserAgent('Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1');
 
 $curl->success(function($instance) {
     echo 'call to "' . $instance->url . '" was successful. response was' . "\n";
