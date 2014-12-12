@@ -124,8 +124,15 @@ if ($test == 'http_basic_auth') {
 } elseif ($test === 'upload_response') {
     $tmp_filename = tempnam('/tmp', 'php-curl-class.');
     move_uploaded_file($_FILES['image']['tmp_name'], $tmp_filename);
+    header('Content-Type: application/json');
     header('ETag: ' . md5_file($tmp_filename));
-    echo $tmp_filename;
+    echo json_encode(array(
+        'file_path' => $tmp_filename,
+    ));
+    exit;
+} elseif ($test === 'upload_cleanup') {
+    $unsafe_file_path = $_POST['file_path'];
+    echo var_export(unlink($unsafe_file_path), true);
     exit;
 } elseif ($test === 'download_response') {
     $unsafe_file_path = $_GET['file_path'];

@@ -338,9 +338,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $upload_test->server('upload_response', 'POST', array(
             'image' => '@' . $upload_file_path,
         ));
-        $uploaded_file_path = $upload_test->curl->response;
+        $uploaded_file_path = $upload_test->curl->response->file_path;
         $this->assertNotEquals($upload_file_path, $uploaded_file_path);
-        $this->assertEquals(md5_file($upload_file_path), md5_file($uploaded_file_path));
         $this->assertEquals(md5_file($upload_file_path), $upload_test->curl->response_headers['ETag']);
 
         // Download the file.
@@ -363,8 +362,12 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(is_bool($download_test->curl->response));
         $this->assertFalse(is_bool($download_test->curl->raw_response));
 
+        // Remove server file.
+        $this->assertEquals('true', $download_test->server('upload_cleanup', 'POST', array(
+            'file_path' => $uploaded_file_path,
+        )));
+
         unlink($upload_file_path);
-        unlink($uploaded_file_path);
         unlink($downloaded_file_path);
         $this->assertFalse(file_exists($upload_file_path));
         $this->assertFalse(file_exists($uploaded_file_path));
