@@ -188,7 +188,18 @@ class Curl
         $this->setOpt(CURLOPT_FILE, $fh);
         $this->get($url);
         fclose($fh);
+
+        // Reset CURLOPT_FILE with STDOUT to avoid: "curl_exec(): CURLOPT_FILE
+        // resource has gone away, resetting to default". Using null causes
+        // "curl_setopt(): supplied argument is not a valid File-Handle
+        // resource".
         $this->setOpt(CURLOPT_FILE, STDOUT);
+
+        // Reset CURLOPT_RETURNTRANSFER to tell cURL to return subsequent
+        // responses as the return value of curl_exec(). Without this,
+        // curl_exec() will revert to returning boolean values.
+        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
+
         return ! $this->error;
     }
 

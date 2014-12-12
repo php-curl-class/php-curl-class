@@ -121,13 +121,19 @@ if ($test == 'http_basic_auth') {
     $rss->appendChild($channel);
     echo $doc->saveXML();
     exit;
+} elseif ($test === 'upload_response') {
+    $tmp_filename = tempnam('/tmp', 'php-curl-class.');
+    move_uploaded_file($_FILES['image']['tmp_name'], $tmp_filename);
+    header('ETag: ' . md5_file($tmp_filename));
+    echo $tmp_filename;
+    exit;
 } elseif ($test === 'download_response') {
-    $png = Helper\create_png();
+    $unsafe_file_path = $_GET['file_path'];
     header('Content-Type: image/png');
     header('Content-Disposition: attachment; filename="image.png"');
-    header('Content-Length: ' . strlen($png));
-    header('ETag: ' . md5($png));
-    echo $png;
+    header('Content-Length: ' . filesize($unsafe_file_path));
+    header('ETag: ' . md5_file($unsafe_file_path));
+    readfile($unsafe_file_path);
     exit;
 } elseif ($test === 'error_message') {
     if (function_exists('http_response_code')) {

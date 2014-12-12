@@ -332,23 +332,43 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testDownload()
     {
-        $save_to_path = tempnam('/tmp', 'php-curl-class.');
-        $file_path = Helper\get_png();
+        // Upload a file.
+        $upload_file_path = Helper\get_png();
+        $upload_test = new Test();
+        $upload_test->server('upload_response', 'POST', array(
+            'image' => '@' . $upload_file_path,
+        ));
+        $uploaded_file_path = $upload_test->curl->response;
+        $this->assertNotEquals($upload_file_path, $uploaded_file_path);
+        $this->assertEquals(md5_file($upload_file_path), md5_file($uploaded_file_path));
+        $this->assertEquals(md5_file($upload_file_path), $upload_test->curl->response_headers['ETag']);
 
-        $test = new Test();
-        $test->curl->setHeader('X-DEBUG-TEST', 'download_response');
-        $this->assertTrue($test->curl->download(Test::TEST_URL, $save_to_path));
-        $this->assertEquals(filesize($file_path), filesize($save_to_path));
-        $this->assertEquals(md5_file($file_path), md5_file($save_to_path));
-        $this->assertEquals(md5_file($file_path), $test->curl->response_headers['ETag']);
+        // Download the file.
+        $downloaded_file_path = tempnam('/tmp', 'php-curl-class.');
+        $download_test = new Test();
+        $download_test->curl->setHeader('X-DEBUG-TEST', 'download_response');
+        $this->assertTrue($download_test->curl->download(Test::TEST_URL . '?' . http_build_query(array(
+            'file_path' => $uploaded_file_path,
+        )), $downloaded_file_path));
+        $this->assertNotEquals($uploaded_file_path, $downloaded_file_path);
 
-        $test->curl->setHeader('X-DEBUG-TEST', 'get');
-        $test->curl->get(Test::TEST_URL);
+        $this->assertEquals(filesize($upload_file_path), filesize($downloaded_file_path));
+        $this->assertEquals(md5_file($upload_file_path), md5_file($downloaded_file_path));
+        $this->assertEquals(md5_file($upload_file_path), $download_test->curl->response_headers['ETag']);
 
-        unlink($file_path);
-        unlink($save_to_path);
-        $this->assertFalse(file_exists($file_path));
-        $this->assertFalse(file_exists($save_to_path));
+        // Ensure successive requests set the appropriate values.
+        $this->assertEquals('GET', $download_test->server('server', 'GET', array(
+            'key' => 'REQUEST_METHOD',
+        )));
+        $this->assertFalse(is_bool($download_test->curl->response));
+        $this->assertFalse(is_bool($download_test->curl->raw_response));
+
+        unlink($upload_file_path);
+        unlink($uploaded_file_path);
+        unlink($downloaded_file_path);
+        $this->assertFalse(file_exists($upload_file_path));
+        $this->assertFalse(file_exists($uploaded_file_path));
+        $this->assertFalse(file_exists($downloaded_file_path));
     }
 
     public function testBasicHttpAuth401Unauthorized()
