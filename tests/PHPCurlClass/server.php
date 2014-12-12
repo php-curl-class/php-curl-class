@@ -1,4 +1,8 @@
 <?php
+require 'Helper.php';
+
+use \Helper\Test;
+
 $http_raw_post_data = file_get_contents('php://input');
 $_PUT = array();
 $_PATCH = array();
@@ -116,6 +120,27 @@ if ($test == 'http_basic_auth') {
     $channel->appendChild($description);
     $rss->appendChild($channel);
     echo $doc->saveXML();
+    exit;
+} elseif ($test === 'upload_response') {
+    $tmp_filename = tempnam('/tmp', 'php-curl-class.');
+    move_uploaded_file($_FILES['image']['tmp_name'], $tmp_filename);
+    header('Content-Type: application/json');
+    header('ETag: ' . md5_file($tmp_filename));
+    echo json_encode(array(
+        'file_path' => $tmp_filename,
+    ));
+    exit;
+} elseif ($test === 'upload_cleanup') {
+    $unsafe_file_path = $_POST['file_path'];
+    echo var_export(unlink($unsafe_file_path), true);
+    exit;
+} elseif ($test === 'download_response') {
+    $unsafe_file_path = $_GET['file_path'];
+    header('Content-Type: image/png');
+    header('Content-Disposition: attachment; filename="image.png"');
+    header('Content-Length: ' . filesize($unsafe_file_path));
+    header('ETag: ' . md5_file($unsafe_file_path));
+    readfile($unsafe_file_path);
     exit;
 } elseif ($test === 'error_message') {
     if (function_exists('http_response_code')) {
