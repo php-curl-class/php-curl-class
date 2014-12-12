@@ -90,10 +90,10 @@ $curl->delete('http://api.example.com/user/', array(
 ```
 
 ```php
-// Enable gzip compression.
+// Enable gzip compression and download a file.
 $curl = new Curl();
 $curl->setOpt(CURLOPT_ENCODING , 'gzip');
-$curl->get('https://www.example.com/image.png');
+$curl->download('https://www.example.com/image.png', '/tmp/myimage.png');
 ```
 
 ```php

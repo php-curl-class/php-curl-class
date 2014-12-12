@@ -3,7 +3,6 @@ require '../src/Curl/Curl.php';
 
 use \Curl\Curl;
 
-
 define('YOUTUBE_API_KEY', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
 
 $playlistId = 'RDHJb0VYVtaNc';
