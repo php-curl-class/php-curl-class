@@ -245,7 +245,14 @@ class Curl
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
-        $this->setOpt(CURLOPT_HTTPHEADER, $this->headers);
+
+		$headers = array();
+		foreach((array) $this->headers as $key => $header_value) {
+			foreach((array) $value as $header_value) {
+				$headers[] = "$key: $value";
+			}
+		}
+        $this->setOpt(CURLOPT_HTTPHEADER, $headers);
     }
 
     public function unsetHeader($key)
@@ -305,20 +312,6 @@ class Curl
 
         if (in_array($option, array_keys($required_options), true) && !($value === true)) {
             trigger_error($required_options[$option] . ' is a required option', E_USER_WARNING);
-        }
-
-        if($option == CURLOPT_HTTPHEADER) {
-            $headers = array();
-            foreach($value as $key => $header_value) {
-                if(is_array($header_value)) {
-                    foreach($header_value as $i => $header_value) {
-                        $headers[$key.$i] = "$key: $header_value";
-                    }
-                } else {
-                    $headers[$key] = "$key: $header_value";
-                }
-            }
-            $value = array_values($headers);
         }
 
         $this->options[$option] = $value;
