@@ -431,6 +431,11 @@ class Curl
 
         return array($response, $raw_response);
     }
+    
+    protected function isJSON()
+    {
+        return isset($this->headers['Content-Type']) && preg_match('~^application/(?:json|vnd\.api\+json)~i', $this->headers['Content-Type']);
+    }
 
     private function parseResponseHeaders($raw_response_headers)
     {
@@ -454,7 +459,9 @@ class Curl
 
     private function postfields($data)
     {
-        if (is_array($data)) {
+        if(!is_string($data) && $this->isJSON()) {
+            $data = json_encode($data);
+        } elseif (is_array($data)) {
             if (self::is_array_multidim($data)) {
                 $data = self::http_build_multi_query($data);
             } else {
