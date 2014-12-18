@@ -56,7 +56,7 @@ class Curl
 
     protected function tmpHandle()
     {
-        if($this->tmp_handle_memory) {
+        if($this->handle_memory) {
             $handle =  fopen('php://memory', 'wb+');
         } else {
             $file_name = tempnam(sys_get_temp_dir(), 'curlHeaders');
@@ -69,7 +69,7 @@ class Curl
 
     public function tmpHandleMemory($memory = TRUE)
     {
-        $this->tmp_handle_memory = !empty($memory);
+        $this->handle_memory = !empty($memory);
     }
 
     public function peclHeaders($pecl = TRUE)
