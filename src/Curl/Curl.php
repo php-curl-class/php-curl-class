@@ -16,6 +16,9 @@ class Curl
     private $success_function = null;
     private $error_function = null;
     private $complete_function = null;
+    
+    private $handle_memory = TRUE;
+    private $pecl_headers = FALSE;
 
     public $curl;
     public $curls;
