@@ -308,16 +308,17 @@ class Curl
         }
 
         if($option == CURLOPT_HTTPHEADER) {
+			$headers = array();
             foreach($value as $key => $header_value) {
                 if(is_array($header_value)) {
                     foreach($header_value as $i => $header_value) {
-                        $value[$key.$i] = "$key: $header_value";
+                        $headers[$key.$i] = "$key: $header_value";
                     }
                 } else {
-                    $value[$key] = "$key: $header_value";
+                    $headers[$key] = "$key: $header_value";
                 }
             }
-
+			$value = array_values($headers);
         }
 
         $this->options[$option] = $value;
