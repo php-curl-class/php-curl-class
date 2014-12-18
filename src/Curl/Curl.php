@@ -376,9 +376,9 @@ class Curl
     {
         $http_headers = new CaseInsensitiveArray();
         $pecl = !empty($this->pecl_headers);
-        list($first, $raw_headers) = preg_split('/\r\n/', $raw_headers, 2, PREG_SPLIT_NO_EMPTY);
+        $raw_headers = preg_split('/\r\n/', $raw_headers, 2, PREG_SPLIT_NO_EMPTY);
+		$first = array_shift($raw_headers);
         if($pecl) {
-
 			if (function_exists('http_parse_headers')) {
 				$headers = http_parse_headers($raw_headers);
 			} else {
