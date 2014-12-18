@@ -308,7 +308,7 @@ class Curl
         }
 
         if($option == CURLOPT_HTTPHEADER) {
-			$headers = array();
+            $headers = array();
             foreach($value as $key => $header_value) {
                 if(is_array($header_value)) {
                     foreach($header_value as $i => $header_value) {
@@ -318,7 +318,7 @@ class Curl
                     $headers[$key] = "$key: $header_value";
                 }
             }
-			$value = array_values($headers);
+            $value = array_values($headers);
         }
 
         $this->options[$option] = $value;
@@ -378,65 +378,65 @@ class Curl
         $http_headers = new CaseInsensitiveArray();
         $pecl = !empty($this->pecl_headers);
         $raw_headers = preg_split('/\r\n/', $raw_headers, 2, PREG_SPLIT_NO_EMPTY);
-		$first = array_shift($raw_headers);
-		if(!empty($raw_headers)) {
-			$raw_headers = current($raw_headers);
-			if($pecl) {
-				if (function_exists('http_parse_headers')) {
-					$headers = http_parse_headers($raw_headers);
-				} else {
-					$headers = array();
-					$key = '';
+        $first = array_shift($raw_headers);
+        if(!empty($raw_headers)) {
+            $raw_headers = current($raw_headers);
+            if($pecl) {
+                if (function_exists('http_parse_headers')) {
+                    $headers = http_parse_headers($raw_headers);
+                } else {
+                    $headers = array();
+                    $key = '';
 
-					foreach(explode("\n", $raw_headers) as $i => $h)
-					{
-						$h = explode(':', $h, 2);
+                    foreach(explode("\n", $raw_headers) as $i => $h)
+                    {
+                        $h = explode(':', $h, 2);
 
-						if (isset($h[1]))
-						{
-							if (!isset($headers[$h[0]]))
-								$headers[$h[0]] = trim($h[1]);
-							elseif (is_array($headers[$h[0]]))
-							{
-								$headers[$h[0]] = array_merge($headers[$h[0]], array(trim($h[1]))); // [+]
-							}
-							else
-							{
-								$headers[$h[0]] = array_merge(array($headers[$h[0]]), array(trim($h[1]))); // [+]
-							}
+                        if (isset($h[1]))
+                        {
+                            if (!isset($headers[$h[0]]))
+                                $headers[$h[0]] = trim($h[1]);
+                            elseif (is_array($headers[$h[0]]))
+                            {
+                                $headers[$h[0]] = array_merge($headers[$h[0]], array(trim($h[1]))); // [+]
+                            }
+                            else
+                            {
+                                $headers[$h[0]] = array_merge(array($headers[$h[0]]), array(trim($h[1]))); // [+]
+                            }
 
-							$key = $h[0];
-						}
-						else
-						{
-							if (substr($h[0], 0, 1) == "\t")
-								$headers[$key] .= "\r\n\t".trim($h[0]);
-							elseif (!$key)
-								$headers[0] = trim($h[0]);trim($h[0]);
-						}
-					}
+                            $key = $h[0];
+                        }
+                        else
+                        {
+                            if (substr($h[0], 0, 1) == "\t")
+                                $headers[$key] .= "\r\n\t".trim($h[0]);
+                            elseif (!$key)
+                                $headers[0] = trim($h[0]);trim($h[0]);
+                        }
+                    }
 
-				}
+                }
 
-				foreach(http_parse_headers($headers) as $key => $value) {
-					$http_headers[$key] = $value;
-				}
-			} else {
-				$raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
+                foreach(http_parse_headers($headers) as $key => $value) {
+                    $http_headers[$key] = $value;
+                }
+            } else {
+                $raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
 
-				foreach($raw_headers as $header) {
-					list($key, $value) = explode(':', $header, 2);
-					$key = trim($key);
-					$value = trim($value);
-					// Use isset() as array_key_exists() and ArrayAccess are not compatible.
-					if (isset($http_headers[$key])) {
-						$http_headers[$key] .= ',' . $value;
-					} else {
-						$http_headers[$key] = $value;
-					}
-				}
-			}
-		}
+                foreach($raw_headers as $header) {
+                    list($key, $value) = explode(':', $header, 2);
+                    $key = trim($key);
+                    $value = trim($value);
+                    // Use isset() as array_key_exists() and ArrayAccess are not compatible.
+                    if (isset($http_headers[$key])) {
+                        $http_headers[$key] .= ',' . $value;
+                    } else {
+                        $http_headers[$key] = $value;
+                    }
+                }
+            }
+        }
 
         return array(isset($first) ? $first : '', $http_headers);
     }
