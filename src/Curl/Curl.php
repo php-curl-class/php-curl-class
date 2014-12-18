@@ -235,24 +235,28 @@ class Curl
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
 
+    protected function buildHeaders(Array $source_headers) {
+        $headers = array();
+        foreach((array) $source_headers as $key => $value) {
+            foreach((array) $value as $value) {
+                $headers[] = "$key: $value";
+            }
+        }
+        return $headers;
+    }
+
     public function setHeaders(Array $headers)
     {
         foreach($headers as $key => $value) {
-            $this->setHeader($key, $value);
+            $this->headers[$key] = $value;
         }
+        $this->setOpt(CURLOPT_HTTPHEADER, $this->buildHeaders($this->headers));
     }
 
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
-
-        $headers = array();
-        foreach((array) $this->headers as $key => $value) {
-            foreach((array) $value as $value) {
-                $headers[] = "$key: $value";
-            }
-        }
-        $this->setOpt(CURLOPT_HTTPHEADER, $headers);
+        $this->setOpt(CURLOPT_HTTPHEADER, $this->buildHeaders($this->headers));
     }
 
     public function unsetHeader($key)
