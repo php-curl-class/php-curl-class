@@ -71,6 +71,11 @@ class Curl
     {
         $this->tmp_handle_memory = !empty($memory);
     }
+    
+    public function peclHeaders($pecl = TRUE)
+    {
+        $this->pecl_headers = !empty($pecl);
+    }
 
     public function get($url_mixed, $data = array())
     {
@@ -229,11 +234,18 @@ class Curl
         $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
-
+    
+    public function setHeaders(Array $headers)
+    {
+        foreach($headers as $key => $value) {
+            $this->setHeader($key, $value);
+        }
+    }
+    
     public function setHeader($key, $value)
     {
-        $this->headers[$key] = $key . ': ' . $value;
-        $this->setOpt(CURLOPT_HTTPHEADER, array_values($this->headers));
+        $this->headers[$key] = $value;
+        $this->setOpt(CURLOPT_HTTPHEADER, $this->headers);
     }
 
     public function unsetHeader($key)
@@ -294,6 +306,19 @@ class Curl
         if (in_array($option, array_keys($required_options), true) && !($value === true)) {
             trigger_error($required_options[$option] . ' is a required option', E_USER_WARNING);
         }
+        
+        if($option == CURLOPT_HTTPHEADER) {
+            foreach($value as $key => $header_value) {
+                if(is_array($header_value)) {
+                    foreach($header_value as $i => $header_value) {
+                        $value[$key.$i] = "$key: $header_value";
+                    }
+                } else {
+                    $value[$key] = "$key: $header_value";
+                }
+            }
+            
+        }
 
         $this->options[$option] = $value;
         return curl_setopt($ch, $option, $value);
@@ -349,22 +374,30 @@ class Curl
 
     private function parseHeaders($raw_headers)
     {
-        $raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
         $http_headers = new CaseInsensitiveArray();
-
-        for ($i = 1; $i < count($raw_headers); $i++) {
-            list($key, $value) = explode(':', $raw_headers[$i], 2);
-            $key = trim($key);
-            $value = trim($value);
-            // Use isset() as array_key_exists() and ArrayAccess are not compatible.
-            if (isset($http_headers[$key])) {
-                $http_headers[$key] .= ',' . $value;
-            } else {
+        $pecl = !empty($this->pecl_headers);
+        list($first, $raw_headers) = preg_split('/\r\n/', $raw_headers, 2, PREG_SPLIT_NO_EMPTY);
+        if($pecl) {
+            foreach(http_parse_headers($raw_headers) as $key => $value) {
                 $http_headers[$key] = $value;
+            }
+        } else {
+            $raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
+            
+            foreach($raw_headers as $header) {
+                list($key, $value) = explode(':', $header, 2);
+                $key = trim($key);
+                $value = trim($value);
+                // Use isset() as array_key_exists() and ArrayAccess are not compatible.
+                if (isset($http_headers[$key])) {
+                    $http_headers[$key] .= ',' . $value;
+                } else {
+                    $http_headers[$key] = $value;
+                }
             }
         }
 
-        return array(isset($raw_headers['0']) ? $raw_headers['0'] : '', $http_headers);
+        return array(isset($first) ? $first : '', $http_headers);
     }
 
     private function parseRequestHeaders($raw_headers)
