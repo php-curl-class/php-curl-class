@@ -16,7 +16,7 @@ class Curl
     private $success_function = null;
     private $error_function = null;
     private $complete_function = null;
-    
+
     private $handle_memory = TRUE;
     private $pecl_headers = FALSE;
 
@@ -53,7 +53,7 @@ class Curl
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
     }
-    
+
     protected function tmpHandle()
     {
         if($this->tmp_handle_memory) {
@@ -63,15 +63,15 @@ class Curl
             $handle = fopen($file_name, 'wb+');
             unlink($file_name);
         }
-        
+
         return $handle;
     }
-    
+
     public function tmpHandleMemory($memory = TRUE)
     {
         $this->tmp_handle_memory = !empty($memory);
     }
-    
+
     public function peclHeaders($pecl = TRUE)
     {
         $this->pecl_headers = !empty($pecl);
@@ -234,14 +234,14 @@ class Curl
         $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
-    
+
     public function setHeaders(Array $headers)
     {
         foreach($headers as $key => $value) {
             $this->setHeader($key, $value);
         }
     }
-    
+
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
@@ -306,7 +306,7 @@ class Curl
         if (in_array($option, array_keys($required_options), true) && !($value === true)) {
             trigger_error($required_options[$option] . ' is a required option', E_USER_WARNING);
         }
-        
+
         if($option == CURLOPT_HTTPHEADER) {
             foreach($value as $key => $header_value) {
                 if(is_array($header_value)) {
@@ -317,7 +317,7 @@ class Curl
                     $value[$key] = "$key: $header_value";
                 }
             }
-            
+
         }
 
         $this->options[$option] = $value;
@@ -378,17 +378,17 @@ class Curl
         $pecl = !empty($this->pecl_headers);
         list($first, $raw_headers) = preg_split('/\r\n/', $raw_headers, 2, PREG_SPLIT_NO_EMPTY);
         if($pecl) {
-			
+
 			if (function_exists('http_parse_headers')) {
 				$headers = http_parse_headers($raw_headers);
 			} else {
 				$headers = array();
 				$key = '';
-			
+
 				foreach(explode("\n", $raw_headers) as $i => $h)
 				{
 					$h = explode(':', $h, 2);
-			
+
 					if (isset($h[1]))
 					{
 						if (!isset($headers[$h[0]]))
@@ -401,7 +401,7 @@ class Curl
 						{
 							$headers[$h[0]] = array_merge(array($headers[$h[0]]), array(trim($h[1]))); // [+]
 						}
-			
+
 						$key = $h[0];
 					}
 					else
@@ -412,16 +412,16 @@ class Curl
 							$headers[0] = trim($h[0]);trim($h[0]);
 					}
 				}
-			
+
 			}
-			
+
             foreach(http_parse_headers($headers) as $key => $value) {
                 $http_headers[$key] = $value;
             }
-			
+
         } else {
             $raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
-            
+
             foreach($raw_headers as $header) {
                 list($key, $value) = explode(':', $header, 2);
                 $key = trim($key);
@@ -469,7 +469,7 @@ class Curl
 
         return array($response, $raw_response);
     }
-    
+
     protected function isJSON()
     {
         return isset($this->headers['Content-Type']) && preg_match('~^application/(?:json|vnd\.api\+json)~i', $this->headers['Content-Type']);
