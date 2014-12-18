@@ -53,6 +53,24 @@ class Curl
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
     }
+    
+    protected function tmpHandle()
+    {
+        if($this->tmp_handle_memory) {
+            $handle =  fopen('php://memory', 'wb+');
+        } else {
+            $file_name = tempnam(sys_get_temp_dir(), 'curlHeaders');
+            $handle = fopen($file_name, 'wb+');
+            unlink($file_name);
+        }
+        
+        return $handle;
+    }
+    
+    public function tmpHandleMemory($memory = TRUE)
+    {
+        $this->tmp_handle_memory = !empty($memory);
+    }
 
     public function get($url_mixed, $data = array())
     {
@@ -440,7 +458,7 @@ class Curl
     {
         $ch = $_ch === null ? $this : $_ch;
 
-        $response_headers_fh = fopen('php://memory', 'wb+');
+        $response_headers_fh = $this->tmpHandle();
         $ch->setOpt(CURLOPT_WRITEHEADER, $response_headers_fh);
 
         if ($ch->multi_child) {
