@@ -246,12 +246,12 @@ class Curl
     {
         $this->headers[$key] = $value;
 
-		$headers = array();
-		foreach((array) $this->headers as $key => $value) {
-			foreach((array) $value as $value) {
-				$headers[] = "$key: $value";
-			}
-		}
+        $headers = array();
+        foreach((array) $this->headers as $key => $value) {
+            foreach((array) $value as $value) {
+                $headers[] = "$key: $value";
+            }
+        }
         $this->setOpt(CURLOPT_HTTPHEADER, $headers);
     }
 
