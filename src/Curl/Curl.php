@@ -247,8 +247,8 @@ class Curl
         $this->headers[$key] = $value;
 
 		$headers = array();
-		foreach((array) $this->headers as $key => $header_value) {
-			foreach((array) $value as $header_value) {
+		foreach((array) $this->headers as $key => $value) {
+			foreach((array) $value as $value) {
 				$headers[] = "$key: $value";
 			}
 		}
