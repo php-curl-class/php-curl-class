@@ -225,7 +225,8 @@ class Curl
 
     public function options($url, $data = array(), Array $url_subs = array())
     {
-        $this->setURL($url, $url_subs, $data);
+        $this->setURL($url, $url_subs);
+		$this->setOpt(CURLOPT_URL, $this->buildURL($this->url, $data));
         $this->unsetHeader('Content-Length');
         $this->setRequestType('OPTIONS');
         return $this->exec();
