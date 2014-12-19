@@ -12,6 +12,11 @@ class Curl
     const HEADERS_FLAT = 0;
     const HEADERS_PECL = 10;
 
+    protected static $content_type_pregs = array(
+        'json' => '~^application/(?:json|vnd\.api\+json)~i',
+        'xml'  => '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i'
+    );
+
     private $cookies = array();
     private $headers = array();
     private $options = array();
@@ -381,6 +386,20 @@ class Curl
         return $url . (empty($data) ? '' : '?' . http_build_query($data));
     }
 
+    public function normalizeContentType(Array $headers = null) {
+        if(is_null($headers)) {
+            $headers = $this->headers;
+        }
+        if(isset($headers['Content-Type'])) {
+            foreach(self::$content_type_pregs as $type => $preg_match) {
+                if(preg_match($preg_match, $headers['Content-Type'])) {
+                    return $type;
+                }
+            }
+        }
+        return null;
+    }
+
     private function parseHeaders($raw_headers, $first_name = FALSE)
     {
         $http_headers = new CaseInsensitiveArray();
@@ -445,28 +464,23 @@ class Curl
 
     private function parseResponse($response_headers, $raw_response)
     {
-
         $response = $raw_response;
-        if (isset($response_headers['Content-Type'])) {
-            if (preg_match('~^application/(?:json|vnd\.api\+json)~i', $response_headers['Content-Type'])) {
+        $content_type = $this->normalizeContentType($response_headers);
+        switch($content_type) {
+            case 'json':
                 $json_obj = json_decode($response, false);
                 if ($json_obj !== null) {
                     $response = $json_obj;
                 }
-            } elseif (preg_match('~^(?:text/|application/(?:atom\+|rss\+)?)xml~i', $response_headers['Content-Type'])) {
+                break;
+            case 'xml':
                 $xml_obj = @simplexml_load_string($response);
                 if (!($xml_obj === false)) {
                     $response = $xml_obj;
                 }
-            }
+                break;
         }
-
         return array($response, $raw_response);
-    }
-
-    protected function isJSON()
-    {
-        return isset($this->headers['Content-Type']) && preg_match('~^application/(?:json|vnd\.api\+json)~i', $this->headers['Content-Type']);
     }
 
     private function parseResponseHeaders($raw_response_headers)
@@ -484,7 +498,7 @@ class Curl
 
     private function postfields($data)
     {
-        if(!is_string($data) && $this->isJSON()) {
+        if(!is_string($data) && $this->normalizeContentType($this->headers) == 'json') {
             $data = json_encode($data);
         } elseif (is_array($data)) {
             if (self::is_array_multidim($data)) {
