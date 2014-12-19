@@ -330,6 +330,7 @@ class Curl
 
     public function setOpts(Array $options, $_ch = null) {
         $return = true;
+        $ch = $_ch === null ? $this->curl : $_ch;
         foreach((array) $options as $option => $value) {
             $return = $this->setOpt($option, $value, $_ch) && $return;
         }
