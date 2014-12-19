@@ -209,8 +209,8 @@ class Curl
 
     public function delete($url, $data = array(), Array $url_subs = array())
     {
-        $this->setURL($url, $url_subs, $data);
-        //$this->setOpt(CURLOPT_URL, $this->buildURL($this->url, $data));
+        $this->setURL($url, $url_subs);
+        $this->setOpt(CURLOPT_URL, $this->buildURL($this->url, $data));
         $this->unsetHeader('Content-Length');
         $this->setRequestType('DELETE');
         return $this->exec();
