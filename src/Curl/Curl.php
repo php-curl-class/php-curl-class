@@ -6,6 +6,12 @@ class Curl
 {
     const VERSION = '2.1.0';
 
+    const TMP_MEMORY = 0;
+    const TMP_FILE   = 1;
+
+    const HEADERS_FLAT = 0;
+    const HEADERS_PECL = 10;
+
     private $cookies = array();
     private $headers = array();
     private $options = array();
@@ -17,8 +23,8 @@ class Curl
     private $error_function = null;
     private $complete_function = null;
 
-    private $handle_memory = TRUE;
-    private $pecl_headers = FALSE;
+    private $handle_file   = FALSE;
+    private $pecl_headers  = FALSE;
 
     public $curl;
     public $curls;
@@ -42,11 +48,14 @@ class Curl
     public $response = null;
     public $raw_response = null;
 
-    public function __construct()
+    public function __construct($flags = FALSE)
     {
         if (!extension_loaded('curl')) {
             throw new \ErrorException('cURL library is not loaded');
         }
+
+        $this->pecl_headers = ($flags & self::HEADERS_PECL);
+        $this->handle_file  = ($flags & self::TMP_FILE);
 
         $this->curl = curl_init();
         $this->setDefaultUserAgent();
@@ -56,25 +65,15 @@ class Curl
 
     protected function tmpHandle()
     {
-        if($this->handle_memory) {
-            $handle =  fopen('php://memory', 'wb+');
-        } else {
+        if($this->handle_file) {
             $file_name = tempnam(sys_get_temp_dir(), 'curlHeaders');
             $handle = fopen($file_name, 'wb+');
             unlink($file_name);
+        } else {
+            $handle =  fopen('php://memory', 'wb+');
         }
 
         return $handle;
-    }
-
-    public function tmpHandleMemory($memory = TRUE)
-    {
-        $this->handle_memory = !empty($memory);
-    }
-
-    public function peclHeaders($pecl = TRUE)
-    {
-        $this->pecl_headers = !empty($pecl);
     }
 
     public function get($url_mixed, $data = array())
@@ -370,57 +369,47 @@ class Curl
         return $url . (empty($data) ? '' : '?' . http_build_query($data));
     }
 
-    private function parseHeaders($raw_headers)
+    private function parseHeaders($raw_headers, $first_name = FALSE)
     {
         $http_headers = new CaseInsensitiveArray();
-        $pecl = !empty($this->pecl_headers);
         $raw_headers = preg_split('/\r\n/', $raw_headers, 2, PREG_SPLIT_NO_EMPTY);
         $first = array_shift($raw_headers);
+        if(!empty($first_name)) {
+            $http_headers[(string) $first_name] = $first;
+        }
         if(!empty($raw_headers)) {
             $raw_headers = current($raw_headers);
-            if($pecl) {
+            if($this->pecl_headers) {
                 if (function_exists('http_parse_headers')) {
                     $headers = http_parse_headers($raw_headers);
                 } else {
                     $headers = array();
                     $key = '';
-
-                    foreach(explode("\n", $raw_headers) as $i => $h)
-                    {
-                        $h = explode(':', $h, 2);
-
-                        if (isset($h[1]))
-                        {
-                            if (!isset($headers[$h[0]]))
-                                $headers[$h[0]] = trim($h[1]);
-                            elseif (is_array($headers[$h[0]]))
-                            {
-                                $headers[$h[0]] = array_merge($headers[$h[0]], array(trim($h[1]))); // [+]
+                    foreach(explode("\n", $raw_headers) as $header) {
+                        $header = explode(':', $header, 2);
+                        if (isset($header[1])) {
+                            if (!isset($headers[$header[0]])) {
+                                $headers[$header[0]] = trim($header[1]);
+                            } elseif (is_array($headers[$header[0]])) {
+                                $headers[$header[0]] = array_merge($headers[$header[0]], array(trim($header[1])));
+                            } else {
+                                $headers[$header[0]] = array_merge(array($headers[$header[0]]), array(trim($header[1])));
                             }
-                            else
-                            {
-                                $headers[$h[0]] = array_merge(array($headers[$h[0]]), array(trim($h[1]))); // [+]
+                            $key = $header[0];
+                        } else {
+                            if (substr($header[0], 0, 1) == "\t") {
+                                $headers[$key] .= "\r\n\t".trim($header[0]);
+                            } elseif (!$key) {
+                                $headers[0] = trim($header[0]);trim($header[0]);
                             }
-
-                            $key = $h[0];
-                        }
-                        else
-                        {
-                            if (substr($h[0], 0, 1) == "\t")
-                                $headers[$key] .= "\r\n\t".trim($h[0]);
-                            elseif (!$key)
-                                $headers[0] = trim($h[0]);trim($h[0]);
                         }
                     }
-
                 }
-
-                foreach(http_parse_headers($headers) as $key => $value) {
+                foreach($headers as $key => $value) {
                     $http_headers[$key] = $value;
                 }
             } else {
                 $raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
-
                 foreach($raw_headers as $header) {
                     list($key, $value) = explode(':', $header, 2);
                     $key = trim($key);
@@ -434,19 +423,12 @@ class Curl
                 }
             }
         }
-
-        return array(isset($first) ? $first : '', $http_headers);
+        return empty($first_name) ? array(isset($first) ? $first : '', $http_headers) : $http_headers;
     }
 
     private function parseRequestHeaders($raw_headers)
     {
-        $request_headers = new CaseInsensitiveArray();
-        list($first_line, $headers) = $this->parseHeaders($raw_headers);
-        $request_headers['Request-Line'] = $first_line;
-        foreach ($headers as $key => $value) {
-            $request_headers[$key] = $value;
-        }
-        return $request_headers;
+        return $this->parseHeaders($raw_headers, 'Request-Line');
     }
 
     private function parseResponse($response_headers, $raw_response)
@@ -485,14 +467,7 @@ class Curl
                 break;
             }
         }
-
-        $response_headers = new CaseInsensitiveArray();
-        list($first_line, $headers) = $this->parseHeaders($response_header);
-        $response_headers['Status-Line'] = $first_line;
-        foreach ($headers as $key => $value) {
-            $response_headers[$key] = $value;
-        }
-        return $response_headers;
+        return $this->parseHeaders($response_header, 'Status-Line');
     }
 
     private function postfields($data)
