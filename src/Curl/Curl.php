@@ -48,7 +48,7 @@ class Curl
     public $response = null;
     public $raw_response = null;
 
-    public function __construct($flags = FALSE)
+    public function __construct(Array $options = array(), $flags = FALSE)
     {
         if (!extension_loaded('curl')) {
             throw new \ErrorException('cURL library is not loaded');
@@ -57,10 +57,14 @@ class Curl
         $this->pecl_headers = ($flags & self::HEADERS_PECL);
         $this->handle_file  = ($flags & self::TMP_FILE);
 
+        $options += array(
+            CURLINFO_HEADER_OUT => true,
+            CURLOPT_RETURNTRANSFER => true,
+        );
+
         $this->curl = curl_init();
         $this->setDefaultUserAgent();
-        $this->setOpt(CURLINFO_HEADER_OUT, true);
-        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
+        $this->setOpts($options);
     }
 
     protected function tmpHandle()
@@ -302,6 +306,14 @@ class Curl
     public function setCookieJar($cookie_jar)
     {
         $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
+    }
+
+    public function setOpts(Array $options, $_ch = null) {
+        $return = true;
+        foreach((array) $options as $option => $value) {
+            $return = $this->setOpt($option, $value, $_ch) && $return;
+        }
+        return $return;
     }
 
     public function setOpt($option, $value, $_ch = null)
