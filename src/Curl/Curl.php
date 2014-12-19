@@ -29,8 +29,8 @@ class Curl
     private $error_function = null;
     private $complete_function = null;
 
-    private $handle_file   = FALSE;
-    private $pecl_headers  = FALSE;
+    private $handle_file  = FALSE;
+    private $pecl_headers = FALSE;
 
     public $curl;
     public $curls;
@@ -86,7 +86,8 @@ class Curl
         return $handle;
     }
 
-    public function buildBaseURL($url, Array $url_subs = array()) {
+    public function buildBaseURL($url, Array $url_subs = array())
+    {
         return preg_replace_callback(self::$substitutive_url_preg, function($matches) use ($url_subs) {
             $part = null;
             if(isset($matches[1]) && isset($url_subs[$matches[1]])) {
@@ -101,13 +102,15 @@ class Curl
         }, $url);
     }
 
-    public function setURL($url, Array $url_subs = array(), $data = array()) {
+    public function setURL($url, Array $url_subs = array(), $data = array())
+    {
         $this->base_url = $this->buildBaseURL($url, $url_subs);
         $this->url      = $this->buildURL($this->base_url, $data);
         return $this->setOpt(CURLOPT_URL, $this->url);
     }
 
-    public function setRequestType($type) {
+    public function setRequestType($type)
+    {
         $TYPE = strtoupper($type);
         $options = array(CURLOPT_CUSTOMREQUEST => $TYPE);
         if($TYPE == 'GET') {
@@ -226,7 +229,7 @@ class Curl
     public function options($url, $data = array(), Array $url_subs = array())
     {
         $this->setURL($url, $url_subs);
-		$this->setOpt(CURLOPT_URL, $this->buildURL($this->url, $data));
+        $this->setOpt(CURLOPT_URL, $this->buildURL($this->url, $data));
         $this->unsetHeader('Content-Length');
         $this->setRequestType('OPTIONS');
         return $this->exec();
@@ -329,7 +332,8 @@ class Curl
         $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
     }
 
-    public function setOpts(Array $options, $_ch = null) {
+    public function setOpts(Array $options, $_ch = null)
+    {
         $return = true;
         $ch = $_ch === null ? $this->curl : $_ch;
         foreach((array) $options as $option => $value) {
@@ -403,7 +407,8 @@ class Curl
         return $url . (empty($data) ? '' : '?' . http_build_query($data));
     }
 
-    public function normalizeContentType($headers = null) {
+    public function normalizeContentType($headers = null)
+    {
         if(!(is_array($headers) || $headers instanceof CaseInsensitiveArray)) {
             $headers = $this->headers;
         }
