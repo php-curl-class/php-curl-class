@@ -547,7 +547,6 @@ class Curl
             return fwrite($response_headers_fh, $data);
         });
 
-
         if ($ch->multi_child) {
             $ch->raw_response = curl_multi_getcontent($ch->curl);
         } else {
