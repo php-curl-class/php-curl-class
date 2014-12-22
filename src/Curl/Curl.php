@@ -6,11 +6,8 @@ class Curl
 {
     const VERSION = '2.1.0';
 
-    const TMP_MEMORY = 0;
-    const TMP_FILE   = 1;
-
     const HEADERS_FLAT = 0;
-    const HEADERS_PECL = 10;
+    const HEADERS_PECL = 1;
 
     protected static $content_type_pregs = array(
         'json' => '~^application/(?:json|vnd\.api\+json)~i',
@@ -29,7 +26,6 @@ class Curl
     private $error_function = null;
     private $complete_function = null;
 
-    private $handle_file  = FALSE;
     private $pecl_headers = FALSE;
 
     public $curl;
@@ -60,8 +56,7 @@ class Curl
             throw new \ErrorException('cURL library is not loaded');
         }
 
-        $this->pecl_headers = ($flags & self::HEADERS_PECL);
-        $this->handle_file  = ($flags & self::TMP_FILE);
+        $this->pecl_headers = (bool) ($flags & self::HEADERS_PECL);
 
         $options += array(
             CURLINFO_HEADER_OUT => true,
@@ -71,19 +66,6 @@ class Curl
         $this->curl = curl_init();
         $this->setDefaultUserAgent();
         $this->setOpts($options);
-    }
-
-    protected function tmpHandle()
-    {
-        if($this->handle_file) {
-            $file_name = tempnam(sys_get_temp_dir(), 'curlHeaders');
-            $handle = fopen($file_name, 'wb+');
-            unlink($file_name);
-        } else {
-            $handle =  fopen('php://memory', 'wb+');
-        }
-
-        return $handle;
     }
 
     public function buildBaseURL($url, Array $url_subs = array())
@@ -559,8 +541,12 @@ class Curl
     {
         $ch = $_ch === null ? $this : $_ch;
 
-        $response_headers_fh = $this->tmpHandle();
-        $ch->setOpt(CURLOPT_WRITEHEADER, $response_headers_fh);
+        $response_headers_fh = fopen('php://memory', 'wb+');
+
+        $ch->setOpt(CURLOPT_HEADERFUNCTION, function($ch, $data) use ($response_headers_fh) {
+            return fwrite($response_headers_fh, $data);
+        });
+
 
         if ($ch->multi_child) {
             $ch->raw_response = curl_multi_getcontent($ch->curl);
