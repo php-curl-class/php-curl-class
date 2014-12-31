@@ -507,7 +507,24 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('HTTP/1.1 401 Unauthorized', $test->curl->error_message);
     }
 
-    public function testHeaders()
+    public function testRequestHeaderCaseSensitivity()
+    {
+        $content_type = 'application/json';
+        $curl = new Curl();
+        $curl->setHeader('Content-Type', $content_type);
+
+        $reflector = new ReflectionClass('\Curl\Curl');
+        $property = $reflector->getProperty('headers');
+        $property->setAccessible(true);
+        $headers = $property->getValue($curl);
+
+        $this->assertEquals($content_type, $headers['Content-Type']);
+        $this->assertEquals($content_type, $headers['content-type']);
+        $this->assertEquals($content_type, $headers['CONTENT-TYPE']);
+        $this->assertEquals($content_type, $headers['cOnTeNt-TyPe']);
+    }
+
+    public function testResponseHeaders()
     {
         $test = new Test();
         $test->curl->setHeader('Content-Type', 'application/json');
@@ -518,7 +535,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('application/json', $test->server('server', 'GET', array('key' => 'HTTP_ACCEPT')));
     }
 
-    public function testHeaderCaseSensitivity()
+    public function testResponseHeaderCaseSensitivity()
     {
         $content_type = 'application/json';
         $test = new Test();
