@@ -211,8 +211,10 @@ class Curl
 
     public function setHeader($key, $value)
     {
-        $this->headers[$key] = $key . ': ' . $value;
-        $this->setOpt(CURLOPT_HTTPHEADER, array_values($this->headers));
+        $this->headers[$key] = $value;
+        $this->setOpt(CURLOPT_HTTPHEADER, array_map(function($value, $key) {
+            return $key . ': ' . $value;
+        }, $this->headers, array_keys($this->headers)));
     }
 
     public function unsetHeader($key)
