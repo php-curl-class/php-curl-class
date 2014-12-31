@@ -649,6 +649,37 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(file_exists($file_path));
     }
 
+    public function testJSONRequest()
+    {
+        $data = array('key' => 'value');
+        $expected_response = '{"key":"value"}';
+
+        $test = new Test();
+        $this->assertEquals($expected_response, $test->server('post_json', 'POST', json_encode($data)));
+
+        foreach (array(
+            'Content-Type',
+            'content-type',
+            'CONTENT-TYPE') as $key) {
+            foreach (array(
+                'APPLICATION/JSON',
+                'APPLICATION/JSON; CHARSET=UTF-8',
+                'APPLICATION/JSON;CHARSET=UTF-8',
+                'application/json',
+                'application/json; charset=utf-8',
+                'application/json;charset=UTF-8',
+                ) as $value) {
+                $test = new Test();
+                $test->curl->setHeader($key, $value);
+                $this->assertEquals($expected_response, $test->server('post_json', 'POST', json_encode($data)));
+
+                $test = new Test();
+                $test->curl->setHeader($key, $value);
+                $this->assertEquals($expected_response, $test->server('post_json', 'POST', $data));
+            }
+        }
+    }
+
     public function testJSONResponse()
     {
         function assertion($key, $value)
