@@ -49,6 +49,7 @@ class Curl
         $this->setDefaultUserAgent();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
+        $this->headers = new CaseInsensitiveArray();
     }
 
     public function get($url_mixed, $data = array())
@@ -212,9 +213,13 @@ class Curl
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
+        $headers = array();
+        foreach ($this->headers as $key => $value) {
+            $headers[$key] = $value;
+        }
         $this->setOpt(CURLOPT_HTTPHEADER, array_map(function($value, $key) {
             return $key . ': ' . $value;
-        }, $this->headers, array_keys($this->headers)));
+        }, $headers, array_keys($headers)));
     }
 
     public function unsetHeader($key)
