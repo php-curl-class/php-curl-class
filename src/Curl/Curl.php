@@ -438,7 +438,14 @@ class Curl
         $ch = $_ch === null ? $this : $_ch;
 
         $response_headers_fh = fopen('php://memory', 'wb+');
-        $ch->setOpt(CURLOPT_WRITEHEADER, $response_headers_fh);
+
+        // Fallback to storing data in a temporary file when storing data in
+        // memory errors with "Warning: curl_setopt(): cannot represent a stream
+        // of type MEMORY as a STDIO FILE*".
+        if (!@$ch->setOpt(CURLOPT_WRITEHEADER, $response_headers_fh)) {
+            $response_headers_fh = fopen('php://temp', 'wb+');
+            $ch->setOpt(CURLOPT_WRITEHEADER, $response_headers_fh);
+        }
 
         if ($ch->multi_child) {
             $ch->raw_response = curl_multi_getcontent($ch->curl);
