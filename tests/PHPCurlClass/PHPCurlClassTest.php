@@ -46,30 +46,22 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testCaseInsensitiveArraySet()
     {
-        function assertions($array, $count = 1)
-        {
-            PHPUnit_Framework_Assert::assertCount($count, $array);
-            PHPUnit_Framework_Assert::assertEquals('bar', $array['foo']);
-            PHPUnit_Framework_Assert::assertEquals('bar', $array['Foo']);
-            PHPUnit_Framework_Assert::assertEquals('bar', $array['FOo']);
-            PHPUnit_Framework_Assert::assertEquals('bar', $array['FOO']);
+        $array = new CaseInsensitiveArray();
+        foreach (array('FOO', 'FOo', 'Foo', 'fOO', 'fOo', 'foO', 'foo') as $key) {
+            $value = mt_rand();
+            $array[$key] = $value;
+            $this->assertCount(1, $array);
+            $this->assertEquals($value, $array['FOO']);
+            $this->assertEquals($value, $array['FOo']);
+            $this->assertEquals($value, $array['Foo']);
+            $this->assertEquals($value, $array['fOO']);
+            $this->assertEquals($value, $array['fOo']);
+            $this->assertEquals($value, $array['foO']);
+            $this->assertEquals($value, $array['foo']);
         }
 
-        $array = new CaseInsensitiveArray();
-        $array['foo'] = 'bar';
-        assertions($array);
-
-        $array['Foo'] = 'bar';
-        assertions($array);
-
-        $array['FOo'] = 'bar';
-        assertions($array);
-
-        $array['FOO'] = 'bar';
-        assertions($array);
-
         $array['baz'] = 'qux';
-        assertions($array, 2);
+        $this->assertCount(2, $array);
     }
 
     public function testUserAgent()
@@ -213,7 +205,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
     public function testPostMultidimensionalData()
     {
         $test = new Test();
-        $this->assertEquals('key=file&file%5B%5D=wibble&file%5B%5D=wubble&file%5B%5D=wobble',
+        $this->assertEquals(
+            'key=file&file%5B%5D=wibble&file%5B%5D=wubble&file%5B%5D=wobble',
             $test->server('post_multidimensional', 'POST', array(
                 'key' => 'file',
                 'file' => array(
@@ -682,122 +675,92 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testJSONResponse()
     {
-        function assertion($key, $value)
-        {
-            $test = new Test();
-            $test->server('json_response', 'POST', array(
-                'key' => $key,
-                'value' => $value,
-            ));
+        foreach (array(
+            'Content-Type',
+            'content-type',
+            'CONTENT-TYPE') as $key) {
+            foreach (array(
+                'APPLICATION/JSON',
+                'APPLICATION/JSON; CHARSET=UTF-8',
+                'APPLICATION/JSON;CHARSET=UTF-8',
+                'application/json',
+                'application/json; charset=utf-8',
+                'application/json;charset=UTF-8',
+                ) as $value) {
+                $test = new Test();
+                $test->server('json_response', 'POST', array(
+                    'key' => $key,
+                    'value' => $value,
+                ));
 
-            $response = $test->curl->response;
-            PHPUnit_Framework_Assert::assertNotNull($response);
-            PHPUnit_Framework_Assert::assertNull($response->null);
-            PHPUnit_Framework_Assert::assertTrue($response->true);
-            PHPUnit_Framework_Assert::assertFalse($response->false);
-            PHPUnit_Framework_Assert::assertTrue(is_int($response->integer));
-            PHPUnit_Framework_Assert::assertTrue(is_float($response->float));
-            PHPUnit_Framework_Assert::assertEmpty($response->empty);
-            PHPUnit_Framework_Assert::assertTrue(is_string($response->string));
-            PHPUnit_Framework_Assert::assertEquals(json_encode(array(
-                'null' => null,
-                'true' => true,
-                'false' => false,
-                'integer' => 1,
-                'float' => 3.14,
-                'empty' => '',
-                'string' => 'string',
-            )), $test->curl->raw_response);
+                $response = $test->curl->response;
+                $this->assertNotNull($response);
+                $this->assertNull($response->null);
+                $this->assertTrue($response->true);
+                $this->assertFalse($response->false);
+                $this->assertTrue(is_int($response->integer));
+                $this->assertTrue(is_float($response->float));
+                $this->assertEmpty($response->empty);
+                $this->assertTrue(is_string($response->string));
+                $this->assertEquals(json_encode(array(
+                    'null' => null,
+                    'true' => true,
+                    'false' => false,
+                    'integer' => 1,
+                    'float' => 3.14,
+                    'empty' => '',
+                    'string' => 'string',
+                )), $test->curl->raw_response);
+            }
         }
-
-        assertion('Content-Type', 'APPLICATION/JSON');
-        assertion('Content-Type', 'APPLICATION/JSON; CHARSET=UTF-8');
-        assertion('Content-Type', 'APPLICATION/JSON;CHARSET=UTF-8');
-        assertion('Content-Type', 'application/json');
-        assertion('Content-Type', 'application/json; charset=utf-8');
-        assertion('Content-Type', 'application/json;charset=UTF-8');
-
-        assertion('content-type', 'APPLICATION/JSON');
-        assertion('content-type', 'APPLICATION/JSON; CHARSET=UTF-8');
-        assertion('content-type', 'APPLICATION/JSON;CHARSET=UTF-8');
-        assertion('content-type', 'application/json');
-        assertion('content-type', 'application/json; charset=utf-8');
-        assertion('content-type', 'application/json;charset=UTF-8');
-
-        assertion('CONTENT-TYPE', 'APPLICATION/JSON');
-        assertion('CONTENT-TYPE', 'APPLICATION/JSON; CHARSET=UTF-8');
-        assertion('CONTENT-TYPE', 'APPLICATION/JSON;CHARSET=UTF-8');
-        assertion('CONTENT-TYPE', 'application/json');
-        assertion('CONTENT-TYPE', 'application/json; charset=utf-8');
-        assertion('CONTENT-TYPE', 'application/json;charset=UTF-8');
     }
 
     public function testXMLResponse()
     {
-        function xmlAssertion($key, $value)
-        {
-            $test = new Test();
-            $test->server('xml_response', 'POST', array(
-                'key' => $key,
-                'value' => $value,
-            ));
+        foreach (array(
+            'Content-Type',
+            'content-type',
+            'CONTENT-TYPE') as $key) {
+            foreach (array(
+                'application/atom+xml; charset=UTF-8',
+                'application/atom+xml;charset=UTF-8',
+                'application/rss+xml',
+                'application/rss+xml; charset=utf-8',
+                'application/rss+xml;charset=utf-8',
+                'application/xml',
+                'application/xml; charset=utf-8',
+                'application/xml;charset=utf-8',
+                'text/xml',
+                'text/xml; charset=utf-8',
+                'text/xml;charset=utf-8',
+                ) as $value) {
+                $test = new Test();
+                $test->server('xml_response', 'POST', array(
+                    'key' => $key,
+                    'value' => $value,
+                ));
 
-            PHPUnit_Framework_Assert::assertInstanceOf('SimpleXMLElement', $test->curl->response);
+                $this->assertInstanceOf('SimpleXMLElement', $test->curl->response);
 
-            $doc = new DOMDocument();
-            $doc->formatOutput = true;
-            $rss = $doc->appendChild($doc->createElement('rss'));
-            $rss->setAttribute('version', '2.0');
-            $channel = $doc->createElement('channel');
-            $title = $doc->createElement('title');
-            $title->appendChild($doc->createTextNode('Title'));
-            $channel->appendChild($title);
-            $link = $doc->createElement('link');
-            $link->appendChild($doc->createTextNode('Link'));
-            $channel->appendChild($link);
-            $description = $doc->createElement('description');
-            $description->appendChild($doc->createTextNode('Description'));
-            $channel->appendChild($description);
-            $rss->appendChild($channel);
-            $xml = $doc->saveXML();
-            PHPUnit_Framework_Assert::assertEquals($xml, $test->curl->raw_response);
+                $doc = new DOMDocument();
+                $doc->formatOutput = true;
+                $rss = $doc->appendChild($doc->createElement('rss'));
+                $rss->setAttribute('version', '2.0');
+                $channel = $doc->createElement('channel');
+                $title = $doc->createElement('title');
+                $title->appendChild($doc->createTextNode('Title'));
+                $channel->appendChild($title);
+                $link = $doc->createElement('link');
+                $link->appendChild($doc->createTextNode('Link'));
+                $channel->appendChild($link);
+                $description = $doc->createElement('description');
+                $description->appendChild($doc->createTextNode('Description'));
+                $channel->appendChild($description);
+                $rss->appendChild($channel);
+                $xml = $doc->saveXML();
+                $this->assertEquals($xml, $test->curl->raw_response);
+            }
         }
-
-        xmlAssertion('Content-Type', 'application/atom+xml; charset=UTF-8');
-        xmlAssertion('Content-Type', 'application/atom+xml;charset=UTF-8');
-        xmlAssertion('Content-Type', 'application/rss+xml');
-        xmlAssertion('Content-Type', 'application/rss+xml; charset=utf-8');
-        xmlAssertion('Content-Type', 'application/rss+xml;charset=utf-8');
-        xmlAssertion('Content-Type', 'application/xml');
-        xmlAssertion('Content-Type', 'application/xml; charset=utf-8');
-        xmlAssertion('Content-Type', 'application/xml;charset=utf-8');
-        xmlAssertion('Content-Type', 'text/xml');
-        xmlAssertion('Content-Type', 'text/xml; charset=utf-8');
-        xmlAssertion('Content-Type', 'text/xml;charset=utf-8');
-
-        xmlAssertion('content-type', 'application/atom+xml; charset=UTF-8');
-        xmlAssertion('content-type', 'application/atom+xml;charset=UTF-8');
-        xmlAssertion('content-type', 'application/rss+xml');
-        xmlAssertion('content-type', 'application/rss+xml; charset=utf-8');
-        xmlAssertion('content-type', 'application/rss+xml;charset=utf-8');
-        xmlAssertion('content-type', 'application/xml');
-        xmlAssertion('content-type', 'application/xml; charset=utf-8');
-        xmlAssertion('content-type', 'application/xml;charset=utf-8');
-        xmlAssertion('content-type', 'text/xml');
-        xmlAssertion('content-type', 'text/xml; charset=utf-8');
-        xmlAssertion('content-type', 'text/xml;charset=utf-8');
-
-        xmlAssertion('CONTENT-TYPE', 'application/atom+xml; charset=UTF-8');
-        xmlAssertion('CONTENT-TYPE', 'application/atom+xml;charset=UTF-8');
-        xmlAssertion('CONTENT-TYPE', 'application/rss+xml');
-        xmlAssertion('CONTENT-TYPE', 'application/rss+xml; charset=utf-8');
-        xmlAssertion('CONTENT-TYPE', 'application/rss+xml;charset=utf-8');
-        xmlAssertion('CONTENT-TYPE', 'application/xml');
-        xmlAssertion('CONTENT-TYPE', 'application/xml; charset=utf-8');
-        xmlAssertion('CONTENT-TYPE', 'application/xml;charset=utf-8');
-        xmlAssertion('CONTENT-TYPE', 'text/xml');
-        xmlAssertion('CONTENT-TYPE', 'text/xml; charset=utf-8');
-        xmlAssertion('CONTENT-TYPE', 'text/xml;charset=utf-8');
     }
 
     public function testEmptyResponse()
@@ -1049,8 +1012,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
             Test::TEST_URL . 'c/',
         ));
 
-        PHPUnit_Framework_Assert::assertTrue($success_called_once || $error_called_once);
-        PHPUnit_Framework_Assert::assertTrue($complete_called_once);
+        $this->assertTrue($success_called_once || $error_called_once);
+        $this->assertTrue($complete_called_once);
     }
 
     public function testErrorCallback()
