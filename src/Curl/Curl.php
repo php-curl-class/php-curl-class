@@ -17,6 +17,9 @@ class Curl
     private $error_function = null;
     private $complete_function = null;
 
+    private $json_pattern = '~^application/(?:json|vnd\.api\+json)~i';
+    private $xml_pattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
+
     public $curl;
     public $curls;
 
@@ -369,12 +372,12 @@ class Curl
 
         $response = $raw_response;
         if (isset($response_headers['Content-Type'])) {
-            if (preg_match('~^application/(?:json|vnd\.api\+json)~i', $response_headers['Content-Type'])) {
+            if (preg_match($this->json_pattern, $response_headers['Content-Type'])) {
                 $json_obj = json_decode($response, false);
                 if ($json_obj !== null) {
                     $response = $json_obj;
                 }
-            } elseif (preg_match('~^(?:text/|application/(?:atom\+|rss\+)?)xml~i', $response_headers['Content-Type'])) {
+            } elseif (preg_match($this->xml_pattern, $response_headers['Content-Type'])) {
                 $xml_obj = @simplexml_load_string($response);
                 if (!($xml_obj === false)) {
                     $response = $xml_obj;
@@ -432,7 +435,15 @@ class Curl
                 }
 
                 if (!$binary_data) {
-                    $data = http_build_query($data);
+                    if (isset($this->headers['Content-Type']) &&
+                        preg_match($this->json_pattern, $this->headers['Content-Type'])) {
+                        $json_str = json_encode($data);
+                        if (!($json_str === false)) {
+                            $data = $json_str;
+                        }
+                    } else {
+                        $data = http_build_query($data);
+                    }
                 }
             }
         }

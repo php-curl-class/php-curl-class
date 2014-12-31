@@ -50,6 +50,9 @@ if ($test == 'http_basic_auth') {
 } elseif ($test === 'post') {
     echo http_build_query($_POST);
     exit;
+} elseif ($test === 'post_json') {
+    echo $http_raw_post_data;
+    exit;
 } elseif ($test === 'put') {
     echo $http_raw_post_data;
     exit;
