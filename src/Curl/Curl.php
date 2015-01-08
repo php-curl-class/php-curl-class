@@ -88,6 +88,7 @@ class Curl
             }
 
             do {
+                curl_multi_select($curl_multi);
                 $status = curl_multi_exec($curl_multi, $active);
             } while ($status === CURLM_CALL_MULTI_PERFORM || $active);
 
