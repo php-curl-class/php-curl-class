@@ -128,7 +128,10 @@ class Curl
         $this->setOpt(CURLOPT_URL, $this->url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         $this->setOpt(CURLOPT_POST, true);
-        $this->setOpt(CURLOPT_POSTFIELDS, $this->postfields($data));
+        if ($this->getHeader('Content-Type') === 'Content-Type: application/json') 
+            $this->setOpt(CURLOPT_POSTFIELDS, json_encode($data));
+        else 
+            $this->setOpt(CURLOPT_POSTFIELDS, $this->postfields($data));
         return $this->exec();
     }
 
