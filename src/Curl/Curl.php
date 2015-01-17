@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '2.1.2';
+    const VERSION = '2.1.3';
 
     private $cookies = array();
     private $headers = array();
@@ -413,7 +413,15 @@ class Curl
     {
         if (is_array($data)) {
             if (self::is_array_multidim($data)) {
-                $data = self::http_build_multi_query($data);
+                if (isset($this->headers['Content-Type']) &&
+                    preg_match($this->json_pattern, $this->headers['Content-Type'])) {
+                    $json_str = json_encode($data);
+                    if (!($json_str === false)) {
+                        $data = $json_str;
+                    }
+                } else {
+                    $data = self::http_build_multi_query($data);
+                }
             } else {
                 $binary_data = false;
                 foreach ($data as $key => $value) {
