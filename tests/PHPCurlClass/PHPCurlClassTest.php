@@ -652,6 +652,17 @@ class CurlTest extends PHPUnit_Framework_TestCase
                     ),
                     '{"key":"value"}',
                 ),
+                array(
+                    array(
+                        'key' => 'value',
+                        'strings' => array(
+                            'a',
+                            'b',
+                            'c',
+                        ),
+                    ),
+                    '{"key":"value","strings":["a","b","c"]}',
+                ),
             ) as $test) {
             list($data, $expected_response) = $test;
 
