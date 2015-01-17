@@ -4,7 +4,7 @@
     "homepage": "https://github.com/php-curl-class/php-curl-class",
     "license": "Unlicense",
     "keywords": ["php", "curl", "class"],
-    "version": "2.1.2",
+    "version": "2.1.3",
     "require": {
         "php": ">=5.3",
         "ext-curl": "*"
