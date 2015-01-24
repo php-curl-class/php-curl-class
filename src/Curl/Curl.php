@@ -17,6 +17,7 @@ class Curl
     private $error_function = null;
     private $complete_function = null;
 
+    private $json_decoder = null;
     private $json_pattern = '~^application/(?:json|vnd\.api\+json)~i';
     private $xml_pattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
 
@@ -50,6 +51,7 @@ class Curl
 
         $this->curl = curl_init();
         $this->setDefaultUserAgent();
+        $this->setDefaultJsonDecoder();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
@@ -241,6 +243,20 @@ class Curl
         $this->setUserAgent($user_agent);
     }
 
+    public function setDefaultJsonDecoder() {
+        $this->json_decoder = function($response) {
+            $json_obj = json_decode($response, false);
+            if (!($json_obj === null)) {
+                $response = $json_obj;
+            }
+            return $response;
+        };
+    }
+
+    public function setJsonDecoder($func) {
+        $this->json_decoder = $func;
+    }
+
     public function setUserAgent($user_agent)
     {
         $this->setOpt(CURLOPT_USERAGENT, $user_agent);
@@ -370,14 +386,11 @@ class Curl
 
     private function parseResponse($response_headers, $raw_response)
     {
-
         $response = $raw_response;
         if (isset($response_headers['Content-Type'])) {
             if (preg_match($this->json_pattern, $response_headers['Content-Type'])) {
-                $json_obj = json_decode($response, false);
-                if ($json_obj !== null) {
-                    $response = $json_obj;
-                }
+                $json_decoder = $this->json_decoder;
+                $response = $json_decoder($response);
             } elseif (preg_match($this->xml_pattern, $response_headers['Content-Type'])) {
                 $xml_obj = @simplexml_load_string($response);
                 if (!($xml_obj === false)) {
