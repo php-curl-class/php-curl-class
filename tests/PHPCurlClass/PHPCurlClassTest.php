@@ -735,6 +735,27 @@ class CurlTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    public function testJSONDecoder()
+    {
+        $data = array(
+            'key' => 'Content-Type',
+            'value' => 'application/json',
+        );
+
+        $test = new Test();
+        $test->server('json_response', 'POST', $data);
+        $this->assertTrue(is_object($test->curl->response));
+        $this->assertFalse(is_array($test->curl->response));
+
+        $test = new Test();
+        $test->curl->setJsonDecoder(function($response) {
+            return json_decode($response, true);
+        });
+        $test->server('json_response', 'POST', $data);
+        $this->assertFalse(is_object($test->curl->response));
+        $this->assertTrue(is_array($test->curl->response));
+    }
+
     public function testXMLResponse()
     {
         foreach (array(
