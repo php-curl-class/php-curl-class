@@ -42,6 +42,8 @@ class Curl
     public $response = null;
     public $raw_response = null;
 
+    public $json_to_array = false;
+
     public function __construct()
     {
         if (!extension_loaded('curl')) {
@@ -368,13 +370,25 @@ class Curl
         return $request_headers;
     }
 
+    /**
+     * Set the Json Response type to be an array instead of an object
+     *   The $curl->response is converted to an object using json_decode() if the content-type is set to json data
+     *   the parseResponse() function will return an array instead of an object using json_decode($response, true)
+     * @param $bool
+     * @return $this
+     */
+    public function setJsonResponseToArray($bool) {
+        $this->json_to_array = $bool;
+        return $this;
+    }
+
     private function parseResponse($response_headers, $raw_response)
     {
 
         $response = $raw_response;
         if (isset($response_headers['Content-Type'])) {
             if (preg_match($this->json_pattern, $response_headers['Content-Type'])) {
-                $json_obj = json_decode($response, false);
+                $json_obj = json_decode($response, $this->json_to_array);
                 if ($json_obj !== null) {
                     $response = $json_obj;
                 }
