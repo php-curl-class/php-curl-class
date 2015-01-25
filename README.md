@@ -143,3 +143,37 @@ $curl->get(array(
     'q' => 'hello world',
 ));
 ```
+
+### Available Methods
+```php
+__construct()
+__destruct()
+beforeSend($function)
+close()
+complete($callback)
+delete($url, $data = array())
+download($url, $filename)
+error($callback)
+get($url_mixed, $data = array())
+getOpt($option)
+head($url, $data = array())
+options($url, $data = array())
+patch($url, $data = array())
+post($url, $data = array())
+put($url, $data = array())
+setBasicAuthentication($username, $password = '')
+setCookie($key, $value)
+setCookieFile($cookie_file)
+setCookieJar($cookie_jar)
+setDefaultJsonDecoder() {
+setDefaultUserAgent()
+setHeader($key, $value)
+setJsonDecoder($func) {
+setOpt($option, $value)
+setReferer($referer)
+setReferrer($referrer)
+setUserAgent($user_agent)
+success($callback)
+unsetHeader($key)
+verbose($on = true)
+```
