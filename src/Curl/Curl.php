@@ -243,7 +243,8 @@ class Curl
         $this->setUserAgent($user_agent);
     }
 
-    public function setDefaultJsonDecoder() {
+    public function setDefaultJsonDecoder()
+    {
         $this->json_decoder = function($response) {
             $json_obj = json_decode($response, false);
             if (!($json_obj === null)) {
@@ -253,7 +254,8 @@ class Curl
         };
     }
 
-    public function setJsonDecoder($func) {
+    public function setJsonDecoder($func)
+    {
         $this->json_decoder = $func;
     }
 

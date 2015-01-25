@@ -165,10 +165,10 @@ setBasicAuthentication($username, $password = '')
 setCookie($key, $value)
 setCookieFile($cookie_file)
 setCookieJar($cookie_jar)
-setDefaultJsonDecoder() {
+setDefaultJsonDecoder()
 setDefaultUserAgent()
 setHeader($key, $value)
-setJsonDecoder($func) {
+setJsonDecoder($func)
 setOpt($option, $value)
 setReferer($referer)
 setReferrer($referrer)
