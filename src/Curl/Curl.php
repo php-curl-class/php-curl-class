@@ -330,9 +330,9 @@ class Curl
         }
     }
 
-    public function beforeSend($function)
+    public function beforeSend($callback)
     {
-        $this->before_send_function = $function;
+        $this->before_send_function = $callback;
     }
 
     public function success($callback)
