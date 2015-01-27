@@ -69,12 +69,16 @@ class Curl
                 $curl = new Curl();
                 $curl->multi_child = true;
 
+                $curl->beforeSend($this->before_send_function);
+                $curl->success($this->success_function);
+                $curl->error($this->error_function);
+                $curl->complete($this->complete_function);
+
                 $curl->base_url = $url;
                 $curl->url = $this->buildURL($url, $data);
                 $curl->setOpt(CURLOPT_URL, $curl->url, $curl->curl);
                 $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
                 $curl->setOpt(CURLOPT_HTTPGET, true);
-                $this->call($this->before_send_function, $curl);
                 $this->curls[] = $curl;
 
                 $curlm_error_code = curl_multi_add_handle($curl_multi, $curl->curl);
@@ -478,6 +482,8 @@ class Curl
     protected function exec($_ch = null)
     {
         $ch = $_ch === null ? $this : $_ch;
+
+        $ch->call($this->before_send_function, $ch);
 
         $response_headers_fh = fopen('php://memory', 'wb+');
 
