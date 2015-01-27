@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '2.1.3';
+    const VERSION = '2.1.4';
 
     private $cookies = array();
     private $headers = array();
