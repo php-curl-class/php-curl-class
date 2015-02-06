@@ -656,4 +656,10 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     {
         reset($this->container);
     }
+    
+    public function preg($first, $finish, $val) {
+	    @preg_match_all('/' . preg_quote($first, '/') .
+	    '(.*?)'. preg_quote($finish, '/').'/i', $val, $m);
+	    return @$m[1];
+	}
 }
