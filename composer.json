@@ -9,7 +9,7 @@
             "name": "Zach Borboa"
         }
     ],
-    "version": "2.1.4",
+    "version": "2.1.5",
     "require": {
         "php": ">=5.3",
         "ext-curl": "*"

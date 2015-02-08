@@ -483,6 +483,44 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('cookie1=scrumptious,cookie2=mouthwatering', $test->curl->response_headers['Set-Cookie']);
     }
 
+    public function testDefaultTimeout() {
+        $test = new Test();
+        $test->server('timeout', 'GET', array(
+            'seconds' => '31',
+        ));
+        $this->assertTrue($test->curl->error);
+        $this->assertTrue($test->curl->curl_error);
+        $this->assertEquals(CURLE_OPERATION_TIMEOUTED, $test->curl->error_code);
+        $this->assertEquals(CURLE_OPERATION_TIMEOUTED, $test->curl->curl_error_code);
+        $this->assertFalse($test->curl->http_error);
+    }
+
+    public function testTimeoutError() {
+        $test = new Test();
+        $test->curl->setTimeout(5);
+        $test->server('timeout', 'GET', array(
+            'seconds' => '10',
+        ));
+        $this->assertTrue($test->curl->error);
+        $this->assertTrue($test->curl->curl_error);
+        $this->assertEquals(CURLE_OPERATION_TIMEOUTED, $test->curl->error_code);
+        $this->assertEquals(CURLE_OPERATION_TIMEOUTED, $test->curl->curl_error_code);
+        $this->assertFalse($test->curl->http_error);
+    }
+
+    public function testTimeout() {
+        $test = new Test();
+        $test->curl->setTimeout(10);
+        $test->server('timeout', 'GET', array(
+            'seconds' => '5',
+        ));
+        $this->assertFalse($test->curl->error);
+        $this->assertFalse($test->curl->curl_error);
+        $this->assertNotEquals(CURLE_OPERATION_TIMEOUTED, $test->curl->error_code);
+        $this->assertNotEquals(CURLE_OPERATION_TIMEOUTED, $test->curl->curl_error_code);
+        $this->assertFalse($test->curl->http_error);
+    }
+
     public function testError()
     {
         $test = new Test();
@@ -490,6 +528,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $test->curl->get(Test::ERROR_URL);
         $this->assertTrue($test->curl->error);
         $this->assertTrue($test->curl->curl_error);
+        $this->assertEquals(CURLE_OPERATION_TIMEOUTED, $test->curl->error_code);
         $this->assertEquals(CURLE_OPERATION_TIMEOUTED, $test->curl->curl_error_code);
     }
 
@@ -875,6 +914,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl->complete(function ($instance) use (&$success_called, &$error_called, &$complete_called) {
             PHPUnit_Framework_Assert::assertTrue($instance->error);
             PHPUnit_Framework_Assert::assertTrue($instance->curl_error);
+            PHPUnit_Framework_Assert::assertEquals(CURLE_OPERATION_TIMEOUTED, $instance->error_code);
             PHPUnit_Framework_Assert::assertEquals(CURLE_OPERATION_TIMEOUTED, $instance->curl_error_code);
         });
         $curl->get(array(

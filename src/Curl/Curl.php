@@ -4,7 +4,8 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '2.1.4';
+    const VERSION = '2.1.5';
+    const DEFAULT_TIMEOUT = 30;
 
     private $cookies = array();
     private $headers = array();
@@ -52,6 +53,7 @@ class Curl
         $this->curl = curl_init();
         $this->setDefaultUserAgent();
         $this->setDefaultJsonDecoder();
+        $this->setDefaultTimeout();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
@@ -266,6 +268,16 @@ class Curl
     public function setUserAgent($user_agent)
     {
         $this->setOpt(CURLOPT_USERAGENT, $user_agent);
+    }
+
+    public function setTimeout($seconds)
+    {
+        $this->setOpt(CURLOPT_TIMEOUT, $seconds);
+    }
+
+    public function setDefaultTimeout()
+    {
+        $this->setTimeout(self::DEFAULT_TIMEOUT);
     }
 
     public function setReferer($referer)
