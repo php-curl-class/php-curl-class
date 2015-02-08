@@ -145,6 +145,20 @@ if ($test == 'http_basic_auth') {
     header('ETag: ' . md5_file($unsafe_file_path));
     readfile($unsafe_file_path);
     exit;
+} elseif ($test === 'timeout') {
+    $unsafe_seconds = $_GET['seconds'];
+    $start = time();
+    while (true) {
+        echo '.';
+        ob_flush();
+        flush();
+        sleep(1);
+        $elapsed = time() - $start;
+        if ($elapsed >= $unsafe_seconds) {
+            break;
+        }
+    }
+    exit;
 } elseif ($test === 'error_message') {
     if (function_exists('http_response_code')) {
         http_response_code(401);
