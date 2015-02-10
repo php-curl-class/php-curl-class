@@ -4,7 +4,7 @@ namespace Curl;
 
 class MultiCurl
 {
-    public $curl_multi;
+    public $multi_curl;
     public $curls = array();
 
     private $before_send_function = null;
@@ -14,7 +14,7 @@ class MultiCurl
 
     public function __construct()
     {
-        $this->curl_multi = curl_multi_init();
+        $this->multi_curl = curl_multi_init();
     }
 
     public function addDelete($url, $data = array())
@@ -136,18 +136,18 @@ class MultiCurl
         $curl_handles = $this->curls;
         do {
             echo str_repeat('-', 80) . "\n";
-            curl_multi_select($this->curl_multi);
-            curl_multi_exec($this->curl_multi, $active);
+            curl_multi_select($this->multi_curl);
+            curl_multi_exec($this->multi_curl, $active);
             echo 'active: ' . $active . "\n";
 
-            while (!($info_array = curl_multi_info_read($this->curl_multi)) === false) {
+            while (!($info_array = curl_multi_info_read($this->multi_curl)) === false) {
                 if ($info_array['msg'] === CURLMSG_DONE) {
                     foreach ($curl_handles as $key => $ch) {
                         if ($ch->curl === $info_array['handle']) {
                             echo $ch->id . ' completed' . "\n";
                             $ch->curl_error_code = $info_array['result'];
                             $ch->exec($ch->curl);
-                            curl_multi_remove_handle($this->curl_multi, $ch->curl);
+                            curl_multi_remove_handle($this->multi_curl, $ch->curl);
                             unset($curl_handles[$key]);
                             break;
                         }
@@ -166,7 +166,7 @@ class MultiCurl
             $ch->close();
         }
 
-        curl_multi_close($this->curl_multi);
+        curl_multi_close($this->multi_curl);
     }
 
     public function __destruct()
@@ -177,7 +177,7 @@ class MultiCurl
     private function addHandle($curl)
     {
         echo 'adding handle (' . $curl->getOpt(CURLOPT_CUSTOMREQUEST) . ')' . "\n";
-        $curlm_error_code = curl_multi_add_handle($this->curl_multi, $curl->curl);
+        $curlm_error_code = curl_multi_add_handle($this->multi_curl, $curl->curl);
         if (!($curlm_error_code === CURLM_OK)) {
             throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
         }
