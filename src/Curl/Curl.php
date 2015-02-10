@@ -62,7 +62,6 @@ class Curl
 
     public function get($url, $data = array())
     {
-        $this->base_url = $url;
         $this->setURL($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $this->setOpt(CURLOPT_HTTPGET, true);
@@ -75,9 +74,7 @@ class Curl
             $this->unsetHeader('Content-Length');
         }
 
-        $this->base_url = $url;
-        $this->url = $url;
-        $this->setOpt(CURLOPT_URL, $this->url);
+        $this->setURL($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         $this->setOpt(CURLOPT_POST, true);
         $this->setOpt(CURLOPT_POSTFIELDS, $this->postfields($data));
@@ -86,9 +83,7 @@ class Curl
 
     public function put($url, $data = array())
     {
-        $this->base_url = $url;
-        $this->url = $url;
-        $this->setOpt(CURLOPT_URL, $this->url);
+        $this->setURL($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
         $put_data = $this->postfields($data);
         if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
@@ -100,10 +95,8 @@ class Curl
 
     public function patch($url, $data = array())
     {
-        $this->base_url = $url;
-        $this->url = $url;
+        $this->setURL($url);
         $this->unsetHeader('Content-Length');
-        $this->setOpt(CURLOPT_URL, $this->url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $this->setOpt(CURLOPT_POSTFIELDS, $data);
         return $this->exec();
@@ -111,19 +104,15 @@ class Curl
 
     public function delete($url, $data = array())
     {
-        $this->base_url = $url;
-        $this->url = $url;
+        $this->setURL($url, $data);
         $this->unsetHeader('Content-Length');
-        $this->setOpt(CURLOPT_URL, $this->buildURL($this->url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
         return $this->exec();
     }
 
     public function head($url, $data = array())
     {
-        $this->base_url = $url;
-        $this->url = $this->buildURL($url, $data);
-        $this->setOpt(CURLOPT_URL, $this->url);
+        $this->setURL($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
         $this->setOpt(CURLOPT_NOBODY, true);
         return $this->exec();
@@ -131,10 +120,8 @@ class Curl
 
     public function options($url, $data = array())
     {
-        $this->base_url = $url;
-        $this->url = $url;
+        $this->setURL($url, $data);
         $this->unsetHeader('Content-Length');
-        $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         return $this->exec();
     }
