@@ -90,6 +90,14 @@ class MultiCurl
 
     public function addPut($url, $data = array())
     {
+        $curl = new Curl();
+        $curl->setURL($url);
+        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
+        $put_data = $curl->postfields($data);
+        $curl->setHeader('Content-Length', strlen($put_data));
+        $curl->setOpt(CURLOPT_POSTFIELDS, $put_data);
+        $this->addHandle($curl);
+        return $curl;
     }
 
     public function beforeSend($callback)
