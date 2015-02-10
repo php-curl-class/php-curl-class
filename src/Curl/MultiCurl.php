@@ -63,6 +63,13 @@ class MultiCurl
 
     public function addPatch($url, $data = array())
     {
+        $curl = new Curl();
+        $curl->setURL($url);
+        $curl->unsetHeader('Content-Length');
+        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
+        $curl->setOpt(CURLOPT_POSTFIELDS, $data);
+        $this->addHandle($curl);
+        return $curl;
     }
 
     public function addPost($url, $data = array())
