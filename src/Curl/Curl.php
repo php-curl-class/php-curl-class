@@ -11,7 +11,7 @@ class Curl
     private $headers = array();
     private $options = array();
 
-    private $before_send_function = null;
+    public $before_send_function = null;
     private $success_function = null;
     private $error_function = null;
     private $complete_function = null;
