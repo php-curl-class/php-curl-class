@@ -19,6 +19,12 @@ class MultiCurl
 
     public function addDelete($url, $data = array())
     {
+        $curl = new Curl();
+        $curl->setURL($url, $data);
+        $curl->unsetHeader('Content-Length');
+        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
+        $this->addHandle($curl);
+        return $curl;
     }
 
     public function addDownload($url, $filename)
@@ -28,7 +34,6 @@ class MultiCurl
     public function addGet($url, $data = array())
     {
         $curl = new Curl();
-        $curl->base_url = $url;
         $curl->setURL($url, $data);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $curl->setOpt(CURLOPT_HTTPGET, true);
@@ -38,6 +43,12 @@ class MultiCurl
 
     public function addHead($url, $data = array())
     {
+        $curl = new Curl();
+        $curl->setURL($url, $data);
+        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
+        $curl->setOpt(CURLOPT_NOBODY, true);
+        $this->addHandle($curl);
+        return $curl;
     }
 
     public function addOptions($url, $data = array())

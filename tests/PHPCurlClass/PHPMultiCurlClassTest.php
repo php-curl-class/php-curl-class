@@ -1,141 +1,215 @@
 <?php
-require '../src/Curl/Curl.php';
 require '../src/Curl/MultiCurl.php';
-require 'Helper.php';
 
 use \Curl\MultiCurl;
-//use \Curl\CaseInsensitiveArray;
 use \Helper\Test;
 
 class MultiCurlTest extends PHPUnit_Framework_TestCase
 {
     public function testMultiCurlCallback()
     {
-        $before_send_called = false;
-        $success_called = false;
-        $error_called = false;
-        $complete_called = false;
+        $delete_before_send_called = false;
+        $delete_success_called = false;
+        $delete_error_called = false;
+        $delete_complete_called = false;
+
+        $get_before_send_called = false;
+        $get_success_called = false;
+        $get_error_called = false;
+        $get_complete_called = false;
+
+        $head_before_send_called = false;
+        $head_success_called = false;
+        $head_error_called = false;
+        $head_complete_called = false;
 
         $multi_curl = new MultiCurl();
         $multi_curl->beforeSend(function ($instance) use (
-            &$before_send_called,
-            &$success_called,
-            &$error_called,
-            &$complete_called) {
+            &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
+            &$get_before_send_called, &$get_success_called, &$get_error_called, &$get_complete_called,
+            &$head_before_send_called, &$head_success_called, &$head_error_called, &$head_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertFalse($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
-            $before_send_called = true;
+            $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
+            echo 'beforeSend request method: ' . $request_method . "\n";
+            if ($request_method === 'DELETE') {
+                PHPUnit_Framework_Assert::assertFalse($delete_before_send_called);
+                PHPUnit_Framework_Assert::assertFalse($delete_success_called);
+                PHPUnit_Framework_Assert::assertFalse($delete_error_called);
+                PHPUnit_Framework_Assert::assertFalse($delete_complete_called);
+                $delete_before_send_called = true;
+            }
+            if ($request_method === 'GET') {
+                PHPUnit_Framework_Assert::assertFalse($get_before_send_called);
+                PHPUnit_Framework_Assert::assertFalse($get_success_called);
+                PHPUnit_Framework_Assert::assertFalse($get_error_called);
+                PHPUnit_Framework_Assert::assertFalse($get_complete_called);
+                $get_before_send_called = true;
+            }
+            if ($request_method === 'HEAD') {
+                PHPUnit_Framework_Assert::assertFalse($head_before_send_called);
+                PHPUnit_Framework_Assert::assertFalse($head_success_called);
+                PHPUnit_Framework_Assert::assertFalse($head_error_called);
+                PHPUnit_Framework_Assert::assertFalse($head_complete_called);
+                $head_before_send_called = true;
+            }
         });
         $multi_curl->success(function ($instance) use (
-            &$before_send_called,
-            &$success_called,
-            &$error_called,
-            &$complete_called) {
+            &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
+            &$get_before_send_called, &$get_success_called, &$get_error_called, &$get_complete_called,
+            &$head_before_send_called, &$head_success_called, &$head_error_called, &$head_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertTrue($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
-            $success_called = true;
+            $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
+            echo 'success request method: ' . $request_method . "\n";
+            if ($request_method === 'DELETE') {
+                PHPUnit_Framework_Assert::assertTrue($delete_before_send_called);
+                PHPUnit_Framework_Assert::assertFalse($delete_success_called);
+                PHPUnit_Framework_Assert::assertFalse($delete_error_called);
+                PHPUnit_Framework_Assert::assertFalse($delete_complete_called);
+                $delete_success_called = true;
+            }
+            if ($request_method === 'GET') {
+                PHPUnit_Framework_Assert::assertTrue($get_before_send_called);
+                PHPUnit_Framework_Assert::assertFalse($get_success_called);
+                PHPUnit_Framework_Assert::assertFalse($get_error_called);
+                PHPUnit_Framework_Assert::assertFalse($get_complete_called);
+                $get_success_called = true;
+            }
+            if ($request_method === 'HEAD') {
+                PHPUnit_Framework_Assert::assertTrue($head_before_send_called);
+                PHPUnit_Framework_Assert::assertFalse($head_success_called);
+                PHPUnit_Framework_Assert::assertFalse($head_error_called);
+                PHPUnit_Framework_Assert::assertFalse($head_complete_called);
+                $head_success_called = true;
+            }
         });
         $multi_curl->error(function ($instance) use (
-            &$error_called) {
-            $error_called = true;
+            &$delete_error_called,
+            &$get_error_called,
+            &$head_error_called) {
+            $delete_error_called = true;
+            $get_error_called = true;
+            $head_error_called = true;
         });
         $multi_curl->complete(function ($instance) use (
-            &$before_send_called,
-            &$success_called,
-            &$error_called,
-            &$complete_called) {
+            &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
+            &$get_before_send_called, &$get_success_called, &$get_error_called, &$get_complete_called,
+            &$head_before_send_called, &$head_success_called, &$head_error_called, &$head_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertTrue($before_send_called);
-            PHPUnit_Framework_Assert::assertTrue($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
-            $complete_called = true;
+            $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
+            echo 'complete request method: ' . $request_method . "\n";
+            if ($request_method === 'DELETE') {
+                PHPUnit_Framework_Assert::assertTrue($delete_before_send_called);
+                PHPUnit_Framework_Assert::assertTrue($delete_success_called);
+                PHPUnit_Framework_Assert::assertFalse($delete_error_called);
+                PHPUnit_Framework_Assert::assertFalse($delete_complete_called);
+                $delete_complete_called = true;
+            }
+            if ($request_method === 'GET') {
+                PHPUnit_Framework_Assert::assertTrue($get_before_send_called);
+                PHPUnit_Framework_Assert::assertTrue($get_success_called);
+                PHPUnit_Framework_Assert::assertFalse($get_error_called);
+                PHPUnit_Framework_Assert::assertFalse($get_complete_called);
+                $get_complete_called = true;
+            }
+            if ($request_method === 'HEAD') {
+                PHPUnit_Framework_Assert::assertTrue($head_before_send_called);
+                PHPUnit_Framework_Assert::assertTrue($head_success_called);
+                PHPUnit_Framework_Assert::assertFalse($head_error_called);
+                PHPUnit_Framework_Assert::assertFalse($head_complete_called);
+                $head_complete_called = true;
+            }
         });
 
+        $multi_curl->addDelete(Test::TEST_URL);
         $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addHead(Test::TEST_URL);
         $multi_curl->start();
 
-        $this->assertTrue($before_send_called);
-        $this->assertTrue($success_called);
-        $this->assertFalse($error_called);
-        $this->assertTrue($complete_called);
+        $this->assertTrue($delete_before_send_called);
+        $this->assertTrue($delete_success_called);
+        $this->assertFalse($delete_error_called);
+        $this->assertTrue($delete_complete_called);
+
+        $this->assertTrue($get_before_send_called);
+        $this->assertTrue($get_success_called);
+        $this->assertFalse($get_error_called);
+        $this->assertTrue($get_complete_called);
+
+        $this->assertTrue($head_before_send_called);
+        $this->assertTrue($head_success_called);
+        $this->assertFalse($head_error_called);
+        $this->assertTrue($head_complete_called);
     }
 
     public function testMultiCurlCallbackError()
     {
-        $before_send_called = false;
-        $success_called = false;
-        $error_called = false;
-        $complete_called = false;
+        $get_before_send_called = false;
+        $get_success_called = false;
+        $get_error_called = false;
+        $get_complete_called = false;
 
         $multi_curl = new MultiCurl();
         $multi_curl->beforeSend(function ($instance) use (
-            &$before_send_called,
-            &$success_called,
-            &$error_called,
-            &$complete_called) {
+            &$get_before_send_called,
+            &$get_success_called,
+            &$get_error_called,
+            &$get_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertFalse($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
-            $before_send_called = true;
+            PHPUnit_Framework_Assert::assertFalse($get_before_send_called);
+            PHPUnit_Framework_Assert::assertFalse($get_success_called);
+            PHPUnit_Framework_Assert::assertFalse($get_error_called);
+            PHPUnit_Framework_Assert::assertFalse($get_complete_called);
+            $get_before_send_called = true;
         });
         $multi_curl->success(function ($instance) use (
-            &$success_called) {
-            $success_called = true;
+            &$get_success_called) {
+            $get_success_called = true;
         });
         $multi_curl->error(function ($instance) use (
-            &$before_send_called,
-            &$success_called,
-            &$error_called,
-            &$complete_called) {
+            &$get_before_send_called,
+            &$get_success_called,
+            &$get_error_called,
+            &$get_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertTrue($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
-            $error_called = true;
+            PHPUnit_Framework_Assert::assertTrue($get_before_send_called);
+            PHPUnit_Framework_Assert::assertFalse($get_success_called);
+            PHPUnit_Framework_Assert::assertFalse($get_error_called);
+            PHPUnit_Framework_Assert::assertFalse($get_complete_called);
+            $get_error_called = true;
         });
         $multi_curl->complete(function ($instance) use (
-            &$before_send_called,
-            &$success_called,
-            &$error_called,
-            &$complete_called) {
+            &$get_before_send_called,
+            &$get_success_called,
+            &$get_error_called,
+            &$get_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertTrue($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertTrue($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
+            PHPUnit_Framework_Assert::assertTrue($get_before_send_called);
+            PHPUnit_Framework_Assert::assertFalse($get_success_called);
+            PHPUnit_Framework_Assert::assertTrue($get_error_called);
+            PHPUnit_Framework_Assert::assertFalse($get_complete_called);
             PHPUnit_Framework_Assert::assertTrue($instance->error);
             PHPUnit_Framework_Assert::assertTrue($instance->curl_error);
             PHPUnit_Framework_Assert::assertFalse($instance->http_error);
             PHPUnit_Framework_Assert::assertEquals(CURLE_OPERATION_TIMEOUTED, $instance->error_code);
             PHPUnit_Framework_Assert::assertEquals(CURLE_OPERATION_TIMEOUTED, $instance->curl_error_code);
-            $complete_called = true;
+            $get_complete_called = true;
         });
 
         $multi_curl->addGet(Test::ERROR_URL);
         $multi_curl->start();
 
-        $this->assertTrue($before_send_called);
-        $this->assertFalse($success_called);
-        $this->assertTrue($error_called);
-        $this->assertTrue($complete_called);
+        $this->assertTrue($get_before_send_called);
+        $this->assertFalse($get_success_called);
+        $this->assertTrue($get_error_called);
+        $this->assertTrue($get_complete_called);
     }
 
     public function testCurlCallback()
     {
-        $before_send_called = false;
-        $success_called = false;
-        $error_called = false;
-        $complete_called = false;
+        $get_before_send_called = false;
+        $get_success_called = false;
+        $get_error_called = false;
+        $get_complete_called = false;
 
         $multi_curl = new MultiCurl();
         echo 'about to add get' . "\n";
@@ -143,69 +217,69 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         echo 'get added' . "\n";
         echo 'about to add before send' . "\n";
         $get->beforeSend(function ($instance) use (
-            &$before_send_called,
-            &$success_called,
-            &$error_called,
-            &$complete_called) {
+            &$get_before_send_called,
+            &$get_success_called,
+            &$get_error_called,
+            &$get_complete_called) {
             echo 'before send called' . "\n";
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertFalse($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
-            $before_send_called = true;
+            PHPUnit_Framework_Assert::assertFalse($get_before_send_called);
+            PHPUnit_Framework_Assert::assertFalse($get_success_called);
+            PHPUnit_Framework_Assert::assertFalse($get_error_called);
+            PHPUnit_Framework_Assert::assertFalse($get_complete_called);
+            $get_before_send_called = true;
         });
         echo 'about to set success' . "\n";
         $get->success(function ($instance) use (
-            &$before_send_called,
-            &$success_called,
-            &$error_called,
-            &$complete_called) {
+            &$get_before_send_called,
+            &$get_success_called,
+            &$get_error_called,
+            &$get_complete_called) {
             echo 'success called' . "\n";
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertTrue($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
-            $success_called = true;
+            PHPUnit_Framework_Assert::assertTrue($get_before_send_called);
+            PHPUnit_Framework_Assert::assertFalse($get_success_called);
+            PHPUnit_Framework_Assert::assertFalse($get_error_called);
+            PHPUnit_Framework_Assert::assertFalse($get_complete_called);
+            $get_success_called = true;
         });
         echo 'about to set error' . "\n";
         $get->error(function ($instance) use (
-            &$error_called) {
+            &$get_error_called) {
             echo 'error called' . "\n";
-            $error_called = true;
+            $get_error_called = true;
         });
         echo 'about to set complete' . "\n";
         $get->complete(function ($instance) use (
-            &$before_send_called,
-            &$success_called,
-            &$error_called,
-            &$complete_called) {
+            &$get_before_send_called,
+            &$get_success_called,
+            &$get_error_called,
+            &$get_complete_called) {
             echo 'complete called' . "\n";
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertTrue($before_send_called);
-            PHPUnit_Framework_Assert::assertTrue($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
-            $complete_called = true;
+            PHPUnit_Framework_Assert::assertTrue($get_before_send_called);
+            PHPUnit_Framework_Assert::assertTrue($get_success_called);
+            PHPUnit_Framework_Assert::assertFalse($get_error_called);
+            PHPUnit_Framework_Assert::assertFalse($get_complete_called);
+            $get_complete_called = true;
         });
 
         echo 'about to run start' . "\n";
         $multi_curl->start();
         echo 'calls done' . "\n";
 
-        $this->assertTrue($before_send_called);
-        $this->assertTrue($success_called);
-        $this->assertFalse($error_called);
-        $this->assertTrue($complete_called);
+        $this->assertTrue($get_before_send_called);
+        $this->assertTrue($get_success_called);
+        $this->assertFalse($get_error_called);
+        $this->assertTrue($get_complete_called);
     }
 
     public function testCurlCallbackError()
     {
-        $before_send_called = false;
-        $success_called = false;
-        $error_called = false;
-        $complete_called = false;
+        $get_before_send_called = false;
+        $get_success_called = false;
+        $get_error_called = false;
+        $get_complete_called = false;
 
         $multi_curl = new MultiCurl();
         echo 'about to add get' . "\n";
@@ -213,60 +287,60 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         echo 'get added' . "\n";
         echo 'about to add before send' . "\n";
         $get->beforeSend(function ($instance) use (
-            &$before_send_called,
-            &$success_called,
-            &$error_called,
-            &$complete_called) {
+            &$get_before_send_called,
+            &$get_success_called,
+            &$get_error_called,
+            &$get_complete_called) {
             echo 'before send called' . "\n";
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertFalse($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
-            $before_send_called = true;
+            PHPUnit_Framework_Assert::assertFalse($get_before_send_called);
+            PHPUnit_Framework_Assert::assertFalse($get_success_called);
+            PHPUnit_Framework_Assert::assertFalse($get_error_called);
+            PHPUnit_Framework_Assert::assertFalse($get_complete_called);
+            $get_before_send_called = true;
         });
         echo 'about to set success' . "\n";
         $get->success(function ($instance) use (
-            &$success_called) {
+            &$get_success_called) {
             echo 'success called' . "\n";
-            $success_called = true;
+            $get_success_called = true;
         });
         echo 'about to set error' . "\n";
         $get->error(function ($instance) use (
-            &$before_send_called,
-            &$success_called,
-            &$error_called,
-            &$complete_called) {
+            &$get_before_send_called,
+            &$get_success_called,
+            &$get_error_called,
+            &$get_complete_called) {
             echo 'error called' . "\n";
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertTrue($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
-            $error_called = true;
+            PHPUnit_Framework_Assert::assertTrue($get_before_send_called);
+            PHPUnit_Framework_Assert::assertFalse($get_success_called);
+            PHPUnit_Framework_Assert::assertFalse($get_error_called);
+            PHPUnit_Framework_Assert::assertFalse($get_complete_called);
+            $get_error_called = true;
         });
         echo 'about to set complete' . "\n";
         $get->complete(function ($instance) use (
-            &$before_send_called,
-            &$success_called,
-            &$error_called,
-            &$complete_called) {
+            &$get_before_send_called,
+            &$get_success_called,
+            &$get_error_called,
+            &$get_complete_called) {
             echo 'complete called' . "\n";
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertTrue($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertTrue($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
-            $complete_called = true;
+            PHPUnit_Framework_Assert::assertTrue($get_before_send_called);
+            PHPUnit_Framework_Assert::assertFalse($get_success_called);
+            PHPUnit_Framework_Assert::assertTrue($get_error_called);
+            PHPUnit_Framework_Assert::assertFalse($get_complete_called);
+            $get_complete_called = true;
         });
 
         echo 'about to run start' . "\n";
         $multi_curl->start();
         echo 'calls done' . "\n";
 
-        $this->assertTrue($before_send_called);
-        $this->assertFalse($success_called);
-        $this->assertTrue($error_called);
-        $this->assertTrue($complete_called);
+        $this->assertTrue($get_before_send_called);
+        $this->assertFalse($get_success_called);
+        $this->assertTrue($get_error_called);
+        $this->assertTrue($get_complete_called);
     }
 }
