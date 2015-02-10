@@ -21,6 +21,7 @@ class Curl
     private $xml_pattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
 
     public $curl;
+    public $id = null;
 
     public $error = false;
     public $error_code = 0;
@@ -38,6 +39,7 @@ class Curl
     public $url = null;
     public $request_headers = null;
     public $response_headers = null;
+    public $raw_response_headers = '';
     public $response = null;
     public $raw_response = null;
 
@@ -48,10 +50,12 @@ class Curl
         }
 
         $this->curl = curl_init();
+        $this->id = 1;
         $this->setDefaultUserAgent();
         $this->setDefaultJsonDecoder();
         $this->setDefaultTimeout();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
+        $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
     }
@@ -59,8 +63,7 @@ class Curl
     public function get($url, $data = array())
     {
         $this->base_url = $url;
-        $this->url = $this->buildURL($url, $data);
-        $this->setOpt(CURLOPT_URL, $this->url);
+        $this->setURL($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $this->setOpt(CURLOPT_HTTPGET, true);
         return $this->exec();
@@ -299,9 +302,21 @@ class Curl
         $this->complete_function = $callback;
     }
 
+    public function setURL($url, $data = array())
+    {
+        $this->url = $this->buildURL($url, $data);
+        $this->setOpt(CURLOPT_URL, $this->url);
+    }
+
     private function buildURL($url, $data = array())
     {
         return $url . (empty($data) ? '' : '?' . http_build_query($data));
+    }
+
+    public function headerCallback($ch, $header)
+    {
+        $this->raw_response_headers .= $header;
+        return strlen($header);
     }
 
     private function parseHeaders($raw_headers)
@@ -424,26 +439,17 @@ class Curl
         return $data;
     }
 
-    protected function exec($_ch = null)
+    public function exec($ch = null)
     {
-        $this->call($this->before_send_function);
+        $target = $ch === null ? $this : $ch;
 
-        $response_headers_fh = fopen('php://memory', 'wb+');
-
-        // Fallback to storing data in a temporary file when storing data in
-        // memory errors with "Warning: curl_setopt(): cannot represent a stream
-        // of type MEMORY as a STDIO FILE*".
-        if (!@$this->setOpt(CURLOPT_WRITEHEADER, $response_headers_fh)) {
-            $response_headers_fh = fopen('php://temp', 'wb+');
-            $this->setOpt(CURLOPT_WRITEHEADER, $response_headers_fh);
+        if (!($ch === null)) {
+            $this->raw_response = curl_multi_getcontent($ch);
+        } else {
+            $this->call($this->before_send_function);
+            $this->raw_response = curl_exec($this->curl);
+            $this->curl_error_code = curl_errno($this->curl);
         }
-
-        $this->raw_response = curl_exec($this->curl);
-        $this->curl_error_code = curl_errno($this->curl);
-
-        rewind($response_headers_fh);
-        $this->raw_response_headers = stream_get_contents($response_headers_fh);
-        fclose($response_headers_fh);
 
         $this->curl_error_message = curl_error($this->curl);
         $this->curl_error = !($this->curl_error_code === 0);
@@ -475,7 +481,7 @@ class Curl
         return $this->response;
     }
 
-    private function call($function)
+    public function call($function)
     {
         if (is_callable($function)) {
             call_user_func_array($function, array($this));
