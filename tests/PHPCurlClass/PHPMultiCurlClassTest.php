@@ -33,13 +33,19 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $patch_error_called = false;
         $patch_complete_called = false;
 
+        $post_before_send_called = false;
+        $post_success_called = false;
+        $post_error_called = false;
+        $post_complete_called = false;
+
         $multi_curl = new MultiCurl();
         $multi_curl->beforeSend(function ($instance) use (
             &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
             &$get_before_send_called, &$get_success_called, &$get_error_called, &$get_complete_called,
             &$head_before_send_called, &$head_success_called, &$head_error_called, &$head_complete_called,
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
-            &$patch_before_send_called, &$patch_success_called, &$patch_error_called, &$patch_complete_called) {
+            &$patch_before_send_called, &$patch_success_called, &$patch_error_called, &$patch_complete_called,
+            &$post_before_send_called, &$post_success_called, &$post_error_called, &$post_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
             echo 'beforeSend request method: ' . $request_method . "\n";
@@ -78,13 +84,21 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
                 PHPUnit_Framework_Assert::assertFalse($patch_complete_called);
                 $patch_before_send_called = true;
             }
+            if ($request_method === 'POST') {
+                PHPUnit_Framework_Assert::assertFalse($post_before_send_called);
+                PHPUnit_Framework_Assert::assertFalse($post_success_called);
+                PHPUnit_Framework_Assert::assertFalse($post_error_called);
+                PHPUnit_Framework_Assert::assertFalse($post_complete_called);
+                $post_before_send_called = true;
+            }
         });
         $multi_curl->success(function ($instance) use (
             &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
             &$get_before_send_called, &$get_success_called, &$get_error_called, &$get_complete_called,
             &$head_before_send_called, &$head_success_called, &$head_error_called, &$head_complete_called,
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
-            &$patch_before_send_called, &$patch_success_called, &$patch_error_called, &$patch_complete_called) {
+            &$patch_before_send_called, &$patch_success_called, &$patch_error_called, &$patch_complete_called,
+            &$post_before_send_called, &$post_success_called, &$post_error_called, &$post_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
             echo 'success request method: ' . $request_method . "\n";
@@ -123,6 +137,13 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
                 PHPUnit_Framework_Assert::assertFalse($patch_complete_called);
                 $patch_success_called = true;
             }
+            if ($request_method === 'POST') {
+                PHPUnit_Framework_Assert::assertTrue($post_before_send_called);
+                PHPUnit_Framework_Assert::assertFalse($post_success_called);
+                PHPUnit_Framework_Assert::assertFalse($post_error_called);
+                PHPUnit_Framework_Assert::assertFalse($post_complete_called);
+                $post_success_called = true;
+            }
         });
         $multi_curl->error(function ($instance) use (
             &$delete_error_called,
@@ -141,7 +162,8 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
             &$get_before_send_called, &$get_success_called, &$get_error_called, &$get_complete_called,
             &$head_before_send_called, &$head_success_called, &$head_error_called, &$head_complete_called,
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
-            &$patch_before_send_called, &$patch_success_called, &$patch_error_called, &$patch_complete_called) {
+            &$patch_before_send_called, &$patch_success_called, &$patch_error_called, &$patch_complete_called,
+            &$post_before_send_called, &$post_success_called, &$post_error_called, &$post_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
             echo 'complete request method: ' . $request_method . "\n";
@@ -180,6 +202,13 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
                 PHPUnit_Framework_Assert::assertFalse($patch_complete_called);
                 $patch_complete_called = true;
             }
+            if ($request_method === 'POST') {
+                PHPUnit_Framework_Assert::assertTrue($post_before_send_called);
+                PHPUnit_Framework_Assert::assertTrue($post_success_called);
+                PHPUnit_Framework_Assert::assertFalse($post_error_called);
+                PHPUnit_Framework_Assert::assertFalse($post_complete_called);
+                $post_complete_called = true;
+            }
         });
 
         $multi_curl->addDelete(Test::TEST_URL);
@@ -187,6 +216,7 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $multi_curl->addHead(Test::TEST_URL);
         $multi_curl->addOptions(Test::TEST_URL);
         $multi_curl->addPatch(Test::TEST_URL);
+        $multi_curl->addPost(Test::TEST_URL);
         $multi_curl->start();
 
         $this->assertTrue($delete_before_send_called);
@@ -213,6 +243,11 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($patch_success_called);
         $this->assertFalse($patch_error_called);
         $this->assertTrue($patch_complete_called);
+
+        $this->assertTrue($post_before_send_called);
+        $this->assertTrue($post_success_called);
+        $this->assertFalse($post_error_called);
+        $this->assertTrue($post_complete_called);
     }
 
     public function testMultiCurlCallbackError()

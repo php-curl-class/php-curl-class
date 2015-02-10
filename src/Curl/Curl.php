@@ -380,7 +380,7 @@ class Curl
         return $response_headers;
     }
 
-    private function postfields($data)
+    public function postfields($data)
     {
         if (is_array($data)) {
             if (self::is_array_multidim($data)) {

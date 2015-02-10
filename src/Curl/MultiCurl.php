@@ -74,6 +74,18 @@ class MultiCurl
 
     public function addPost($url, $data = array())
     {
+        $curl = new Curl();
+
+        if (is_array($data) && empty($data)) {
+            $curl->unsetHeader('Content-Length');
+        }
+
+        $curl->setURL($url);
+        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
+        $curl->setOpt(CURLOPT_POST, true);
+        $curl->setOpt(CURLOPT_POSTFIELDS, $curl->postfields($data));
+        $this->addHandle($curl);
+        return $curl;
     }
 
     public function addPut($url, $data = array())
