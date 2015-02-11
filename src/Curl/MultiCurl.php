@@ -7,6 +7,9 @@ class MultiCurl
     public $multi_curl;
     public $curls = array();
 
+    private $headers = array();
+    private $options = array();
+
     private $before_send_function = null;
     private $success_function = null;
     private $error_function = null;
@@ -15,6 +18,7 @@ class MultiCurl
     public function __construct()
     {
         $this->multi_curl = curl_multi_init();
+        $this->headers = new CaseInsensitiveArray();
     }
 
     public function addDelete($url, $data = array())
@@ -124,12 +128,42 @@ class MultiCurl
         $this->complete_function = $callback;
     }
 
+    public function setHeader($key, $value)
+    {
+        $this->headers[$key] = $value;
+    }
+
+    public function setOpt($option, $value)
+    {
+        $this->options[$option] = $value;
+    }
+
+    public function getOpt($option)
+    {
+        return $this->options[$option];
+    }
+
     public function start()
     {
         echo 'running start' . "\n";
         foreach ($this->curls as $ch) {
+            echo 'next curl' . "\n";
+
+            echo 'setting options for curl' . "\n";
+            foreach ($this->options as $option => $value) {
+                $ch->setOpt($option, $value);
+            }
+            echo 'options set for curl' . "\n";
+
+            echo 'setting headers for curl' . "\n";
+            foreach ($this->headers as $key => $value) {
+                $ch->setHeader($key, $value);
+            }
+            echo 'headers set for curl' . "\n";
+
             echo 'about to call before send' . "\n";
             $ch->call($ch->before_send_function);
+            echo 'before send called' . "\n";
         }
         echo 'called all before sends' . "\n";
 
