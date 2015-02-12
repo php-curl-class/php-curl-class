@@ -133,6 +133,12 @@ class Curl
         $this->get($url);
         fclose($fh);
 
+        // Fix "PHP Notice: Use of undefined constant STDOUT" when reading the
+        // PHP script from stdin.
+        if (!defined('STDOUT')) {
+            define('STDOUT', null);
+        }
+
         // Reset CURLOPT_FILE with STDOUT to avoid: "curl_exec(): CURLOPT_FILE
         // resource has gone away, resetting to default". Using null causes
         // "curl_setopt(): supplied argument is not a valid File-Handle
