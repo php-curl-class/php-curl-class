@@ -116,32 +116,32 @@ curl_close($curl->curl);
 
 ```php
 // Requests in parallel with callback functions.
-$curl = new Curl();
-$curl->setUserAgent('Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1');
+$multi_curl = new MultiCurl();
 
-$curl->success(function($instance) {
-    echo 'call to "' . $instance->url . '" was successful. response was' . "\n";
-    echo $instance->response . "\n";
+$multi_curl->success(function($instance) {
+    echo 'call to "' . $instance->url . '" was successful.' . "\n";
+    echo 'response: ' . $instance->response . "\n";
 });
-$curl->error(function($instance) {
+$multi_curl->error(function($instance) {
     echo 'call to "' . $instance->url . '" was unsuccessful.' . "\n";
-    echo 'error code:' . $instance->error_code . "\n";
-    echo 'error message:' . $instance->error_message . "\n";
+    echo 'error code: ' . $instance->error_code . "\n";
+    echo 'error message: ' . $instance->error_message . "\n";
 });
-$curl->complete(function($instance) {
+$multi_curl->complete(function($instance) {
     echo 'call completed' . "\n";
 });
 
-$curl->get(array(
-    'https://duckduckgo.com/',
-    'https://search.yahoo.com/search',
-    'https://www.bing.com/search',
-    'http://www.dogpile.com/search/web',
-    'https://www.google.com/search',
-    'https://www.wolframalpha.com/input/',
-), array(
+$multi_curl->addGet('https://www.google.com/search', array(
     'q' => 'hello world',
 ));
+$multi_curl->addGet('https://duckduckgo.com/', array(
+    'q' => 'hello world',
+));
+$multi_curl->addGet('https://www.bing.com/search', array(
+    'q' => 'hello world',
+));
+
+$multi_curl->start();
 ```
 
 ### Available Methods
