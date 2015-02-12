@@ -4,16 +4,14 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '2.1.5';
+    const VERSION = '3.0.0';
     const DEFAULT_TIMEOUT = 30;
 
     private $cookies = array();
     private $headers = array();
     private $options = array();
 
-    private $multi_parent = false;
-    private $multi_child = false;
-    private $before_send_function = null;
+    public $before_send_function = null;
     private $success_function = null;
     private $error_function = null;
     private $complete_function = null;
@@ -23,7 +21,7 @@ class Curl
     private $xml_pattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
 
     public $curl;
-    public $curls;
+    public $id = null;
 
     public $error = false;
     public $error_code = 0;
@@ -41,6 +39,7 @@ class Curl
     public $url = null;
     public $request_headers = null;
     public $response_headers = null;
+    public $raw_response_headers = '';
     public $response = null;
     public $raw_response = null;
 
@@ -51,78 +50,22 @@ class Curl
         }
 
         $this->curl = curl_init();
+        $this->id = 1;
         $this->setDefaultUserAgent();
         $this->setDefaultJsonDecoder();
         $this->setDefaultTimeout();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
+        $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
     }
 
-    public function get($url_mixed, $data = array())
+    public function get($url, $data = array())
     {
-        if (is_array($url_mixed)) {
-            $curl_multi = curl_multi_init();
-            $this->multi_parent = true;
-
-            $this->curls = array();
-
-            foreach ($url_mixed as $url) {
-                $curl = new Curl();
-                $curl->multi_child = true;
-
-                $curl->beforeSend($this->before_send_function);
-                $curl->success($this->success_function);
-                $curl->error($this->error_function);
-                $curl->complete($this->complete_function);
-
-                $curl->base_url = $url;
-                $curl->url = $this->buildURL($url, $data);
-                $curl->setOpt(CURLOPT_URL, $curl->url, $curl->curl);
-                $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
-                $curl->setOpt(CURLOPT_HTTPGET, true);
-                $this->curls[] = $curl;
-
-                $curlm_error_code = curl_multi_add_handle($curl_multi, $curl->curl);
-                if (!($curlm_error_code === CURLM_OK)) {
-                    throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
-                }
-            }
-
-            foreach ($this->curls as $ch) {
-                foreach ($this->options as $key => $value) {
-                    $ch->setOpt($key, $value);
-                }
-            }
-
-            do {
-                curl_multi_select($curl_multi);
-                $status = curl_multi_exec($curl_multi, $active);
-            } while ($status === CURLM_CALL_MULTI_PERFORM || $active);
-
-            while (!($info_array = curl_multi_info_read($curl_multi)) === false) {
-                if (!($info_array['msg'] === CURLMSG_DONE)) {
-                    continue;
-                }
-                foreach ($this->curls as $ch) {
-                    if ($ch->curl === $info_array['handle']) {
-                        $ch->curl_error_code = $info_array['result'];
-                        break;
-                    }
-                }
-            }
-
-            foreach ($this->curls as $ch) {
-                $this->exec($ch);
-            }
-        } else {
-            $this->base_url = $url_mixed;
-            $this->url = $this->buildURL($url_mixed, $data);
-            $this->setOpt(CURLOPT_URL, $this->url);
-            $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
-            $this->setOpt(CURLOPT_HTTPGET, true);
-            return $this->exec();
-        }
+        $this->setURL($url, $data);
+        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
+        $this->setOpt(CURLOPT_HTTPGET, true);
+        return $this->exec();
     }
 
     public function post($url, $data = array())
@@ -131,9 +74,7 @@ class Curl
             $this->unsetHeader('Content-Length');
         }
 
-        $this->base_url = $url;
-        $this->url = $url;
-        $this->setOpt(CURLOPT_URL, $this->url);
+        $this->setURL($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         $this->setOpt(CURLOPT_POST, true);
         $this->setOpt(CURLOPT_POSTFIELDS, $this->postfields($data));
@@ -142,9 +83,7 @@ class Curl
 
     public function put($url, $data = array())
     {
-        $this->base_url = $url;
-        $this->url = $url;
-        $this->setOpt(CURLOPT_URL, $this->url);
+        $this->setURL($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
         $put_data = $this->postfields($data);
         if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
@@ -156,10 +95,8 @@ class Curl
 
     public function patch($url, $data = array())
     {
-        $this->base_url = $url;
-        $this->url = $url;
+        $this->setURL($url);
         $this->unsetHeader('Content-Length');
-        $this->setOpt(CURLOPT_URL, $this->url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $this->setOpt(CURLOPT_POSTFIELDS, $data);
         return $this->exec();
@@ -167,19 +104,15 @@ class Curl
 
     public function delete($url, $data = array())
     {
-        $this->base_url = $url;
-        $this->url = $url;
+        $this->setURL($url, $data);
         $this->unsetHeader('Content-Length');
-        $this->setOpt(CURLOPT_URL, $this->buildURL($this->url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
         return $this->exec();
     }
 
     public function head($url, $data = array())
     {
-        $this->base_url = $url;
-        $this->url = $this->buildURL($url, $data);
-        $this->setOpt(CURLOPT_URL, $this->url);
+        $this->setURL($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
         $this->setOpt(CURLOPT_NOBODY, true);
         return $this->exec();
@@ -187,10 +120,8 @@ class Curl
 
     public function options($url, $data = array())
     {
-        $this->base_url = $url;
-        $this->url = $url;
+        $this->setURL($url, $data);
         $this->unsetHeader('Content-Length');
-        $this->setOpt(CURLOPT_URL, $this->buildURL($url, $data));
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         return $this->exec();
     }
@@ -306,10 +237,8 @@ class Curl
         $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
     }
 
-    public function setOpt($option, $value, $_ch = null)
+    public function setOpt($option, $value)
     {
-        $ch = $_ch === null ? $this->curl : $_ch;
-
         $required_options = array(
             CURLINFO_HEADER_OUT    => 'CURLINFO_HEADER_OUT',
             CURLOPT_RETURNTRANSFER => 'CURLOPT_RETURNTRANSFER',
@@ -320,7 +249,7 @@ class Curl
         }
 
         $this->options[$option] = $value;
-        return curl_setopt($ch, $option, $value);
+        return curl_setopt($this->curl, $option, $value);
     }
 
     public function getOpt($option)
@@ -335,12 +264,6 @@ class Curl
 
     public function close()
     {
-        if ($this->multi_parent) {
-            foreach ($this->curls as $curl) {
-                $curl->close();
-            }
-        }
-
         if (is_resource($this->curl)) {
             curl_close($this->curl);
         }
@@ -366,9 +289,22 @@ class Curl
         $this->complete_function = $callback;
     }
 
+    public function setURL($url, $data = array())
+    {
+        $this->base_url = $url;
+        $this->url = $this->buildURL($url, $data);
+        $this->setOpt(CURLOPT_URL, $this->url);
+    }
+
     private function buildURL($url, $data = array())
     {
         return $url . (empty($data) ? '' : '?' . http_build_query($data));
+    }
+
+    public function headerCallback($ch, $header)
+    {
+        $this->raw_response_headers .= $header;
+        return strlen($header);
     }
 
     private function parseHeaders($raw_headers)
@@ -440,7 +376,7 @@ class Curl
         return $response_headers;
     }
 
-    private function postfields($data)
+    public function postfields($data)
     {
         if (is_array($data)) {
             if (self::is_array_multidim($data)) {
@@ -491,69 +427,52 @@ class Curl
         return $data;
     }
 
-    protected function exec($_ch = null)
+    public function exec($ch = null)
     {
-        $ch = $_ch === null ? $this : $_ch;
+        $target = $ch === null ? $this : $ch;
 
-        $ch->call($this->before_send_function, $ch);
-
-        $response_headers_fh = fopen('php://memory', 'wb+');
-
-        // Fallback to storing data in a temporary file when storing data in
-        // memory errors with "Warning: curl_setopt(): cannot represent a stream
-        // of type MEMORY as a STDIO FILE*".
-        if (!@$ch->setOpt(CURLOPT_WRITEHEADER, $response_headers_fh)) {
-            $response_headers_fh = fopen('php://temp', 'wb+');
-            $ch->setOpt(CURLOPT_WRITEHEADER, $response_headers_fh);
-        }
-
-        if ($ch->multi_child) {
-            $ch->raw_response = curl_multi_getcontent($ch->curl);
+        if (!($ch === null)) {
+            $this->raw_response = curl_multi_getcontent($ch);
         } else {
-            $ch->raw_response = curl_exec($ch->curl);
-            $ch->curl_error_code = curl_errno($ch->curl);
+            $this->call($this->before_send_function);
+            $this->raw_response = curl_exec($this->curl);
+            $this->curl_error_code = curl_errno($this->curl);
         }
 
-        rewind($response_headers_fh);
-        $ch->raw_response_headers = stream_get_contents($response_headers_fh);
-        fclose($response_headers_fh);
+        $this->curl_error_message = curl_error($this->curl);
+        $this->curl_error = !($this->curl_error_code === 0);
+        $this->http_status_code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
+        $this->http_error = in_array(floor($this->http_status_code / 100), array(4, 5));
+        $this->error = $this->curl_error || $this->http_error;
+        $this->error_code = $this->error ? ($this->curl_error ? $this->curl_error_code : $this->http_status_code) : 0;
 
-        $ch->curl_error_message = curl_error($ch->curl);
-        $ch->curl_error = !($ch->curl_error_code === 0);
-        $ch->http_status_code = curl_getinfo($ch->curl, CURLINFO_HTTP_CODE);
-        $ch->http_error = in_array(floor($ch->http_status_code / 100), array(4, 5));
-        $ch->error = $ch->curl_error || $ch->http_error;
-        $ch->error_code = $ch->error ? ($ch->curl_error ? $ch->curl_error_code : $ch->http_status_code) : 0;
+        $this->request_headers = $this->parseRequestHeaders(curl_getinfo($this->curl, CURLINFO_HEADER_OUT));
+        $this->response_headers = $this->parseResponseHeaders($this->raw_response_headers);
+        list($this->response, $this->raw_response) = $this->parseResponse($this->response_headers, $this->raw_response);
 
-        $ch->request_headers = $this->parseRequestHeaders(curl_getinfo($ch->curl, CURLINFO_HEADER_OUT));
-        $ch->response_headers = $this->parseResponseHeaders($ch->raw_response_headers);
-        list($ch->response, $ch->raw_response) = $this->parseResponse($ch->response_headers, $ch->raw_response);
-
-        $ch->http_error_message = '';
-        if ($ch->error) {
-            if (isset($ch->response_headers['Status-Line'])) {
-                $ch->http_error_message = $ch->response_headers['Status-Line'];
+        $this->http_error_message = '';
+        if ($this->error) {
+            if (isset($this->response_headers['Status-Line'])) {
+                $this->http_error_message = $this->response_headers['Status-Line'];
             }
         }
-        $ch->error_message = $ch->curl_error ? $ch->curl_error_message : $ch->http_error_message;
+        $this->error_message = $this->curl_error ? $this->curl_error_message : $this->http_error_message;
 
-        if (!$ch->error) {
-            $ch->call($this->success_function, $ch);
+        if (!$this->error) {
+            $this->call($this->success_function);
         } else {
-            $ch->call($this->error_function, $ch);
+            $this->call($this->error_function);
         }
 
-        $ch->call($this->complete_function, $ch);
+        $this->call($this->complete_function);
 
-        return $ch->response;
+        return $this->response;
     }
 
-    private function call($function)
+    public function call($function)
     {
         if (is_callable($function)) {
-            $args = func_get_args();
-            array_shift($args);
-            call_user_func_array($function, $args);
+            call_user_func_array($function, array($this));
         }
     }
 

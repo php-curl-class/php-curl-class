@@ -116,66 +116,94 @@ curl_close($curl->curl);
 
 ```php
 // Requests in parallel with callback functions.
-$curl = new Curl();
-$curl->setUserAgent('Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1');
+$multi_curl = new MultiCurl();
 
-$curl->success(function($instance) {
-    echo 'call to "' . $instance->url . '" was successful. response was' . "\n";
-    echo $instance->response . "\n";
+$multi_curl->success(function($instance) {
+    echo 'call to "' . $instance->url . '" was successful.' . "\n";
+    echo 'response: ' . $instance->response . "\n";
 });
-$curl->error(function($instance) {
+$multi_curl->error(function($instance) {
     echo 'call to "' . $instance->url . '" was unsuccessful.' . "\n";
-    echo 'error code:' . $instance->error_code . "\n";
-    echo 'error message:' . $instance->error_message . "\n";
+    echo 'error code: ' . $instance->error_code . "\n";
+    echo 'error message: ' . $instance->error_message . "\n";
 });
-$curl->complete(function($instance) {
+$multi_curl->complete(function($instance) {
     echo 'call completed' . "\n";
 });
 
-$curl->get(array(
-    'https://duckduckgo.com/',
-    'https://search.yahoo.com/search',
-    'https://www.bing.com/search',
-    'http://www.dogpile.com/search/web',
-    'https://www.google.com/search',
-    'https://www.wolframalpha.com/input/',
-), array(
+$multi_curl->addGet('https://www.google.com/search', array(
     'q' => 'hello world',
 ));
+$multi_curl->addGet('https://duckduckgo.com/', array(
+    'q' => 'hello world',
+));
+$multi_curl->addGet('https://www.bing.com/search', array(
+    'q' => 'hello world',
+));
+
+$multi_curl->start();
 ```
 
 ### Available Methods
 ```php
-__construct()
-__destruct()
-beforeSend($function)
-close()
-complete($callback)
-delete($url, $data = array())
-download($url, $filename)
-error($callback)
-get($url_mixed, $data = array())
-getOpt($option)
-head($url, $data = array())
-options($url, $data = array())
-patch($url, $data = array())
-post($url, $data = array())
-put($url, $data = array())
-setBasicAuthentication($username, $password = '')
-setCookie($key, $value)
-setCookieFile($cookie_file)
-setCookieJar($cookie_jar)
-setDefaultJsonDecoder()
-setDefaultTimeout()
-setDefaultUserAgent()
-setHeader($key, $value)
-setJsonDecoder($func)
-setOpt($option, $value)
-setReferer($referer)
-setReferrer($referrer)
-setTimeout($seconds)
-setUserAgent($user_agent)
-success($callback)
-unsetHeader($key)
-verbose($on = true)
+Curl::__construct()
+Curl::__destruct()
+Curl::beforeSend($callback)
+Curl::call($function)
+Curl::close()
+Curl::complete($callback)
+Curl::delete($url, $data = array())
+Curl::download($url, $filename)
+Curl::error($callback)
+Curl::exec($ch = null)
+Curl::get($url, $data = array())
+Curl::getOpt($option)
+Curl::head($url, $data = array())
+Curl::headerCallback($ch, $header)
+Curl::options($url, $data = array())
+Curl::patch($url, $data = array())
+Curl::post($url, $data = array())
+Curl::postfields($data)
+Curl::put($url, $data = array())
+Curl::setBasicAuthentication($username, $password = '')
+Curl::setCookie($key, $value)
+Curl::setCookieFile($cookie_file)
+Curl::setCookieJar($cookie_jar)
+Curl::setDefaultJsonDecoder()
+Curl::setDefaultTimeout()
+Curl::setDefaultUserAgent()
+Curl::setHeader($key, $value)
+Curl::setJsonDecoder($func)
+Curl::setOpt($option, $value)
+Curl::setReferer($referer)
+Curl::setReferrer($referrer)
+Curl::setTimeout($seconds)
+Curl::setURL($url, $data = array())
+Curl::setUserAgent($user_agent)
+Curl::success($callback)
+Curl::unsetHeader($key)
+Curl::verbose($on = true)
+```
+
+### Experimental Methods
+```php
+MultiCurl::__construct()
+MultiCurl::__destruct()
+MultiCurl::addDelete($url, $data = array())
+MultiCurl::addDownload($url, $filename)
+MultiCurl::addGet($url, $data = array())
+MultiCurl::addHead($url, $data = array())
+MultiCurl::addOptions($url, $data = array())
+MultiCurl::addPatch($url, $data = array())
+MultiCurl::addPost($url, $data = array())
+MultiCurl::addPut($url, $data = array())
+MultiCurl::beforeSend($callback)
+MultiCurl::close()
+MultiCurl::complete($callback)
+MultiCurl::error($callback)
+MultiCurl::getOpt($option)
+MultiCurl::setHeader($key, $value)
+MultiCurl::setOpt($option, $value)
+MultiCurl::start()
+MultiCurl::success($callback)
 ```
