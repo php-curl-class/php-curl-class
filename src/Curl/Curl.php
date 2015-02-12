@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '3.0.0';
+    const VERSION = '3.0.1';
     const DEFAULT_TIMEOUT = 30;
 
     private $cookies = array();
