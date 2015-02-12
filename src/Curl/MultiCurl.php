@@ -106,25 +106,21 @@ class MultiCurl
 
     public function beforeSend($callback)
     {
-        echo 'setting multicurl beforeSend' . "\n";
         $this->before_send_function = $callback;
     }
 
     public function success($callback)
     {
-        echo 'setting multicurl success' . "\n";
         $this->success_function = $callback;
     }
 
     public function error($callback)
     {
-        echo 'setting multicurl error' . "\n";
         $this->error_function = $callback;
     }
 
     public function complete($callback)
     {
-        echo 'setting multicurl complete' . "\n";
         $this->complete_function = $callback;
     }
 
@@ -145,40 +141,25 @@ class MultiCurl
 
     public function start()
     {
-        echo 'running start' . "\n";
         foreach ($this->curls as $ch) {
-            echo 'next curl' . "\n";
-
-            echo 'setting options for curl' . "\n";
             foreach ($this->options as $option => $value) {
                 $ch->setOpt($option, $value);
             }
-            echo 'options set for curl' . "\n";
-
-            echo 'setting headers for curl' . "\n";
             foreach ($this->headers as $key => $value) {
                 $ch->setHeader($key, $value);
             }
-            echo 'headers set for curl' . "\n";
-
-            echo 'about to call before send' . "\n";
             $ch->call($ch->before_send_function);
-            echo 'before send called' . "\n";
         }
-        echo 'called all before sends' . "\n";
 
         $curl_handles = $this->curls;
         do {
-            echo str_repeat('-', 80) . "\n";
             curl_multi_select($this->multi_curl);
             curl_multi_exec($this->multi_curl, $active);
-            echo 'active: ' . $active . "\n";
 
             while (!($info_array = curl_multi_info_read($this->multi_curl)) === false) {
                 if ($info_array['msg'] === CURLMSG_DONE) {
                     foreach ($curl_handles as $key => $ch) {
                         if ($ch->curl === $info_array['handle']) {
-                            echo $ch->id . ' completed' . "\n";
                             $ch->curl_error_code = $info_array['result'];
                             $ch->exec($ch->curl);
                             curl_multi_remove_handle($this->multi_curl, $ch->curl);
@@ -189,9 +170,6 @@ class MultiCurl
                 }
             }
         } while ($active > 0);
-
-        echo 'active: ' . $active . "\n";
-        echo 'start completed' . "\n";
     }
 
     public function close()
@@ -210,18 +188,15 @@ class MultiCurl
 
     private function addHandle($curl)
     {
-        echo 'adding handle (' . $curl->getOpt(CURLOPT_CUSTOMREQUEST) . ')' . "\n";
         $curlm_error_code = curl_multi_add_handle($this->multi_curl, $curl->curl);
         if (!($curlm_error_code === CURLM_OK)) {
             throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
         }
-        echo 'copying over callbacks from multicurl to curl' . "\n";
         $curl->beforeSend($this->before_send_function);
         $curl->success($this->success_function);
         $curl->error($this->error_function);
         $curl->complete($this->complete_function);
         $this->curls[] = $curl;
         $curl->id = count($this->curls);
-        echo 'handle added' . "\n";
     }
 }

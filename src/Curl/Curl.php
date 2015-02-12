@@ -271,25 +271,21 @@ class Curl
 
     public function beforeSend($callback)
     {
-        echo 'setting curl beforeSend' . "\n";
         $this->before_send_function = $callback;
     }
 
     public function success($callback)
     {
-        echo 'setting curl success' . "\n";
         $this->success_function = $callback;
     }
 
     public function error($callback)
     {
-        echo 'setting curl error' . "\n";
         $this->error_function = $callback;
     }
 
     public function complete($callback)
     {
-        echo 'setting curl complete' . "\n";
         $this->complete_function = $callback;
     }
 
