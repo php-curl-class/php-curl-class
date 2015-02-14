@@ -188,6 +188,8 @@ $data_mapping = array(
     'server' => '_SERVER',
 );
 
-$data = $$data_mapping[$test];
-$value = isset($data[$key]) ? $data[$key] : '';
-echo $value;
+if (!empty($test)) {
+    $data = $$data_mapping[$test];
+    $value = isset($data[$key]) ? $data[$key] : '';
+    echo $value;
+}
