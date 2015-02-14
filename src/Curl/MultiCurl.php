@@ -6,6 +6,7 @@ class MultiCurl
 {
     public $multi_curl;
     public $curls = array();
+    private $curl_fhs = array();
 
     private $headers = array();
     private $options = array();
@@ -33,6 +34,15 @@ class MultiCurl
 
     public function addDownload($url, $filename)
     {
+        $curl = new Curl();
+        $curl->setURL($url);
+        $fh = fopen($filename, 'wb');
+        $curl->setOpt(CURLOPT_FILE, $fh);
+        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
+        $curl->setOpt(CURLOPT_HTTPGET, true);
+        $this->addHandle($curl);
+        $this->curl_fhs[$curl->id] = $fh;
+        return $curl;
     }
 
     public function addGet($url, $data = array())
@@ -164,6 +174,15 @@ class MultiCurl
                             $ch->exec($ch->curl);
                             curl_multi_remove_handle($this->multi_curl, $ch->curl);
                             unset($curl_handles[$key]);
+
+                            // Close open file handles and reset the curl instance.
+                            if (isset($this->curl_fhs[$ch->id])) {
+                                fclose($this->curl_fhs[$ch->id]);
+                                defined('STDOUT') || define('STDOUT', null);
+                                $ch->setOpt(CURLOPT_FILE, STDOUT);
+                                $ch->setOpt(CURLOPT_RETURNTRANSFER, true);
+                                unset($this->curl_fhs[$ch->id]);
+                            }
                             break;
                         }
                     }
