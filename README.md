@@ -183,6 +183,9 @@ Curl::setUserAgent($user_agent)
 Curl::success($callback)
 Curl::unsetHeader($key)
 Curl::verbose($on = true)
+Curl::http_build_multi_query($data, $key = null)
+Curl::is_array_assoc($array)
+Curl::is_array_multidim($array)
 ```
 
 ### Experimental Methods
