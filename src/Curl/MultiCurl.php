@@ -119,9 +119,18 @@ class MultiCurl
         $this->before_send_function = $callback;
     }
 
-    public function success($callback)
+    public function close()
     {
-        $this->success_function = $callback;
+        foreach ($this->curls as $ch) {
+            $ch->close();
+        }
+
+        curl_multi_close($this->multi_curl);
+    }
+
+    public function complete($callback)
+    {
+        $this->complete_function = $callback;
     }
 
     public function error($callback)
@@ -129,9 +138,9 @@ class MultiCurl
         $this->error_function = $callback;
     }
 
-    public function complete($callback)
+    public function getOpt($option)
     {
-        $this->complete_function = $callback;
+        return $this->options[$option];
     }
 
     public function setHeader($key, $value)
@@ -142,11 +151,6 @@ class MultiCurl
     public function setOpt($option, $value)
     {
         $this->options[$option] = $value;
-    }
-
-    public function getOpt($option)
-    {
-        return $this->options[$option];
     }
 
     public function start()
@@ -191,13 +195,9 @@ class MultiCurl
         } while ($active > 0);
     }
 
-    public function close()
+    public function success($callback)
     {
-        foreach ($this->curls as $ch) {
-            $ch->close();
-        }
-
-        curl_multi_close($this->multi_curl);
+        $this->success_function = $callback;
     }
 
     public function __destruct()
