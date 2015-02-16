@@ -40,7 +40,8 @@ find_invalid_indentation() {
                 ' (' . $leading_space_count . ':+' . $add_count . '/-' . $remove_count . ')' . "\n";
         }
     }
-EOF)
+EOF
+)
     php --run "${script}" "${filename}"
 }
 export -f "find_invalid_indentation"
