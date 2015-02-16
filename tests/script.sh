@@ -44,11 +44,14 @@ EOF
 )
     php --run "${script}" "${filename}"
 }
-export -f "find_invalid_indentation"
-invalid_indentation=$(find . -type "f" -iname "*.php" -exec bash -c 'find_invalid_indentation "{}"' \;)
-if [[ ! -z "${invalid_indentation}" ]]; then
-    echo "${invalid_indentation}"
-    exit 1
+# Skip hhvm "Notice: File could not be loaded: ..."
+if [[ "${TRAVIS_PHP_VERSION}" != "hhvm" ]]; then
+    export -f "find_invalid_indentation"
+    invalid_indentation=$(find . -type "f" -iname "*.php" -exec bash -c 'find_invalid_indentation "{}"' \;)
+    if [[ ! -z "${invalid_indentation}" ]]; then
+        echo "${invalid_indentation}"
+        exit 1
+    fi
 fi
 
 # Prohibit trailing whitespace in php files.
