@@ -1,5 +1,5 @@
 # Check syntax in php files.
-find . -type "f" -iname "*.php" | xargs -L "1" php -l
+find . -type "f" -iname "*.php" -exec php -l {} \;
 
 # Run tests.
 cd tests && phpunit --configuration phpunit.xml

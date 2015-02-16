@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '3.0.2';
+    const VERSION = '3.0.3';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
@@ -345,9 +345,11 @@ class Curl
         }, $headers, array_keys($headers)));
     }
 
-    public function setJsonDecoder($func)
+    public function setJsonDecoder($function)
     {
-        $this->json_decoder = $func;
+        if (is_callable($function)) {
+            $this->json_decoder = $function;
+        }
     }
 
     public function setOpt($option, $value)

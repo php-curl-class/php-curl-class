@@ -90,9 +90,13 @@ if ($test == 'http_basic_auth') {
     echo 'OK';
     exit;
 } elseif ($test === 'json_response') {
-    $key = $_POST['key'];
-    $value = $_POST['value'];
-    header($key . ': ' . $value);
+    if ($request_method === 'POST') {
+        $key = $_POST['key'];
+        $value = $_POST['value'];
+        header($key . ': ' . $value);
+    } else {
+        header('Content-Type: application/json');
+    }
     echo json_encode(array(
         'null' => null,
         'true' => true,

@@ -8,13 +8,16 @@ class MultiCurl
     public $curls = array();
     private $curl_fhs = array();
 
-    private $headers = array();
-    private $options = array();
-
     private $before_send_function = null;
     private $success_function = null;
     private $error_function = null;
     private $complete_function = null;
+
+    private $cookies = array();
+    private $headers = array();
+    private $options = array();
+
+    private $json_decoder = null;
 
     public function __construct()
     {
@@ -143,14 +146,63 @@ class MultiCurl
         return $this->options[$option];
     }
 
+    public function setBasicAuthentication($username, $password = '')
+    {
+        $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
+    }
+
+    public function setCookie($key, $value)
+    {
+        $this->cookies[$key] = $value;
+        $this->setOpt(CURLOPT_COOKIE, str_replace('+', '%20', http_build_query($this->cookies, '', '; ')));
+    }
+
+    public function setCookieFile($cookie_file)
+    {
+        $this->setOpt(CURLOPT_COOKIEFILE, $cookie_file);
+    }
+
+    public function setCookieJar($cookie_jar)
+    {
+        $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
+    }
+
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
     }
 
+    public function setJsonDecoder($function)
+    {
+        if (is_callable($function)) {
+            $this->json_decoder = $function;
+        }
+    }
+
     public function setOpt($option, $value)
     {
         $this->options[$option] = $value;
+    }
+
+    public function setReferer($referer)
+    {
+        $this->setReferrer($referer);
+    }
+
+    public function setReferrer($referrer)
+    {
+        $this->setOpt(CURLOPT_REFERER, $referrer);
+    }
+
+    public function setTimeout($seconds)
+    {
+        $this->setOpt(CURLOPT_TIMEOUT, $seconds);
+    }
+
+    public function setUserAgent($user_agent)
+    {
+        $this->setOpt(CURLOPT_USERAGENT, $user_agent);
     }
 
     public function start()
@@ -162,6 +214,7 @@ class MultiCurl
             foreach ($this->headers as $key => $value) {
                 $ch->setHeader($key, $value);
             }
+            $ch->setJsonDecoder($this->json_decoder);
             $ch->call($ch->before_send_function);
         }
 
@@ -198,6 +251,17 @@ class MultiCurl
     public function success($callback)
     {
         $this->success_function = $callback;
+    }
+
+    public function unsetHeader($key)
+    {
+        $this->setHeader($key, '');
+        unset($this->headers[$key]);
+    }
+
+    public function verbose($on = true)
+    {
+        $this->setOpt(CURLOPT_VERBOSE, $on);
     }
 
     public function __destruct()

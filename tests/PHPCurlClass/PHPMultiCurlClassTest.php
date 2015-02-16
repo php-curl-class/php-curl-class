@@ -1572,4 +1572,102 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($curl_user_agent, $get_2->getOpt(CURLOPT_USERAGENT));
         $this->assertEquals($curl_user_agent, $get_2->response);
     }
+
+    public function testBasicHttpAuthSuccess()
+    {
+        $username1 = 'myusername';
+        $password1 = 'mypassword';
+        $username2 = 'myotherusername';
+        $password2 = 'myotherpassword';
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'http_basic_auth');
+        $multi_curl->setBasicAuthentication($username1, $password1);
+
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_1->complete(function ($instance) use ($username1, $password1) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
+            PHPUnit_Framework_Assert::assertEquals($username1, $instance->response->username);
+            PHPUnit_Framework_Assert::assertEquals($password1, $instance->response->password);
+        });
+
+        $get_2 = $multi_curl->addGet(Test::TEST_URL);
+        $get_2->beforeSend(function ($instance) use ($username2, $password2) {
+            $instance->setBasicAuthentication($username2, $password2);
+        });
+        $get_2->complete(function ($instance) use ($username2, $password2) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
+            PHPUnit_Framework_Assert::assertEquals($username2, $instance->response->username);
+            PHPUnit_Framework_Assert::assertEquals($password2, $instance->response->password);
+        });
+
+        $multi_curl->start();
+
+        $this->assertEquals(CURLAUTH_BASIC, $multi_curl->getOpt(CURLOPT_HTTPAUTH));
+        $this->assertEquals(CURLAUTH_BASIC, $get_1->getOpt(CURLOPT_HTTPAUTH));
+        $this->assertEquals($username1, $get_1->response->username);
+        $this->assertEquals($password1, $get_1->response->password);
+        $this->assertEquals(CURLAUTH_BASIC, $get_2->getOpt(CURLOPT_HTTPAUTH));
+        $this->assertEquals($username2, $get_2->response->username);
+        $this->assertEquals($password2, $get_2->response->password);
+    }
+
+    public function testCookies()
+    {
+        $data = array('key' => 'mycookie');
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'cookie');
+        $multi_curl->setCookie('mycookie', 'yum');
+
+        $get_1 = $multi_curl->addGet(Test::TEST_URL, $data);
+        $get_1->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
+            PHPUnit_Framework_Assert::assertEquals('yum', $instance->response);
+        });
+
+        $get_2 = $multi_curl->addGet(Test::TEST_URL, $data);
+        $get_2->beforeSend(function ($instance) {
+            $instance->setCookie('mycookie', 'yummy');
+        });
+        $get_2->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
+            PHPUnit_Framework_Assert::assertEquals('yummy', $instance->response);
+        });
+
+        $multi_curl->start();
+
+        $this->assertEquals('yum', $get_1->response);
+        $this->assertEquals('yummy', $get_2->response);
+    }
+
+    public function testJSONDecoder()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'json_response');
+        $multi_curl->setJsonDecoder(function($response) {
+            return 'foo';
+        });
+
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_1->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
+            PHPUnit_Framework_Assert::assertEquals('foo', $instance->response);
+        });
+
+        $get_2 = $multi_curl->addGet(Test::TEST_URL);
+        $get_2->beforeSend(function ($instance) {
+            $instance->setJsonDecoder(function($response) {
+                return 'bar';
+            });
+        });
+        $get_2->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
+            PHPUnit_Framework_Assert::assertEquals('bar', $instance->response);
+        });
+
+        $multi_curl->start();
+        $this->assertEquals('foo', $get_1->response);
+        $this->assertEquals('bar', $get_2->response);
+    }
 }
