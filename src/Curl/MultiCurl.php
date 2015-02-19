@@ -100,7 +100,7 @@ class MultiCurl
         $curl->setURL($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         $curl->setOpt(CURLOPT_POST, true);
-        $curl->setOpt(CURLOPT_POSTFIELDS, $curl->postfields($data));
+        $curl->setOpt(CURLOPT_POSTFIELDS, $curl->buildPostData($data));
         $this->addHandle($curl);
         return $curl;
     }
@@ -110,7 +110,7 @@ class MultiCurl
         $curl = new Curl();
         $curl->setURL($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
-        $put_data = $curl->postfields($data);
+        $put_data = $curl->buildPostData($data);
         $curl->setHeader('Content-Length', strlen($put_data));
         $curl->setOpt(CURLOPT_POSTFIELDS, $put_data);
         $this->addHandle($curl);

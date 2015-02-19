@@ -219,11 +219,11 @@ class Curl
         $this->setURL($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         $this->setOpt(CURLOPT_POST, true);
-        $this->setOpt(CURLOPT_POSTFIELDS, $this->postfields($data));
+        $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
         return $this->exec();
     }
 
-    public function postfields($data)
+    public function buildPostData($data)
     {
         if (is_array($data)) {
             if (self::is_array_multidim($data)) {
@@ -278,7 +278,7 @@ class Curl
     {
         $this->setURL($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
-        $put_data = $this->postfields($data);
+        $put_data = $this->buildPostData($data);
         if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
             $this->setHeader('Content-Length', strlen($put_data));
         }
