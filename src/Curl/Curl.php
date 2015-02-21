@@ -291,12 +291,11 @@ class Curl
         $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
-    
+
     public function setDigestAuthentication($username, $password = '')
     {
         $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
-        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
     }
 
     public function setCookie($key, $value)
