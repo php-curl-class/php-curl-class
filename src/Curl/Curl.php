@@ -65,6 +65,57 @@ class Curl
         $this->before_send_function = $callback;
     }
 
+    public function buildPostData($data)
+    {
+        if (is_array($data)) {
+            if (self::is_array_multidim($data)) {
+                if (isset($this->headers['Content-Type']) &&
+                    preg_match($this->json_pattern, $this->headers['Content-Type'])) {
+                    $json_str = json_encode($data);
+                    if (!($json_str === false)) {
+                        $data = $json_str;
+                    }
+                } else {
+                    $data = self::http_build_multi_query($data);
+                }
+            } else {
+                $binary_data = false;
+                foreach ($data as $key => $value) {
+                    // Fix "Notice: Array to string conversion" when $value in
+                    // curl_setopt($ch, CURLOPT_POSTFIELDS, $value) is an array
+                    // that contains an empty array.
+                    if (is_array($value) && empty($value)) {
+                        $data[$key] = '';
+                    // Fix "curl_setopt(): The usage of the @filename API for
+                    // file uploading is deprecated. Please use the CURLFile
+                    // class instead".
+                    } elseif (is_string($value) && strpos($value, '@') === 0) {
+                        $binary_data = true;
+                        if (class_exists('CURLFile')) {
+                            $data[$key] = new \CURLFile(substr($value, 1));
+                        }
+                    } elseif ($value instanceof \CURLFile) {
+                        $binary_data = true;
+                    }
+                }
+
+                if (!$binary_data) {
+                    if (isset($this->headers['Content-Type']) &&
+                        preg_match($this->json_pattern, $this->headers['Content-Type'])) {
+                        $json_str = json_encode($data);
+                        if (!($json_str === false)) {
+                            $data = $json_str;
+                        }
+                    } else {
+                        $data = http_build_query($data);
+                    }
+                }
+            }
+        }
+
+        return $data;
+    }
+
     public function call($function)
     {
         if (is_callable($function)) {
@@ -219,66 +270,15 @@ class Curl
         $this->setURL($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         $this->setOpt(CURLOPT_POST, true);
-        $this->setOpt(CURLOPT_POSTFIELDS, $this->postfields($data));
+        $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
         return $this->exec();
-    }
-
-    public function postfields($data)
-    {
-        if (is_array($data)) {
-            if (self::is_array_multidim($data)) {
-                if (isset($this->headers['Content-Type']) &&
-                    preg_match($this->json_pattern, $this->headers['Content-Type'])) {
-                    $json_str = json_encode($data);
-                    if (!($json_str === false)) {
-                        $data = $json_str;
-                    }
-                } else {
-                    $data = self::http_build_multi_query($data);
-                }
-            } else {
-                $binary_data = false;
-                foreach ($data as $key => $value) {
-                    // Fix "Notice: Array to string conversion" when $value in
-                    // curl_setopt($ch, CURLOPT_POSTFIELDS, $value) is an array
-                    // that contains an empty array.
-                    if (is_array($value) && empty($value)) {
-                        $data[$key] = '';
-                    // Fix "curl_setopt(): The usage of the @filename API for
-                    // file uploading is deprecated. Please use the CURLFile
-                    // class instead".
-                    } elseif (is_string($value) && strpos($value, '@') === 0) {
-                        $binary_data = true;
-                        if (class_exists('CURLFile')) {
-                            $data[$key] = new \CURLFile(substr($value, 1));
-                        }
-                    } elseif ($value instanceof \CURLFile) {
-                        $binary_data = true;
-                    }
-                }
-
-                if (!$binary_data) {
-                    if (isset($this->headers['Content-Type']) &&
-                        preg_match($this->json_pattern, $this->headers['Content-Type'])) {
-                        $json_str = json_encode($data);
-                        if (!($json_str === false)) {
-                            $data = $json_str;
-                        }
-                    } else {
-                        $data = http_build_query($data);
-                    }
-                }
-            }
-        }
-
-        return $data;
     }
 
     public function put($url, $data = array())
     {
         $this->setURL($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
-        $put_data = $this->postfields($data);
+        $put_data = $this->buildPostData($data);
         if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
             $this->setHeader('Content-Length', strlen($put_data));
         }
