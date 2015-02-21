@@ -367,14 +367,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(file_exists($downloaded_file_path));
     }
 
-    public function testBasicHttpAuth401Unauthorized()
+    public function testBasicHttpAuth()
     {
         $test = new Test();
         $this->assertEquals('canceled', $test->server('http_basic_auth', 'GET'));
-    }
 
-    public function testBasicHttpAuthSuccess()
-    {
         $username = 'myusername';
         $password = 'mypassword';
         $test = new Test();
