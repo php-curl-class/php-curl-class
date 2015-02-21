@@ -382,6 +382,30 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($password, $json->password);
     }
 
+    public function testDigestHttpAuth()
+    {
+        $username = 'myusername';
+        $password = 'mypassword';
+        $invalid_password = 'anotherpassword';
+
+        $test = new Test();
+        $test->server('http_digest_auth', 'GET');
+        $this->assertEquals('canceled', $test->curl->response);
+        $this->assertEquals(401, $test->curl->http_status_code);
+
+        $test = new Test();
+        $test->curl->setDigestAuthentication($username, $invalid_password);
+        $test->server('http_digest_auth', 'GET');
+        $this->assertEquals('invalid', $test->curl->response);
+        $this->assertEquals(401, $test->curl->http_status_code);
+
+        $test = new Test();
+        $test->curl->setDigestAuthentication($username, $password);
+        $test->server('http_digest_auth', 'GET');
+        $this->assertEquals('valid', $test->curl->response);
+        $this->assertEquals(200, $test->curl->http_status_code);
+    }
+
     public function testReferrer()
     {
         $test = new Test();
