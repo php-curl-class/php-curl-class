@@ -183,7 +183,28 @@ class Curl
             $this->raw_response = curl_multi_getcontent($ch);
         } else {
             $this->call($this->before_send_function);
-            $this->raw_response = curl_exec($this->curl);
+            //Pucci - retry adapted from https://gist.github.com/backendguy/4659105
+                $try = 0;
+                while (true) {
+                $running_time_msecs = round(microtime(true) * 1000);
+        $this->raw_response = curl_exec($this->curl);
+                 $running_time_msecs = round(microtime(true) * 1000) - $running_time_msecs;
+                 
+                  $curl_info = curl_getinfo($this->curl);
+                  $curl_info['response_size'] = strlen($response);
+                  if (!empty($this->raw_response) && !empty($curl_info['header_size'])) {
+                    // success!
+                    break;
+                  }
+                  if ($try >= 5) {
+                      echo "{$curl_error} [retry failed after #{$try} attempt]"
+                    break;
+                  }
+                  usleep(min(2000000, 250000 * (1 << $try))); // sleep between requests: 250ms, 500ms, 1s, 2s, 2s, 2s ...
+                  $try++;
+                } 
+                  
+                  
             $this->curl_error_code = curl_errno($this->curl);
         }
 
