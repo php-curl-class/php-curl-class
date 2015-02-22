@@ -191,13 +191,13 @@ class Curl
                  $running_time_msecs = round(microtime(true) * 1000) - $running_time_msecs;
                  
                   $curl_info = curl_getinfo($this->curl);
-                  $curl_info['response_size'] = strlen($response);
+                  $curl_info['response_size'] = strlen($this->raw_response);
                   if (!empty($this->raw_response) && !empty($curl_info['header_size'])) {
                     // success!
                     break;
                   }
                   if ($try >= 5) {
-                      echo "{$curl_error} [retry failed after #{$try} attempt]"
+                      echo "{$curl_error} [retry failed after #{$try} attempt]";
                     break;
                   }
                   usleep(min(2000000, 250000 * (1 << $try))); // sleep between requests: 250ms, 500ms, 1s, 2s, 2s, 2s ...
