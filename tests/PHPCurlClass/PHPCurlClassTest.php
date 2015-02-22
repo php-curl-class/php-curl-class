@@ -131,6 +131,60 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Test::TEST_URL . '?' . http_build_query($data), $test->curl->url);
     }
 
+    public function testSetUrl()
+    {
+        $data = array('key' => 'value');
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'get');
+        $curl->setUrl(Test::TEST_URL);
+        $curl->delete($data);
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('key=value', $curl->response);
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'get');
+        $curl->setUrl(Test::TEST_URL);
+        $curl->get($data);
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('key=value', $curl->response);
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'get');
+        $curl->setUrl(Test::TEST_URL);
+        $curl->head($data);
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('HEAD /?key=value HTTP/1.1', $curl->request_headers['Request-Line']);
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'get');
+        $curl->setUrl(Test::TEST_URL);
+        $curl->options($data);
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('key=value', $curl->response);
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'request_method');
+        $curl->setUrl(Test::TEST_URL);
+        $curl->patch($data);
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('PATCH', $curl->response);
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'post');
+        $curl->setUrl(Test::TEST_URL);
+        $curl->post($data);
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('key=value', $curl->response);
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'put');
+        $curl->setUrl(Test::TEST_URL);
+        $curl->put($data);
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('key=value', $curl->response);
+    }
+
     public function testPostRequestMethod()
     {
         $test = new Test();
@@ -618,7 +672,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('OK', $test->curl->response);
     }
 
-    public function testRequestURL()
+    public function testRequestUrl()
     {
         $test = new Test();
         $this->assertFalse(substr($test->server('request_uri', 'GET'), -1) === '?');
