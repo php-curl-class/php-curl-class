@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '3.1.3';
+    const VERSION = '3.2.3';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
@@ -43,7 +43,7 @@ class Curl
     private $json_pattern = '~^application/(?:json|vnd\.api\+json)~i';
     private $xml_pattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
 
-    public function __construct()
+    public function __construct($base_url = null)
     {
         if (!extension_loaded('curl')) {
             throw new \ErrorException('cURL library is not loaded');
@@ -58,6 +58,7 @@ class Curl
         $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
+        $this->setURL($base_url);
     }
 
     public function beforeSend($callback)
