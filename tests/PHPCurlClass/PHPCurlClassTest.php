@@ -131,6 +131,53 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Test::TEST_URL . '?' . http_build_query($data), $test->curl->url);
     }
 
+    public function testSetUrlInConstructor()
+    {
+        $data = array('key' => 'value');
+
+        $curl = new Curl(Test::TEST_URL);
+        $curl->setHeader('X-DEBUG-TEST', 'get');
+        $curl->delete($data);
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('key=value', $curl->response);
+
+        $curl = new Curl(Test::TEST_URL);
+        $curl->setHeader('X-DEBUG-TEST', 'get');
+        $curl->get($data);
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('key=value', $curl->response);
+
+        $curl = new Curl(Test::TEST_URL);
+        $curl->setHeader('X-DEBUG-TEST', 'get');
+        $curl->head($data);
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('HEAD /?key=value HTTP/1.1', $curl->request_headers['Request-Line']);
+
+        $curl = new Curl(Test::TEST_URL);
+        $curl->setHeader('X-DEBUG-TEST', 'get');
+        $curl->options($data);
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('key=value', $curl->response);
+
+        $curl = new Curl(Test::TEST_URL);
+        $curl->setHeader('X-DEBUG-TEST', 'request_method');
+        $curl->patch($data);
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('PATCH', $curl->response);
+
+        $curl = new Curl(Test::TEST_URL);
+        $curl->setHeader('X-DEBUG-TEST', 'post');
+        $curl->post($data);
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('key=value', $curl->response);
+
+        $curl = new Curl(Test::TEST_URL);
+        $curl->setHeader('X-DEBUG-TEST', 'put');
+        $curl->put($data);
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('key=value', $curl->response);
+    }
+
     public function testSetUrl()
     {
         $data = array('key' => 'value');

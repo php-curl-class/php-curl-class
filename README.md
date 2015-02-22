@@ -146,7 +146,7 @@ $multi_curl->start();
 
 ### Available Methods
 ```php
-Curl::__construct()
+Curl::__construct($base_url = null)
 Curl::__destruct()
 Curl::beforeSend($callback)
 Curl::buildPostData($data)
