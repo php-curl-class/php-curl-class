@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '3.0.3';
+    const VERSION = '3.1.3';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
