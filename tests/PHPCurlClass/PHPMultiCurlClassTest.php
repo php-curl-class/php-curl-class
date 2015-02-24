@@ -1670,4 +1670,60 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('foo', $get_1->response);
         $this->assertEquals('bar', $get_2->response);
     }
+
+    public function testDownloadCallback()
+    {
+        // Upload a file.
+        $upload_file_path = Helper\get_png();
+        $upload_test = new Test();
+        $upload_test->server('upload_response', 'POST', array(
+            'image' => '@' . $upload_file_path,
+        ));
+        $uploaded_file_path = $upload_test->curl->response->file_path;
+
+        // Download the file.
+        $download_callback_called = false;
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'download_response');
+        $multi_curl->addDownload(Test::TEST_URL . '?' . http_build_query(array(
+            'file_path' => $uploaded_file_path,
+        )), function($instance, $fh) use (&$download_callback_called) {
+            PHPUnit_Framework_Assert::assertFalse($download_callback_called);
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
+            PHPUnit_Framework_Assert::assertTrue(is_resource($fh));
+            PHPUnit_Framework_Assert::assertEquals('stream', get_resource_type($fh));
+            PHPUnit_Framework_Assert::assertGreaterThan(0, strlen(stream_get_contents($fh)));
+            PHPUnit_Framework_Assert::assertEquals(0, strlen(stream_get_contents($fh)));
+            PHPUnit_Framework_Assert::assertTrue(fclose($fh));
+            $download_callback_called = true;
+        });
+        $multi_curl->start();
+        $this->assertTrue($download_callback_called);
+
+        // Remove server file.
+        $this->assertEquals('true', $upload_test->server('upload_cleanup', 'POST', array(
+            'file_path' => $uploaded_file_path,
+        )));
+
+        unlink($upload_file_path);
+        $this->assertFalse(file_exists($upload_file_path));
+        $this->assertFalse(file_exists($uploaded_file_path));
+    }
+
+    public function testDownloadCallbackError()
+    {
+        $download_before_send_called = false;
+        $download_callback_called = false;
+        $multi_curl = new MultiCurl();
+        $multi_curl->beforeSend(function ($instance) use (&$download_before_send_called) {
+            PHPUnit_Framework_Assert::assertFalse($download_before_send_called);
+            $download_before_send_called = true;
+        });
+        $multi_curl->addDownload(Test::ERROR_URL, function($instance, $fh) use (&$download_callback_called) {
+            $download_callback_called = true;
+        });
+        $multi_curl->start();
+        $this->assertTrue($download_before_send_called);
+        $this->assertFalse($download_callback_called);
+    }
 }

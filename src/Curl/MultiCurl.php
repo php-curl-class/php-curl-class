@@ -35,11 +35,21 @@ class MultiCurl
         return $curl;
     }
 
-    public function addDownload($url, $filename)
+    public function addDownload($url, $mixed_filename)
     {
         $curl = new Curl();
         $curl->setURL($url);
-        $fh = fopen($filename, 'wb');
+
+        $callback = false;
+        if (is_callable($mixed_filename)) {
+            $callback = $mixed_filename;
+            $curl->download_complete_function = $callback;
+            $fh = tmpfile();
+        } else {
+            $filename = $mixed_filename;
+            $fh = fopen($filename, 'wb');
+        }
+
         $curl->setOpt(CURLOPT_FILE, $fh);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $curl->setOpt(CURLOPT_HTTPGET, true);
@@ -234,11 +244,18 @@ class MultiCurl
 
                             // Close open file handles and reset the curl instance.
                             if (isset($this->curl_fhs[$ch->id])) {
-                                fclose($this->curl_fhs[$ch->id]);
+                                $fh = $this->curl_fhs[$ch->id];
+                                if (!$ch->error) {
+                                    rewind($fh);
+                                    $ch->call($ch->download_complete_function, $fh);
+                                }
+                                if (is_resource($fh)) {
+                                    fclose($fh);
+                                }
                                 defined('STDOUT') || define('STDOUT', null);
                                 $ch->setOpt(CURLOPT_FILE, STDOUT);
                                 $ch->setOpt(CURLOPT_RETURNTRANSFER, true);
-                                unset($this->curl_fhs[$ch->id]);
+                                unset($fh);
                             }
                             break;
                         }

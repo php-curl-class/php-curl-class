@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '3.2.3';
+    const VERSION = '3.3.3';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
@@ -31,6 +31,7 @@ class Curl
     public $raw_response = null;
 
     public $before_send_function = null;
+    public $download_complete_function = null;
     private $success_function = null;
     private $error_function = null;
     private $complete_function = null;
@@ -117,10 +118,13 @@ class Curl
         return $data;
     }
 
-    public function call($function)
+    public function call()
     {
+        $args = func_get_args();
+        $function = array_shift($args);
         if (is_callable($function)) {
-            call_user_func_array($function, array($this));
+            array_unshift($args, $this);
+            call_user_func_array($function, $args);
         }
     }
 
@@ -150,12 +154,28 @@ class Curl
         return $this->exec();
     }
 
-    public function download($url, $filename)
+    public function download($url, $mixed_filename)
     {
-        $fh = fopen($filename, 'wb');
+        $callback = false;
+        if (is_callable($mixed_filename)) {
+            $callback = $mixed_filename;
+            $fh = tmpfile();
+        } else {
+            $filename = $mixed_filename;
+            $fh = fopen($filename, 'wb');
+        }
+
         $this->setOpt(CURLOPT_FILE, $fh);
         $this->get($url);
-        fclose($fh);
+
+        if (!$this->error && $callback) {
+            rewind($fh);
+            $this->call($callback, $fh);
+        }
+
+        if (is_resource($fh)) {
+            fclose($fh);
+        }
 
         // Fix "PHP Notice: Use of undefined constant STDOUT" when reading the
         // PHP script from stdin.
