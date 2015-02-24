@@ -31,6 +31,7 @@ class Curl
     public $raw_response = null;
 
     public $before_send_function = null;
+    public $download_complete_function = null;
     private $success_function = null;
     private $error_function = null;
     private $complete_function = null;
@@ -169,7 +170,7 @@ class Curl
 
         if (!$this->error && $callback) {
             rewind($fh);
-            $callback($this, $fh);
+            $this->call($callback, $fh);
         }
 
         if (is_resource($fh)) {

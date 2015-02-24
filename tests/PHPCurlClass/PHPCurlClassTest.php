@@ -491,7 +491,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
             PHPUnit_Framework_Assert::assertEquals('stream', get_resource_type($fh));
             PHPUnit_Framework_Assert::assertGreaterThan(0, strlen(stream_get_contents($fh)));
             PHPUnit_Framework_Assert::assertEquals(0, strlen(stream_get_contents($fh)));
-            fclose($fh);
+            PHPUnit_Framework_Assert::assertTrue(fclose($fh));
         });
         $this->assertTrue($callback_called);
 
