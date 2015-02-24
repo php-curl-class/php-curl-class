@@ -150,12 +150,28 @@ class Curl
         return $this->exec();
     }
 
-    public function download($url, $filename)
+    public function download($url, $mixed_filename)
     {
-        $fh = fopen($filename, 'wb');
+        $callback = false;
+        if (is_callable($mixed_filename)) {
+            $callback = $mixed_filename;
+            $fh = tmpfile();
+        } else {
+            $filename = $mixed_filename;
+            $fh = fopen($filename, 'wb');
+        }
+
         $this->setOpt(CURLOPT_FILE, $fh);
         $this->get($url);
-        fclose($fh);
+
+        if ($callback) {
+            rewind($fh);
+            $callback($this, $fh);
+        }
+
+        if (is_resource($fh)) {
+            fclose($fh);
+        }
 
         // Fix "PHP Notice: Use of undefined constant STDOUT" when reading the
         // PHP script from stdin.
