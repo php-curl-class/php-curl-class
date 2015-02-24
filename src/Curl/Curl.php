@@ -140,13 +140,11 @@ class Curl
         $this->complete_function = $callback;
     }
 
-    public function delete($url_mixed, $data = array())
+    public function delete($url, $data = array())
     {
-        if (is_array($url_mixed)) {
+        if (is_array($url)) {
+            $data = $url;
             $url = $this->base_url;
-            $data = $url_mixed;
-        } else {
-            $url = $url_mixed;
         }
         $this->setURL($url, $data);
         $this->unsetHeader('Content-Length');
@@ -244,13 +242,11 @@ class Curl
         return $this->response;
     }
 
-    public function get($url_mixed, $data = array())
+    public function get($url, $data = array())
     {
-        if (is_array($url_mixed)) {
+        if (is_array($url)) {
+            $data = $url;
             $url = $this->base_url;
-            $data = $url_mixed;
-        } else {
-            $url = $url_mixed;
         }
         $this->setURL($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
@@ -263,13 +259,11 @@ class Curl
         return $this->options[$option];
     }
 
-    public function head($url_mixed, $data = array())
+    public function head($url, $data = array())
     {
-        if (is_array($url_mixed)) {
+        if (is_array($url)) {
+            $data = $url;
             $url = $this->base_url;
-            $data = $url_mixed;
-        } else {
-            $url = $url_mixed;
         }
         $this->setURL($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
@@ -283,13 +277,11 @@ class Curl
         return strlen($header);
     }
 
-    public function options($url_mixed, $data = array())
+    public function options($url, $data = array())
     {
-        if (is_array($url_mixed)) {
+        if (is_array($url)) {
+            $data = $url;
             $url = $this->base_url;
-            $data = $url_mixed;
-        } else {
-            $url = $url_mixed;
         }
         $this->setURL($url, $data);
         $this->unsetHeader('Content-Length');
@@ -297,13 +289,11 @@ class Curl
         return $this->exec();
     }
 
-    public function patch($url_mixed, $data = array())
+    public function patch($url, $data = array())
     {
-        if (is_array($url_mixed)) {
+        if (is_array($url)) {
+            $data = $url;
             $url = $this->base_url;
-            $data = $url_mixed;
-        } else {
-            $url = $url_mixed;
         }
         $this->setURL($url);
         $this->unsetHeader('Content-Length');
@@ -312,13 +302,11 @@ class Curl
         return $this->exec();
     }
 
-    public function post($url_mixed, $data = array())
+    public function post($url, $data = array())
     {
-        if (is_array($url_mixed)) {
+        if (is_array($url)) {
+            $data = $url;
             $url = $this->base_url;
-            $data = $url_mixed;
-        } else {
-            $url = $url_mixed;
         }
 
         if (is_array($data) && empty($data)) {
@@ -332,13 +320,11 @@ class Curl
         return $this->exec();
     }
 
-    public function put($url_mixed, $data = array())
+    public function put($url, $data = array())
     {
-        if (is_array($url_mixed)) {
+        if (is_array($url)) {
+            $data = $url;
             $url = $this->base_url;
-            $data = $url_mixed;
-        } else {
-            $url = $url_mixed;
         }
         $this->setURL($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
