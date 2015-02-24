@@ -485,13 +485,14 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl->download(Test::TEST_URL . '?' . http_build_query(array(
             'file_path' => $uploaded_file_path,
         )), function($instance, $fh) use (&$callback_called) {
-            $callback_called = true;
+            PHPUnit_Framework_Assert::assertFalse($callback_called);
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertTrue(is_resource($fh));
             PHPUnit_Framework_Assert::assertEquals('stream', get_resource_type($fh));
             PHPUnit_Framework_Assert::assertGreaterThan(0, strlen(stream_get_contents($fh)));
             PHPUnit_Framework_Assert::assertEquals(0, strlen(stream_get_contents($fh)));
             PHPUnit_Framework_Assert::assertTrue(fclose($fh));
+            $callback_called = true;
         });
         $this->assertTrue($callback_called);
 
