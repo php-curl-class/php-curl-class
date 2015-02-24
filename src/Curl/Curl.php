@@ -117,10 +117,13 @@ class Curl
         return $data;
     }
 
-    public function call($function)
+    public function call()
     {
+        $args = func_get_args();
+        $function = array_shift($args);
         if (is_callable($function)) {
-            call_user_func_array($function, array($this));
+            array_unshift($args, $this);
+            call_user_func_array($function, $args);
         }
     }
 
