@@ -164,7 +164,7 @@ class Curl
         $this->setOpt(CURLOPT_FILE, $fh);
         $this->get($url);
 
-        if ($callback) {
+        if (!$this->error && $callback) {
             rewind($fh);
             $callback($this, $fh);
         }
