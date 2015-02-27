@@ -140,6 +140,12 @@ class Curl
         $this->complete_function = $callback;
     }
 
+    public function progress($callback)
+    {
+        $this->setOpt(CURLOPT_PROGRESSFUNCTION, $callback);
+        $this->setOpt(CURLOPT_NOPROGRESS, false);
+    }
+
     public function delete($url, $data = array())
     {
         if (is_array($url)) {
