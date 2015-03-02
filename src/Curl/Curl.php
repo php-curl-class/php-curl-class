@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '3.3.3';
+    const VERSION = '3.4.3';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
@@ -138,6 +138,12 @@ class Curl
     public function complete($callback)
     {
         $this->complete_function = $callback;
+    }
+
+    public function progress($callback)
+    {
+        $this->setOpt(CURLOPT_PROGRESSFUNCTION, $callback);
+        $this->setOpt(CURLOPT_NOPROGRESS, false);
     }
 
     public function delete($url, $data = array())
