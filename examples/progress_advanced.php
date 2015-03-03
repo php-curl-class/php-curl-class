@@ -10,13 +10,19 @@ $curl->progress(function($client, $download_size, $downloaded, $upload_size, $up
     }
 
     // Display a progress bar: xxx% [=======>             ]
-    $percent = (int)floor( $downloaded * 100 / $download_size );
-    $percentage = sprintf('%3d%%', $percent);
-    $arrow_length = 40;
-    $arrow_tail_length = max(1, floor(($percent / 100 * $arrow_length) - 3));
-    $space_length = max(0, $arrow_length - $arrow_tail_length - 3);
-    $arrow = '[' . str_repeat('=', $arrow_tail_length) . '>' . str_repeat(' ', $space_length) . ']';
-    echo ' ' . $percentage . ' ' . $arrow . "\r";
+    $progress_size = 40;
+    $fraction_downloaded = $downloaded / $download_size;
+    $dots = round($fraction_downloaded * $progress_size);
+    printf('%3.0f%% [', $fraction_downloaded * 100 );
+    $i = 0;
+    for ( ; $i < $dots - 1; $i++) {
+        echo '=';
+    }
+    echo '>';
+    for ( ; $i < $progress_size - 1; $i++) {
+        echo ' ';
+    }
+    echo ']' . "\r";
 });
 $curl->complete(function($instance) {
     echo "\n" . 'download complete' . "\n";
