@@ -4,6 +4,7 @@ namespace Curl;
 
 class MultiCurl
 {
+    public $base_url = null;
     public $multi_curl;
     public $curls = array();
     private $curl_fhs = array();
@@ -19,14 +20,19 @@ class MultiCurl
 
     private $json_decoder = null;
 
-    public function __construct()
+    public function __construct($base_url = null)
     {
         $this->multi_curl = curl_multi_init();
         $this->headers = new CaseInsensitiveArray();
+        $this->setURL($base_url);
     }
 
     public function addDelete($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
         $curl = new Curl();
         $curl->setURL($url, $data);
         $curl->unsetHeader('Content-Length');
@@ -60,6 +66,10 @@ class MultiCurl
 
     public function addGet($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
         $curl = new Curl();
         $curl->setURL($url, $data);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
@@ -70,6 +80,10 @@ class MultiCurl
 
     public function addHead($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
         $curl = new Curl();
         $curl->setURL($url, $data);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
@@ -80,6 +94,10 @@ class MultiCurl
 
     public function addOptions($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
         $curl = new Curl();
         $curl->setURL($url, $data);
         $curl->unsetHeader('Content-Length');
@@ -90,6 +108,10 @@ class MultiCurl
 
     public function addPatch($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
         $curl = new Curl();
         $curl->setURL($url);
         $curl->unsetHeader('Content-Length');
@@ -101,6 +123,11 @@ class MultiCurl
 
     public function addPost($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
+
         $curl = new Curl();
 
         if (is_array($data) && empty($data)) {
@@ -117,6 +144,10 @@ class MultiCurl
 
     public function addPut($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
         $curl = new Curl();
         $curl->setURL($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -208,6 +239,11 @@ class MultiCurl
     public function setTimeout($seconds)
     {
         $this->setOpt(CURLOPT_TIMEOUT, $seconds);
+    }
+
+    public function setURL($url)
+    {
+        $this->base_url = $url;
     }
 
     public function setUserAgent($user_agent)

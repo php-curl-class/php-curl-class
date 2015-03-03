@@ -191,7 +191,7 @@ Curl::is_array_multidim($array)
 
 ### Experimental Methods
 ```php
-MultiCurl::__construct()
+MultiCurl::__construct($base_url = null)
 MultiCurl::__destruct()
 MultiCurl::addDelete($url, $data = array())
 MultiCurl::addDownload($url, $mixed_filename)
@@ -216,6 +216,7 @@ MultiCurl::setOpt($option, $value)
 MultiCurl::setReferer($referer)
 MultiCurl::setReferrer($referrer)
 MultiCurl::setTimeout($seconds)
+MultiCurl::setURL($url)
 MultiCurl::setUserAgent($user_agent)
 MultiCurl::start()
 MultiCurl::success($callback)
