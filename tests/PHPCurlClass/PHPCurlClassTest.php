@@ -64,6 +64,22 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertCount(2, $array);
     }
 
+    public function testBuildPostDataArgSeparator()
+    {
+        $data = array(
+            'foo' => 'Hello',
+            'bar' => 'World',
+        );
+
+        foreach (array(false, '&amp;', '&') as $arg_separator) {
+            if ($arg_separator) {
+                ini_set('arg_separator.output', $arg_separator);
+            }
+            $curl = new Curl();
+            $this->assertEquals('foo=Hello&bar=World', $curl->buildPostData($data));
+        }
+    }
+
     public function testUserAgent()
     {
         $php_version = 'PHP\/' . PHP_VERSION;
