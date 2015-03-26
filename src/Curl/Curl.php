@@ -109,7 +109,7 @@ class Curl
                             $data = $json_str;
                         }
                     } else {
-                        $data = http_build_query($data);
+                        $data = http_build_query($data, '', '&');
                     }
                 }
             }
