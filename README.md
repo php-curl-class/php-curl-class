@@ -190,10 +190,6 @@ Curl::verbose($on = true)
 Curl::http_build_multi_query($data, $key = null)
 Curl::is_array_assoc($array)
 Curl::is_array_multidim($array)
-```
-
-### Experimental Methods
-```php
 MultiCurl::__construct($base_url = null)
 MultiCurl::__destruct()
 MultiCurl::addDelete($url, $data = array())
