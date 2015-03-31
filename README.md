@@ -6,7 +6,9 @@ PHP Curl Class is an object-oriented wrapper of the PHP cURL extension.
 
 ### Composer
 
-    $ composer require php-curl-class/php-curl-class
+> NOTE: Please use dev-master. I am currently unable to update releases on [packagist.org](https://packagist.org/packages/php-curl-class/php-curl-class) ([Issue #156](https://github.com/php-curl-class/php-curl-class/issues/156)).
+
+    $ composer require php-curl-class/php-curl-class:dev-master
 
 ### Quick Start and Examples
 
