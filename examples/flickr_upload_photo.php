@@ -1,6 +1,6 @@
 <?php
 require '../src/Curl/Curl.php';
-require 'Flickr.class.php';
+require 'flickr.class.php';
 
 use \Curl\Curl;
 
