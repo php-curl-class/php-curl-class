@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '3.4.3';
+    const VERSION = '3.4.4';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
@@ -158,11 +158,40 @@ class Curl
         return $this->exec();
     }
 
+    public function downloadComplete($fh)
+    {
+        if (!$this->error && $this->download_complete_function) {
+            rewind($fh);
+            $this->call($this->download_complete_function, $fh);
+            $this->download_complete_function = null;
+        }
+
+        if (is_resource($fh)) {
+            fclose($fh);
+        }
+
+        // Fix "PHP Notice: Use of undefined constant STDOUT" when reading the
+        // PHP script from stdin. Using null causes "Warning: curl_setopt():
+        // supplied argument is not a valid File-Handle resource".
+        if (!defined('STDOUT')) {
+            define('STDOUT', fopen('php://stdout', 'w'));
+        }
+
+        // Reset CURLOPT_FILE with STDOUT to avoid: "curl_exec(): CURLOPT_FILE
+        // resource has gone away, resetting to default".
+        $this->setOpt(CURLOPT_FILE, STDOUT);
+
+        // Reset CURLOPT_RETURNTRANSFER to tell cURL to return subsequent
+        // responses as the return value of curl_exec(). Without this,
+        // curl_exec() will revert to returning boolean values.
+        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
+    }
+
     public function download($url, $mixed_filename)
     {
         $callback = false;
         if (is_callable($mixed_filename)) {
-            $callback = $mixed_filename;
+            $this->download_complete_function = $mixed_filename;
             $fh = tmpfile();
         } else {
             $filename = $mixed_filename;
@@ -171,32 +200,7 @@ class Curl
 
         $this->setOpt(CURLOPT_FILE, $fh);
         $this->get($url);
-
-        if (!$this->error && $callback) {
-            rewind($fh);
-            $this->call($callback, $fh);
-        }
-
-        if (is_resource($fh)) {
-            fclose($fh);
-        }
-
-        // Fix "PHP Notice: Use of undefined constant STDOUT" when reading the
-        // PHP script from stdin.
-        if (!defined('STDOUT')) {
-            define('STDOUT', null);
-        }
-
-        // Reset CURLOPT_FILE with STDOUT to avoid: "curl_exec(): CURLOPT_FILE
-        // resource has gone away, resetting to default". Using null causes
-        // "curl_setopt(): supplied argument is not a valid File-Handle
-        // resource".
-        $this->setOpt(CURLOPT_FILE, STDOUT);
-
-        // Reset CURLOPT_RETURNTRANSFER to tell cURL to return subsequent
-        // responses as the return value of curl_exec(). Without this,
-        // curl_exec() will revert to returning boolean values.
-        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
+        $this->downloadComplete($fh);
 
         return ! $this->error;
     }
