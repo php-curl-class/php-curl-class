@@ -158,23 +158,12 @@ class Curl
         return $this->exec();
     }
 
-    public function download($url, $mixed_filename)
+    public function downloadComplete($fh)
     {
-        $callback = false;
-        if (is_callable($mixed_filename)) {
-            $callback = $mixed_filename;
-            $fh = tmpfile();
-        } else {
-            $filename = $mixed_filename;
-            $fh = fopen($filename, 'wb');
-        }
-
-        $this->setOpt(CURLOPT_FILE, $fh);
-        $this->get($url);
-
-        if (!$this->error && $callback) {
+        if (!$this->error && $this->download_complete_function) {
             rewind($fh);
-            $this->call($callback, $fh);
+            $this->call($this->download_complete_function, $fh);
+            $this->download_complete_function = null;
         }
 
         if (is_resource($fh)) {
@@ -197,6 +186,22 @@ class Curl
         // responses as the return value of curl_exec(). Without this,
         // curl_exec() will revert to returning boolean values.
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
+    }
+
+    public function download($url, $mixed_filename)
+    {
+        $callback = false;
+        if (is_callable($mixed_filename)) {
+            $this->download_complete_function = $mixed_filename;
+            $fh = tmpfile();
+        } else {
+            $filename = $mixed_filename;
+            $fh = fopen($filename, 'wb');
+        }
+
+        $this->setOpt(CURLOPT_FILE, $fh);
+        $this->get($url);
+        $this->downloadComplete($fh);
 
         return ! $this->error;
     }
