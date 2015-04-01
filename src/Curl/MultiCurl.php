@@ -281,17 +281,24 @@ class MultiCurl
                             // Close open file handles and reset the curl instance.
                             if (isset($this->curl_fhs[$ch->id])) {
                                 $fh = $this->curl_fhs[$ch->id];
-                                if (!$ch->error) {
+
+                                if (!$ch->error && $ch->download_complete_function) {
                                     rewind($fh);
                                     $ch->call($ch->download_complete_function, $fh);
                                 }
+
                                 if (is_resource($fh)) {
                                     fclose($fh);
                                 }
-                                defined('STDOUT') || define('STDOUT', null);
+
+                                if (!defined('STDOUT')) {
+                                    define('STDOUT', null);
+                                }
+
                                 $ch->setOpt(CURLOPT_FILE, STDOUT);
                                 $ch->setOpt(CURLOPT_RETURNTRANSFER, true);
-                                unset($fh);
+
+                                unset($this->curl_fhs[$ch->id]);
                             }
                             break;
                         }
