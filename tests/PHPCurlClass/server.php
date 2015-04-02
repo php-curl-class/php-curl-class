@@ -105,12 +105,12 @@ if ($test == 'http_basic_auth') {
     echo $http_raw_post_data;
     exit;
 } elseif ($test === 'post_file_path_upload') {
-    echo mime_content_type($_FILES[$key]['tmp_name']);
+    echo Helper\mime_type($_FILES[$key]['tmp_name']);
     exit;
 } elseif ($test === 'put_file_handle') {
     $tmp_filename = tempnam('/tmp', 'php-curl-class.');
     file_put_contents($tmp_filename, $http_raw_post_data);
-    echo mime_content_type($tmp_filename);
+    echo Helper\mime_type($tmp_filename);
     unlink($tmp_filename);
     exit;
 } elseif ($test === 'request_method') {
