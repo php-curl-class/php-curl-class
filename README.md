@@ -1,13 +1,14 @@
-# php-curl-class
+# PHP Curl Class: HTTP requests made easy
 
 [![Build Status](https://travis-ci.org/php-curl-class/php-curl-class.png?branch=master)](https://travis-ci.org/php-curl-class/php-curl-class)
 
 PHP Curl Class is an object-oriented wrapper of the PHP cURL extension that makes it easy to send HTTP requests and integrate with web APIs.
 
-### Composer
+### Installation
+
+To install PHP Curl Class, simply:
 
     $ composer require php-curl-class/php-curl-class
-    $ composer require php-curl-class/php-curl-class:dev-master # Development version
 
 ### Quick Start and Examples
 
@@ -222,3 +223,10 @@ MultiCurl::success($callback)
 MultiCurl::unsetHeader($key)
 MultiCurl::verbose($on = true)
 ```
+
+### Contribute
+1. Check for open issues or open a new issue to start a discussion around a bug or feature.
+1. Fork the repository on GitHub to start making your changes.
+1. Write one or more tests for the new feature or that expose the bug.
+1. Make code changes to implement the feature or fix the bug.
+1. Send a pull request to get your changes merged and published.
