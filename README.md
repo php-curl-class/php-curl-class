@@ -1,7 +1,7 @@
 # PHP Curl Class: HTTP requests made easy
 
 [![Build Status](https://travis-ci.org/php-curl-class/php-curl-class.png?branch=master)](https://travis-ci.org/php-curl-class/php-curl-class)
-[![License](https://poser.pugx.org/php-curl-class/php-curl-class/license.svg)](https://packagist.org/packages/php-curl-class/php-curl-class)
+[![License](https://poser.pugx.org/php-curl-class/php-curl-class/license.svg)](https://github.com/php-curl-class/php-curl-class/blob/master/LICENSE)
 [![Downloads](https://poser.pugx.org/php-curl-class/php-curl-class/downloads.svg)](https://packagist.org/packages/php-curl-class/php-curl-class)
 
 PHP Curl Class is an object-oriented wrapper of the PHP cURL extension that makes it easy to send HTTP requests and integrate with web APIs.
