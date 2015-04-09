@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '3.4.4';
+    const VERSION = '3.4.5';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
@@ -488,7 +488,8 @@ class Curl
         $raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
         $http_headers = new CaseInsensitiveArray();
 
-        for ($i = 1; $i < count($raw_headers); $i++) {
+        $raw_headers_count = count($raw_headers);
+        for ($i = 1; $i < $raw_headers_count; $i++) {
             list($key, $value) = explode(':', $raw_headers[$i], 2);
             $key = trim($key);
             $value = trim($value);
