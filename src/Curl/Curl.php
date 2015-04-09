@@ -189,7 +189,6 @@ class Curl
 
     public function download($url, $mixed_filename)
     {
-        $callback = false;
         if (is_callable($mixed_filename)) {
             $this->download_complete_function = $mixed_filename;
             $fh = tmpfile();
@@ -212,8 +211,6 @@ class Curl
 
     public function exec($ch = null)
     {
-        $target = $ch === null ? $this : $ch;
-
         if (!($ch === null)) {
             $this->raw_response = curl_multi_getcontent($ch);
         } else {
