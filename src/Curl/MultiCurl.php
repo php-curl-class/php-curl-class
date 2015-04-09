@@ -46,7 +46,6 @@ class MultiCurl
         $curl = new Curl();
         $curl->setURL($url);
 
-        $callback = false;
         if (is_callable($mixed_filename)) {
             $callback = $mixed_filename;
             $curl->download_complete_function = $callback;
