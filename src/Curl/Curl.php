@@ -4,21 +4,8 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '3.0.1';
+    const VERSION = '3.4.5';
     const DEFAULT_TIMEOUT = 30;
-
-    private $cookies = array();
-    private $headers = array();
-    private $options = array();
-
-    public $before_send_function = null;
-    private $success_function = null;
-    private $error_function = null;
-    private $complete_function = null;
-
-    private $json_decoder = null;
-    private $json_pattern = '~^application/(?:json|vnd\.api\+json)~i';
-    private $xml_pattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
 
     public $curl;
     public $id = null;
@@ -43,7 +30,21 @@ class Curl
     public $response = null;
     public $raw_response = null;
 
-    public function __construct()
+    public $before_send_function = null;
+    public $download_complete_function = null;
+    private $success_function = null;
+    private $error_function = null;
+    private $complete_function = null;
+
+    private $cookies = array();
+    private $headers = array();
+    private $options = array();
+
+    private $json_decoder = null;
+    private $json_pattern = '~^application/(?:json|vnd\.api\+json)~i';
+    private $xml_pattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
+
+    public function __construct($base_url = null)
     {
         if (!extension_loaded('curl')) {
             throw new \ErrorException('cURL library is not loaded');
@@ -58,43 +59,249 @@ class Curl
         $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
+        $this->setURL($base_url);
+    }
+
+    public function beforeSend($callback)
+    {
+        $this->before_send_function = $callback;
+    }
+
+    public function buildPostData($data)
+    {
+        if (is_array($data)) {
+            if (self::is_array_multidim($data)) {
+                if (isset($this->headers['Content-Type']) &&
+                    preg_match($this->json_pattern, $this->headers['Content-Type'])) {
+                    $json_str = json_encode($data);
+                    if (!($json_str === false)) {
+                        $data = $json_str;
+                    }
+                } else {
+                    $data = self::http_build_multi_query($data);
+                }
+            } else {
+                $binary_data = false;
+                foreach ($data as $key => $value) {
+                    // Fix "Notice: Array to string conversion" when $value in
+                    // curl_setopt($ch, CURLOPT_POSTFIELDS, $value) is an array
+                    // that contains an empty array.
+                    if (is_array($value) && empty($value)) {
+                        $data[$key] = '';
+                    // Fix "curl_setopt(): The usage of the @filename API for
+                    // file uploading is deprecated. Please use the CURLFile
+                    // class instead".
+                    } elseif (is_string($value) && strpos($value, '@') === 0) {
+                        $binary_data = true;
+                        if (class_exists('CURLFile')) {
+                            $data[$key] = new \CURLFile(substr($value, 1));
+                        }
+                    } elseif ($value instanceof \CURLFile) {
+                        $binary_data = true;
+                    }
+                }
+
+                if (!$binary_data) {
+                    if (isset($this->headers['Content-Type']) &&
+                        preg_match($this->json_pattern, $this->headers['Content-Type'])) {
+                        $json_str = json_encode($data);
+                        if (!($json_str === false)) {
+                            $data = $json_str;
+                        }
+                    } else {
+                        $data = http_build_query($data, '', '&');
+                    }
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    public function call()
+    {
+        $args = func_get_args();
+        $function = array_shift($args);
+        if (is_callable($function)) {
+            array_unshift($args, $this);
+            call_user_func_array($function, $args);
+        }
+    }
+
+    public function close()
+    {
+        if (is_resource($this->curl)) {
+            curl_close($this->curl);
+        }
+    }
+
+    public function complete($callback)
+    {
+        $this->complete_function = $callback;
+    }
+
+    public function progress($callback)
+    {
+        $this->setOpt(CURLOPT_PROGRESSFUNCTION, $callback);
+        $this->setOpt(CURLOPT_NOPROGRESS, false);
+    }
+
+    public function delete($url, $data = array())
+    {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
+        $this->setURL($url, $data);
+        $this->unsetHeader('Content-Length');
+        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
+        return $this->exec();
+    }
+
+    public function downloadComplete($fh)
+    {
+        if (!$this->error && $this->download_complete_function) {
+            rewind($fh);
+            $this->call($this->download_complete_function, $fh);
+            $this->download_complete_function = null;
+        }
+
+        if (is_resource($fh)) {
+            fclose($fh);
+        }
+
+        // Fix "PHP Notice: Use of undefined constant STDOUT" when reading the
+        // PHP script from stdin. Using null causes "Warning: curl_setopt():
+        // supplied argument is not a valid File-Handle resource".
+        if (!defined('STDOUT')) {
+            define('STDOUT', fopen('php://stdout', 'w'));
+        }
+
+        // Reset CURLOPT_FILE with STDOUT to avoid: "curl_exec(): CURLOPT_FILE
+        // resource has gone away, resetting to default".
+        $this->setOpt(CURLOPT_FILE, STDOUT);
+
+        // Reset CURLOPT_RETURNTRANSFER to tell cURL to return subsequent
+        // responses as the return value of curl_exec(). Without this,
+        // curl_exec() will revert to returning boolean values.
+        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
+    }
+
+    public function download($url, $mixed_filename)
+    {
+        if (is_callable($mixed_filename)) {
+            $this->download_complete_function = $mixed_filename;
+            $fh = tmpfile();
+        } else {
+            $filename = $mixed_filename;
+            $fh = fopen($filename, 'wb');
+        }
+
+        $this->setOpt(CURLOPT_FILE, $fh);
+        $this->get($url);
+        $this->downloadComplete($fh);
+
+        return ! $this->error;
+    }
+
+    public function error($callback)
+    {
+        $this->error_function = $callback;
+    }
+
+    public function exec($ch = null)
+    {
+        if (!($ch === null)) {
+            $this->raw_response = curl_multi_getcontent($ch);
+        } else {
+            $this->call($this->before_send_function);
+            $this->raw_response = curl_exec($this->curl);
+            $this->curl_error_code = curl_errno($this->curl);
+        }
+
+        $this->curl_error_message = curl_error($this->curl);
+        $this->curl_error = !($this->curl_error_code === 0);
+        $this->http_status_code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
+        $this->http_error = in_array(floor($this->http_status_code / 100), array(4, 5));
+        $this->error = $this->curl_error || $this->http_error;
+        $this->error_code = $this->error ? ($this->curl_error ? $this->curl_error_code : $this->http_status_code) : 0;
+
+        $this->request_headers = $this->parseRequestHeaders(curl_getinfo($this->curl, CURLINFO_HEADER_OUT));
+        $this->response_headers = $this->parseResponseHeaders($this->raw_response_headers);
+        list($this->response, $this->raw_response) = $this->parseResponse($this->response_headers, $this->raw_response);
+
+        $this->http_error_message = '';
+        if ($this->error) {
+            if (isset($this->response_headers['Status-Line'])) {
+                $this->http_error_message = $this->response_headers['Status-Line'];
+            }
+        }
+        $this->error_message = $this->curl_error ? $this->curl_error_message : $this->http_error_message;
+
+        if (!$this->error) {
+            $this->call($this->success_function);
+        } else {
+            $this->call($this->error_function);
+        }
+
+        $this->call($this->complete_function);
+
+        return $this->response;
     }
 
     public function get($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
         $this->setURL($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $this->setOpt(CURLOPT_HTTPGET, true);
         return $this->exec();
     }
 
-    public function post($url, $data = array())
+    public function getOpt($option)
     {
-        if (is_array($data) && empty($data)) {
-            $this->unsetHeader('Content-Length');
-        }
+        return $this->options[$option];
+    }
 
-        $this->setURL($url);
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
-        $this->setOpt(CURLOPT_POST, true);
-        $this->setOpt(CURLOPT_POSTFIELDS, $this->postfields($data));
+    public function head($url, $data = array())
+    {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
+        $this->setURL($url, $data);
+        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
+        $this->setOpt(CURLOPT_NOBODY, true);
         return $this->exec();
     }
 
-    public function put($url, $data = array())
+    public function headerCallback($ch, $header)
     {
-        $this->setURL($url);
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
-        $put_data = $this->postfields($data);
-        if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
-            $this->setHeader('Content-Length', strlen($put_data));
+        $this->raw_response_headers .= $header;
+        return strlen($header);
+    }
+
+    public function options($url, $data = array())
+    {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
         }
-        $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
+        $this->setURL($url, $data);
+        $this->unsetHeader('Content-Length');
+        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         return $this->exec();
     }
 
     public function patch($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
         $this->setURL($url);
         $this->unsetHeader('Content-Length');
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
@@ -102,55 +309,38 @@ class Curl
         return $this->exec();
     }
 
-    public function delete($url, $data = array())
+    public function post($url, $data = array())
     {
-        $this->setURL($url, $data);
-        $this->unsetHeader('Content-Length');
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
-        return $this->exec();
-    }
-
-    public function head($url, $data = array())
-    {
-        $this->setURL($url, $data);
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
-        $this->setOpt(CURLOPT_NOBODY, true);
-        return $this->exec();
-    }
-
-    public function options($url, $data = array())
-    {
-        $this->setURL($url, $data);
-        $this->unsetHeader('Content-Length');
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
-        return $this->exec();
-    }
-
-    public function download($url, $filename)
-    {
-        $fh = fopen($filename, 'wb');
-        $this->setOpt(CURLOPT_FILE, $fh);
-        $this->get($url);
-        fclose($fh);
-
-        // Fix "PHP Notice: Use of undefined constant STDOUT" when reading the
-        // PHP script from stdin.
-        if (!defined('STDOUT')) {
-            define('STDOUT', null);
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
         }
 
-        // Reset CURLOPT_FILE with STDOUT to avoid: "curl_exec(): CURLOPT_FILE
-        // resource has gone away, resetting to default". Using null causes
-        // "curl_setopt(): supplied argument is not a valid File-Handle
-        // resource".
-        $this->setOpt(CURLOPT_FILE, STDOUT);
+        if (is_array($data) && empty($data)) {
+            $this->unsetHeader('Content-Length');
+        }
 
-        // Reset CURLOPT_RETURNTRANSFER to tell cURL to return subsequent
-        // responses as the return value of curl_exec(). Without this,
-        // curl_exec() will revert to returning boolean values.
-        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
+        $this->setURL($url);
+        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
+        $this->setOpt(CURLOPT_POST, true);
+        $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
+        return $this->exec();
+    }
 
-        return ! $this->error;
+    public function put($url, $data = array())
+    {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
+        $this->setURL($url);
+        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
+        $put_data = $this->buildPostData($data);
+        if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
+            $this->setHeader('Content-Length', strlen($put_data));
+        }
+        $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
+        return $this->exec();
     }
 
     public function setBasicAuthentication($username, $password = '')
@@ -159,72 +349,10 @@ class Curl
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
 
-    public function setHeader($key, $value)
+    public function setDigestAuthentication($username, $password = '')
     {
-        $this->headers[$key] = $value;
-        $headers = array();
-        foreach ($this->headers as $key => $value) {
-            $headers[$key] = $value;
-        }
-        $this->setOpt(CURLOPT_HTTPHEADER, array_map(function($value, $key) {
-            return $key . ': ' . $value;
-        }, $headers, array_keys($headers)));
-    }
-
-    public function unsetHeader($key)
-    {
-        $this->setHeader($key, '');
-        unset($this->headers[$key]);
-    }
-
-    public function setDefaultUserAgent()
-    {
-        $user_agent = 'PHP-Curl-Class/' . self::VERSION . ' (+https://github.com/php-curl-class/php-curl-class)';
-        $user_agent .= ' PHP/' . PHP_VERSION;
-        $curl_version = curl_version();
-        $user_agent .= ' curl/' . $curl_version['version'];
-        $this->setUserAgent($user_agent);
-    }
-
-    public function setDefaultJsonDecoder()
-    {
-        $this->json_decoder = function($response) {
-            $json_obj = json_decode($response, false);
-            if (!($json_obj === null)) {
-                $response = $json_obj;
-            }
-            return $response;
-        };
-    }
-
-    public function setJsonDecoder($func)
-    {
-        $this->json_decoder = $func;
-    }
-
-    public function setUserAgent($user_agent)
-    {
-        $this->setOpt(CURLOPT_USERAGENT, $user_agent);
-    }
-
-    public function setTimeout($seconds)
-    {
-        $this->setOpt(CURLOPT_TIMEOUT, $seconds);
-    }
-
-    public function setDefaultTimeout()
-    {
-        $this->setTimeout(self::DEFAULT_TIMEOUT);
-    }
-
-    public function setReferer($referer)
-    {
-        $this->setReferrer($referer);
-    }
-
-    public function setReferrer($referrer)
-    {
-        $this->setOpt(CURLOPT_REFERER, $referrer);
+        $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+        $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
 
     public function setCookie($key, $value)
@@ -243,6 +371,50 @@ class Curl
         $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
     }
 
+    public function setDefaultJsonDecoder()
+    {
+        $this->json_decoder = function($response) {
+            $json_obj = json_decode($response, false);
+            if (!($json_obj === null)) {
+                $response = $json_obj;
+            }
+            return $response;
+        };
+    }
+
+    public function setDefaultTimeout()
+    {
+        $this->setTimeout(self::DEFAULT_TIMEOUT);
+    }
+
+    public function setDefaultUserAgent()
+    {
+        $user_agent = 'PHP-Curl-Class/' . self::VERSION . ' (+https://github.com/php-curl-class/php-curl-class)';
+        $user_agent .= ' PHP/' . PHP_VERSION;
+        $curl_version = curl_version();
+        $user_agent .= ' curl/' . $curl_version['version'];
+        $this->setUserAgent($user_agent);
+    }
+
+    public function setHeader($key, $value)
+    {
+        $this->headers[$key] = $value;
+        $headers = array();
+        foreach ($this->headers as $key => $value) {
+            $headers[$key] = $value;
+        }
+        $this->setOpt(CURLOPT_HTTPHEADER, array_map(function($value, $key) {
+            return $key . ': ' . $value;
+        }, $headers, array_keys($headers)));
+    }
+
+    public function setJsonDecoder($function)
+    {
+        if (is_callable($function)) {
+            $this->json_decoder = $function;
+        }
+    }
+
     public function setOpt($option, $value)
     {
         $required_options = array(
@@ -258,41 +430,19 @@ class Curl
         return curl_setopt($this->curl, $option, $value);
     }
 
-    public function getOpt($option)
+    public function setReferer($referer)
     {
-        return $this->options[$option];
+        $this->setReferrer($referer);
     }
 
-    public function verbose($on = true)
+    public function setReferrer($referrer)
     {
-        $this->setOpt(CURLOPT_VERBOSE, $on);
+        $this->setOpt(CURLOPT_REFERER, $referrer);
     }
 
-    public function close()
+    public function setTimeout($seconds)
     {
-        if (is_resource($this->curl)) {
-            curl_close($this->curl);
-        }
-    }
-
-    public function beforeSend($callback)
-    {
-        $this->before_send_function = $callback;
-    }
-
-    public function success($callback)
-    {
-        $this->success_function = $callback;
-    }
-
-    public function error($callback)
-    {
-        $this->error_function = $callback;
-    }
-
-    public function complete($callback)
-    {
-        $this->complete_function = $callback;
+        $this->setOpt(CURLOPT_TIMEOUT, $seconds);
     }
 
     public function setURL($url, $data = array())
@@ -302,15 +452,35 @@ class Curl
         $this->setOpt(CURLOPT_URL, $this->url);
     }
 
+    public function setUserAgent($user_agent)
+    {
+        $this->setOpt(CURLOPT_USERAGENT, $user_agent);
+    }
+
+    public function success($callback)
+    {
+        $this->success_function = $callback;
+    }
+
+    public function unsetHeader($key)
+    {
+        $this->setHeader($key, '');
+        unset($this->headers[$key]);
+    }
+
+    public function verbose($on = true)
+    {
+        $this->setOpt(CURLOPT_VERBOSE, $on);
+    }
+
+    public function __destruct()
+    {
+        $this->close();
+    }
+
     private function buildURL($url, $data = array())
     {
         return $url . (empty($data) ? '' : '?' . http_build_query($data));
-    }
-
-    public function headerCallback($ch, $header)
-    {
-        $this->raw_response_headers .= $header;
-        return strlen($header);
     }
 
     private function parseHeaders($raw_headers)
@@ -318,7 +488,8 @@ class Curl
         $raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
         $http_headers = new CaseInsensitiveArray();
 
-        for ($i = 1; $i < count($raw_headers); $i++) {
+        $raw_headers_count = count($raw_headers);
+        for ($i = 1; $i < $raw_headers_count; $i++) {
             list($key, $value) = explode(':', $raw_headers[$i], 2);
             $key = trim($key);
             $value = trim($value);
@@ -382,125 +553,6 @@ class Curl
         return $response_headers;
     }
 
-    public function postfields($data)
-    {
-        if (is_array($data)) {
-            if (self::is_array_multidim($data)) {
-                if (isset($this->headers['Content-Type']) &&
-                    preg_match($this->json_pattern, $this->headers['Content-Type'])) {
-                    $json_str = json_encode($data);
-                    if (!($json_str === false)) {
-                        $data = $json_str;
-                    }
-                } else {
-                    $data = self::http_build_multi_query($data);
-                }
-            } else {
-                $binary_data = false;
-                foreach ($data as $key => $value) {
-                    // Fix "Notice: Array to string conversion" when $value in
-                    // curl_setopt($ch, CURLOPT_POSTFIELDS, $value) is an array
-                    // that contains an empty array.
-                    if (is_array($value) && empty($value)) {
-                        $data[$key] = '';
-                    // Fix "curl_setopt(): The usage of the @filename API for
-                    // file uploading is deprecated. Please use the CURLFile
-                    // class instead".
-                    } elseif (is_string($value) && strpos($value, '@') === 0) {
-                        $binary_data = true;
-                        if (class_exists('CURLFile')) {
-                            $data[$key] = new \CURLFile(substr($value, 1));
-                        }
-                    } elseif ($value instanceof \CURLFile) {
-                        $binary_data = true;
-                    }
-                }
-
-                if (!$binary_data) {
-                    if (isset($this->headers['Content-Type']) &&
-                        preg_match($this->json_pattern, $this->headers['Content-Type'])) {
-                        $json_str = json_encode($data);
-                        if (!($json_str === false)) {
-                            $data = $json_str;
-                        }
-                    } else {
-                        $data = http_build_query($data);
-                    }
-                }
-            }
-        }
-
-        return $data;
-    }
-
-    public function exec($ch = null)
-    {
-        $target = $ch === null ? $this : $ch;
-
-        if (!($ch === null)) {
-            $this->raw_response = curl_multi_getcontent($ch);
-        } else {
-            $this->call($this->before_send_function);
-            $this->raw_response = curl_exec($this->curl);
-            $this->curl_error_code = curl_errno($this->curl);
-        }
-
-        $this->curl_error_message = curl_error($this->curl);
-        $this->curl_error = !($this->curl_error_code === 0);
-        $this->http_status_code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
-        $this->http_error = in_array(floor($this->http_status_code / 100), array(4, 5));
-        $this->error = $this->curl_error || $this->http_error;
-        $this->error_code = $this->error ? ($this->curl_error ? $this->curl_error_code : $this->http_status_code) : 0;
-
-        $this->request_headers = $this->parseRequestHeaders(curl_getinfo($this->curl, CURLINFO_HEADER_OUT));
-        $this->response_headers = $this->parseResponseHeaders($this->raw_response_headers);
-        list($this->response, $this->raw_response) = $this->parseResponse($this->response_headers, $this->raw_response);
-
-        $this->http_error_message = '';
-        if ($this->error) {
-            if (isset($this->response_headers['Status-Line'])) {
-                $this->http_error_message = $this->response_headers['Status-Line'];
-            }
-        }
-        $this->error_message = $this->curl_error ? $this->curl_error_message : $this->http_error_message;
-
-        if (!$this->error) {
-            $this->call($this->success_function);
-        } else {
-            $this->call($this->error_function);
-        }
-
-        $this->call($this->complete_function);
-
-        return $this->response;
-    }
-
-    public function call($function)
-    {
-        if (is_callable($function)) {
-            call_user_func_array($function, array($this));
-        }
-    }
-
-    public function __destruct()
-    {
-        $this->close();
-    }
-
-    public static function is_array_assoc($array)
-    {
-        return (bool)count(array_filter(array_keys($array), 'is_string'));
-    }
-
-    public static function is_array_multidim($array)
-    {
-        if (!is_array($array)) {
-            return false;
-        }
-
-        return (bool)count(array_filter($array, 'is_array'));
-    }
-
     public static function http_build_multi_query($data, $key = null)
     {
         $query = array();
@@ -522,6 +574,20 @@ class Curl
         }
 
         return implode('&', $query);
+    }
+
+    public static function is_array_assoc($array)
+    {
+        return (bool)count(array_filter(array_keys($array), 'is_string'));
+    }
+
+    public static function is_array_multidim($array)
+    {
+        if (!is_array($array)) {
+            return false;
+        }
+
+        return (bool)count(array_filter($array, 'is_array'));
     }
 }
 

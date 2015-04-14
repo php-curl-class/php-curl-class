@@ -44,6 +44,51 @@ if ($test == 'http_basic_auth') {
         'password' => $_SERVER['PHP_AUTH_PW'],
     ));
     exit;
+} elseif ($test == 'http_digest_auth') {
+    $users = array(
+        'myusername' => 'mypassword',
+    );
+
+    $realm = 'Restricted area';
+    $qop = 'auth';
+    $nonce = md5(uniqid());
+    $opaque = md5(uniqid());
+    if (empty($_SERVER['PHP_AUTH_DIGEST'])) {
+        header('HTTP/1.1 401 Unauthorized');
+        header(sprintf(
+            'WWW-Authenticate: Digest realm="%s", qop="%s", nonce="%s", opaque="%s"', $realm, $qop, $nonce, $opaque));
+        echo 'canceled';
+        exit;
+    }
+
+    $data = array(
+        'nonce' => '',
+        'nc' => '',
+        'cnonce' => '',
+        'qop' => '',
+        'username' => '',
+        'uri' => '',
+        'response' => '',
+    );
+    preg_match_all('@(' . implode('|', array_keys($data)) . ')=(?:([\'"])([^\2]+?)\2|([^\s,]+))@',
+        $_SERVER['PHP_AUTH_DIGEST'], $matches, PREG_SET_ORDER);
+    foreach ($matches as $match) {
+        $data[$match['1']] = $match['3'] ? $match['3'] : $match['4'];
+    }
+
+    $A1 = md5($data['username'] . ':' . $realm . ':' . $users[$data['username']]);
+    $A2 = md5($_SERVER['REQUEST_METHOD'] . ':' . $data['uri']);
+    $valid_response = md5(
+        $A1 . ':' . $data['nonce'] . ':' . $data['nc'] . ':' . $data['cnonce'] . ':' . $data['qop'] . ':' . $A2);
+
+    if (!($data['response'] === $valid_response)) {
+        header('HTTP/1.1 401 Unauthorized');
+        echo 'invalid';
+        exit;
+    }
+
+    echo 'valid';
+    exit;
 } elseif ($test === 'get') {
     echo http_build_query($_GET);
     exit;
@@ -60,12 +105,12 @@ if ($test == 'http_basic_auth') {
     echo $http_raw_post_data;
     exit;
 } elseif ($test === 'post_file_path_upload') {
-    echo mime_content_type($_FILES[$key]['tmp_name']);
+    echo Helper\mime_type($_FILES[$key]['tmp_name']);
     exit;
 } elseif ($test === 'put_file_handle') {
     $tmp_filename = tempnam('/tmp', 'php-curl-class.');
     file_put_contents($tmp_filename, $http_raw_post_data);
-    echo mime_content_type($tmp_filename);
+    echo Helper\mime_type($tmp_filename);
     unlink($tmp_filename);
     exit;
 } elseif ($test === 'request_method') {
@@ -90,9 +135,13 @@ if ($test == 'http_basic_auth') {
     echo 'OK';
     exit;
 } elseif ($test === 'json_response') {
-    $key = $_POST['key'];
-    $value = $_POST['value'];
-    header($key . ': ' . $value);
+    if ($request_method === 'POST') {
+        $key = $_POST['key'];
+        $value = $_POST['value'];
+        header($key . ': ' . $value);
+    } else {
+        header('Content-Type: application/json');
+    }
     echo json_encode(array(
         'null' => null,
         'true' => true,
@@ -188,6 +237,8 @@ $data_mapping = array(
     'server' => '_SERVER',
 );
 
-$data = $$data_mapping[$test];
-$value = isset($data[$key]) ? $data[$key] : '';
-echo $value;
+if (!empty($test)) {
+    $data = $$data_mapping[$test];
+    $value = isset($data[$key]) ? $data[$key] : '';
+    echo $value;
+}

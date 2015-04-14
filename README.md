@@ -1,10 +1,15 @@
-# php-curl-class
+# PHP Curl Class: HTTP requests made easy
 
 [![Build Status](https://travis-ci.org/php-curl-class/php-curl-class.png?branch=master)](https://travis-ci.org/php-curl-class/php-curl-class)
+[![Downloads](https://img.shields.io/packagist/dt/php-curl-class/php-curl-class.svg)](https://packagist.org/packages/php-curl-class/php-curl-class)
 
-PHP Curl Class is an object-oriented wrapper of the PHP cURL extension.
+[![License](https://img.shields.io/packagist/l/php-curl-class/php-curl-class.svg)](https://github.com/php-curl-class/php-curl-class/blob/master/LICENSE)
 
-### Composer
+PHP Curl Class is an object-oriented wrapper of the PHP cURL extension that makes it easy to send HTTP requests and integrate with web APIs.
+
+### Installation
+
+To install PHP Curl Class, simply:
 
     $ composer require php-curl-class/php-curl-class
 
@@ -146,14 +151,16 @@ $multi_curl->start();
 
 ### Available Methods
 ```php
-Curl::__construct()
+Curl::__construct($base_url = null)
 Curl::__destruct()
 Curl::beforeSend($callback)
-Curl::call($function)
+Curl::buildPostData($data)
+Curl::call()
 Curl::close()
 Curl::complete($callback)
 Curl::delete($url, $data = array())
-Curl::download($url, $filename)
+Curl::download($url, $mixed_filename)
+Curl::downloadComplete($fh)
 Curl::error($callback)
 Curl::exec($ch = null)
 Curl::get($url, $data = array())
@@ -163,7 +170,7 @@ Curl::headerCallback($ch, $header)
 Curl::options($url, $data = array())
 Curl::patch($url, $data = array())
 Curl::post($url, $data = array())
-Curl::postfields($data)
+Curl::progress($callback)
 Curl::put($url, $data = array())
 Curl::setBasicAuthentication($username, $password = '')
 Curl::setCookie($key, $value)
@@ -172,8 +179,9 @@ Curl::setCookieJar($cookie_jar)
 Curl::setDefaultJsonDecoder()
 Curl::setDefaultTimeout()
 Curl::setDefaultUserAgent()
+Curl::setDigestAuthentication($username, $password = '')
 Curl::setHeader($key, $value)
-Curl::setJsonDecoder($func)
+Curl::setJsonDecoder($function)
 Curl::setOpt($option, $value)
 Curl::setReferer($referer)
 Curl::setReferrer($referrer)
@@ -183,14 +191,13 @@ Curl::setUserAgent($user_agent)
 Curl::success($callback)
 Curl::unsetHeader($key)
 Curl::verbose($on = true)
-```
-
-### Experimental Methods
-```php
-MultiCurl::__construct()
+Curl::http_build_multi_query($data, $key = null)
+Curl::is_array_assoc($array)
+Curl::is_array_multidim($array)
+MultiCurl::__construct($base_url = null)
 MultiCurl::__destruct()
 MultiCurl::addDelete($url, $data = array())
-MultiCurl::addDownload($url, $filename)
+MultiCurl::addDownload($url, $mixed_filename)
 MultiCurl::addGet($url, $data = array())
 MultiCurl::addHead($url, $data = array())
 MultiCurl::addOptions($url, $data = array())
@@ -202,8 +209,27 @@ MultiCurl::close()
 MultiCurl::complete($callback)
 MultiCurl::error($callback)
 MultiCurl::getOpt($option)
+MultiCurl::setBasicAuthentication($username, $password = '')
+MultiCurl::setCookie($key, $value)
+MultiCurl::setCookieFile($cookie_file)
+MultiCurl::setCookieJar($cookie_jar)
 MultiCurl::setHeader($key, $value)
+MultiCurl::setJsonDecoder($function)
 MultiCurl::setOpt($option, $value)
+MultiCurl::setReferer($referer)
+MultiCurl::setReferrer($referrer)
+MultiCurl::setTimeout($seconds)
+MultiCurl::setURL($url)
+MultiCurl::setUserAgent($user_agent)
 MultiCurl::start()
 MultiCurl::success($callback)
+MultiCurl::unsetHeader($key)
+MultiCurl::verbose($on = true)
 ```
+
+### Contribute
+1. Check for open issues or open a new issue to start a discussion around a bug or feature.
+1. Fork the repository on GitHub to start making your changes.
+1. Write one or more tests for the new feature or that expose the bug.
+1. Make code changes to implement the feature or fix the bug.
+1. Send a pull request to get your changes merged and published.

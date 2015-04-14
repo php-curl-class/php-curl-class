@@ -4,25 +4,35 @@ namespace Curl;
 
 class MultiCurl
 {
+    public $base_url = null;
     public $multi_curl;
     public $curls = array();
-
-    private $headers = array();
-    private $options = array();
+    private $curl_fhs = array();
 
     private $before_send_function = null;
     private $success_function = null;
     private $error_function = null;
     private $complete_function = null;
 
-    public function __construct()
+    private $cookies = array();
+    private $headers = array();
+    private $options = array();
+
+    private $json_decoder = null;
+
+    public function __construct($base_url = null)
     {
         $this->multi_curl = curl_multi_init();
         $this->headers = new CaseInsensitiveArray();
+        $this->setURL($base_url);
     }
 
     public function addDelete($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
         $curl = new Curl();
         $curl->setURL($url, $data);
         $curl->unsetHeader('Content-Length');
@@ -31,12 +41,34 @@ class MultiCurl
         return $curl;
     }
 
-    public function addDownload($url, $filename)
+    public function addDownload($url, $mixed_filename)
     {
+        $curl = new Curl();
+        $curl->setURL($url);
+
+        if (is_callable($mixed_filename)) {
+            $callback = $mixed_filename;
+            $curl->download_complete_function = $callback;
+            $fh = tmpfile();
+        } else {
+            $filename = $mixed_filename;
+            $fh = fopen($filename, 'wb');
+        }
+
+        $curl->setOpt(CURLOPT_FILE, $fh);
+        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
+        $curl->setOpt(CURLOPT_HTTPGET, true);
+        $this->addHandle($curl);
+        $this->curl_fhs[$curl->id] = $fh;
+        return $curl;
     }
 
     public function addGet($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
         $curl = new Curl();
         $curl->setURL($url, $data);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
@@ -47,6 +79,10 @@ class MultiCurl
 
     public function addHead($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
         $curl = new Curl();
         $curl->setURL($url, $data);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
@@ -57,6 +93,10 @@ class MultiCurl
 
     public function addOptions($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
         $curl = new Curl();
         $curl->setURL($url, $data);
         $curl->unsetHeader('Content-Length');
@@ -67,6 +107,10 @@ class MultiCurl
 
     public function addPatch($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
         $curl = new Curl();
         $curl->setURL($url);
         $curl->unsetHeader('Content-Length');
@@ -78,6 +122,11 @@ class MultiCurl
 
     public function addPost($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
+
         $curl = new Curl();
 
         if (is_array($data) && empty($data)) {
@@ -87,17 +136,21 @@ class MultiCurl
         $curl->setURL($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         $curl->setOpt(CURLOPT_POST, true);
-        $curl->setOpt(CURLOPT_POSTFIELDS, $curl->postfields($data));
+        $curl->setOpt(CURLOPT_POSTFIELDS, $curl->buildPostData($data));
         $this->addHandle($curl);
         return $curl;
     }
 
     public function addPut($url, $data = array())
     {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->base_url;
+        }
         $curl = new Curl();
         $curl->setURL($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
-        $put_data = $curl->postfields($data);
+        $put_data = $curl->buildPostData($data);
         $curl->setHeader('Content-Length', strlen($put_data));
         $curl->setOpt(CURLOPT_POSTFIELDS, $put_data);
         $this->addHandle($curl);
@@ -109,14 +162,13 @@ class MultiCurl
         $this->before_send_function = $callback;
     }
 
-    public function success($callback)
+    public function close()
     {
-        $this->success_function = $callback;
-    }
+        foreach ($this->curls as $ch) {
+            $ch->close();
+        }
 
-    public function error($callback)
-    {
-        $this->error_function = $callback;
+        curl_multi_close($this->multi_curl);
     }
 
     public function complete($callback)
@@ -124,9 +176,48 @@ class MultiCurl
         $this->complete_function = $callback;
     }
 
+    public function error($callback)
+    {
+        $this->error_function = $callback;
+    }
+
+    public function getOpt($option)
+    {
+        return $this->options[$option];
+    }
+
+    public function setBasicAuthentication($username, $password = '')
+    {
+        $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
+    }
+
+    public function setCookie($key, $value)
+    {
+        $this->cookies[$key] = $value;
+        $this->setOpt(CURLOPT_COOKIE, str_replace('+', '%20', http_build_query($this->cookies, '', '; ')));
+    }
+
+    public function setCookieFile($cookie_file)
+    {
+        $this->setOpt(CURLOPT_COOKIEFILE, $cookie_file);
+    }
+
+    public function setCookieJar($cookie_jar)
+    {
+        $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
+    }
+
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
+    }
+
+    public function setJsonDecoder($function)
+    {
+        if (is_callable($function)) {
+            $this->json_decoder = $function;
+        }
     }
 
     public function setOpt($option, $value)
@@ -134,9 +225,29 @@ class MultiCurl
         $this->options[$option] = $value;
     }
 
-    public function getOpt($option)
+    public function setReferer($referer)
     {
-        return $this->options[$option];
+        $this->setReferrer($referer);
+    }
+
+    public function setReferrer($referrer)
+    {
+        $this->setOpt(CURLOPT_REFERER, $referrer);
+    }
+
+    public function setTimeout($seconds)
+    {
+        $this->setOpt(CURLOPT_TIMEOUT, $seconds);
+    }
+
+    public function setURL($url)
+    {
+        $this->base_url = $url;
+    }
+
+    public function setUserAgent($user_agent)
+    {
+        $this->setOpt(CURLOPT_USERAGENT, $user_agent);
     }
 
     public function start()
@@ -148,6 +259,7 @@ class MultiCurl
             foreach ($this->headers as $key => $value) {
                 $ch->setHeader($key, $value);
             }
+            $ch->setJsonDecoder($this->json_decoder);
             $ch->call($ch->before_send_function);
         }
 
@@ -164,6 +276,12 @@ class MultiCurl
                             $ch->exec($ch->curl);
                             curl_multi_remove_handle($this->multi_curl, $ch->curl);
                             unset($curl_handles[$key]);
+
+                            // Close open file handles and reset the curl instance.
+                            if (isset($this->curl_fhs[$ch->id])) {
+                                $ch->downloadComplete($this->curl_fhs[$ch->id]);
+                                unset($this->curl_fhs[$ch->id]);
+                            }
                             break;
                         }
                     }
@@ -172,13 +290,20 @@ class MultiCurl
         } while ($active > 0);
     }
 
-    public function close()
+    public function success($callback)
     {
-        foreach ($this->curls as $ch) {
-            $ch->close();
-        }
+        $this->success_function = $callback;
+    }
 
-        curl_multi_close($this->multi_curl);
+    public function unsetHeader($key)
+    {
+        $this->setHeader($key, '');
+        unset($this->headers[$key]);
+    }
+
+    public function verbose($on = true)
+    {
+        $this->setOpt(CURLOPT_VERBOSE, $on);
     }
 
     public function __destruct()
