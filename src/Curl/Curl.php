@@ -133,6 +133,7 @@ class Curl
         if (is_resource($this->curl)) {
             curl_close($this->curl);
         }
+        $this->json_decoder = null;
     }
 
     public function complete($callback)
