@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '3.4.5';
+    const VERSION = '3.5.5';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
@@ -146,15 +146,17 @@ class Curl
         $this->setOpt(CURLOPT_NOPROGRESS, false);
     }
 
-    public function delete($url, $data = array())
+    public function delete($url, $query_parameters = array(), $data = array())
     {
         if (is_array($url)) {
-            $data = $url;
+            $data = $query_parameters;
+            $query_parameters = $url;
             $url = $this->base_url;
         }
-        $this->setURL($url, $data);
-        $this->unsetHeader('Content-Length');
+
+        $this->setURL($url, $query_parameters);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
+        $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
         return $this->exec();
     }
 

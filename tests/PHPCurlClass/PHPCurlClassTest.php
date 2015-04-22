@@ -128,7 +128,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Test::TEST_URL, $test->curl->base_url);
         $this->assertEquals(Test::TEST_URL, $test->curl->url);
 
-        // curl -v --get --request DELETE "http://127.0.0.1:8000/" --data "foo=bar"
+        // curl -v --request DELETE "http://127.0.0.1:8000/?foo=bar"
         $test = new Test();
         $test->server('server', 'DELETE', $data);
         $this->assertEquals(Test::TEST_URL, $test->curl->base_url);
@@ -150,6 +150,12 @@ class CurlTest extends PHPUnit_Framework_TestCase
     public function testSetUrlInConstructor()
     {
         $data = array('key' => 'value');
+
+        $curl = new Curl(Test::TEST_URL);
+        $curl->setHeader('X-DEBUG-TEST', 'delete_with_body');
+        $curl->delete($data, array('wibble' => 'wubble'));
+        $this->assertEquals(Test::TEST_URL, $curl->base_url);
+        $this->assertEquals('{"get":{"key":"value"},"post":{"wibble":"wubble"}}', $curl->raw_response);
 
         $curl = new Curl(Test::TEST_URL);
         $curl->setHeader('X-DEBUG-TEST', 'get');
@@ -419,6 +425,10 @@ class CurlTest extends PHPUnit_Framework_TestCase
             'test' => 'delete',
             'key' => 'test',
         )));
+
+        $test = new Test();
+        $test->server('delete_with_body', 'DELETE', array('foo' => 'bar'), array('wibble' => 'wubble'));
+        $this->assertEquals('{"get":{"foo":"bar"},"post":{"wibble":"wubble"}}', $test->curl->raw_response);
     }
 
     public function testHeadRequestMethod()

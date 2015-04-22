@@ -27,16 +27,17 @@ class MultiCurl
         $this->setURL($base_url);
     }
 
-    public function addDelete($url, $data = array())
+    public function addDelete($url, $query_parameters = array(), $data = array())
     {
         if (is_array($url)) {
-            $data = $url;
+            $data = $query_parameters;
+            $query_parameters = $url;
             $url = $this->base_url;
         }
         $curl = new Curl();
-        $curl->setURL($url, $data);
-        $curl->unsetHeader('Content-Length');
+        $curl->setURL($url, $query_parameters);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
+        $curl->setOpt(CURLOPT_POSTFIELDS, $curl->buildPostData($data));
         $this->addHandle($curl);
         return $curl;
     }
