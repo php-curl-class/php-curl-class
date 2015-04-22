@@ -669,7 +669,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('cookie1=scrumptious,cookie2=mouthwatering', $test->curl->response_headers['Set-Cookie']);
     }
 
-    public function testDefaultTimeout() {
+    public function testDefaultTimeout()
+    {
         $test = new Test();
         $test->server('timeout', 'GET', array(
             'seconds' => '31',
@@ -681,7 +682,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($test->curl->http_error);
     }
 
-    public function testTimeoutError() {
+    public function testTimeoutError()
+    {
         $test = new Test();
         $test->curl->setTimeout(5);
         $test->server('timeout', 'GET', array(
@@ -694,7 +696,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($test->curl->http_error);
     }
 
-    public function testTimeout() {
+    public function testTimeout()
+    {
         $test = new Test();
         $test->curl->setTimeout(10);
         $test->server('timeout', 'GET', array(
