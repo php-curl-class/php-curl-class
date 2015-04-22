@@ -223,6 +223,13 @@ if ($test == 'http_basic_auth') {
 
     echo 'OK';
     exit;
+} elseif ($test === 'delete_with_body') {
+    header('Content-Type: application/json');
+    echo json_encode(array(
+        'get' => $_GET,
+        'post' => $_POST,
+    ));
+    exit;
 }
 
 header('Content-Type: text/plain');

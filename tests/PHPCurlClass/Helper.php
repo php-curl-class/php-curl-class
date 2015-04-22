@@ -15,11 +15,15 @@ class Test
         $this->curl->setOpt(CURLOPT_SSL_VERIFYHOST, false);
     }
 
-    public function server($test, $request_method, $data = array())
+    public function server($test, $request_method, $query_parameters = array(), $data = array())
     {
         $this->curl->setHeader('X-DEBUG-TEST', $test);
         $request_method = strtolower($request_method);
-        $this->curl->$request_method(self::TEST_URL, $data);
+        if (is_array($data) && empty($data)) {
+            $this->curl->$request_method(self::TEST_URL, $query_parameters);
+        } else {
+            $this->curl->$request_method(self::TEST_URL, $query_parameters, $data);
+        }
         return $this->curl->response;
     }
 }
