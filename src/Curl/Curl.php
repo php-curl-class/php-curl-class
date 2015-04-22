@@ -146,13 +146,13 @@ class Curl
         $this->setOpt(CURLOPT_NOPROGRESS, false);
     }
 
-    public function delete($url, $data = array())
+    public function delete($url, $query_parameters = array())
     {
         if (is_array($url)) {
-            $data = $url;
+            $query_parameters = $url;
             $url = $this->base_url;
         }
-        $this->setURL($url, $data);
+        $this->setURL($url, $query_parameters);
         $this->unsetHeader('Content-Length');
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
         return $this->exec();
