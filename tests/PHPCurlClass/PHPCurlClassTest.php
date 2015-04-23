@@ -155,7 +155,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl->setHeader('X-DEBUG-TEST', 'delete_with_body');
         $curl->delete($data, array('wibble' => 'wubble'));
         $this->assertEquals(Test::TEST_URL, $curl->base_url);
-        $this->assertEquals('{"get":{"key":"value"},"post":{"wibble":"wubble"}}', $curl->raw_response);
+        $this->assertEquals('{"get":{"key":"value"},"delete":{"wibble":"wubble"}}', $curl->raw_response);
 
         $curl = new Curl(Test::TEST_URL);
         $curl->setHeader('X-DEBUG-TEST', 'get');
@@ -428,7 +428,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
         $test = new Test();
         $test->server('delete_with_body', 'DELETE', array('foo' => 'bar'), array('wibble' => 'wubble'));
-        $this->assertEquals('{"get":{"foo":"bar"},"post":{"wibble":"wubble"}}', $test->curl->raw_response);
+        $this->assertEquals('{"get":{"foo":"bar"},"delete":{"wibble":"wubble"}}', $test->curl->raw_response);
     }
 
     public function testHeadRequestMethod()
