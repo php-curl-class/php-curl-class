@@ -95,9 +95,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
     public function testGet()
     {
         $test = new Test();
-        $this->assertEquals('GET', $test->server('server', 'GET', array(
-            'key' => 'REQUEST_METHOD',
-        )));
+        $this->assertEquals('GET', $test->server('request_method', 'GET'));
     }
 
     public function testUrl()
@@ -155,7 +153,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl->setHeader('X-DEBUG-TEST', 'delete_with_body');
         $curl->delete($data, array('wibble' => 'wubble'));
         $this->assertEquals(Test::TEST_URL, $curl->base_url);
-        $this->assertEquals('{"get":{"key":"value"},"post":{"wibble":"wubble"}}', $curl->raw_response);
+        $this->assertEquals('{"get":{"key":"value"},"delete":{"wibble":"wubble"}}', $curl->raw_response);
 
         $curl = new Curl(Test::TEST_URL);
         $curl->setHeader('X-DEBUG-TEST', 'get');
@@ -257,9 +255,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
     public function testPostRequestMethod()
     {
         $test = new Test();
-        $this->assertEquals('POST', $test->server('server', 'POST', array(
-            'key' => 'REQUEST_METHOD',
-        )));
+        $this->assertEquals('POST', $test->server('request_method', 'POST'));
     }
 
     public function testPostContinueResponseHeader()
@@ -413,30 +409,23 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('PATCH', $test->server('request_method', 'PATCH'));
     }
 
-    public function testDelete()
+    public function testDeleteRequestMethod()
     {
         $test = new Test();
-        $this->assertEquals('DELETE', $test->server('server', 'DELETE', array(
-            'key' => 'REQUEST_METHOD',
-        )));
+        $this->assertEquals('DELETE', $test->server('request_method', 'DELETE'));
+    }
 
-        $test = new Test();
-        $this->assertEquals('delete', $test->server('delete', 'DELETE', array(
-            'test' => 'delete',
-            'key' => 'test',
-        )));
-
+    public function testDeleteRequestBody()
+    {
         $test = new Test();
         $test->server('delete_with_body', 'DELETE', array('foo' => 'bar'), array('wibble' => 'wubble'));
-        $this->assertEquals('{"get":{"foo":"bar"},"post":{"wibble":"wubble"}}', $test->curl->raw_response);
+        $this->assertEquals('{"get":{"foo":"bar"},"delete":{"wibble":"wubble"}}', $test->curl->raw_response);
     }
 
     public function testHeadRequestMethod()
     {
         $test = new Test();
-        $test->server('request_method', 'HEAD', array(
-            'key' => 'REQUEST_METHOD',
-        ));
+        $test->server('request_method', 'HEAD');
         $this->assertEquals('HEAD', $test->curl->response_headers['X-REQUEST-METHOD']);
         $this->assertEmpty($test->curl->response);
     }
@@ -444,9 +433,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
     public function testOptionsRequestMethod()
     {
         $test = new Test();
-        $test->server('request_method', 'OPTIONS', array(
-            'key' => 'REQUEST_METHOD',
-        ));
+        $test->server('request_method', 'OPTIONS');
         $this->assertEquals('OPTIONS', $test->curl->response_headers['X-REQUEST-METHOD']);
     }
 
@@ -476,9 +463,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(md5_file($upload_file_path), $download_test->curl->response_headers['ETag']);
 
         // Ensure successive requests set the appropriate values.
-        $this->assertEquals('GET', $download_test->server('server', 'GET', array(
-            'key' => 'REQUEST_METHOD',
-        )));
+        $this->assertEquals('GET', $download_test->server('request_method', 'GET'));
         $this->assertFalse(is_bool($download_test->curl->response));
         $this->assertFalse(is_bool($download_test->curl->raw_response));
 
@@ -549,6 +534,12 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testDigestHttpAuth()
     {
+        // Skip Digest Access Authentication test on HHVM.
+        // https://github.com/facebook/hhvm/issues/5201
+        if (defined('HHVM_VERSION')) {
+            return;
+        }
+
         $username = 'myusername';
         $password = 'mypassword';
         $invalid_password = 'anotherpassword';

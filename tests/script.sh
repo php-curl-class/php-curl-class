@@ -3,6 +3,9 @@ find . -type "f" -iname "*.php" -exec php -l {} \;
 
 # Run tests.
 cd tests && phpunit --configuration phpunit.xml
+if [[ "${?}" -ne 0 ]]; then
+    exit 1
+fi
 
 # Enforce line ending consistency in php files.
 crlf_file=$(find . -type "f" -iname "*.php" -exec grep --files-with-matches $'\r' {} \;)

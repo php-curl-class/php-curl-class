@@ -6,6 +6,7 @@ use \Helper\Test;
 $http_raw_post_data = file_get_contents('php://input');
 $_PUT = array();
 $_PATCH = array();
+$_DELETE = array();
 
 $request_method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
 if (!array_key_exists('CONTENT_TYPE', $_SERVER) && array_key_exists('HTTP_CONTENT_TYPE', $_SERVER)) {
@@ -24,6 +25,11 @@ if ($request_method === 'POST') {
     if (strpos($content_type, 'application/x-www-form-urlencoded') === 0) {
         parse_str($http_raw_post_data, $_PATCH);
         $data_values = $_PATCH;
+    }
+} elseif ($request_method === 'DELETE') {
+    if (strpos($content_type, 'application/x-www-form-urlencoded') === 0) {
+        parse_str($http_raw_post_data, $_DELETE);
+        $data_values = $_DELETE;
     }
 }
 
@@ -227,7 +233,7 @@ if ($test == 'http_basic_auth') {
     header('Content-Type: application/json');
     echo json_encode(array(
         'get' => $_GET,
-        'post' => $_POST,
+        'delete' => $_DELETE,
     ));
     exit;
 }

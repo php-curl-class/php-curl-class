@@ -1735,7 +1735,7 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $multi_curl->setHeader('X-DEBUG-TEST', 'delete_with_body');
         $multi_curl->addDelete($data, array('wibble' => 'wubble'))->complete(function($instance) {
             PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->base_url);
-            PHPUnit_Framework_Assert::assertEquals('{"get":{"key":"value"},"post":{"wibble":"wubble"}}',
+            PHPUnit_Framework_Assert::assertEquals('{"get":{"key":"value"},"delete":{"wibble":"wubble"}}',
                 $instance->raw_response);
         });
         $multi_curl->start();
