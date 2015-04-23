@@ -1282,4 +1282,38 @@ class CurlTest extends PHPUnit_Framework_TestCase
         Helper\test($test, 'OPTIONS', 'DELETE');
         Helper\test($test, 'OPTIONS', 'HEAD');
     }
+
+    public function testMemoryLeak()
+    {
+        ob_start();
+        echo '[';
+        for ($i = 0; $i < 10; $i++) {
+            if ($i >= 1) {
+                echo ',';
+            }
+            echo '{"before":' . memory_get_usage() . ',';
+            $curl = new Curl();
+            $curl->close();
+            echo '"after":' . memory_get_usage() . '}';
+            sleep(1);
+        }
+        echo ']';
+        $html = ob_get_contents();
+        ob_end_clean();
+        $results = json_decode($html, true);
+
+        // Ensure memory does not leak excessively after instantiating a new
+        // Curl instance and cleaning up. Memory diffs in the 2000-6000+ range
+        // have indicated a memory leak.
+        $max_memory_diff = 1000;
+        foreach ($results as $i => $result) {
+            $memory_diff = $result['after'] - $result['before'];;
+            echo 'diff:   ' . $memory_diff . "\n";
+
+            // Skip the first test to allow memory usage to settle.
+            if ($i >= 1) {
+                $this->assertLessThan($max_memory_diff, $memory_diff);
+            }
+        }
+    }
 }
