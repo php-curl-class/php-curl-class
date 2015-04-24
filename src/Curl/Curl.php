@@ -44,6 +44,12 @@ class Curl
     private $json_pattern = '~^application/(?:json|vnd\.api\+json)~i';
     private $xml_pattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
 
+    /**
+     * Construct
+     *
+     * @access public
+     * @param  $base_url
+     */
     public function __construct($base_url = null)
     {
         if (!extension_loaded('curl')) {
@@ -62,11 +68,25 @@ class Curl
         $this->setURL($base_url);
     }
 
+    /**
+     * Before Send
+     *
+     * @access public
+     * @param  $callback
+     */
     public function beforeSend($callback)
     {
         $this->before_send_function = $callback;
     }
 
+    /**
+     * Build Post Data
+     *
+     * @access public
+     * @param  $data
+     *
+     * @return array|string
+     */
     public function buildPostData($data)
     {
         if (is_array($data)) {
@@ -118,6 +138,11 @@ class Curl
         return $data;
     }
 
+    /**
+     * Call
+     *
+     * @access public
+     */
     public function call()
     {
         $args = func_get_args();
@@ -128,6 +153,11 @@ class Curl
         }
     }
 
+    /**
+     * Close
+     *
+     * @access public
+     */
     public function close()
     {
         if (is_resource($this->curl)) {
@@ -137,17 +167,39 @@ class Curl
         $this->json_decoder = null;
     }
 
+    /**
+     * Complete
+     *
+     * @access public
+     * @param  $callback
+     */
     public function complete($callback)
     {
         $this->complete_function = $callback;
     }
 
+    /**
+     * Progress
+     *
+     * @access public
+     * @param  $callback
+     */
     public function progress($callback)
     {
         $this->setOpt(CURLOPT_PROGRESSFUNCTION, $callback);
         $this->setOpt(CURLOPT_NOPROGRESS, false);
     }
 
+    /**
+     * Delete
+     *
+     * @access public
+     * @param  $url
+     * @param  $query_parameters
+     * @param  $data
+     *
+     * @return string
+     */
     public function delete($url, $query_parameters = array(), $data = array())
     {
         if (is_array($url)) {
@@ -162,6 +214,12 @@ class Curl
         return $this->exec();
     }
 
+    /**
+     * Download Complete
+     *
+     * @access public
+     * @param  $fh
+     */
     public function downloadComplete($fh)
     {
         if (!$this->error && $this->download_complete_function) {
@@ -191,6 +249,15 @@ class Curl
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
     }
 
+    /**
+     * Download
+     *
+     * @access public
+     * @param  $url
+     * @param  $mixed_filename
+     *
+     * @return boolean
+     */
     public function download($url, $mixed_filename)
     {
         if (is_callable($mixed_filename)) {
@@ -208,11 +275,25 @@ class Curl
         return ! $this->error;
     }
 
+    /**
+     * Error
+     *
+     * @access public
+     * @param  $callback
+     */
     public function error($callback)
     {
         $this->error_function = $callback;
     }
 
+    /**
+     * Exec
+     *
+     * @access public
+     * @param  $ch
+     *
+     * @return string
+     */
     public function exec($ch = null)
     {
         if (!($ch === null)) {
@@ -253,6 +334,15 @@ class Curl
         return $this->response;
     }
 
+    /**
+     * Get
+     *
+     * @access public
+     * @param  $url
+     * @param  $data
+     *
+     * @return string
+     */
     public function get($url, $data = array())
     {
         if (is_array($url)) {
@@ -265,11 +355,28 @@ class Curl
         return $this->exec();
     }
 
+    /**
+     * Get Opt
+     *
+     * @access public
+     * @param  $option
+     *
+     * @return mixed
+     */
     public function getOpt($option)
     {
         return $this->options[$option];
     }
 
+    /**
+     * Head
+     *
+     * @access public
+     * @param  $url
+     * @param  $data
+     *
+     * @return string
+     */
     public function head($url, $data = array())
     {
         if (is_array($url)) {
@@ -282,12 +389,30 @@ class Curl
         return $this->exec();
     }
 
+    /**
+     * Header Callback
+     *
+     * @access public
+     * @param  $ch
+     * @param  $header
+     *
+     * @return integer
+     */
     public function headerCallback($ch, $header)
     {
         $this->raw_response_headers .= $header;
         return strlen($header);
     }
 
+    /**
+     * Options
+     *
+     * @access public
+     * @param  $url
+     * @param  $data
+     *
+     * @return string
+     */
     public function options($url, $data = array())
     {
         if (is_array($url)) {
@@ -300,6 +425,15 @@ class Curl
         return $this->exec();
     }
 
+    /**
+     * Patch
+     *
+     * @access public
+     * @param  $url
+     * @param  $data
+     *
+     * @return string
+     */
     public function patch($url, $data = array())
     {
         if (is_array($url)) {
@@ -313,6 +447,15 @@ class Curl
         return $this->exec();
     }
 
+    /**
+     * Post
+     *
+     * @access public
+     * @param  $url
+     * @param  $data
+     *
+     * @return string
+     */
     public function post($url, $data = array())
     {
         if (is_array($url)) {
@@ -331,6 +474,15 @@ class Curl
         return $this->exec();
     }
 
+    /**
+     * Put
+     *
+     * @access public
+     * @param  $url
+     * @param  $data
+     *
+     * @return string
+     */
     public function put($url, $data = array())
     {
         if (is_array($url)) {
@@ -347,34 +499,72 @@ class Curl
         return $this->exec();
     }
 
+    /**
+     * Set Basic Authentication
+     *
+     * @access public
+     * @param  $username
+     * @param  $password
+     */
     public function setBasicAuthentication($username, $password = '')
     {
         $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
 
+    /**
+     * Set Digest Authentication
+     *
+     * @access public
+     * @param  $username
+     * @param  $password
+     */
     public function setDigestAuthentication($username, $password = '')
     {
         $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
 
+    /**
+     * Set Cookie
+     *
+     * @access public
+     * @param  $key
+     * @param  $value
+     */
     public function setCookie($key, $value)
     {
         $this->cookies[$key] = $value;
         $this->setOpt(CURLOPT_COOKIE, str_replace('+', '%20', http_build_query($this->cookies, '', '; ')));
     }
 
+    /**
+     * Set Cookie File
+     *
+     * @access public
+     * @param  $cookie_file
+     */
     public function setCookieFile($cookie_file)
     {
         $this->setOpt(CURLOPT_COOKIEFILE, $cookie_file);
     }
 
+    /**
+     * Set Cookie Jar
+     *
+     * @access public
+     * @param  $cookie_jar
+     */
     public function setCookieJar($cookie_jar)
     {
         $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
     }
 
+    /**
+     * Set Default JSON Decoder
+     *
+     * @access public
+     */
     public function setDefaultJsonDecoder()
     {
         $this->json_decoder = function($response) {
@@ -386,11 +576,21 @@ class Curl
         };
     }
 
+    /**
+     * Set Default Timeout
+     *
+     * @access public
+     */
     public function setDefaultTimeout()
     {
         $this->setTimeout(self::DEFAULT_TIMEOUT);
     }
 
+    /**
+     * Set Default User Agent
+     *
+     * @access public
+     */
     public function setDefaultUserAgent()
     {
         $user_agent = 'PHP-Curl-Class/' . self::VERSION . ' (+https://github.com/php-curl-class/php-curl-class)';
@@ -400,6 +600,15 @@ class Curl
         $this->setUserAgent($user_agent);
     }
 
+    /**
+     * Set Header
+     *
+     * @access public
+     * @param  $key
+     * @param  $value
+     *
+     * @return string
+     */
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
@@ -412,6 +621,12 @@ class Curl
         }, $headers, array_keys($headers)));
     }
 
+    /**
+     * Set JSON Decoder
+     *
+     * @access public
+     * @param  $function
+     */
     public function setJsonDecoder($function)
     {
         if (is_callable($function)) {
@@ -419,6 +634,15 @@ class Curl
         }
     }
 
+    /**
+     * Set Opt
+     *
+     * @access public
+     * @param  $option
+     * @param  $value
+     *
+     * @return boolean
+     */
     public function setOpt($option, $value)
     {
         $required_options = array(
@@ -434,21 +658,46 @@ class Curl
         return curl_setopt($this->curl, $option, $value);
     }
 
+    /**
+     * Set Referer
+     *
+     * @access public
+     * @param  $referer
+     */
     public function setReferer($referer)
     {
         $this->setReferrer($referer);
     }
 
+    /**
+     * Set Referrer
+     *
+     * @access public
+     * @param  $referrer
+     */
     public function setReferrer($referrer)
     {
         $this->setOpt(CURLOPT_REFERER, $referrer);
     }
 
+    /**
+     * Set Timeout
+     *
+     * @access public
+     * @param  $seconds
+     */
     public function setTimeout($seconds)
     {
         $this->setOpt(CURLOPT_TIMEOUT, $seconds);
     }
 
+    /**
+     * Set Url
+     *
+     * @access public
+     * @param  $url
+     * @param  $data
+     */
     public function setURL($url, $data = array())
     {
         $this->base_url = $url;
@@ -456,37 +705,83 @@ class Curl
         $this->setOpt(CURLOPT_URL, $this->url);
     }
 
+    /**
+     * Set User Agent
+     *
+     * @access public
+     * @param  $user_agent
+     */
     public function setUserAgent($user_agent)
     {
         $this->setOpt(CURLOPT_USERAGENT, $user_agent);
     }
 
+    /**
+     * Success
+     *
+     * @access public
+     * @param  $callback
+     */
     public function success($callback)
     {
         $this->success_function = $callback;
     }
 
+    /**
+     * Unset Header
+     *
+     * @access public
+     * @param  $key
+     */
     public function unsetHeader($key)
     {
         $this->setHeader($key, '');
         unset($this->headers[$key]);
     }
 
+    /**
+     * Verbose
+     *
+     * @access public
+     * @param  $on
+     */
     public function verbose($on = true)
     {
         $this->setOpt(CURLOPT_VERBOSE, $on);
     }
 
+    /**
+     * Destruct
+     *
+     * @access public
+     */
     public function __destruct()
     {
         $this->close();
     }
 
+    /**
+     * Build Url
+     *
+     * @access private
+     * @param  $url
+     * @param  $data
+     *
+     * @return string
+     */
     private function buildURL($url, $data = array())
     {
         return $url . (empty($data) ? '' : '?' . http_build_query($data));
     }
 
+    /**
+     * Parse Headers
+     *
+     * @access private
+     * @param  $raw_headers
+     *
+     * @return array
+     */
     private function parseHeaders($raw_headers)
     {
         $raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
@@ -508,6 +803,14 @@ class Curl
         return array(isset($raw_headers['0']) ? $raw_headers['0'] : '', $http_headers);
     }
 
+    /**
+     * Parse Request Headers
+     *
+     * @access private
+     * @param  $raw_headers
+     *
+     * @return array
+     */
     private function parseRequestHeaders($raw_headers)
     {
         $request_headers = new CaseInsensitiveArray();
@@ -519,6 +822,15 @@ class Curl
         return $request_headers;
     }
 
+    /**
+     * Parse Response
+     *
+     * @access private
+     * @param  $response_headers
+     * @param  $raw_response
+     *
+     * @return array
+     */
     private function parseResponse($response_headers, $raw_response)
     {
         $response = $raw_response;
@@ -537,6 +849,14 @@ class Curl
         return array($response, $raw_response);
     }
 
+    /**
+     * Parse Response Headers
+     *
+     * @access private
+     * @param  $raw_response_headers
+     *
+     * @return array
+     */
     private function parseResponseHeaders($raw_response_headers)
     {
         $response_header_array = explode("\r\n\r\n", $raw_response_headers);
@@ -557,6 +877,15 @@ class Curl
         return $response_headers;
     }
 
+    /**
+     * Http Build Multi Query
+     *
+     * @access public
+     * @param  $data
+     * @param  $key
+     *
+     * @return string
+     */
     public static function http_build_multi_query($data, $key = null)
     {
         $query = array();
@@ -580,11 +909,27 @@ class Curl
         return implode('&', $query);
     }
 
+    /**
+     * Is Array Assoc
+     *
+     * @access public
+     * @param  $array
+     *
+     * @return boolean
+     */
     public static function is_array_assoc($array)
     {
         return (bool)count(array_filter(array_keys($array), 'is_string'));
     }
 
+    /**
+     * Is Array Multidim
+     *
+     * @access public
+     * @param  $array
+     *
+     * @return boolean
+     */
     public static function is_array_multidim($array)
     {
         if (!is_array($array)) {

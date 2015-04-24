@@ -20,6 +20,12 @@ class MultiCurl
 
     private $json_decoder = null;
 
+    /**
+     * Construct
+     *
+     * @access public
+     * @param  $base_url
+     */
     public function __construct($base_url = null)
     {
         $this->multi_curl = curl_multi_init();
@@ -27,6 +33,16 @@ class MultiCurl
         $this->setURL($base_url);
     }
 
+    /**
+     * Add Delete
+     *
+     * @access public
+     * @param  $url
+     * @param  $query_parameters
+     * @param  $data
+     *
+     * @return object
+     */
     public function addDelete($url, $query_parameters = array(), $data = array())
     {
         if (is_array($url)) {
@@ -42,6 +58,15 @@ class MultiCurl
         return $curl;
     }
 
+    /**
+     * Add Download
+     *
+     * @access public
+     * @param  $url
+     * @param  $mixed_filename
+     *
+     * @return object
+     */
     public function addDownload($url, $mixed_filename)
     {
         $curl = new Curl();
@@ -64,6 +89,15 @@ class MultiCurl
         return $curl;
     }
 
+    /**
+     * Add Get
+     *
+     * @access public
+     * @param  $url
+     * @param  $data
+     *
+     * @return object
+     */
     public function addGet($url, $data = array())
     {
         if (is_array($url)) {
@@ -78,6 +112,15 @@ class MultiCurl
         return $curl;
     }
 
+    /**
+     * Add Head
+     *
+     * @access public
+     * @param  $url
+     * @param  $data
+     *
+     * @return object
+     */
     public function addHead($url, $data = array())
     {
         if (is_array($url)) {
@@ -92,6 +135,15 @@ class MultiCurl
         return $curl;
     }
 
+    /**
+     * Add Options
+     *
+     * @access public
+     * @param  $url
+     * @param  $data
+     *
+     * @return object
+     */
     public function addOptions($url, $data = array())
     {
         if (is_array($url)) {
@@ -106,6 +158,15 @@ class MultiCurl
         return $curl;
     }
 
+    /**
+     * Add Patch
+     *
+     * @access public
+     * @param  $url
+     * @param  $data
+     *
+     * @return object
+     */
     public function addPatch($url, $data = array())
     {
         if (is_array($url)) {
@@ -121,6 +182,15 @@ class MultiCurl
         return $curl;
     }
 
+    /**
+     * Add Post
+     *
+     * @access public
+     * @param  $url
+     * @param  $data
+     *
+     * @return object
+     */
     public function addPost($url, $data = array())
     {
         if (is_array($url)) {
@@ -142,6 +212,15 @@ class MultiCurl
         return $curl;
     }
 
+    /**
+     * Add Put
+     *
+     * @access public
+     * @param  $url
+     * @param  $data
+     *
+     * @return object
+     */
     public function addPut($url, $data = array())
     {
         if (is_array($url)) {
@@ -158,11 +237,22 @@ class MultiCurl
         return $curl;
     }
 
+    /**
+     * Before Send
+     *
+     * @access public
+     * @param  $callback
+     */
     public function beforeSend($callback)
     {
         $this->before_send_function = $callback;
     }
 
+    /**
+     * Close
+     *
+     * @access public
+     */
     public function close()
     {
         foreach ($this->curls as $ch) {
@@ -172,48 +262,107 @@ class MultiCurl
         curl_multi_close($this->multi_curl);
     }
 
+    /**
+     * Complete
+     *
+     * @access public
+     * @param  $callback
+     */
     public function complete($callback)
     {
         $this->complete_function = $callback;
     }
 
+    /**
+     * Error
+     *
+     * @access public
+     * @param  $callback
+     */
     public function error($callback)
     {
         $this->error_function = $callback;
     }
 
+    /**
+     * Get Opt
+     *
+     * @access public
+     * @param  $option
+     *
+     * @return mixed
+     */
     public function getOpt($option)
     {
         return $this->options[$option];
     }
 
+    /**
+     * Set Basic Authentication
+     *
+     * @access public
+     * @param  $username
+     * @param  $password
+     */
     public function setBasicAuthentication($username, $password = '')
     {
         $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
 
+    /**
+     * Set Cookie
+     *
+     * @access public
+     * @param  $key
+     * @param  $value
+     */
     public function setCookie($key, $value)
     {
         $this->cookies[$key] = $value;
         $this->setOpt(CURLOPT_COOKIE, str_replace('+', '%20', http_build_query($this->cookies, '', '; ')));
     }
 
+    /**
+     * Set Cookie File
+     *
+     * @access public
+     * @param  $cookie_file
+     */
     public function setCookieFile($cookie_file)
     {
         $this->setOpt(CURLOPT_COOKIEFILE, $cookie_file);
     }
 
+    /**
+     * Set Cookie Jar
+     *
+     * @access public
+     * @param  $cookie_jar
+     */
     public function setCookieJar($cookie_jar)
     {
         $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
     }
 
+    /**
+     * Set Header
+     *
+     * @access public
+     * @param  $key
+     * @param  $value
+     */
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
     }
 
+    /**
+     * Set JSON Decoder
+     *
+     * @access public
+     * @param  $function
+     */
     public function setJsonDecoder($function)
     {
         if (is_callable($function)) {
@@ -221,36 +370,78 @@ class MultiCurl
         }
     }
 
+    /**
+     * Set Opt
+     *
+     * @access public
+     * @param  $option
+     * @param  $value
+     */
     public function setOpt($option, $value)
     {
         $this->options[$option] = $value;
     }
 
+    /**
+     * Set Referer
+     *
+     * @access public
+     * @param  $referer
+     */
     public function setReferer($referer)
     {
         $this->setReferrer($referer);
     }
 
+    /**
+     * Set Referrer
+     *
+     * @access public
+     * @param  $referrer
+     */
     public function setReferrer($referrer)
     {
         $this->setOpt(CURLOPT_REFERER, $referrer);
     }
 
+    /**
+     * Set Timeout
+     *
+     * @access public
+     * @param  $seconds
+     */
     public function setTimeout($seconds)
     {
         $this->setOpt(CURLOPT_TIMEOUT, $seconds);
     }
 
+    /**
+     * Set Url
+     *
+     * @access public
+     * @param  $url
+     */
     public function setURL($url)
     {
         $this->base_url = $url;
     }
 
+    /**
+     * Set User Agent
+     *
+     * @access public
+     * @param  $user_agent
+     */
     public function setUserAgent($user_agent)
     {
         $this->setOpt(CURLOPT_USERAGENT, $user_agent);
     }
 
+    /**
+     * Start
+     *
+     * @access public
+     */
     public function start()
     {
         foreach ($this->curls as $ch) {
@@ -291,27 +482,56 @@ class MultiCurl
         } while ($active > 0);
     }
 
+    /**
+     * Success
+     *
+     * @access public
+     * @param  $callback
+     */
     public function success($callback)
     {
         $this->success_function = $callback;
     }
 
+    /**
+     * Unset Header
+     *
+     * @access public
+     * @param  $key
+     */
     public function unsetHeader($key)
     {
         $this->setHeader($key, '');
         unset($this->headers[$key]);
     }
 
+    /**
+     * Verbose
+     *
+     * @access public
+     * @param  $on
+     */
     public function verbose($on = true)
     {
         $this->setOpt(CURLOPT_VERBOSE, $on);
     }
 
+    /**
+     * Destruct
+     *
+     * @access public
+     */
     public function __destruct()
     {
         $this->close();
     }
 
+    /**
+     * Add Handle
+     *
+     * @access private
+     * @param  $curl
+     */
     private function addHandle($curl)
     {
         $curlm_error_code = curl_multi_add_handle($this->multi_curl, $curl->curl);
