@@ -837,7 +837,9 @@ class Curl
         if (isset($response_headers['Content-Type'])) {
             if (preg_match($this->json_pattern, $response_headers['Content-Type'])) {
                 $json_decoder = $this->json_decoder;
-                $response = $json_decoder($response);
+                if (is_callable($json_decoder)) {
+                    $response = $json_decoder($response);
+                }
             } elseif (preg_match($this->xml_pattern, $response_headers['Content-Type'])) {
                 $xml_obj = @simplexml_load_string($response);
                 if (!($xml_obj === false)) {
