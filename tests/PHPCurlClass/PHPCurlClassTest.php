@@ -603,7 +603,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         )));
     }
 
-    public function testCookieEncoding()
+    public function testCookieEncodingSpace()
     {
         $curl = new Curl();
         $curl->setCookie('cookie', 'Om nom nom nom');
@@ -613,6 +613,18 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $reflectionProperty->setAccessible(true);
         $options = $reflectionProperty->getValue($curl);
         $this->assertEquals('cookie=Om%20nom%20nom%20nom', $options[CURLOPT_COOKIE]);
+    }
+
+    public function testCookieEncodingColon()
+    {
+        $curl = new Curl();
+        $curl->setCookie('JSESSIONID', '0000wd-PcsB3bZ-KzYGAqm_rKlm:17925chrl');
+
+        $reflectionClass = new ReflectionClass('\Curl\Curl');
+        $reflectionProperty = $reflectionClass->getProperty('options');
+        $reflectionProperty->setAccessible(true);
+        $options = $reflectionProperty->getValue($curl);
+        $this->assertEquals('JSESSIONID=0000wd-PcsB3bZ-KzYGAqm_rKlm:17925chrl', $options[CURLOPT_COOKIE]);
     }
 
     public function testCookieFile()
