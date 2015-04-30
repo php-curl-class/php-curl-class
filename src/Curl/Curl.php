@@ -41,7 +41,7 @@ class Curl
     private $options = array();
 
     private $json_decoder = null;
-    private $json_pattern = '~^application/(?:json|vnd\.api\+json)~i';
+    private $json_pattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
     private $xml_pattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
 
     /**
