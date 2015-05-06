@@ -546,7 +546,6 @@ class Curl
      */
     public function setPort($port)
     {
-        $this->cookies[$key] = $value;
         $this->setOpt(CURLOPT_PORT, intval($port));
     }
 
