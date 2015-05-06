@@ -539,6 +539,18 @@ class Curl
     }
 
     /**
+     * Set Port
+     *
+     * @access public
+     * @param  $port
+     */
+    public function setPort($port)
+    {
+        $this->cookies[$key] = $value;
+        $this->setOpt(CURLOPT_PORT, intval($port));
+    }
+
+    /**
      * Set Cookie File
      *
      * @access public
