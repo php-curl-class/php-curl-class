@@ -49,6 +49,7 @@ class Curl
      *
      * @access public
      * @param  $base_url
+     * @throws \ErrorException
      */
     public function __construct($base_url = null)
     {

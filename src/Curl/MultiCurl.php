@@ -531,6 +531,7 @@ class MultiCurl
      *
      * @access private
      * @param  $curl
+     * @throws \ErrorException
      */
     private function addHandle($curl)
     {
