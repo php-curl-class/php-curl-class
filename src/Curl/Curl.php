@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '3.5.5';
+    const VERSION = '3.6.5';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
@@ -548,6 +548,17 @@ class Curl
     public function setPort($port)
     {
         $this->setOpt(CURLOPT_PORT, intval($port));
+    }
+
+    /**
+     * Set Connect Timeout
+     *
+     * @access public
+     * @param  $seconds
+     */
+    public function setConnectTimeout($seconds)
+    {
+        $this->setOpt(CURLOPT_CONNECTTIMEOUT, $seconds);
     }
 
     /**
