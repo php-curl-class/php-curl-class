@@ -809,11 +809,6 @@ class Curl
     {
         $raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
         $http_headers = new CaseInsensitiveArray();
-
-        private function parseHeaders($raw_headers)
-    {
-        $raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
-        $http_headers = new CaseInsensitiveArray();
 		
 		foreach($raw_headers as $key => $value)
 		{
@@ -826,9 +821,6 @@ class Curl
                 $http_headers[$key] = $value;
             }
 		}
-
-        return array(isset($raw_headers['0']) ? $raw_headers['0'] : '', $http_headers);
-    }
 
         return array(isset($raw_headers['0']) ? $raw_headers['0'] : '', $http_headers);
     }
