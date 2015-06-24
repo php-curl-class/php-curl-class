@@ -810,10 +810,14 @@ class Curl
         $raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
         $http_headers = new CaseInsensitiveArray();
 
-        $raw_headers_count = count($raw_headers);
-        for ($i = 1; $i < $raw_headers_count; $i++) {
-            list($key, $value) = explode(':', $raw_headers[$i], 2);
-            $key = trim($key);
+        private function parseHeaders($raw_headers)
+    {
+        $raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
+        $http_headers = new CaseInsensitiveArray();
+		
+		foreach($raw_headers as $key => $value)
+		{
+			$key = trim($key);
             $value = trim($value);
             // Use isset() as array_key_exists() and ArrayAccess are not compatible.
             if (isset($http_headers[$key])) {
@@ -821,7 +825,10 @@ class Curl
             } else {
                 $http_headers[$key] = $value;
             }
-        }
+		}
+
+        return array(isset($raw_headers['0']) ? $raw_headers['0'] : '', $http_headers);
+    }
 
         return array(isset($raw_headers['0']) ? $raw_headers['0'] : '', $http_headers);
     }
