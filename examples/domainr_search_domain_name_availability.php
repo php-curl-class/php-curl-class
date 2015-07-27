@@ -5,7 +5,7 @@ use \Curl\Curl;
 
 $curl = new Curl();
 $curl->get('https://api.domainr.com/v1/search', array(
-    'client_id' => 'php_curl_class',
+    'client_id' => '{your-mashape-key}',
     'q' => 'example',
 ));
 
