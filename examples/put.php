@@ -3,9 +3,9 @@ require '../src/Curl/Curl.php';
 
 use \Curl\Curl;
 
-// curl -X PUT -d "id=1&first_name=Zach&last_name=Borboa" "http://httpbin.org/put"
+// curl -X PUT -d "id=1&first_name=Zach&last_name=Borboa" "https://httpbin.org/put"
 $curl = new Curl();
-$curl->put('http://httpbin.org/put', array(
+$curl->put('https://httpbin.org/put', array(
     'id' => 1,
     'first_name' => 'Zach',
     'last_name' => 'Borboa',
