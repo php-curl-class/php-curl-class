@@ -11,38 +11,38 @@ class Curl
     public $id = null;
 
     public $error = false;
-    public $error_code = 0;
-    public $error_message = null;
+    public $errorCode = 0;
+    public $errorMessage = null;
 
-    public $curl_error = false;
-    public $curl_error_code = 0;
-    public $curl_error_message = null;
+    public $curlError = false;
+    public $curlErrorCode = 0;
+    public $curlErrorMessage = null;
 
-    public $http_error = false;
-    public $http_status_code = 0;
-    public $http_error_message = null;
+    public $httpError = false;
+    public $httpStatusCode = 0;
+    public $httpErrorMessage = null;
 
-    public $base_url = null;
+    public $baseUrl = null;
     public $url = null;
-    public $request_headers = null;
-    public $response_headers = null;
-    public $raw_response_headers = '';
+    public $requestHeaders = null;
+    public $responseHeaders = null;
+    public $rawResponseHeaders = '';
     public $response = null;
-    public $raw_response = null;
+    public $rawResponse = null;
 
-    public $before_send_function = null;
-    public $download_complete_function = null;
-    private $success_function = null;
-    private $error_function = null;
-    private $complete_function = null;
+    public $beforeSendFunction = null;
+    public $downloadCompleteFunction = null;
+    private $successFunction = null;
+    private $errorFunction = null;
+    private $completeFunction = null;
 
     private $cookies = array();
     private $headers = array();
     private $options = array();
 
-    private $json_decoder = null;
-    private $json_pattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
-    private $xml_pattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
+    private $jsonDecoder = null;
+    private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
+    private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
 
     /**
      * Construct
@@ -77,7 +77,7 @@ class Curl
      */
     public function beforeSend($callback)
     {
-        $this->before_send_function = $callback;
+        $this->beforeSendFunction = $callback;
     }
 
     /**
@@ -93,7 +93,7 @@ class Curl
         if (is_array($data)) {
             if (self::is_array_multidim($data)) {
                 if (isset($this->headers['Content-Type']) &&
-                    preg_match($this->json_pattern, $this->headers['Content-Type'])) {
+                    preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
                     $json_str = json_encode($data);
                     if (!($json_str === false)) {
                         $data = $json_str;
@@ -124,7 +124,7 @@ class Curl
 
                 if (!$binary_data) {
                     if (isset($this->headers['Content-Type']) &&
-                        preg_match($this->json_pattern, $this->headers['Content-Type'])) {
+                        preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
                         $json_str = json_encode($data);
                         if (!($json_str === false)) {
                             $data = $json_str;
@@ -165,7 +165,7 @@ class Curl
             curl_close($this->curl);
         }
         $this->options = null;
-        $this->json_decoder = null;
+        $this->jsonDecoder = null;
     }
 
     /**
@@ -176,7 +176,7 @@ class Curl
      */
     public function complete($callback)
     {
-        $this->complete_function = $callback;
+        $this->completeFunction = $callback;
     }
 
     /**
@@ -206,7 +206,7 @@ class Curl
         if (is_array($url)) {
             $data = $query_parameters;
             $query_parameters = $url;
-            $url = $this->base_url;
+            $url = $this->baseUrl;
         }
 
         $this->setURL($url, $query_parameters);
@@ -223,10 +223,10 @@ class Curl
      */
     public function downloadComplete($fh)
     {
-        if (!$this->error && $this->download_complete_function) {
+        if (!$this->error && $this->downloadCompleteFunction) {
             rewind($fh);
-            $this->call($this->download_complete_function, $fh);
-            $this->download_complete_function = null;
+            $this->call($this->downloadCompleteFunction, $fh);
+            $this->downloadCompleteFunction = null;
         }
 
         if (is_resource($fh)) {
@@ -262,7 +262,7 @@ class Curl
     public function download($url, $mixed_filename)
     {
         if (is_callable($mixed_filename)) {
-            $this->download_complete_function = $mixed_filename;
+            $this->downloadCompleteFunction = $mixed_filename;
             $fh = tmpfile();
         } else {
             $filename = $mixed_filename;
@@ -284,7 +284,7 @@ class Curl
      */
     public function error($callback)
     {
-        $this->error_function = $callback;
+        $this->errorFunction = $callback;
     }
 
     /**
@@ -298,39 +298,39 @@ class Curl
     public function exec($ch = null)
     {
         if (!($ch === null)) {
-            $this->raw_response = curl_multi_getcontent($ch);
+            $this->rawResponse = curl_multi_getcontent($ch);
         } else {
-            $this->call($this->before_send_function);
-            $this->raw_response = curl_exec($this->curl);
-            $this->curl_error_code = curl_errno($this->curl);
+            $this->call($this->beforeSendFunction);
+            $this->rawResponse = curl_exec($this->curl);
+            $this->curlErrorCode = curl_errno($this->curl);
         }
 
-        $this->curl_error_message = curl_error($this->curl);
-        $this->curl_error = !($this->curl_error_code === 0);
-        $this->http_status_code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
-        $this->http_error = in_array(floor($this->http_status_code / 100), array(4, 5));
-        $this->error = $this->curl_error || $this->http_error;
-        $this->error_code = $this->error ? ($this->curl_error ? $this->curl_error_code : $this->http_status_code) : 0;
+        $this->curlErrorMessage = curl_error($this->curl);
+        $this->curlError = !($this->curlErrorCode === 0);
+        $this->httpStatusCode = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
+        $this->httpError = in_array(floor($this->httpStatusCode / 100), array(4, 5));
+        $this->error = $this->curlError || $this->httpError;
+        $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;
 
-        $this->request_headers = $this->parseRequestHeaders(curl_getinfo($this->curl, CURLINFO_HEADER_OUT));
-        $this->response_headers = $this->parseResponseHeaders($this->raw_response_headers);
-        list($this->response, $this->raw_response) = $this->parseResponse($this->response_headers, $this->raw_response);
+        $this->requestHeaders = $this->parseRequestHeaders(curl_getinfo($this->curl, CURLINFO_HEADER_OUT));
+        $this->responseHeaders = $this->parseResponseHeaders($this->rawResponseHeaders);
+        list($this->response, $this->rawResponse) = $this->parseResponse($this->responseHeaders, $this->rawResponse);
 
-        $this->http_error_message = '';
+        $this->httpErrorMessage = '';
         if ($this->error) {
-            if (isset($this->response_headers['Status-Line'])) {
-                $this->http_error_message = $this->response_headers['Status-Line'];
+            if (isset($this->responseHeaders['Status-Line'])) {
+                $this->httpErrorMessage = $this->responseHeaders['Status-Line'];
             }
         }
-        $this->error_message = $this->curl_error ? $this->curl_error_message : $this->http_error_message;
+        $this->errorMessage = $this->curlError ? $this->curlErrorMessage : $this->httpErrorMessage;
 
         if (!$this->error) {
-            $this->call($this->success_function);
+            $this->call($this->successFunction);
         } else {
-            $this->call($this->error_function);
+            $this->call($this->errorFunction);
         }
 
-        $this->call($this->complete_function);
+        $this->call($this->completeFunction);
 
         return $this->response;
     }
@@ -348,7 +348,7 @@ class Curl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = $this->base_url;
+            $url = $this->baseUrl;
         }
         $this->setURL($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
@@ -382,7 +382,7 @@ class Curl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = $this->base_url;
+            $url = $this->baseUrl;
         }
         $this->setURL($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
@@ -401,7 +401,7 @@ class Curl
      */
     public function headerCallback($ch, $header)
     {
-        $this->raw_response_headers .= $header;
+        $this->rawResponseHeaders .= $header;
         return strlen($header);
     }
 
@@ -418,7 +418,7 @@ class Curl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = $this->base_url;
+            $url = $this->baseUrl;
         }
         $this->setURL($url, $data);
         $this->unsetHeader('Content-Length');
@@ -439,7 +439,7 @@ class Curl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = $this->base_url;
+            $url = $this->baseUrl;
         }
         $this->setURL($url);
         $this->unsetHeader('Content-Length');
@@ -461,7 +461,7 @@ class Curl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = $this->base_url;
+            $url = $this->baseUrl;
         }
 
         if (is_array($data) && empty($data)) {
@@ -488,7 +488,7 @@ class Curl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = $this->base_url;
+            $url = $this->baseUrl;
         }
         $this->setURL($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -590,7 +590,7 @@ class Curl
      */
     public function setDefaultJsonDecoder()
     {
-        $this->json_decoder = function($response) {
+        $this->jsonDecoder = function($response) {
             $json_obj = json_decode($response, false);
             if (!($json_obj === null)) {
                 $response = $json_obj;
@@ -653,7 +653,7 @@ class Curl
     public function setJsonDecoder($function)
     {
         if (is_callable($function)) {
-            $this->json_decoder = $function;
+            $this->jsonDecoder = $function;
         }
     }
 
@@ -723,7 +723,7 @@ class Curl
      */
     public function setURL($url, $data = array())
     {
-        $this->base_url = $url;
+        $this->baseUrl = $url;
         $this->url = $this->buildURL($url, $data);
         $this->setOpt(CURLOPT_URL, $this->url);
     }
@@ -747,7 +747,7 @@ class Curl
      */
     public function success($callback)
     {
-        $this->success_function = $callback;
+        $this->successFunction = $callback;
     }
 
     /**
@@ -858,12 +858,12 @@ class Curl
     {
         $response = $raw_response;
         if (isset($response_headers['Content-Type'])) {
-            if (preg_match($this->json_pattern, $response_headers['Content-Type'])) {
-                $json_decoder = $this->json_decoder;
+            if (preg_match($this->jsonPattern, $response_headers['Content-Type'])) {
+                $json_decoder = $this->jsonDecoder;
                 if (is_callable($json_decoder)) {
                     $response = $json_decoder($response);
                 }
-            } elseif (preg_match($this->xml_pattern, $response_headers['Content-Type'])) {
+            } elseif (preg_match($this->xmlPattern, $response_headers['Content-Type'])) {
                 $xml_obj = @simplexml_load_string($response);
                 if (!($xml_obj === false)) {
                     $response = $xml_obj;
