@@ -75,6 +75,6 @@ if (isset($_GET['code'])) {
         'approval_prompt' => 'force',
     ));
 
-    $url = $curl->response_headers['Location'];
+    $url = $curl->responseHeaders['Location'];
     echo '<a href="' . $url . '">Continue</a>';
 }

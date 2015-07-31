@@ -173,8 +173,8 @@ $curl->setHeader('X-Requested-With', 'XMLHttpRequest');
 $curl->get('https://www.example.com/');
 
 // Case-insensitive access to headers.
-echo $curl->request_headers['X-Requested-With'] . "\n"; // XMLHttpRequest
-echo $curl->request_headers['x-ReQUeStED-wiTH'] . "\n"; // XMLHttpRequest
+echo $curl->requestHeaders['X-Requested-With'] . "\n"; // XMLHttpRequest
+echo $curl->requestHeaders['x-ReQUeStED-wiTH'] . "\n"; // XMLHttpRequest
 ```
 
 ## Response header
@@ -185,8 +185,8 @@ $curl = new Curl();
 $curl->get('https://www.example.com/image.png');
 
 // Case-insensitive access to headers.
-echo $curl->response_headers['Content-Type'] . "\n"; // image/png
-echo $curl->response_headers['CoNTeNT-TyPE'] . "\n"; // image/png
+echo $curl->responseHeaders['Content-Type'] . "\n"; // image/png
+echo $curl->responseHeaders['CoNTeNT-TyPE'] . "\n"; // image/png
 ```
 
 ## Response body
@@ -224,8 +224,8 @@ $curl = new Curl();
 $curl->get('https://www.example.com/404');
 
 if ($curl->error) {
-    echo 'Error code: ' . $curl->error_code . "\n"; // 404
-    echo 'Error message: ' . $curl->error_message . "\n"; // HTTP/1.1 404 Not Found
+    echo 'Error code: ' . $curl->errorCode . "\n"; // 404
+    echo 'Error message: ' . $curl->errorMessage . "\n"; // HTTP/1.1 404 Not Found
 }
 else {
     echo $curl->response;
@@ -245,8 +245,8 @@ $curl->success(function($instance) {
 });
 $curl->error(function($instance) {
     echo 'call was unsuccessful.' . "\n";
-    echo 'error code:' . $instance->error_code . "\n";
-    echo 'error message:' . $instance->error_message . "\n";
+    echo 'error code:' . $instance->errorCode . "\n";
+    echo 'error message:' . $instance->errorMessage . "\n";
 });
 $curl->complete(function($instance) {
     echo 'call completed' . "\n";

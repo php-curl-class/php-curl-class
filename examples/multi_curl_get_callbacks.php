@@ -13,8 +13,8 @@ $multi_curl->success(function($instance) {
 });
 $multi_curl->error(function($instance) {
     echo 'call to "' . $instance->url . '" was unsuccessful.' . "\n";
-    echo 'error code: ' . $instance->error_code . "\n";
-    echo 'error message: ' . $instance->error_message . "\n";
+    echo 'error code: ' . $instance->errorCode . "\n";
+    echo 'error message: ' . $instance->errorMessage . "\n";
 });
 $multi_curl->complete(function($instance) {
     echo 'call completed' . "\n";

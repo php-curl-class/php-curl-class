@@ -9,11 +9,6 @@ $new_version = implode('.', array($major, $minor, (string)((int)$patch += 1)));
 foreach(
     array(
         array(
-            dirname(__FILE__) . '/../composer.json',
-            '/"version": "(?:\d+.\d+.\d+)"/',
-            '"version": "' . $new_version . '"',
-        ),
-        array(
             dirname(__FILE__) . '/../src/Curl/Curl.php',
             '/const VERSION = \'(?:\d+.\d+.\d+)\';/',
             'const VERSION = \'' . $new_version . '\';',
