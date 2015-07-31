@@ -49,14 +49,14 @@ $curl->setCookie('key', 'value');
 $curl->get('http://www.example.com/');
 
 if ($curl->error) {
-    echo 'Error: ' . $curl->error_code . ': ' . $curl->error_message;
+    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage;
 }
 else {
     echo $curl->response;
 }
 
-var_dump($curl->request_headers);
-var_dump($curl->response_headers);
+var_dump($curl->requestHeaders);
+var_dump($curl->responseHeaders);
 ```
 
 ```php
@@ -105,8 +105,8 @@ $curl->download('https://www.example.com/image.png', '/tmp/myimage.png');
 // Case-insensitive access to headers.
 $curl = new Curl();
 $curl->download('https://www.example.com/image.png', '/tmp/myimage.png');
-echo $curl->response_headers['Content-Type'] . "\n"; // image/png
-echo $curl->response_headers['CoNTeNT-TyPE'] . "\n"; // image/png
+echo $curl->responseHeaders['Content-Type'] . "\n"; // image/png
+echo $curl->responseHeaders['CoNTeNT-TyPE'] . "\n"; // image/png
 ```
 
 ```php
@@ -129,8 +129,8 @@ $multi_curl->success(function($instance) {
 });
 $multi_curl->error(function($instance) {
     echo 'call to "' . $instance->url . '" was unsuccessful.' . "\n";
-    echo 'error code: ' . $instance->error_code . "\n";
-    echo 'error message: ' . $instance->error_message . "\n";
+    echo 'error code: ' . $instance->errorCode . "\n";
+    echo 'error message: ' . $instance->errorMessage . "\n";
 });
 $multi_curl->complete(function($instance) {
     echo 'call completed' . "\n";
