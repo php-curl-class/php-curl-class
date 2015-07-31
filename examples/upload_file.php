@@ -11,7 +11,7 @@ $curl->post('https://httpbin.org/post', array(
 ));
 
 if ($curl->error) {
-    echo 'Error: ' . $curl->error_message . "\n";
+    echo 'Error: ' . $curl->errorMessage . "\n";
 } else {
     echo 'Success' . "\n";
 }

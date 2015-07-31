@@ -28,7 +28,7 @@ if (isset($_GET['code'])) {
     ));
 
     if ($curl->error) {
-        echo $curl->response->error_type . ': ' . $curl->response->error_message . '<br />';
+        echo $curl->response->error_type . ': ' . $curl->response->errorMessage . '<br />';
         echo '<a href="?">Try again?</a>';
         exit;
     }
