@@ -311,7 +311,7 @@ class MultiCurl
     }
 
     /**
-     * Set Digets Authentication
+     * Set Digest Authentication
      *
      * @access public
      * @param  $username
