@@ -1614,41 +1614,78 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
 
     public function testDigestHttpAuthSuccess()
     {
-        $username1 = 'myusername';
-        $password1 = 'mypassword';
-        $username2 = 'myotherusername';
-        $password2 = 'myotherpassword';
+        $username = 'myusername';
+        $password = 'mypassword';
+        $invalid_password = 'anotherpassword';
 
+        // Ensure that http digest returns canceled when not using any http digest authentication.
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'http_basic_auth');
-        $multi_curl->setDigestAuthentication($username1, $password1);
+        $multi_curl->setHeader('X-DEBUG-TEST', 'http_digest_auth');
 
         $get_1 = $multi_curl->addGet(Test::TEST_URL);
-        $get_1->complete(function ($instance) use ($username1, $password1) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertEquals($username1, $instance->response->username);
-            PHPUnit_Framework_Assert::assertEquals($password1, $instance->response->password);
-        });
-
-        $get_2 = $multi_curl->addGet(Test::TEST_URL);
-        $get_2->beforeSend(function ($instance) use ($username2, $password2) {
-            $instance->setDigestAuthentication($username2, $password2);
-        });
-        $get_2->complete(function ($instance) use ($username2, $password2) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertEquals($username2, $instance->response->username);
-            PHPUnit_Framework_Assert::assertEquals($password2, $instance->response->password);
+        $get_1->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertEquals('canceled', $instance->response);
+            PHPUnit_Framework_Assert::assertEquals(401, $instance->httpStatusCode);
         });
 
         $multi_curl->start();
 
+        // Ensure that http digest returns invalid when using incorrect http digest authentication.
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'http_digest_auth');
+        $multi_curl->setDigestAuthentication($username, $invalid_password);
         $this->assertEquals(CURLAUTH_DIGEST, $multi_curl->getOpt(CURLOPT_HTTPAUTH));
-        $this->assertEquals(CURLAUTH_DIGEST, $get_1->getOpt(CURLOPT_HTTPAUTH));
-        $this->assertEquals($username1, $get_1->response->username);
-        $this->assertEquals($password1, $get_1->response->password);
-        $this->assertEquals(CURLAUTH_DIGEST, $get_2->getOpt(CURLOPT_HTTPAUTH));
-        $this->assertEquals($username2, $get_2->response->username);
-        $this->assertEquals($password2, $get_2->response->password);
+
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_1->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertEquals(CURLAUTH_DIGEST, $instance->getOpt(CURLOPT_HTTPAUTH));
+            PHPUnit_Framework_Assert::assertEquals('invalid', $instance->response);
+            PHPUnit_Framework_Assert::assertEquals(401, $instance->httpStatusCode);
+        });
+
+        $multi_curl->start();
+
+        // Ensure that http digest returns valid when using correct http digest authentication.
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'http_digest_auth');
+        $multi_curl->setDigestAuthentication($username, $password);
+        $this->assertEquals(CURLAUTH_DIGEST, $multi_curl->getOpt(CURLOPT_HTTPAUTH));
+
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_1->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertEquals(CURLAUTH_DIGEST, $instance->getOpt(CURLOPT_HTTPAUTH));
+            PHPUnit_Framework_Assert::assertEquals('valid', $instance->response);
+            PHPUnit_Framework_Assert::assertEquals(200, $instance->httpStatusCode);
+        });
+
+        $multi_curl->start();
+
+        // Ensure that http digest can return both invalid and valid when using
+        // incorrect and correct authentication in the same MultiCurl.
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'http_digest_auth');
+        $multi_curl->setDigestAuthentication($username, $password);
+        $this->assertEquals(CURLAUTH_DIGEST, $multi_curl->getOpt(CURLOPT_HTTPAUTH));
+
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_1->beforeSend(function ($instance) use ($username, $invalid_password) {
+            $instance->setDigestAuthentication($username, $invalid_password);
+            PHPUnit_Framework_Assert::assertEquals(CURLAUTH_DIGEST, $instance->getOpt(CURLOPT_HTTPAUTH));
+        });
+        $get_1->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertEquals(CURLAUTH_DIGEST, $instance->getOpt(CURLOPT_HTTPAUTH));
+            PHPUnit_Framework_Assert::assertEquals('invalid', $instance->response);
+            PHPUnit_Framework_Assert::assertEquals(401, $instance->httpStatusCode);
+        });
+
+        $get_2 = $multi_curl->addGet(Test::TEST_URL);
+        $get_2->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertEquals(CURLAUTH_DIGEST, $instance->getOpt(CURLOPT_HTTPAUTH));
+            PHPUnit_Framework_Assert::assertEquals('valid', $instance->response);
+            PHPUnit_Framework_Assert::assertEquals(200, $instance->httpStatusCode);
+        });
+
+        $multi_curl->start();
     }
 
     public function testCookies()
