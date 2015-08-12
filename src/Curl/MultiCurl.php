@@ -311,6 +311,19 @@ class MultiCurl
     }
 
     /**
+     * Set Digest Authentication
+     *
+     * @access public
+     * @param  $username
+     * @param  $password
+     */
+    public function setDigestAuthentication($username, $password = '')
+    {
+        $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+        $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
+    }
+
+    /**
      * Set Cookie
      *
      * @access public
