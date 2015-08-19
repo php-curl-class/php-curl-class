@@ -488,6 +488,10 @@ class MultiCurl
                     }
                 }
             }
+
+            if (!$active) {
+                $active = count($this->curls);
+            }
         } while ($active > 0);
 
         $this->isStarted = false;
@@ -578,6 +582,5 @@ class MultiCurl
         }
         $curl->setJsonDecoder($this->jsonDecoder);
         $curl->call($curl->beforeSendFunction);
-
     }
 }
