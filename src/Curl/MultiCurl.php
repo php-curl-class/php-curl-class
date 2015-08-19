@@ -8,6 +8,8 @@ class MultiCurl
     public $multiCurl;
     public $curls = array();
     private $curlFileHandles = array();
+    private $nextCurlId = 1;
+    private $isStarted = false;
 
     private $beforeSendFunction = null;
     private $successFunction = null;
@@ -458,29 +460,23 @@ class MultiCurl
     public function start()
     {
         foreach ($this->curls as $ch) {
-            foreach ($this->options as $option => $value) {
-                $ch->setOpt($option, $value);
-            }
-            foreach ($this->headers as $key => $value) {
-                $ch->setHeader($key, $value);
-            }
-            $ch->setJsonDecoder($this->jsonDecoder);
-            $ch->call($ch->beforeSendFunction);
+            $this->initHandle($ch);
         }
 
-        $curl_handles = $this->curls;
+        $this->isStarted = true;
+
         do {
             curl_multi_select($this->multiCurl);
             curl_multi_exec($this->multiCurl, $active);
 
             while (!($info_array = curl_multi_info_read($this->multiCurl)) === false) {
                 if ($info_array['msg'] === CURLMSG_DONE) {
-                    foreach ($curl_handles as $key => $ch) {
+                    foreach ($this->curls as $key => $ch) {
                         if ($ch->curl === $info_array['handle']) {
                             $ch->curlErrorCode = $info_array['result'];
                             $ch->exec($ch->curl);
                             curl_multi_remove_handle($this->multiCurl, $ch->curl);
-                            unset($curl_handles[$key]);
+                            unset($this->curls[$key]);
 
                             // Close open file handles and reset the curl instance.
                             if (isset($this->curlFileHandles[$ch->id])) {
@@ -493,6 +489,8 @@ class MultiCurl
                 }
             }
         } while ($active > 0);
+
+        $this->isStarted = false;
     }
 
     /**
@@ -557,6 +555,29 @@ class MultiCurl
         $curl->error($this->errorFunction);
         $curl->complete($this->completeFunction);
         $this->curls[] = $curl;
-        $curl->id = count($this->curls);
+        $curl->id = $this->nextCurlId++;
+
+        if ($this->isStarted) {
+            $this->initHandle($curl);
+        }
+    }
+
+    /**
+     * Init Handle
+     *
+     * @access private
+     * @param  $curl
+     */
+    private function initHandle($curl)
+    {
+        foreach ($this->options as $option => $value) {
+            $curl->setOpt($option, $value);
+        }
+        foreach ($this->headers as $key => $value) {
+            $curl->setHeader($key, $value);
+        }
+        $curl->setJsonDecoder($this->jsonDecoder);
+        $curl->call($curl->beforeSendFunction);
+
     }
 }
