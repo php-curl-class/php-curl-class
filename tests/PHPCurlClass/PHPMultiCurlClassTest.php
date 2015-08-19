@@ -1938,4 +1938,36 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
             PHPUnit_Framework_Assert::assertEquals('key=value', $instance->response);
         });
     }
+
+    public function testAddRequestAfterStart() {
+        $multi_curl = new MultiCurl();
+
+        $urls = array();
+        $copy_of_urls = array();
+        for ($i = 0; $i < 10; $i++) {
+            $url = Test::TEST_URL . '?' . md5(mt_rand());
+            $urls[] = $url;
+            $copy_of_urls[] = $url;
+        }
+
+        $urls_called = array();
+        $multi_curl->complete(function ($instance) use (&$multi_curl, &$urls, &$urls_called) {
+            $urls_called[] = $instance->url;
+            $next_url = array_pop($urls);
+            if (!($next_url === null)) {
+                $multi_curl->addGet($next_url);
+            }
+        });
+
+        $multi_curl->addGet(array_pop($urls));
+        $multi_curl->start();
+
+        $this->assertNotEmpty($copy_of_urls);
+        $this->assertNotEmpty($urls_called);
+        $this->assertEquals(count($copy_of_urls), count($urls_called));
+
+        foreach ($copy_of_urls as $url) {
+            $this->assertTrue(in_array($url, $urls_called, true));
+        }
+    }
 }
