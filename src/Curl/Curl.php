@@ -401,6 +401,9 @@ class Curl
      */
     public function headerCallback($ch, $header)
     {
+        if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]+)/mi', $header, $cookie) == 1) {
+            $this->cookies[$cookie[1]] = $cookie[2];
+        }
         $this->rawResponseHeaders .= $header;
         return strlen($header);
     }
@@ -536,6 +539,16 @@ class Curl
     {
         $this->cookies[$key] = $value;
         $this->setOpt(CURLOPT_COOKIE, str_replace(' ', '%20', urldecode(http_build_query($this->cookies, '', '; '))));
+    }
+
+    /**
+     * get Cookie
+     *
+     * @access public
+     * @param  $key
+     */
+    public function getCookie($key) {
+        return $this->cookies[$key];
     }
 
     /**
