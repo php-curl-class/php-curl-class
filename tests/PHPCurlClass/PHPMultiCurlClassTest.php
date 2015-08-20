@@ -51,7 +51,8 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $multi_curl = new MultiCurl();
         $multi_curl->beforeSend(function ($instance) use (
             &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
-            &$download_before_send_called, &$download_success_called, &$download_error_called, &$download_complete_called,
+            &$download_before_send_called, &$download_success_called, &$download_error_called,
+            &$download_complete_called,
             &$get_before_send_called, &$get_success_called, &$get_error_called, &$get_complete_called,
             &$head_before_send_called, &$head_success_called, &$head_error_called, &$head_complete_called,
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
@@ -118,7 +119,8 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         });
         $multi_curl->success(function ($instance) use (
             &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
-            &$download_before_send_called, &$download_success_called, &$download_error_called, &$download_complete_called,
+            &$download_before_send_called, &$download_success_called, &$download_error_called,
+            &$download_complete_called,
             &$get_before_send_called, &$get_success_called, &$get_error_called, &$get_complete_called,
             &$head_before_send_called, &$head_success_called, &$head_error_called, &$head_complete_called,
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
@@ -203,7 +205,8 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         });
         $multi_curl->complete(function ($instance) use (
             &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
-            &$download_before_send_called, &$download_success_called, &$download_error_called, &$download_complete_called,
+            &$download_before_send_called, &$download_success_called, &$download_error_called,
+            &$download_complete_called,
             &$get_before_send_called, &$get_success_called, &$get_error_called, &$get_complete_called,
             &$head_before_send_called, &$head_success_called, &$head_error_called, &$head_complete_called,
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
@@ -367,7 +370,8 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $multi_curl = new MultiCurl();
         $multi_curl->beforeSend(function ($instance) use (
             &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
-            &$download_before_send_called, &$download_success_called, &$download_error_called, &$download_complete_called,
+            &$download_before_send_called, &$download_success_called, &$download_error_called,
+            &$download_complete_called,
             &$get_before_send_called, &$get_success_called, &$get_error_called, &$get_complete_called,
             &$head_before_send_called, &$head_success_called, &$head_error_called, &$head_complete_called,
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
@@ -451,7 +455,8 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         });
         $multi_curl->error(function ($instance) use (
             &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
-            &$download_before_send_called, &$download_success_called, &$download_error_called, &$download_complete_called,
+            &$download_before_send_called, &$download_success_called, &$download_error_called,
+            &$download_complete_called,
             &$get_before_send_called, &$get_success_called, &$get_error_called, &$get_complete_called,
             &$head_before_send_called, &$head_success_called, &$head_error_called, &$head_complete_called,
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
@@ -518,7 +523,8 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         });
         $multi_curl->complete(function ($instance) use (
             &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
-            &$download_before_send_called, &$download_success_called, &$download_error_called, &$download_complete_called,
+            &$download_before_send_called, &$download_success_called, &$download_error_called,
+            &$download_complete_called,
             &$get_before_send_called, &$get_success_called, &$get_error_called, &$get_complete_called,
             &$head_before_send_called, &$head_success_called, &$head_error_called, &$head_complete_called,
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
@@ -690,7 +696,8 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $download_file_path = tempnam('/tmp', 'php-curl-class.');
         $download = $multi_curl->addDownload(Test::TEST_URL, $download_file_path);
         $download->beforeSend(function ($instance) use (
-            &$download_before_send_called, &$download_success_called, &$download_error_called, &$download_complete_called) {
+            &$download_before_send_called, &$download_success_called, &$download_error_called,
+            &$download_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($download_before_send_called);
             PHPUnit_Framework_Assert::assertFalse($download_success_called);
@@ -699,7 +706,8 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
             $download_before_send_called = true;
         });
         $download->success(function ($instance) use (
-            &$download_before_send_called, &$download_success_called, &$download_error_called, &$download_complete_called) {
+            &$download_before_send_called, &$download_success_called, &$download_error_called,
+            &$download_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertTrue($download_before_send_called);
             PHPUnit_Framework_Assert::assertFalse($download_success_called);
@@ -712,7 +720,8 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
             $download_error_called = true;
         });
         $download->complete(function ($instance) use (
-            &$download_before_send_called, &$download_success_called, &$download_error_called, &$download_complete_called) {
+            &$download_before_send_called, &$download_success_called, &$download_error_called,
+            &$download_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertTrue($download_before_send_called);
             PHPUnit_Framework_Assert::assertTrue($download_success_called);
@@ -1035,7 +1044,8 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $download_file_path = tempnam('/tmp', 'php-curl-class.');
         $download = $multi_curl->addDownload(Test::ERROR_URL, $download_file_path);
         $download->beforeSend(function ($instance) use (
-            &$download_before_send_called, &$download_success_called, &$download_error_called, &$download_complete_called) {
+            &$download_before_send_called, &$download_success_called, &$download_error_called,
+            &$download_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($download_before_send_called);
             PHPUnit_Framework_Assert::assertFalse($download_success_called);
@@ -1048,7 +1058,8 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
             $download_success_called = true;
         });
         $download->error(function ($instance) use (
-            &$download_before_send_called, &$download_success_called, &$download_error_called, &$download_complete_called) {
+            &$download_before_send_called, &$download_success_called, &$download_error_called,
+            &$download_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertTrue($download_before_send_called);
             PHPUnit_Framework_Assert::assertFalse($download_success_called);
@@ -1057,7 +1068,8 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
             $download_error_called = true;
         });
         $download->complete(function ($instance) use (
-            &$download_before_send_called, &$download_success_called, &$download_error_called, &$download_complete_called) {
+            &$download_before_send_called, &$download_success_called, &$download_error_called,
+            &$download_complete_called) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertTrue($download_before_send_called);
             PHPUnit_Framework_Assert::assertFalse($download_success_called);
