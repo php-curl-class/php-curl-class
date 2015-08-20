@@ -46,4 +46,6 @@ server {
 }
 EOF
     sudo /usr/share/hhvm/install_fastcgi.sh
+    sudo /etc/init.d/hhvm restart
+    sudo service nginx restart
 fi
