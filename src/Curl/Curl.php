@@ -37,6 +37,7 @@ class Curl
     private $completeFunction = null;
 
     private $cookies = array();
+    private $responseCookies = array();
     private $headers = array();
     private $options = array();
 
@@ -304,7 +305,7 @@ class Curl
             $this->rawResponse = curl_exec($this->curl);
             $this->curlErrorCode = curl_errno($this->curl);
         }
-
+        $this->responseCookies = array();
         $this->curlErrorMessage = curl_error($this->curl);
         $this->curlError = !($this->curlErrorCode === 0);
         $this->httpStatusCode = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
@@ -402,7 +403,7 @@ class Curl
     public function headerCallback($ch, $header)
     {
         if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]+)/mi', $header, $cookie) == 1) {
-            $this->cookies[$cookie[1]] = $cookie[2];
+            $this->responseCookies[$cookie[1]] = $cookie[2];
         }
         $this->rawResponseHeaders .= $header;
         return strlen($header);
@@ -543,13 +544,13 @@ class Curl
     }
 
     /**
-     * get Cookie
+     * get Cookie of Response
      *
      * @access public
      * @param  $key
      */
-    public function getCookie($key) {
-        return $this->cookies[$key];
+    public function getResponseCookie($key) {
+        return $this->responseCookies[$key];
     }
 
     /**
