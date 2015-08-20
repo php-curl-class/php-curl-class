@@ -107,6 +107,9 @@ if ($test == 'http_basic_auth') {
 } elseif ($test === 'put') {
     echo $http_raw_post_data;
     exit;
+} elseif ($test === 'patch') {
+    echo $http_raw_post_data;
+    exit;
 } elseif ($test === 'post_multidimensional') {
     echo $http_raw_post_data;
     exit;
