@@ -298,6 +298,7 @@ class Curl
      */
     public function exec($ch = null)
     {
+        $this->responseCookies = array();
         if (!($ch === null)) {
             $this->rawResponse = curl_multi_getcontent($ch);
         } else {
@@ -305,7 +306,6 @@ class Curl
             $this->rawResponse = curl_exec($this->curl);
             $this->curlErrorCode = curl_errno($this->curl);
         }
-        $this->responseCookies = array();
         $this->curlErrorMessage = curl_error($this->curl);
         $this->curlError = !($this->curlErrorCode === 0);
         $this->httpStatusCode = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
@@ -544,13 +544,13 @@ class Curl
     }
 
     /**
-     * get Cookie of Response
+     * get Cookie of Response, if Key is set. Otherwise return NULL
      *
      * @access public
      * @param  $key
      */
     public function getResponseCookie($key) {
-        return $this->responseCookies[$key];
+        return (isset($this->responseCookies[$key]))?$this->responseCookies[$key]:NULL;
     }
 
     /**
