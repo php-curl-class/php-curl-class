@@ -63,3 +63,10 @@ if [[ ! -z "${trailing_whitespace}" ]]; then
     echo -e "${trailing_whitespace}" | perl -pe 's/^(.*)$/Trailing whitespace found in \1/'
     exit 1
 fi
+
+# Prohibit long lines in php files.
+long_lines=$(find . -type "f" -iname "*.php" -exec awk '{print FILENAME":"NR" "length}' {} \; | awk '$2 > 120')
+if [[ ! -z "${long_lines}" ]]; then
+    echo -e "${long_lines}" | perl -pe 's/^(.*)$/Long lines found in \1/'
+    exit 1
+fi
