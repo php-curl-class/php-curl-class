@@ -409,6 +409,22 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('PATCH', $test->server('request_method', 'PATCH'));
     }
 
+    public function testPatchRequestMethodWithMultidimArray()
+    {
+        $data = array(
+            'data' => array(
+                'foo' => 'bar',
+                'wibble' => 'wubble',
+            ),
+        );
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'data_values');
+        $curl->patch(Test::TEST_URL, $data);
+        $this->assertEquals('{"data":{"foo":"bar","wibble":"wubble"}}', $curl->rawResponse);
+        $this->assertEquals(json_decode(json_encode($data), false), $curl->response);
+    }
+
     public function testDeleteRequestMethod()
     {
         $test = new Test();
