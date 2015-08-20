@@ -236,6 +236,10 @@ if ($test == 'http_basic_auth') {
         'delete' => $_DELETE,
     ));
     exit;
+} elseif ($test === 'data_values') {
+    header('Content-Type: application/json');
+    echo json_encode($data_values);
+    exit;
 }
 
 header('Content-Type: text/plain');
