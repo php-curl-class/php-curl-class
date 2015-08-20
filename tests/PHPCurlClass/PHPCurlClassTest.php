@@ -82,7 +82,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testUserAgent()
     {
-        $php_version = 'PHP\/' . PHP_VERSION;
+        $php_version = preg_replace('/([\.\+\?\*\(\)\[\]\^\$\/])/', '\\\\\1', 'PHP/' . PHP_VERSION);
         $curl_version = curl_version();
         $curl_version = 'curl\/' . $curl_version['version'];
 
