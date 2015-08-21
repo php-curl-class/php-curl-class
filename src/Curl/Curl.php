@@ -544,13 +544,23 @@ class Curl
     }
 
     /**
-     * get Cookie of Response, if Key is set. Otherwise return NULL
+     * Get cookie.
+     *
+     * @access public
+     * @param  $key
+     */
+    public function getCookie($key) {
+        return $this->getResponseCookie($key);
+    }
+
+    /**
+     * Get response cookie.
      *
      * @access public
      * @param  $key
      */
     public function getResponseCookie($key) {
-        return (isset($this->responseCookies[$key]))?$this->responseCookies[$key]:NULL;
+        return isset($this->responseCookies[$key]) ? $this->responseCookies[$key] : null;
     }
 
     /**
