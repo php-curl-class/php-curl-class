@@ -549,7 +549,8 @@ class Curl
      * @access public
      * @param  $key
      */
-    public function getCookie($key) {
+    public function getCookie($key)
+    {
         return $this->getResponseCookie($key);
     }
 
@@ -559,7 +560,8 @@ class Curl
      * @access public
      * @param  $key
      */
-    public function getResponseCookie($key) {
+    public function getResponseCookie($key)
+    {
         return isset($this->responseCookies[$key]) ? $this->responseCookies[$key] : null;
     }
 

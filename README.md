@@ -168,9 +168,9 @@ Curl::downloadComplete($fh)
 Curl::error($callback)
 Curl::exec($ch = null)
 Curl::get($url, $data = array())
-Curl::getCookie($key) {
+Curl::getCookie($key)
 Curl::getOpt($option)
-Curl::getResponseCookie($key) {
+Curl::getResponseCookie($key)
 Curl::head($url, $data = array())
 Curl::headerCallback($ch, $header)
 Curl::options($url, $data = array())
