@@ -82,7 +82,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testUserAgent()
     {
-        $php_version = 'PHP\/' . PHP_VERSION;
+        $php_version = preg_replace('/([\.\+\?\*\(\)\[\]\^\$\/])/', '\\\\\1', 'PHP/' . PHP_VERSION);
         $curl_version = curl_version();
         $curl_version = 'curl\/' . $curl_version['version'];
 
@@ -407,6 +407,19 @@ class CurlTest extends PHPUnit_Framework_TestCase
     {
         $test = new Test();
         $this->assertEquals('PATCH', $test->server('request_method', 'PATCH'));
+    }
+
+    public function testPatchData()
+    {
+        $test = new Test();
+        $this->assertEquals('key=value', $test->server('patch', 'PATCH', array(
+            'key' => 'value',
+        )));
+
+        $test = new Test();
+        $this->assertEquals('{"key":"value"}', $test->server('patch', 'PATCH', json_encode(array(
+            'key' => 'value',
+        ))));
     }
 
     public function testPatchRequestMethodWithMultidimArray()

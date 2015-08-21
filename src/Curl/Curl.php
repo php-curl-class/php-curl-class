@@ -441,6 +441,11 @@ class Curl
             $data = $url;
             $url = $this->baseUrl;
         }
+
+        if (is_array($data) && empty($data)) {
+            $this->unsetHeader('Content-Length');
+        }
+
         $this->setURL($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
@@ -461,10 +466,6 @@ class Curl
         if (is_array($url)) {
             $data = $url;
             $url = $this->baseUrl;
-        }
-
-        if (is_array($data) && empty($data)) {
-            $this->unsetHeader('Content-Length');
         }
 
         $this->setURL($url);
