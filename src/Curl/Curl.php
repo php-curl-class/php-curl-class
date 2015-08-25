@@ -80,7 +80,25 @@ class Curl
     {
         $this->beforeSendFunction = $callback;
     }
+	
+	/**
+     * Build Headers
+     *
+     * @access private
+     * @param  $data
+     */
+    private function buildHeaders()
+    {
+        $headers = array();
+        foreach ($this->headers as $key => $value) {
+            $headers[$key] = $value;
+        }
+        $this->setOpt(CURLOPT_HTTPHEADER, array_map(function($value, $key) {
+            return $key . ': ' . $value;
+        }, $headers, array_keys($headers)));
 
+    }
+	
     /**
      * Build Post Data
      *
@@ -655,19 +673,11 @@ class Curl
      * @access public
      * @param  $key
      * @param  $value
-     *
-     * @return string
      */
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
-        $headers = array();
-        foreach ($this->headers as $key => $value) {
-            $headers[$key] = $value;
-        }
-        $this->setOpt(CURLOPT_HTTPHEADER, array_map(function($value, $key) {
-            return $key . ': ' . $value;
-        }, $headers, array_keys($headers)));
+        $this->buildHeaders();
     }
 
     /**
@@ -784,8 +794,8 @@ class Curl
      */
     public function unsetHeader($key)
     {
-        $this->setHeader($key, '');
         unset($this->headers[$key]);
+        $this->buildHeaders();
     }
 
     /**
