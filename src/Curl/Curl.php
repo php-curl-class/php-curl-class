@@ -667,6 +667,18 @@ class Curl
         $this->setUserAgent($user_agent);
     }
 
+	/**
+     * Set Default Header
+	 * @param  $key
+     *
+     * @access public
+     */
+    public function setDefaultHeader($key)
+    {
+        unset($this->headers[$key]);
+        $this->buildHeaders();
+    }
+	
     /**
      * Set Header
      *
@@ -794,8 +806,7 @@ class Curl
      */
     public function unsetHeader($key)
     {
-        unset($this->headers[$key]);
-        $this->buildHeaders();
+        $this->setHeader($key, '');
     }
 
     /**
