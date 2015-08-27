@@ -321,6 +321,26 @@ class CurlTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testPostContentLength()
+    {
+        $test_data = array(
+            array(false, 0),
+            array('', 0),
+            array(array(), 0),
+            array(null, 0),
+        );
+        foreach ($test_data as $data) {
+            $test = new Test();
+            list($post_data, $expected_content_length) = $data;
+            if ($post_data === false) {
+                $test->server('post', 'POST');
+            } else {
+                $test->server('post', 'POST', $post_data);
+            }
+            $this->assertEquals($expected_content_length, $test->curl->requestHeaders['Content-Length']);
+        }
+    }
+
     public function testPostMultidimensionalData()
     {
         $test = new Test();
