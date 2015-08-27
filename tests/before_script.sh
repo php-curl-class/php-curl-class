@@ -1,3 +1,4 @@
+echo "TRAVIS_PHP_VERSION: ${TRAVIS_PHP_VERSION}"
 if [[ "${TRAVIS_PHP_VERSION}" == "5.3" ]]; then
     sudo add-apt-repository -y ppa:nginx/development
     sudo apt-get update
@@ -48,4 +49,6 @@ EOF
     sudo /usr/share/hhvm/install_fastcgi.sh
     sudo /etc/init.d/hhvm restart
     sudo service nginx restart
+elif [[ "${TRAVIS_PHP_VERSION}" == "nightly" ]]; then
+    php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 fi
