@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '4.6.9';
+    const VERSION = '4.7.0';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
@@ -313,7 +313,11 @@ class Curl
         $this->error = $this->curlError || $this->httpError;
         $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;
 
-        $this->requestHeaders = $this->parseRequestHeaders(curl_getinfo($this->curl, CURLINFO_HEADER_OUT));
+        // NOTE: CURLINFO_HEADER_OUT set to true is required for requestHeaders
+        // to not be empty (e.g. $curl->setOpt(CURLINFO_HEADER_OUT, true);).
+        if ($this->getOpt(CURLINFO_HEADER_OUT) === true) {
+            $this->requestHeaders = $this->parseRequestHeaders(curl_getinfo($this->curl, CURLINFO_HEADER_OUT));
+        }
         $this->responseHeaders = $this->parseResponseHeaders($this->rawResponseHeaders);
         list($this->response, $this->rawResponse) = $this->parseResponse($this->responseHeaders, $this->rawResponse);
 
@@ -693,7 +697,6 @@ class Curl
     public function setOpt($option, $value)
     {
         $required_options = array(
-            CURLINFO_HEADER_OUT    => 'CURLINFO_HEADER_OUT',
             CURLOPT_RETURNTRANSFER => 'CURLOPT_RETURNTRANSFER',
         );
 

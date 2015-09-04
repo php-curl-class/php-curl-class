@@ -830,6 +830,29 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($etag, $response_headers['eTaG']);
     }
 
+    public function testHeaderOutOptional()
+    {
+        // CURLINFO_HEADER_OUT is true by default.
+        $test_1 = new Test();
+        $test_1->server('response_header', 'GET');
+        $this->assertNotEmpty($test_1->curl->requestHeaders);
+        $this->assertNotEmpty($test_1->curl->requestHeaders['Request-Line']);
+
+        // CURLINFO_HEADER_OUT is set to true.
+        $test_2 = new Test();
+        $test_2->curl->setOpt(CURLINFO_HEADER_OUT, true);
+        $test_2->server('response_header', 'GET');
+        $this->assertNotEmpty($test_2->curl->requestHeaders);
+        $this->assertNotEmpty($test_2->curl->requestHeaders['Request-Line']);
+
+        // CURLINFO_HEADER_OUT is set to false.
+        $test_3 = new Test();
+        $test_3->curl->setOpt(CURLINFO_HEADER_OUT, false);
+        $test_3->curl->verbose();
+        $test_3->server('response_header', 'GET');
+        $this->assertNull($test_3->curl->requestHeaders);
+    }
+
     public function testHeaderRedirect()
     {
         $test = new Test();
@@ -2382,15 +2405,6 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_resource($curl->curl));
         $curl->close();
         $this->assertFalse(is_resource($curl->curl));
-    }
-
-    /**
-     * @expectedException PHPUnit_Framework_Error_Warning
-     */
-    public function testRequiredOptionCurlInfoHeaderOutEmitsWarning()
-    {
-        $curl = new Curl();
-        $curl->setOpt(CURLINFO_HEADER_OUT, false);
     }
 
     /**
