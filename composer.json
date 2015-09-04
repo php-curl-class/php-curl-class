@@ -20,6 +20,9 @@
         "phpunit/phpunit": "*"
     },
     "autoload": {
-        "classmap": ["src/"]
+        "psr-4": {
+            "Curl\\Curl\\": "src/",
+            "Curl\\MultiCurl\\": "src/"
+        }
     }
 }
