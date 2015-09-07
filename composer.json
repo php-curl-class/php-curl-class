@@ -21,8 +21,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Curl\\Curl\\": "src/",
-            "Curl\\MultiCurl\\": "src/"
+            "Curl\\": "src/Curl/"
         }
     }
 }
