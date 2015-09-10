@@ -2224,4 +2224,25 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $multi_curl->close();
         $this->assertFalse(is_resource($multi_curl->multiCurl));
     }
+
+    public function testMultiPostRedirectGet()
+    {
+        // Deny post-redirect-get
+        $multi_curl = new MultiCurl(Test::TEST_URL);
+        $multi_curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+        $multi_curl->setHeader('X-DEBUG-TEST', 'post_redirect_get');
+        $multi_curl->addPost(array(), false)->complete(function($instance) {
+            PHPUnit_Framework_Assert::assertEquals('Redirected: POST', $instance->response);
+        });
+        $multi_curl->start();
+
+        // Allow post-redirect-get
+        $multi_curl = new MultiCurl(Test::TEST_URL);
+        $multi_curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+        $multi_curl->setHeader('X-DEBUG-TEST', 'post_redirect_get');
+        $multi_curl->addPost(array(), true)->complete(function($instance) {
+            PHPUnit_Framework_Assert::assertEquals('Redirected: GET', $instance->response);
+        });
+        $multi_curl->start();
+    }
 }
