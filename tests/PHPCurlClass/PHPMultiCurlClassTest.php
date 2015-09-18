@@ -1988,4 +1988,14 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
             $this->assertTrue(in_array($url, $urls_called, true));
         }
     }
+
+    public function testClose()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->start();
+        $this->assertTrue(is_resource($multi_curl->multiCurl));
+        $multi_curl->close();
+        $this->assertFalse(is_resource($multi_curl->multiCurl));
+    }
 }
