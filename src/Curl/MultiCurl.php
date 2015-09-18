@@ -261,7 +261,9 @@ class MultiCurl
             $ch->close();
         }
 
-        curl_multi_close($this->multiCurl);
+        if (is_resource($this->multiCurl)) {
+            curl_multi_close($this->multiCurl);
+        }
     }
 
     /**
