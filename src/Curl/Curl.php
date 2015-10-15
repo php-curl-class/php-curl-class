@@ -797,6 +797,11 @@ class Curl
      */
     public function verbose($on = true)
     {
+        // Turn off CURLINFO_HEADER_OUT for verbose to work. This has the side
+        // effect of causing Curl::requestHeaders to be empty.
+        if ($on) {
+            $this->setOpt(CURLINFO_HEADER_OUT, false);
+        }
         $this->setOpt(CURLOPT_VERBOSE, $on);
     }
 
