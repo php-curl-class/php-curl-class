@@ -2529,6 +2529,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testAlternativeStandardErrorOutput()
     {
+        // Skip test on HHVM due to "Segmentation fault".
+        if (defined('HHVM_VERSION')) {
+            return;
+        }
+
         $buffer = fopen('php://memory', 'w+');
 
         $curl = new Curl();
