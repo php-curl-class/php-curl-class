@@ -2526,4 +2526,19 @@ class CurlTest extends PHPUnit_Framework_TestCase
             }
         }
     }
+
+    public function testAlternativeStandardErrorOutput()
+    {
+        $buffer = fopen('php://memory', 'w+');
+
+        $curl = new Curl();
+        $curl->verbose(true, $buffer);
+        $curl->post(Test::TEST_URL);
+
+        rewind($buffer);
+        $stderr = stream_get_contents($buffer);
+        fclose($buffer);
+
+        $this->assertNotEmpty($stderr);
+    }
 }
