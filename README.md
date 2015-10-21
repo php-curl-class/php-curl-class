@@ -20,7 +20,7 @@ PHP Curl Class works with PHP 5.3, 5.4, 5.5, 5.6, and HHVM.
 ### Quick Start and Examples
 
 ```php
-require 'Curl.php';
+require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
 
