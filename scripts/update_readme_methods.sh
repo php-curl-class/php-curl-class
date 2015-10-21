@@ -15,13 +15,13 @@ head -n "${curl_max_line_number}" "src/Curl/Curl.php" | \
     egrep "^    .* function .*" | \
     egrep "^    public" | \
     sort | \
-    perl -pe 's/^    public (.* )?function /Curl::/' | \
-    tee -a "README.md"
+    perl -pe 's/^    public (.* )?function /Curl::/' \
+    >> "README.md"
 egrep "^    .* function .*" "src/Curl/MultiCurl.php" | \
     egrep "^    public" | \
     sort | \
-    perl -pe 's/^    public (.* )?function /MultiCurl::/' | \
-    tee -a "README.md"
+    perl -pe 's/^    public (.* )?function /MultiCurl::/' \
+    >> "README.md"
 echo '```' >> "README.md"
 echo >> "README.md"
 
