@@ -1,5 +1,5 @@
 <?php
-require 'Helper.php';
+require_once 'Helper.php';
 
 use \Helper\Test;
 
