@@ -7,6 +7,16 @@
 
 PHP Curl Class is an object-oriented wrapper of the PHP cURL extension that makes it easy to send HTTP requests and integrate with web APIs.
 
+---
+
+- [Installation](#installation)
+- [Requirements](#requirements)
+- [Quick Start and Examples](#quick-start-and-examples)
+- [Available Methods](#available-methods)
+- [Contribute](#contribute)
+
+---
+
 ### Installation
 
 To install PHP Curl Class, simply:
