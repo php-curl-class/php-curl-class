@@ -149,7 +149,7 @@ class Curl
     {
         $args = func_get_args();
         $function = array_shift($args);
-        if (is_callable($function)) {
+        if (is_callable($function, true)) {
             array_unshift($args, $this);
             call_user_func_array($function, $args);
         }
@@ -262,7 +262,7 @@ class Curl
      */
     public function download($url, $mixed_filename)
     {
-        if (is_callable($mixed_filename)) {
+        if (is_callable($mixed_filename, true)) {
             $this->downloadCompleteFunction = $mixed_filename;
             $fh = tmpfile();
         } else {
@@ -680,7 +680,7 @@ class Curl
      */
     public function setJsonDecoder($function)
     {
-        if (is_callable($function)) {
+        if (is_callable($function, true)) {
             $this->jsonDecoder = $function;
         }
     }
@@ -893,7 +893,7 @@ class Curl
         if (isset($response_headers['Content-Type'])) {
             if (preg_match($this->jsonPattern, $response_headers['Content-Type'])) {
                 $json_decoder = $this->jsonDecoder;
-                if (is_callable($json_decoder)) {
+                if (is_callable($json_decoder, true)) {
                     $response = $json_decoder($response);
                 }
             } elseif (preg_match($this->xmlPattern, $response_headers['Content-Type'])) {
