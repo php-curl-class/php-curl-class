@@ -1,6 +1,4 @@
 <?php
-require '../src/Curl/Curl.php';
-require 'Helper.php';
 
 use \Curl\Curl;
 use \Curl\CaseInsensitiveArray;

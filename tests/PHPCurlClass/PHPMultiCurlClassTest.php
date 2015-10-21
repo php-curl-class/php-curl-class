@@ -1,5 +1,4 @@
 <?php
-require '../src/Curl/MultiCurl.php';
 
 use \Curl\MultiCurl;
 use \Helper\Test;

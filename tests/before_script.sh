@@ -1,4 +1,8 @@
 echo "TRAVIS_PHP_VERSION: ${TRAVIS_PHP_VERSION}"
+
+composer self-update
+composer install --prefer-source --no-interaction
+
 if [[ "${TRAVIS_PHP_VERSION}" == "5.3" ]]; then
     sudo add-apt-repository -y ppa:nginx/development
     sudo apt-get update
