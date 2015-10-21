@@ -124,6 +124,10 @@ curl_close($curl->curl);
 ```
 
 ```php
+require __DIR__ . '/vendor/autoload.php';
+
+use \Curl\MultiCurl;
+
 // Requests in parallel with callback functions.
 $multi_curl = new MultiCurl();
 
