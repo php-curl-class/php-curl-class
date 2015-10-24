@@ -1,5 +1,5 @@
 <?php
-require '../src/Curl/Curl.php';
+require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
 
