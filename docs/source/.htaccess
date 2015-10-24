@@ -1,4 +1,0 @@
-RewriteEngine On
-
-RewriteCond %{HTTP_HOST} !^www\.                    [nocase]
-RewriteRule ^ http://www.%{HTTP_HOST}%{REQUEST_URI} [R=302,L]

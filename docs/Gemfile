@@ -1,4 +1,0 @@
-gem "middleman"
-gem "middleman-livereload"
-gem "middleman-syntax"
-gem "redcarpet"
