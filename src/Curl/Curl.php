@@ -105,15 +105,13 @@ class Curl
             } else {
                 $binary_data = false;
                 foreach ($data as $key => $value) {
-                    // Fix "Notice: Array to string conversion" when $value in
-                    // curl_setopt($ch, CURLOPT_POSTFIELDS, $value) is an array
-                    // that contains an empty array.
+                    // Fix "Notice: Array to string conversion" when $value in curl_setopt($ch, CURLOPT_POSTFIELDS,
+                    // $value) is an array that contains an empty array.
                     if (is_array($value) && empty($value)) {
                         $data[$key] = '';
-                    // Fix "curl_setopt(): The usage of the @filename API for
-                    // file uploading is deprecated. Please use the CURLFile
-                    // class instead".
-                    } elseif (is_string($value) && strpos($value, '@') === 0) {
+                    // Fix "curl_setopt(): The usage of the @filename API for file uploading is deprecated. Please use
+                    // the CURLFile class instead". Ignore non-file values prefixed with the @ character.
+                    } elseif (is_string($value) && strpos($value, '@') === 0 && is_file(substr($value, 1))) {
                         $binary_data = true;
                         if (class_exists('CURLFile')) {
                             $data[$key] = new \CURLFile(substr($value, 1));
