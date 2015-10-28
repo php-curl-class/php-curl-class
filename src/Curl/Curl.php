@@ -541,9 +541,45 @@ class Curl
      */
     public function setCookie($key, $value)
     {
-        $this->cookies[$key] = $value;
+        $name_chars = array();
+        foreach (str_split($key) as $name_char) {
+            if (!in_array($name_char, array(
+                // RFC2616: "any CHAR except CTLs or separators".
+                '!', '#', '$', '%', '&', "'", '*', '+', '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
+                'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
+                'W', 'X', 'Y', 'Z', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+                'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '|', '~',), true)) {
+                $name_chars[] = rawurlencode($name_char);
+            } else {
+                $name_chars[] = $name_char;
+            }
+        }
+
+        $value_chars = array();
+        foreach (str_split($value) as $value_char) {
+            if (!in_array($value_char, array(
+                // RFC6265: "US-ASCII characters excluding CTLs, whitespace DQUOTE, comma, semicolon, and backslash".
+                // %x21
+                '!',
+                // %x23-2B
+                '#', '$', '%', '&', "'", '(', ')', '*', '+',
+                // %x2D-3A
+                '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':',
+                // %x3C-5B
+                '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+                'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[',
+                // %x5D-7E
+                ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
+                'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',), true)) {
+                $value_chars[] = rawurlencode($value_char);
+            } else {
+                $value_chars[] = $value_char;
+            }
+        }
+
+        $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
         $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function($k, $v) {
-            return $k . '=' . str_replace(' ', '%20', $v);
+            return $k . '=' . $v;
         }, array_keys($this->cookies), array_values($this->cookies))));
     }
 
