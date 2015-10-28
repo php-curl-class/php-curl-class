@@ -544,7 +544,9 @@ class Curl
     public function setCookie($key, $value)
     {
         $this->cookies[$key] = $value;
-        $this->setOpt(CURLOPT_COOKIE, str_replace(' ', '%20', urldecode(http_build_query($this->cookies, '', '; '))));
+        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function($k, $v) {
+            return $k . '=' . str_replace(' ', '%20', $v);
+        }, array_keys($this->cookies), array_values($this->cookies))));
     }
 
     /**

@@ -662,6 +662,19 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('cookie=Om%20nom%20nom%20nom', $options[CURLOPT_COOKIE]);
     }
 
+    public function testMultipleCookies()
+    {
+        $curl = new Curl();
+        $curl->setCookie('cookie', 'Om nom nom nom');
+        $curl->setCookie('foo', 'bar');
+
+        $reflectionClass = new ReflectionClass('\Curl\Curl');
+        $reflectionProperty = $reflectionClass->getProperty('options');
+        $reflectionProperty->setAccessible(true);
+        $options = $reflectionProperty->getValue($curl);
+        $this->assertEquals('cookie=Om%20nom%20nom%20nom; foo=bar', $options[CURLOPT_COOKIE]);
+    }
+
     public function testCookieEncodingColon()
     {
         $curl = new Curl();
