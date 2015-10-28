@@ -385,6 +385,17 @@ class CurlTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    public function testPostNonFilePathUpload()
+    {
+        $test = new Test();
+        $test->server('post', 'POST', array(
+            'foo' => 'bar',
+            'file' => '@not-a-file',
+        ));
+        $this->assertFalse($test->curl->error);
+        $this->assertEquals('foo=bar&file=%40not-a-file', $test->curl->response);
+    }
+
     public function testPutRequestMethod()
     {
         $test = new Test();
