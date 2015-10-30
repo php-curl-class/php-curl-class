@@ -585,7 +585,7 @@ class Curl
     {
         $name_chars = array();
         foreach (str_split($key) as $name_char) {
-            if (!array_key_exists($name_char, CurlCookieConst::RFC2616)) {
+            if (!array_key_exists($name_char, CurlCookieConst::RFC2616())) {
                 $name_chars[] = rawurlencode($name_char);
             } else {
                 $name_chars[] = $name_char;
@@ -594,7 +594,7 @@ class Curl
 
         $value_chars = array();
         foreach (str_split($value) as $value_char) {
-            if (!array_key_exists($value_char, CurlCookieConst::RFC6265)) {
+            if (!array_key_exists($value_char, CurlCookieConst::RFC6265())) {
                 $value_chars[] = rawurlencode($value_char);
             } else {
                 $value_chars[] = $value_char;
