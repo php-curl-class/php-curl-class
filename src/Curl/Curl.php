@@ -46,7 +46,7 @@ CurlCookieConst::Init();
 
 class Curl
 {
-    const VERSION = '4.8.1';
+    const VERSION = '4.8.2';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
