@@ -2719,11 +2719,13 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $results = array();
         foreach ($tests as $test_name => $test_function) {
             $start = microtime(true);
-            for ($i = 0; $i < 500000; ++$i) {
+            for ($i = 0; $i < 1000000; ++$i) {
                 $test_function();
             }
             $results[$test_name] = microtime(true) - $start;
         }
+
+        var_dump($results);
 
         // Ensure we are using the fastest functions for cookie name in Curl::setCookie().
         foreach (array(
@@ -2732,6 +2734,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
             'predefined_in_array_rfc2616',
             'predefined_array_key_exists_rfc2616',
             ) as $test_name) {
+            echo 'Testing ' . $test_name . "\n";
             $this->assertLessThanOrEqual($results[$test_name], $results['predefined_array_key_exists_rfc2616']);
         }
 
@@ -2742,6 +2745,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
             'predefined_in_array_rfc6265',
             'predefined_array_key_exists_rfc6265',
             ) as $test_name) {
+            echo 'Testing ' . $test_name . "\n";
             $this->assertLessThanOrEqual($results[$test_name], $results['predefined_array_key_exists_rfc6265']);
         }
     }
