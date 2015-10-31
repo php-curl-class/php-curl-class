@@ -4,6 +4,46 @@ use \Curl\Curl;
 use \Curl\CaseInsensitiveArray;
 use \Helper\Test;
 
+abstract class CurlCookieConst
+{
+    private static $RFC2616 = array();
+    private static $RFC6265 = array();
+
+    public static function Init() {
+        self::$RFC2616 = array_fill_keys(array(
+            // RFC2616: "any CHAR except CTLs or separators".
+            '!', '#', '$', '%', '&', "'", '*', '+', '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
+            'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
+            'W', 'X', 'Y', 'Z', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+            'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '|', '~',
+        ), true);
+
+        self::$RFC6265 = array_fill_keys(array(
+            // RFC6265: "US-ASCII characters excluding CTLs, whitespace DQUOTE, comma, semicolon, and backslash".
+            // %x21
+            '!',
+            // %x23-2B
+            '#', '$', '%', '&', "'", '(', ')', '*', '+',
+            // %x2D-3A
+            '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':',
+            // %x3C-5B
+            '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+            'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[',
+            // %x5D-7E
+            ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
+            'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',
+        ), true);
+    }
+
+    public static function RFC2616() {
+        return self::$RFC2616;
+    }
+
+    public static function RFC6265() {
+        return self::$RFC6265;
+    }
+}
+
 class CurlTest extends PHPUnit_Framework_TestCase
 {
     public function testExtensionsLoaded()
@@ -2567,5 +2607,143 @@ class CurlTest extends PHPUnit_Framework_TestCase
         fclose($buffer);
 
         $this->assertNotEmpty($stderr);
+    }
+
+    public function testSetCookieBenchmark()
+    {
+        $tests = array();
+
+        $in_array_rfc2616 = function() {
+            $name_char = chr(mt_rand(0, 127));
+            $in_array = in_array($name_char, array(
+                // RFC2616: "any CHAR except CTLs or separators".
+                '!', '#', '$', '%', '&', "'", '*', '+', '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
+                'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
+                'W', 'X', 'Y', 'Z', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+                'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '|', '~',) ,
+            true);
+            $encoded_char = ! $in_array ? rawurlencode($name_char) : $name_char;
+        };
+        $tests['in_array_rfc2616'] = $in_array_rfc2616;
+
+        $array_key_exists_rfc2616 = function() {
+            $name_char = chr(mt_rand(0, 127));
+            $in_array = array_key_exists($name_char, array_fill_keys(array(
+                // RFC2616: "any CHAR except CTLs or separators".
+                '!', '#', '$', '%', '&', "'", '*', '+', '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
+                'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
+                'W', 'X', 'Y', 'Z', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+                'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '|', '~',), true)
+            );
+            $encoded_char = ! $in_array ? rawurlencode($name_char) : $name_char;
+        };
+        $tests['array_key_exists_rfc2616'] = $array_key_exists_rfc2616;
+
+        $predefined_in_array_rfc2616 = function() {
+            $name_char = chr(mt_rand(0, 127));
+            $in_array = in_array($name_char, CurlCookieConst::RFC2616(), true);
+            $encoded_char = ! $in_array ? rawurlencode($name_char) : $name_char;
+        };
+        $tests['predefined_in_array_rfc2616'] = $predefined_in_array_rfc2616;
+
+        $predefined_array_key_exists_rfc2616 = function() {
+            $name_char = chr(mt_rand(0, 127));
+            $in_array = array_key_exists($name_char, CurlCookieConst::RFC2616());
+            $encoded_char = ! $in_array ? rawurlencode($name_char) : $name_char;
+        };
+        $tests['predefined_array_key_exists_rfc2616'] = $predefined_array_key_exists_rfc2616;
+
+        $in_array_rfc6265 = function() {
+            $name_char = chr(mt_rand(0, 127));
+            $in_array = in_array($name_char, array(
+                // RFC6265: "US-ASCII characters excluding CTLs, whitespace DQUOTE, comma, semicolon, and backslash".
+                // %x21
+                '!',
+                // %x23-2B
+                '#', '$', '%', '&', "'", '(', ')', '*', '+',
+                // %x2D-3A
+                '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':',
+                // %x3C-5B
+                '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+                'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[',
+                // %x5D-7E
+                ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
+                'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',) ,
+            true);
+            $encoded_char = ! $in_array ? rawurlencode($name_char) : $name_char;
+        };
+        $tests['in_array_rfc6265'] = $in_array_rfc6265;
+
+        $array_key_exists_rfc6265 = function() {
+            $name_char = chr(mt_rand(0, 127));
+            $in_array = array_key_exists($name_char, array_fill_keys(array(
+                // RFC6265: "US-ASCII characters excluding CTLs, whitespace DQUOTE, comma, semicolon, and backslash".
+                // %x21
+                '!',
+                // %x23-2B
+                '#', '$', '%', '&', "'", '(', ')', '*', '+',
+                // %x2D-3A
+                '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':',
+                // %x3C-5B
+                '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+                'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[',
+                // %x5D-7E
+                ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
+                'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',), true)
+            );
+            $encoded_char = ! $in_array ? rawurlencode($name_char) : $name_char;
+        };
+        $tests['array_key_exists_rfc6265'] = $array_key_exists_rfc6265;
+
+        $predefined_in_array_rfc6265 = function() {
+            $name_char = chr(mt_rand(0, 127));
+            $in_array = in_array($name_char, CurlCookieConst::RFC6265(), true);
+            $encoded_char = ! $in_array ? rawurlencode($name_char) : $name_char;
+        };
+        $tests['predefined_in_array_rfc6265'] = $predefined_in_array_rfc6265;
+
+        $predefined_array_key_exists_rfc6265 = function() {
+            $name_char = chr(mt_rand(0, 127));
+            $in_array = array_key_exists($name_char, CurlCookieConst::RFC6265());
+            $encoded_char = ! $in_array ? rawurlencode($name_char) : $name_char;
+        };
+        $tests['predefined_array_key_exists_rfc6265'] = $predefined_array_key_exists_rfc6265;
+
+        // Warmup.
+        foreach ($tests as $test_name => $test_function) {
+            for ($i = 0; $i < 1000; ++$i) {
+                $test_function();
+            }
+        }
+
+        // Benchmark.
+        $results = array();
+        foreach ($tests as $test_name => $test_function) {
+            $start = microtime(true);
+            for ($i = 0; $i < 500000; ++$i) {
+                $test_function();
+            }
+            $results[$test_name] = microtime(true) - $start;
+        }
+
+        // Ensure we are using the fastest functions for cookie name in Curl::setCookie().
+        foreach (array(
+            'in_array_rfc2616',
+            'array_key_exists_rfc2616',
+            'predefined_in_array_rfc2616',
+            'predefined_array_key_exists_rfc2616',
+            ) as $test_name) {
+            $this->assertLessThanOrEqual($results[$test_name], $results['predefined_array_key_exists_rfc2616']);
+        }
+
+        // Ensure we are using the fastest functions for cookie value in Curl::setCookie().
+        foreach (array(
+            'in_array_rfc6265',
+            'array_key_exists_rfc6265',
+            'predefined_in_array_rfc6265',
+            'predefined_array_key_exists_rfc6265',
+            ) as $test_name) {
+            $this->assertLessThanOrEqual($results[$test_name], $results['predefined_array_key_exists_rfc6265']);
+        }
     }
 }
