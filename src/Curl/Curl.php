@@ -1,48 +1,7 @@
 <?php
 
 namespace Curl;
-
-abstract class CurlCookieConst
-{
-    private static $RFC2616 = array();
-    private static $RFC6265 = array();
-
-    public static function Init() {
-        self::$RFC2616 = array_fill_keys(array(
-            // RFC2616: "any CHAR except CTLs or separators".
-            '!', '#', '$', '%', '&', "'", '*', '+', '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
-            'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-            'W', 'X', 'Y', 'Z', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-            'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '|', '~',
-        ), true);
-
-        self::$RFC6265 = array_fill_keys(array(
-            // RFC6265: "US-ASCII characters excluding CTLs, whitespace DQUOTE, comma, semicolon, and backslash".
-            // %x21
-            '!',
-            // %x23-2B
-            '#', '$', '%', '&', "'", '(', ')', '*', '+',
-            // %x2D-3A
-            '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':',
-            // %x3C-5B
-            '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-            'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[',
-            // %x5D-7E
-            ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
-            'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',
-        ), true);
-    }
-
-    public static function RFC2616() {
-        return self::$RFC2616;
-    }
-
-    public static function RFC6265() {
-        return self::$RFC6265;
-    }
-}
-
-CurlCookieConst::Init();
+use \Curl\Abstracts\Cookie;
 
 class Curl
 {
@@ -583,28 +542,16 @@ class Curl
      */
     public function setCookie($key, $value)
     {
-        $name_chars = array();
-        foreach (str_split($key) as $name_char) {
-            if (!array_key_exists($name_char, CurlCookieConst::RFC2616())) {
-                $name_chars[] = rawurlencode($name_char);
-            } else {
-                $name_chars[] = $name_char;
-            }
+        $name  = Cookie::sanitizeName($key);
+        $value = Cookie::sanitizeValue($value);
+        $this->cookies[$name] = $value;
+
+        $cookies = '';
+        foreach($this->cookies as $name => $value) {
+            $cookies .= "$name=$value; ";
         }
 
-        $value_chars = array();
-        foreach (str_split($value) as $value_char) {
-            if (!array_key_exists($value_char, CurlCookieConst::RFC6265())) {
-                $value_chars[] = rawurlencode($value_char);
-            } else {
-                $value_chars[] = $value_char;
-            }
-        }
-
-        $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
-        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function($k, $v) {
-            return $k . '=' . $v;
-        }, array_keys($this->cookies), array_values($this->cookies))));
+        $this->setOpt(CURLOPT_COOKIE, substr($cookies, 0, -2));
     }
 
     /**
