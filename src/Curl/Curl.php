@@ -49,6 +49,11 @@ class Curl
     const VERSION = '4.8.2';
     const DEFAULT_TIMEOUT = 30;
 
+    protected static $content_type_pregs = array(
+        'json' => '~^(?:application|text)/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?~i',
+        'xml'  => '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i'
+    );
+
     public $curl;
     public $id = null;
 
@@ -83,9 +88,7 @@ class Curl
     private $headers = array();
     private $options = array();
 
-    private $jsonDecoder = null;
-    private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
-    private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
+    private $payloadDecoders = array();
 
     /**
      * Construct
@@ -103,7 +106,6 @@ class Curl
         $this->curl = curl_init();
         $this->id = 1;
         $this->setDefaultUserAgent();
-        $this->setDefaultJsonDecoder();
         $this->setDefaultTimeout();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
@@ -135,8 +137,7 @@ class Curl
     {
         if (is_array($data)) {
             if (self::is_array_multidim($data)) {
-                if (isset($this->headers['Content-Type']) &&
-                    preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
+                if ($this->normalizeContentType($this->headers) == 'json') {
                     $json_str = json_encode($data);
                     if (!($json_str === false)) {
                         $data = $json_str;
@@ -164,8 +165,7 @@ class Curl
                 }
 
                 if (!$binary_data) {
-                    if (isset($this->headers['Content-Type']) &&
-                        preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
+                    if ($this->normalizeContentType($this->headers) == 'json') {
                         $json_str = json_encode($data);
                         if (!($json_str === false)) {
                             $data = $json_str;
@@ -680,13 +680,17 @@ class Curl
      */
     public function setDefaultJsonDecoder()
     {
-        $this->jsonDecoder = function($response) {
-            $json_obj = json_decode($response, false);
-            if (!($json_obj === null)) {
-                $response = $json_obj;
-            }
-            return $response;
-        };
+        $this->setPayloadDecoder('json', NULL);
+    }
+
+    /**
+     * Set Default XML Decoder
+     *
+     * @access public
+     */
+    public function setDefaultXMLDecoder()
+    {
+        $this->setPayloadDecoder('xml', NULL);
     }
 
     /**
@@ -738,10 +742,41 @@ class Curl
      * @access public
      * @param  $function
      */
-    public function setJsonDecoder($function)
+    public function setJsonDecoder($callback)
     {
-        if (is_callable($function)) {
-            $this->jsonDecoder = $function;
+        $this->__setPayloadDecoder('json', $callback);
+    }
+
+    /**
+     * Set XML Decoder
+     *
+     * @access public
+     * @param  $function
+     */
+    public function setXMLDecoder($callback)
+    {
+        $this->__setPayloadDecoder('xml', $callback);
+    }
+
+    /**
+     * Set Payload Decoder
+     *
+     * Sets a Callback to handle decoding of a payload type.
+     *
+     * @param string $type Content Type to decode.
+     * @param callable $callback Callback to handel the decoding (NULL to clear)
+     *
+     * @return void
+     *
+     * @access private
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    private function __setPayloadDecoder($type, $callback) {
+        if($callback === NULL) {
+            unset($this->payloadDecoders[$type]);
+        } elseif (is_callable($callback)) {
+            $this->payloadDecoders[$type] = $callback;
         }
     }
 
@@ -891,6 +926,35 @@ class Curl
     }
 
     /**
+     * Normalize Content Type
+     *
+     * Applies Content-Type regulair expressions and returns the first-matching
+     * content type.  Supports the addition of new content types.
+     *
+     * @param mixed $headers (optional) The headers to detect the Content-Type
+     *
+     * @return string|null The content type, or NULL if no match found.
+     *
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function normalizeContentType($headers = null)
+    {
+        if(!(is_array($headers) || $headers instanceof CaseInsensitiveArray)) {
+            $headers = $this->headers;
+        }
+        if(isset($headers['Content-Type'])) {
+            foreach(self::$content_type_pregs as $type => $preg_match) {
+                if(preg_match($preg_match, $headers['Content-Type'])) {
+                    return $type;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Parse Headers
      *
      * @access private
@@ -947,24 +1011,83 @@ class Curl
      *
      * @return array
      */
-    private function parseResponse($response_headers, $raw_response)
-    {
-        $response = $raw_response;
-        if (isset($response_headers['Content-Type'])) {
-            if (preg_match($this->jsonPattern, $response_headers['Content-Type'])) {
-                $json_decoder = $this->jsonDecoder;
-                if (is_callable($json_decoder)) {
-                    $response = $json_decoder($response);
-                }
-            } elseif (preg_match($this->xmlPattern, $response_headers['Content-Type'])) {
-                $xml_obj = @simplexml_load_string($response);
-                if (!($xml_obj === false)) {
-                    $response = $xml_obj;
-                }
-            }
-        }
+    private function parseResponse($response_headers, $raw_response) {
+        return array(
+            $this->parsePayload(
+                $this->normalizeContentType($response_headers), $raw_response
+            ),
+            $raw_response
+        );
+    }
 
-        return array($response, $raw_response);
+    /**
+     * Parse Payload
+     *
+     * Parses a given Payload according to the parser assigned to the given
+     * Content Type.
+     *
+     * @param string $content_type Content Type of the Payload
+     * @param string $payload The un-parsed Payload
+     *
+     * @return mixed[] The parsed Payload, or the RAW payload if error.
+     *
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function parsePayload($content_type, $payload) {
+        $decoder = '__defaultDecode'.strtoupper($content_type);
+        if(isset($this->payloadDecoders[$content_type])) {
+            $decoder = $this->payloadDecoders[$content_type];
+        }
+        if (is_callable($decoder)) {
+            $payload = $decoder($payload);
+        }
+        return $payload;
+    }
+
+    /**
+     * Default Decode JSON
+     *
+     * The default JSON Payload Decoder
+     *
+     * @param string $payload Un-decoded Payload
+     *
+     * @return mixed The decoded payload or the raw payload on error.
+     *
+     * @access private
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    private function __defaultDecodeJSON($payload) {
+        $json_obj = json_decode($payload, false);
+        if ($json_obj === null && json_last_error() !== JSON_ERROR_NONE) {
+            // This doesn't seem right, this is NOT the JSON data...  :-/
+            $json_obj = $response;
+        }
+        return $json_obj;
+    }
+
+    /**
+     * Default Decode XML
+     *
+     * The default XML Payload Decoder.
+     *
+     * @param string $payload The un-decoded Payload
+     *
+     * @return mixed The XML object or RAW payload on error.
+     *
+     * @access private
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    private function __defaultDecodeXML($payload) {
+        $xml_obj = @simplexml_load_string($payload);
+        if ($xml_obj === false) {
+            // This doesn't seem right, this is NOT the XML data...  :-/
+            $xml_obj = $payload;
+        }
+        return $xml_obj;
     }
 
     /**
