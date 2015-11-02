@@ -49,6 +49,9 @@ class Curl
     const VERSION = '4.8.2';
     const DEFAULT_TIMEOUT = 30;
 
+    const HEADERS_FLAT = 0;
+    const HEADERS_PECL = 1;
+
     public $curl;
     public $id = null;
 
@@ -78,6 +81,8 @@ class Curl
     private $errorFunction = null;
     private $completeFunction = null;
 
+    private $pecl_headers = FALSE;
+
     private $cookies = array();
     private $responseCookies = array();
     private $headers = array();
@@ -94,11 +99,13 @@ class Curl
      * @param  $base_url
      * @throws \ErrorException
      */
-    public function __construct($base_url = null)
+    public function __construct($base_url = null, $flags = FALSE)
     {
         if (!extension_loaded('curl')) {
             throw new \ErrorException('cURL library is not loaded');
         }
+
+        $this->pecl_headers = (bool) ($flags & self::HEADERS_PECL);
 
         $this->curl = curl_init();
         $this->id = 1;
@@ -893,30 +900,88 @@ class Curl
     /**
      * Parse Headers
      *
-     * @access private
-     * @param  $raw_headers
+     * Internally handles first element naming, and optionally (Construct Flag)
+     * parses the headers into PECL-compatible format, either using official
+     * methods, or a compatible implementation.
      *
-     * @return array
+     * @param string $raw The Raw Headers to parse
+     * @param string $first_name (optional) The name of the first element.
+     *
+     * @return CaseInsensitiveArray The headers, parsed.
+     *
+     * @access private
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
-    private function parseHeaders($raw_headers)
-    {
-        $raw_headers = preg_split('/\r\n/', $raw_headers, null, PREG_SPLIT_NO_EMPTY);
+    private function parseHeaders($raw, $first_name = '') {
+        static $nlr = '/\r\n/';
+        static $flags = PREG_SPLIT_NO_EMPTY;
         $http_headers = new CaseInsensitiveArray();
-
-        $raw_headers_count = count($raw_headers);
-        for ($i = 1; $i < $raw_headers_count; $i++) {
-            list($key, $value) = explode(':', $raw_headers[$i], 2);
-            $key = trim($key);
-            $value = trim($value);
-            // Use isset() as array_key_exists() and ArrayAccess are not compatible.
-            if (isset($http_headers[$key])) {
-                $http_headers[$key] .= ',' . $value;
+        if(!empty($first_name)) {
+            list($first, $raw) = preg_split($nlr, $raw, 2, $flags);
+            $http_headers[(string) $first_name] = $first;
+        }
+        if(!empty($raw)) {
+            if($this->pecl_headers) {
+                if (function_exists('http_parse_headers')) {
+                    $headers = http_parse_headers($raw);
+                } else {
+                    // Pecl-compatible implementation.
+                    $headers = array();
+                    $key = 0;
+                    foreach(preg_split($nlr, $raw, NULL, $flags) as $header) {
+                        $parts = explode(':', $header, 2);
+                        if (isset($header[1])) {
+                            $key = trim($parts[0]);
+                            $value = trim($parts[1]);
+                            if (!isset($headers[$key])) {
+                                $headers[$key] = $value;
+                            } else {
+                                $headers[$key] = array_merge(
+                                    (array) $headers[$key],
+                                    (array) $value
+                                );
+                            }
+                        } else {
+                            $value = trim($header[0]);
+                            if (substr($value, 0, 1) == "\t") {
+                                $value = "\r\n\t$value";
+                            }
+                            if (!isset($headers[$key])) {
+                                $headers[$key] = $value;
+                            } else {
+                                if(is_array($headers[$key])) {
+                                    end($headers[$key]);
+                                    $i = key($headers[$key]);
+                                    $headers[$key][$i] .= $value;
+                                } else {
+                                    $headers[$key] .= $value;
+                                }
+                            }
+                        }
+                    }
+                }
+                foreach($headers as $key => $header) {
+                    $http_headers[$key] = $header;
+                }
             } else {
-                $http_headers[$key] = $value;
+                foreach(preg_split($nlr, $raw, NULL, $flags) as $header) {
+                    list($key, $value) = explode(':', $header, 2);
+                    $key = trim($key);
+                    $value = trim($value);
+                    /**
+                     * Use isset() as array_key_exists() and ArrayAccess are not
+                     * compatible.  Not to mention isset() is much faster.
+                     */
+                    if (isset($http_headers[$key])) {
+                        $http_headers[$key] .= ',' . $value;
+                    } else {
+                        $http_headers[$key] = $value;
+                    }
+                }
             }
         }
-
-        return array(isset($raw_headers['0']) ? $raw_headers['0'] : '', $http_headers);
+        return $http_headers;
     }
 
     /**
@@ -927,15 +992,8 @@ class Curl
      *
      * @return array
      */
-    private function parseRequestHeaders($raw_headers)
-    {
-        $request_headers = new CaseInsensitiveArray();
-        list($first_line, $headers) = $this->parseHeaders($raw_headers);
-        $request_headers['Request-Line'] = $first_line;
-        foreach ($headers as $key => $value) {
-            $request_headers[$key] = $value;
-        }
-        return $request_headers;
+    private function parseRequestHeaders($raw_headers) {
+        return $this->parseHeaders($raw_headers, 'Request-Line');
     }
 
     /**
@@ -975,24 +1033,17 @@ class Curl
      *
      * @return array
      */
-    private function parseResponseHeaders($raw_response_headers)
-    {
+    private function parseResponseHeaders($raw_response_headers) {
+        // Find the actual HTTP response headers to parse.
         $response_header_array = explode("\r\n\r\n", $raw_response_headers);
-        $response_header  = '';
-        for ($i = count($response_header_array) - 1; $i >= 0; $i--) {
-            if (stripos($response_header_array[$i], 'HTTP/') === 0) {
-                $response_header = $response_header_array[$i];
+        $response_headers  = array();
+        foreach($response_header_array as $header) {
+            if (stripos($header, 'HTTP/') === 0) {
+                $response_headers = $this->parseHeaders($header, 'Status-Line');
                 break;
             }
         }
-
-        $response_headers = new CaseInsensitiveArray();
-        list($first_line, $headers) = $this->parseHeaders($response_header);
-        $response_headers['Status-Line'] = $first_line;
-        foreach ($headers as $key => $value) {
-            $response_headers[$key] = $value;
-        }
-        return $response_headers;
+        return (array) $response_headers;
     }
 
     /**
