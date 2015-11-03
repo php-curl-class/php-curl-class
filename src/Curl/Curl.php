@@ -914,22 +914,28 @@ class Curl
      * @author Michael Mulligan <michael@bigroomstudios.com>
      */
     private function parseHeaders($raw, $first_name = '') {
-        static $nlr = '/\r\n/';
-        static $flags = PREG_SPLIT_NO_EMPTY;
         $http_headers = new CaseInsensitiveArray();
+
         if(!empty($first_name)) {
-            list($first, $raw) = preg_split($nlr, $raw, 2, $flags);
-            $http_headers[(string) $first_name] = $first;
+            $raw = (array) preg_split(
+                '/\r\n/', (string) $raw, 2, PREG_SPLIT_NO_EMPTY);
+            $http_headers[(string) $first_name] = array_shift($raw);
+            $raw = current($raw);
         }
+
         if(!empty($raw)) {
             if($this->pecl_headers) {
+
                 if (function_exists('http_parse_headers')) {
                     $headers = http_parse_headers($raw);
                 } else {
                     // Pecl-compatible implementation.
                     $headers = array();
                     $key = 0;
-                    foreach(preg_split($nlr, $raw, NULL, $flags) as $header) {
+                    foreach((array) preg_split(
+                        '/\r\n/', (string) $raw, NULL, PREG_SPLIT_NO_EMPTY
+                    ) as $header) {
+
                         $parts = explode(':', $header, 2);
                         if (isset($header[1])) {
                             $key = trim($parts[0]);
@@ -959,13 +965,19 @@ class Curl
                                 }
                             }
                         }
+
                     }
                 }
                 foreach($headers as $key => $header) {
                     $http_headers[$key] = $header;
                 }
+
             } else {
-                foreach(preg_split($nlr, $raw, NULL, $flags) as $header) {
+
+                foreach((array) preg_split(
+                    '/\r\n/', (string) $raw, NULL, PREG_SPLIT_NO_EMPTY
+                ) as $header) {
+
                     list($key, $value) = explode(':', $header, 2);
                     $key = trim($key);
                     $value = trim($value);
@@ -978,7 +990,9 @@ class Curl
                     } else {
                         $http_headers[$key] = $value;
                     }
+
                 }
+
             }
         }
         return $http_headers;
@@ -1036,14 +1050,14 @@ class Curl
     private function parseResponseHeaders($raw_response_headers) {
         // Find the actual HTTP response headers to parse.
         $response_header_array = explode("\r\n\r\n", $raw_response_headers);
-        $response_headers  = array();
-        foreach($response_header_array as $header) {
+        $response_headers = '';
+        while(($header = array_pop($response_header_array)) !== NULL) {
             if (stripos($header, 'HTTP/') === 0) {
-                $response_headers = $this->parseHeaders($header, 'Status-Line');
+                $response_headers = $header;
                 break;
             }
         }
-        return (array) $response_headers;
+        return $this->parseHeaders($response_headers, 'Status-Line');
     }
 
     /**
