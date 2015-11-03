@@ -1198,12 +1198,38 @@ class Curl
      * @author Michael Mulligan <michael@bigroomstudios.com>
      */
     public function encodeData($content_type, $unencoded) {
-        $encoder = $this->getContentTypeEncoder($content_type);
-        if (is_callable($encoder)) {
-            $encoded = call_user_func($encoder, $unencoded);
-        } else {
-            $encoded = $unencoded;
+        $binary_data = false;
+        if (is_array($unencoded)) {
+            foreach ($unencoded as $key => $value) {
+                // Fix "Notice: Array to string conversion" when $value in curl_setopt($ch, CURLOPT_POSTFIELDS,
+                // $value) is an array that contains an empty array.
+                if (is_array($value) && empty($value)) {
+                    $unencoded[$key] = '';
+                // Fix "curl_setopt(): The usage of the @filename API for file uploading is deprecated. Please use
+                // the CURLFile class instead". Ignore non-file values prefixed with the @ character.
+                } elseif (is_string($value) && strpos($value, '@') === 0) {
+                    $file = substr($value, 1);
+                    if(is_file($file)) {
+                        $binary_data = true;
+                        if (class_exists('CURLFile')) {
+                            $unencoded[$key] = new \CURLFile($file);
+                        }
+                    }
+                } elseif ($value instanceof \CURLFile) {
+                    $binary_data = true;
+                }
+            }
         }
+
+        $encoded = $unencoded;
+
+        if(!$binary_data) {
+            $encoder = $this->getContentTypeEncoder($content_type);
+            if(is_callable($encoder)) {
+                $encoded = call_user_func($encoder, $unencoded);
+            }
+        }
+
         return $encoded;
     }
 
@@ -1248,36 +1274,10 @@ class Curl
      */
     private function __defaultEncode($unencoded) {
         if (is_array($unencoded)) {
-            $binary_data = false;
-            foreach ($unencoded as $key => $value) {
-                // Fix "Notice: Array to string conversion" when $value in curl_setopt($ch, CURLOPT_POSTFIELDS,
-                // $value) is an array that contains an empty array.
-                if (is_array($value) && empty($value)) {
-                    $unencoded[$key] = '';
-                // Fix "curl_setopt(): The usage of the @filename API for file uploading is deprecated. Please use
-                // the CURLFile class instead". Ignore non-file values prefixed with the @ character.
-                } elseif (is_string($value) && strpos($value, '@') === 0) {
-                    $file = substr($value, 1);
-                    if(is_file($file)) {
-                        $binary_data = true;
-                        if (class_exists('CURLFile')) {
-                            $unencoded[$key] = new \CURLFile($file);
-                        }
-                    }
-                } elseif ($value instanceof \CURLFile) {
-                    $binary_data = true;
-                }
-            }
-
-            if (!$binary_data) {
-                $encoded = self::http_build_query($unencoded);
-            } else {
-                $encoded = $unencoded;
-            }
+            $encoded = self::http_build_query($unencoded);
         } else {
             $encoded = $unencoded;
         }
-
         return $encoded;
     }
 
