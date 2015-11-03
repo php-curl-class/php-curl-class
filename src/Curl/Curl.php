@@ -1041,7 +1041,7 @@ class Curl
             $decoder = $this->payloadDecoders[$content_type];
         }
         if (is_callable($decoder)) {
-            $payload = $decoder($payload);
+            $payload = call_user_func($decoder, $payload);
         }
         return $payload;
     }
