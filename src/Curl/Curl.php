@@ -51,7 +51,7 @@ class Curl
 
     protected static $content_type_pregs = array(
         'json' => '~^(?:application|text)/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?~i',
-        'xml'  => '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i'
+        'xml'  => '~^(?:application|text)/(?:(?:atom|rss)\+)?xml~i'
     );
 
     public $curl;
@@ -206,7 +206,7 @@ class Curl
             curl_close($this->curl);
         }
         $this->options = null;
-        $this->jsonDecoder = null;
+        $this->payloadDecoders = array();
     }
 
     /**
@@ -1036,7 +1036,7 @@ class Curl
      * @author Michael Mulligan <michael@bigroomstudios.com>
      */
     public function parsePayload($content_type, $payload) {
-        $decoder = '__defaultDecode'.strtoupper($content_type);
+        $decoder = array($this, '__defaultDecode'.strtoupper($content_type));
         if(isset($this->payloadDecoders[$content_type])) {
             $decoder = $this->payloadDecoders[$content_type];
         }
