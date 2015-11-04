@@ -49,6 +49,24 @@ class Curl
     const VERSION = '4.8.2';
     const DEFAULT_TIMEOUT = 30;
 
+    const DEFAULT_USER_AGENT_TEMPLATE = 'PHP-Curl-Class/%s (+https://github.com/php-curl-class/php-curl-class) PHP/%s curl/%s';
+
+    /**
+     * @var string Regulair expression used to detect the protocol portion of a URI.
+     * @see buildURLBase()
+     * @see setOptPrivate()
+     */
+    protected static $url_protocol_preg = '~^([a-z]+):~i';
+
+    /**
+     * @var array[string] An array of allowed URI protocols.
+     * @see setOptPrivate()
+     */
+    protected static $allowed_protocols = array(
+        'https', 'http',
+        'ftps', 'ftp',
+    );
+
     public $curl;
     public $id = null;
 
@@ -87,6 +105,53 @@ class Curl
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
 
+
+    /**
+     * @var int[] Array of Required Curl Options
+     * @see optIsRequired()
+     */
+    private static $curlOptsRequired = array(
+        CURLINFO_HEADER_OUT => 1,
+        CURLOPT_RETURNTRANSFER => 1,
+    );
+
+
+    /**
+     * @var int[] Array of Protected Curl Options
+     * @see optIsProtected()
+     */
+    private static $curlOptsProtected = array();
+
+    /**
+     * @var int[] Array of Private Curl Options
+     * @see optIsPrivate()
+     */
+    private static $curlOptsPrivate = array(
+        CURLOPT_USERAGENT => 1,
+        CURLOPT_URL => 1,
+        CURLOPT_HEADERFUNCTION => 1,
+        CURLOPT_POSTFIELDS => 1,
+        CURLOPT_VERBOSE => 1,
+    );
+
+    /**
+     * Clone
+     *
+     * Prepare a cloned object and set the Resource parameters.
+     *
+     * @param void
+     *
+     * @return void
+     *
+     * @access public
+     */
+    public function __clone() {
+        $this->curl = curl_init();
+        foreach($this->options as $option => $value) {
+            $this->setOptPrivate($option, $value);
+        }
+    }
+
     /**
      * Construct
      *
@@ -105,11 +170,40 @@ class Curl
         $this->setDefaultUserAgent();
         $this->setDefaultJsonDecoder();
         $this->setDefaultTimeout();
-        $this->setOpt(CURLINFO_HEADER_OUT, true);
-        $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
-        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
+        $this->setOptPrivate(CURLINFO_HEADER_OUT, true);
+        $this->setOptPrivate(CURLOPT_RETURNTRANSFER, true);
+        $this->setOptPrivate(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
         $this->headers = new CaseInsensitiveArray();
-        $this->setURL($base_url);
+        if(!empty($base_url)) {
+            $this->setURL($base_url);
+        }
+
+    }
+
+    /**
+     * Get Handle
+     *
+     * @param void
+     *
+     * @return resource|null Curl Resource Handle or NULL if not set.
+     *
+     * @access protected
+     */
+    protected function getHandle() {
+        return is_resource($this->curl) ? $this->curl : NULL;
+    }
+
+    /**
+     * Locked
+     *
+     * @param void
+     *
+     * @return bool True if is prepped or if the curl var is not a resource.
+     *
+     * @access public
+     */
+    public function locked() {
+        return !is_resource($this->curl);
     }
 
     /**
@@ -228,8 +322,8 @@ class Curl
      */
     public function progress($callback)
     {
-        $this->setOpt(CURLOPT_PROGRESSFUNCTION, $callback);
-        $this->setOpt(CURLOPT_NOPROGRESS, false);
+        $this->setOptPrivate(CURLOPT_PROGRESSFUNCTION, $callback);
+        $this->setOptPrivate(CURLOPT_NOPROGRESS, false);
     }
 
     /**
@@ -251,8 +345,8 @@ class Curl
         }
 
         $this->setURL($url, $query_parameters);
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
-        $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
+        $this->setOptPrivate(CURLOPT_CUSTOMREQUEST, 'DELETE');
+        $this->setOptPrivate(CURLOPT_POSTFIELDS, $this->buildPostData($data));
         return $this->exec();
     }
 
@@ -283,12 +377,12 @@ class Curl
 
         // Reset CURLOPT_FILE with STDOUT to avoid: "curl_exec(): CURLOPT_FILE
         // resource has gone away, resetting to default".
-        $this->setOpt(CURLOPT_FILE, STDOUT);
+        $this->setOptPrivate(CURLOPT_FILE, STDOUT);
 
         // Reset CURLOPT_RETURNTRANSFER to tell cURL to return subsequent
         // responses as the return value of curl_exec(). Without this,
         // curl_exec() will revert to returning boolean values.
-        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
+        $this->setOptPrivate(CURLOPT_RETURNTRANSFER, true);
     }
 
     /**
@@ -310,7 +404,7 @@ class Curl
             $fh = fopen($filename, 'wb');
         }
 
-        $this->setOpt(CURLOPT_FILE, $fh);
+        $this->setOptPrivate(CURLOPT_FILE, $fh);
         $this->get($url);
         $this->downloadComplete($fh);
 
@@ -396,22 +490,9 @@ class Curl
             $url = $this->baseUrl;
         }
         $this->setURL($url, $data);
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
-        $this->setOpt(CURLOPT_HTTPGET, true);
+        $this->setOptPrivate(CURLOPT_CUSTOMREQUEST, 'GET');
+        $this->setOptPrivate(CURLOPT_HTTPGET, true);
         return $this->exec();
-    }
-
-    /**
-     * Get Opt
-     *
-     * @access public
-     * @param  $option
-     *
-     * @return mixed
-     */
-    public function getOpt($option)
-    {
-        return $this->options[$option];
     }
 
     /**
@@ -430,8 +511,8 @@ class Curl
             $url = $this->baseUrl;
         }
         $this->setURL($url, $data);
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
-        $this->setOpt(CURLOPT_NOBODY, true);
+        $this->setOptPrivate(CURLOPT_CUSTOMREQUEST, 'HEAD');
+        $this->setOptPrivate(CURLOPT_NOBODY, true);
         return $this->exec();
     }
 
@@ -470,7 +551,7 @@ class Curl
         }
         $this->setURL($url, $data);
         $this->unsetHeader('Content-Length');
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
+        $this->setOptPrivate(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         return $this->exec();
     }
 
@@ -495,8 +576,8 @@ class Curl
         }
 
         $this->setURL($url);
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
-        $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
+        $this->setOptPrivate(CURLOPT_CUSTOMREQUEST, 'PATCH');
+        $this->setOptPrivate(CURLOPT_POSTFIELDS, $this->buildPostData($data));
         return $this->exec();
     }
 
@@ -517,9 +598,9 @@ class Curl
         }
 
         $this->setURL($url);
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
-        $this->setOpt(CURLOPT_POST, true);
-        $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
+        $this->setOptPrivate(CURLOPT_CUSTOMREQUEST, 'POST');
+        $this->setOptPrivate(CURLOPT_POST, true);
+        $this->setOptPrivate(CURLOPT_POSTFIELDS, $this->buildPostData($data));
         return $this->exec();
     }
 
@@ -539,12 +620,12 @@ class Curl
             $url = $this->baseUrl;
         }
         $this->setURL($url);
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
+        $this->setOptPrivate(CURLOPT_CUSTOMREQUEST, 'PUT');
         $put_data = $this->buildPostData($data);
         if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
             $this->setHeader('Content-Length', strlen($put_data));
         }
-        $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
+        $this->setOptPrivate(CURLOPT_POSTFIELDS, $put_data);
         return $this->exec();
     }
 
@@ -557,8 +638,8 @@ class Curl
      */
     public function setBasicAuthentication($username, $password = '')
     {
-        $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
+        $this->setOptPrivate(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        $this->setOptPrivate(CURLOPT_USERPWD, $username . ':' . $password);
     }
 
     /**
@@ -570,8 +651,8 @@ class Curl
      */
     public function setDigestAuthentication($username, $password = '')
     {
-        $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
-        $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
+        $this->setOptPrivate(CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+        $this->setOptPrivate(CURLOPT_USERPWD, $username . ':' . $password);
     }
 
     /**
@@ -602,7 +683,7 @@ class Curl
         }
 
         $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
-        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function($k, $v) {
+        $this->setOptPrivate(CURLOPT_COOKIE, implode('; ', array_map(function($k, $v) {
             return $k . '=' . $v;
         }, array_keys($this->cookies), array_values($this->cookies))));
     }
@@ -637,7 +718,7 @@ class Curl
      */
     public function setPort($port)
     {
-        $this->setOpt(CURLOPT_PORT, intval($port));
+        $this->setOptPrivate(CURLOPT_PORT, intval($port));
     }
 
     /**
@@ -648,7 +729,7 @@ class Curl
      */
     public function setConnectTimeout($seconds)
     {
-        $this->setOpt(CURLOPT_CONNECTTIMEOUT, $seconds);
+        $this->setOptPrivate(CURLOPT_CONNECTTIMEOUT, $seconds);
     }
 
     /**
@@ -659,7 +740,7 @@ class Curl
      */
     public function setCookieFile($cookie_file)
     {
-        $this->setOpt(CURLOPT_COOKIEFILE, $cookie_file);
+        $this->setOptPrivate(CURLOPT_COOKIEFILE, $cookie_file);
     }
 
     /**
@@ -670,7 +751,7 @@ class Curl
      */
     public function setCookieJar($cookie_jar)
     {
-        $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
+        $this->setOptPrivate(CURLOPT_COOKIEJAR, $cookie_jar);
     }
 
     /**
@@ -704,13 +785,15 @@ class Curl
      *
      * @access public
      */
-    public function setDefaultUserAgent()
-    {
-        $user_agent = 'PHP-Curl-Class/' . self::VERSION . ' (+https://github.com/php-curl-class/php-curl-class)';
-        $user_agent .= ' PHP/' . PHP_VERSION;
+    public function setDefaultUserAgent() {
+        $this->setUserAgent($this->buildDefaultUserAgent());
+    }
+
+    public function buildDefaultUserAgent() {
         $curl_version = curl_version();
-        $user_agent .= ' curl/' . $curl_version['version'];
-        $this->setUserAgent($user_agent);
+        return sprintf(
+            self::DEFAULT_USER_AGENT_TEMPLATE,
+            self::VERSION, PHP_VERSION, $curl_version['version']);
     }
 
     /**
@@ -729,7 +812,7 @@ class Curl
         foreach ($this->headers as $key => $value) {
             $headers[] = $key . ': ' . $value;
         }
-        $this->setOpt(CURLOPT_HTTPHEADER, $headers);
+        $this->setOptPrivate(CURLOPT_HTTPHEADER, $headers);
     }
 
     /**
@@ -746,28 +829,181 @@ class Curl
     }
 
     /**
-     * Set Opt
+     * Opt Is Required
      *
+     * @param int $option Curl Option
+     *
+     * @return bool Wether or not it is a Required Option
+     *
+     * @static
      * @access public
-     * @param  $option
-     * @param  $value
      *
-     * @return boolean
+     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
-    public function setOpt($option, $value)
-    {
-        $required_options = array(
-            CURLOPT_RETURNTRANSFER => 'CURLOPT_RETURNTRANSFER',
-        );
-
-        if (in_array($option, array_keys($required_options), true) && !($value === true)) {
-            trigger_error($required_options[$option] . ' is a required option', E_USER_WARNING);
-        }
-
-        $this->options[$option] = $value;
-        return curl_setopt($this->curl, $option, $value);
+    public function optIsRequired($option) {
+        return (bool) isset(self::$curlOptsRequired[$option]);
     }
 
+    /**
+     * Opt Is Private
+     *
+     * @param int $option Curl Option
+     *
+     * @return bool Wether or not it is a Private Option
+     *
+     * @static
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function optIsProtected($option) {
+        return (bool) isset(self::$curlOptsProtected[$option]);
+    }
+
+    /**
+     * Opt Is Private
+     *
+     * @param int $option Curl Option
+     *
+     * @return bool Wether or not it is a Private Option
+     *
+     * @static
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function optIsPrivate($option) {
+        return (bool) isset(self::$curlOptsPrivate[$option]);
+    }
+
+    /**
+     * Set Opts
+     *
+     * Set multiple Curl Options at a time by providing them in an associative
+     * Array.
+     *
+     * @param mixed[] $options A collection of Curl Options
+     *
+     * @return bool Success of setting all options.
+     *
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function setOpts(Array $options) {
+        $return = true;
+        foreach((array) $options as $option => $value) {
+            $return = $this->setOpt($option, $value) && $return;
+        }
+        return (bool) $return;
+    }
+
+    /**
+     * Set Opt
+     *
+     * Set a single Publicly-Accessable (un-protected) Curl Option.
+     *
+     * @param int $option The Curl Option constant.
+     * @param mixed $value The value to set the option to.
+     *
+     * @return bool Success
+     *
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function setOpt($option, $value) {
+        return (bool) (!$this->optIsProtected($option)
+            && $this->setOptProtected($option, $value));
+    }
+
+    /**
+     * Set Opt Protected
+     *
+     * Set a single Protected Curl Option.  This enforces Required (only set to
+     * TRUE) and filtering of Private Options.
+     *
+     * @param int $option The Curl Option constant.
+     * @param mixed $value The value to set the option to.
+     *
+     * @return bool Success
+     *
+     * @access protected
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    protected function setOptProtected($option, $value) {
+
+        $valid = TRUE;
+        $success = FALSE;
+
+        if ($this->optIsRequired($option) && !($value === true)) {
+            trigger_error(Options::human($option) . ' is a required option',
+                E_USER_WARNING);
+            $valid = FALSE;
+        }
+
+        if ($this->optIsPrivate($option)) {
+            trigger_error(Options::human($option) . ' is a private option, '.
+                'please use a helper-method (if available) to protect Object '.
+                'integrity', E_USER_WARNING);
+            $valid = FALSE;
+        }
+
+        if($valid && !$this->locked()) {
+            $success = $this->setOptPrivate($option, $value);
+        }
+
+        return (bool) $success;
+    }
+
+    /**
+     * Set Opt Private
+     *
+     * Set a Private Curl Option. This also filters allowed protocols.  Will not
+     * set the Option if the Curl Handle is not a resource.
+     *
+     * @param int $option The Curl Option constant.
+     * @param mixed $value The value to set the option to.
+     *
+     * @return bool Success
+     *
+     * @access private
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    private function setOptPrivate($option, $value) {
+        $valid = TRUE;
+        $success = FALSE;
+        switch($option) {
+            case CURLOPT_URL:
+                if(!empty(self::$allowed_protocols)) {
+                    if(!preg_match(self::$url_protocol_preg, $value, $matches)) {
+                        trigger_error('Unable to determine Request URL Protocol,'.
+                            'url: '.$value, E_USER_WARNING);
+                    } elseif(!in_array($matches[1], self::$allowed_protocols)) {
+                        trigger_error('The Request URL Protocol '.$matches[1].' '.
+                            'is not allowed', E_USER_WARNING);
+                        $valid = FALSE;
+                    }
+                }
+                break;
+        }
+
+        if($valid && is_resource($this->getHandle())) {
+            $this->options[$option] = $value;
+            $success = curl_setopt($this->getHandle(), $option, $value);
+        }
+        return (bool) $success;
+    }
+
+    public function getOpt($option) {
+        return isset($this->options[$option]) ? $this->options[$option] : NULL;
+    }
+
+    public function isOptSet($option, $empty = FALSE) {
+        return isset($this->options[$option]) && ($empty && !empty($option));
+    }
     /**
      * Set Referer
      *
@@ -787,7 +1023,7 @@ class Curl
      */
     public function setReferrer($referrer)
     {
-        $this->setOpt(CURLOPT_REFERER, $referrer);
+        $this->setOptPrivate(CURLOPT_REFERER, $referrer);
     }
 
     /**
@@ -798,7 +1034,7 @@ class Curl
      */
     public function setTimeout($seconds)
     {
-        $this->setOpt(CURLOPT_TIMEOUT, $seconds);
+        $this->setOptPrivate(CURLOPT_TIMEOUT, $seconds);
     }
 
     /**
@@ -812,7 +1048,7 @@ class Curl
     {
         $this->baseUrl = $url;
         $this->url = $this->buildURL($url, $data);
-        $this->setOpt(CURLOPT_URL, $this->url);
+        $this->setOptPrivate(CURLOPT_URL, $this->url);
     }
 
     /**
@@ -823,7 +1059,7 @@ class Curl
      */
     public function setUserAgent($user_agent)
     {
-        $this->setOpt(CURLOPT_USERAGENT, $user_agent);
+        $this->setOptPrivate(CURLOPT_USERAGENT, $user_agent);
     }
 
     /**
@@ -860,10 +1096,11 @@ class Curl
         // Turn off CURLINFO_HEADER_OUT for verbose to work. This has the side
         // effect of causing Curl::requestHeaders to be empty.
         if ($on) {
-            $this->setOpt(CURLINFO_HEADER_OUT, false);
+            // Allows False
+            $this->setOptPrivate(CURLINFO_HEADER_OUT, false);
         }
-        $this->setOpt(CURLOPT_VERBOSE, $on);
-        $this->setOpt(CURLOPT_STDERR, $output);
+        $this->setOptPrivate(CURLOPT_VERBOSE, $on);
+        $this->setOptPrivate(CURLOPT_STDERR, $output);
     }
 
     /**
@@ -1056,4 +1293,5 @@ class Curl
 
         return (bool)count(array_filter($array, 'is_array'));
     }
+
 }
