@@ -49,9 +49,6 @@ class Curl
     const VERSION = '4.8.2';
     const DEFAULT_TIMEOUT = 30;
 
-    const HEADERS_FLAT = 0;
-    const HEADERS_PECL = 1;
-
     public $curl;
     public $id = null;
 
@@ -99,13 +96,11 @@ class Curl
      * @param  $base_url
      * @throws \ErrorException
      */
-    public function __construct($base_url = null, $flags = FALSE)
+    public function __construct($base_url = null)
     {
         if (!extension_loaded('curl')) {
             throw new \ErrorException('cURL library is not loaded');
         }
-
-        $this->pecl_headers = (bool) ($flags & self::HEADERS_PECL);
 
         $this->curl = curl_init();
         $this->id = 1;
@@ -556,6 +551,23 @@ class Curl
     }
 
     /**
+     * Set Pecl Headers
+     *
+     * Activate PECL compatible headers.
+     *
+     * @param bool $compatible (optional) User Pecl-style headers.
+     *
+     * @return void
+     *
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function setPeclHeaders($compatible = TRUE) {
+        $this->pecl_headers = (bool) $compatible;
+    }
+
+    /**
      * Set Basic Authentication
      *
      * @access public
@@ -898,88 +910,107 @@ class Curl
     }
 
     /**
+     * Http Parse Headers
+     *
+     * Parses Raw Headers String into PECL-compatible format, either using
+     * official methods, or a compatible implementation.
+     *
+     * @see https://secure.php.net/manual/en/function.http-parse-headers.php
+     *
+     * @param string $raw_headers (optional) Raw Headers String
+     *
+     * @return array Parsed Headers Array
+     *
+     * @static
+     * @access private
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    private static function http_parse_headers($raw_headers = '') {
+        $headers = array();
+        if (is_string($raw_headers)) {
+            if (function_exists('http_parse_headers')) {
+                $headers = http_parse_headers($raw_headers);
+            } else {
+                $key = '';
+                foreach((array) preg_split(
+                    '/\n/', (string) $raw_headers, NULL, PREG_SPLIT_NO_EMPTY
+                ) as $line) {
+                    $parts = explode(':', $line, 2);
+                    if (isset($parts[1])) {
+                        $key   = trim($parts[0]);
+                        $value = trim($parts[1]);
+                        if (!isset($headers[$key])) {
+                            $headers[$key] = $value;
+                        } else {
+                            $headers[$key] = array_merge(
+                                (array) $headers[$key],
+                                (array) $value
+                            );
+                        }
+                    } else {
+                        $value = trim($parts[0]);
+                        if (substr($value, 0, 1) == "\t") {
+                            $value = "\r\n\t$value";
+                        }
+                        if (!isset($headers[$key])) {
+                            $headers[$key] = $value;
+                        } else {
+                            if(is_array($headers[$key])) {
+                                end($headers[$key]);
+                                $i = key($headers[$key]);
+                                $headers[$key][$i] .= $value;
+                            } else {
+                                $headers[$key] .= $value;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            trigger_error('Curl::http_parse_headers() expects parameter 1 to be a string', E_USER_WARNING);
+        }
+        return (array) $headers;
+    }
+
+    /**
      * Parse Headers
      *
      * Internally handles first element naming, and optionally (Construct Flag)
-     * parses the headers into PECL-compatible format, either using official
-     * methods, or a compatible implementation.
+     * parses the headers into PECL-compatible format.
      *
-     * @param string $raw The Raw Headers to parse
+     * @param string $raw_headers The Raw Headers to parse
      * @param string $first_name (optional) The name of the first element.
      *
-     * @return CaseInsensitiveArray The headers, parsed.
+     * @return \Curl\CaseInsensitiveArray The headers, parsed.
      *
      * @access private
      *
      * @author Michael Mulligan <michael@bigroomstudios.com>
      */
-    private function parseHeaders($raw, $first_name = '') {
+    private function parseHeaders($raw_headers, $first_name = '') {
         $http_headers = new CaseInsensitiveArray();
 
         if(!empty($first_name)) {
-            $raw = (array) preg_split(
-                '/\r\n/', (string) $raw, 2, PREG_SPLIT_NO_EMPTY);
-            $http_headers[(string) $first_name] = array_shift($raw);
-            $raw = current($raw);
+            $raw_headers = (array) preg_split(
+                '/\n/', (string) $raw_headers, 2, PREG_SPLIT_NO_EMPTY);
+            $http_headers[(string) $first_name] = trim(array_shift($raw_headers));
+            $raw_headers = trim(current($raw_headers));
         }
 
-        if(!empty($raw)) {
+        if(!empty($raw_headers)) {
             if($this->pecl_headers) {
-
-                if (function_exists('http_parse_headers')) {
-                    $headers = http_parse_headers($raw);
-                } else {
-                    // Pecl-compatible implementation.
-                    $headers = array();
-                    $key = 0;
-                    foreach((array) preg_split(
-                        '/\r\n/', (string) $raw, NULL, PREG_SPLIT_NO_EMPTY
-                    ) as $header) {
-
-                        $parts = explode(':', $header, 2);
-                        if (isset($header[1])) {
-                            $key = trim($parts[0]);
-                            $value = trim($parts[1]);
-                            if (!isset($headers[$key])) {
-                                $headers[$key] = $value;
-                            } else {
-                                $headers[$key] = array_merge(
-                                    (array) $headers[$key],
-                                    (array) $value
-                                );
-                            }
-                        } else {
-                            $value = trim($header[0]);
-                            if (substr($value, 0, 1) == "\t") {
-                                $value = "\r\n\t$value";
-                            }
-                            if (!isset($headers[$key])) {
-                                $headers[$key] = $value;
-                            } else {
-                                if(is_array($headers[$key])) {
-                                    end($headers[$key]);
-                                    $i = key($headers[$key]);
-                                    $headers[$key][$i] .= $value;
-                                } else {
-                                    $headers[$key] .= $value;
-                                }
-                            }
-                        }
-
-                    }
+                foreach(self::http_parse_headers($raw_headers) as $key => $value) {
+                    $http_headers[$key] = $value;
                 }
-                foreach($headers as $key => $header) {
-                    $http_headers[$key] = $header;
-                }
-
             } else {
 
                 foreach((array) preg_split(
-                    '/\r\n/', (string) $raw, NULL, PREG_SPLIT_NO_EMPTY
+                    '/\n/', (string) $raw_headers, NULL, PREG_SPLIT_NO_EMPTY
                 ) as $header) {
 
                     list($key, $value) = explode(':', $header, 2);
-                    $key = trim($key);
+                    $key   = trim($key);
                     $value = trim($value);
                     /**
                      * Use isset() as array_key_exists() and ArrayAccess are not
@@ -995,7 +1026,7 @@ class Curl
 
             }
         }
-        return $http_headers;
+        return /* (CaseInsensitiveArray) */ $http_headers;
     }
 
     /**
@@ -1004,10 +1035,10 @@ class Curl
      * @access private
      * @param  $raw_headers
      *
-     * @return array
+     * @return \Curl\CaseInsensitiveArray
      */
     private function parseRequestHeaders($raw_headers) {
-        return $this->parseHeaders($raw_headers, 'Request-Line');
+        return /* (CaseInsensitiveArray) */  $this->parseHeaders($raw_headers, 'Request-Line');
     }
 
     /**
@@ -1045,7 +1076,7 @@ class Curl
      * @access private
      * @param  $raw_response_headers
      *
-     * @return array
+     * @return \Curl\CaseInsensitiveArray
      */
     private function parseResponseHeaders($raw_response_headers) {
         // Find the actual HTTP response headers to parse.
@@ -1057,7 +1088,7 @@ class Curl
                 break;
             }
         }
-        return $this->parseHeaders($response_headers, 'Status-Line');
+        return /* (CaseInsensitiveArray) */  $this->parseHeaders($response_headers, 'Status-Line');
     }
 
     /**
