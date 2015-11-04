@@ -136,7 +136,8 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator {
      */
     public function offsetGet($offset) {
         $offsetlower = strtolower($offset);
-        return array_key_exists($offsetlower, $this->data) ? $this->data[$offsetlower] : NULL;
+        // As isset() is false on 'NULL' anyway, use it, and return NULL, faster
+        return isset($this->data[$offsetlower]) ? $this->data[$offsetlower] : NULL;
     }
 
     /**
