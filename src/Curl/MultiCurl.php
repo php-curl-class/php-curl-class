@@ -52,11 +52,10 @@ class MultiCurl
             $query_parameters = $url;
             $url = $this->baseUrl;
         }
-        $curl = new Curl();
+        $curl = $this->addHandle(new Curl());
         $curl->setURL($url, $query_parameters);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
         $curl->setOpt(CURLOPT_POSTFIELDS, $curl->buildPostData($data));
-        $this->addHandle($curl);
         return $curl;
     }
 
@@ -71,7 +70,7 @@ class MultiCurl
      */
     public function addDownload($url, $mixed_filename)
     {
-        $curl = new Curl();
+        $curl = $this->addHandle(new Curl());
         $curl->setURL($url);
 
         if (is_callable($mixed_filename)) {
@@ -86,7 +85,6 @@ class MultiCurl
         $curl->setOpt(CURLOPT_FILE, $fh);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $curl->setOpt(CURLOPT_HTTPGET, true);
-        $this->addHandle($curl);
         $this->curlFileHandles[$curl->id] = $fh;
         return $curl;
     }
@@ -106,11 +104,10 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $curl = new Curl();
+        $curl = $this->addHandle(new Curl());
         $curl->setURL($url, $data);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $curl->setOpt(CURLOPT_HTTPGET, true);
-        $this->addHandle($curl);
         return $curl;
     }
 
@@ -129,11 +126,10 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $curl = new Curl();
+        $curl = $this->addHandle(new Curl());
         $curl->setURL($url, $data);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
         $curl->setOpt(CURLOPT_NOBODY, true);
-        $this->addHandle($curl);
         return $curl;
     }
 
@@ -152,11 +148,10 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $curl = new Curl();
+        $curl = $this->addHandle(new Curl());
         $curl->setURL($url, $data);
         $curl->unsetHeader('Content-Length');
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
-        $this->addHandle($curl);
         return $curl;
     }
 
@@ -175,12 +170,11 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $curl = new Curl();
+        $curl = $this->addHandle(new Curl());
         $curl->setURL($url);
         $curl->unsetHeader('Content-Length');
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $curl->setOpt(CURLOPT_POSTFIELDS, $data);
-        $this->addHandle($curl);
         return $curl;
     }
 
@@ -200,7 +194,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
 
-        $curl = new Curl();
+        $curl = $this->addHandle(new Curl());
 
         if (is_array($data) && empty($data)) {
             $curl->unsetHeader('Content-Length');
@@ -210,7 +204,7 @@ class MultiCurl
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         $curl->setOpt(CURLOPT_POST, true);
         $curl->setOpt(CURLOPT_POSTFIELDS, $curl->buildPostData($data));
-        $this->addHandle($curl);
+        
         return $curl;
     }
 
@@ -229,13 +223,13 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $curl = new Curl();
+        $curl = $this->addHandle(new Curl());
         $curl->setURL($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
         $put_data = $curl->buildPostData($data);
         $curl->setHeader('Content-Length', strlen($put_data));
         $curl->setOpt(CURLOPT_POSTFIELDS, $put_data);
-        $this->addHandle($curl);
+        
         return $curl;
     }
 
@@ -332,7 +326,6 @@ class MultiCurl
     public function close()
     {
         $this->__cascade('close');
-
         if (is_resource($this->multiCurl)) {
             curl_multi_close($this->multiCurl);
         }
@@ -594,8 +587,7 @@ class MultiCurl
      * @param  $curl
      * @throws \ErrorException
      */
-    private function addHandle($curl)
-    {
+    public function addHandle(Curl $curl) {
         foreach(array('beforeSend', 'success', 'error', 'complete') as $event) {
             $eventName = $event.'Function';
             if(!empty($this->$eventName)) {
@@ -617,8 +609,8 @@ class MultiCurl
 
         $curl->id = $this->nextCurlId++;
 
-        if($this->isStarted && !empty($curl->beforeSendFunction)) {
-            $curl->call($curl->beforeSendFunction);
+        if($this->isStarted && !empty($this->beforeSendFunction)) {
+            $curl->call($this->beforeSendFunction);
         }
 
         $curlm_error_code = curl_multi_add_handle($this->multiCurl, $curl->curl);
@@ -627,7 +619,13 @@ class MultiCurl
         }
 
         $this->curls[] = $curl;
+        
+        return $curl;
 
+    }
+    
+    public function getHandles() {
+        return $this->curls;
     }
 
 }
