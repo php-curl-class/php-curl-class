@@ -2536,11 +2536,10 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
         // Ensure memory does not leak excessively after instantiating a new
         // Curl instance and cleaning up. Memory diffs in the 2000-6000+ range
-        // have indicated a memory leak.
+        // indicate a memory leak.
         $max_memory_diff = 1000;
         foreach ($results as $i => $result) {
             $memory_diff = $result['after'] - $result['before'];;
-            echo 'diff:   ' . $memory_diff . "\n";
 
             // Skip the first test to allow memory usage to settle.
             if ($i >= 1) {
