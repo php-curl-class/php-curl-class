@@ -70,3 +70,10 @@ if [[ ! -z "${long_lines}" ]]; then
     echo -e "${long_lines}" | perl -pe 's/^(.*)$/Long lines found in \1/'
     exit 1
 fi
+
+# Prohibit @author in php files.
+at_author=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --line-number -H "@author" {} \;)
+if [[ ! -z "${at_author}" ]]; then
+    echo -e "${at_author}" | perl -pe 's/^(.*)$/\@author found in \1/'
+    exit 1
+fi
