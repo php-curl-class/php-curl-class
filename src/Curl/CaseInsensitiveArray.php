@@ -2,7 +2,8 @@
 
 namespace Curl;
 
-class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator {
+class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
+{
 
     /**
      * @var mixed[] Data storage with lower-case keys
@@ -37,12 +38,11 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator {
      * @return void
      *
      * @access public
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
-    public function __construct(Array $initial = NULL) {
-        if($initial !== NULL) {
-            foreach($initial as $key => $value) {
+    public function __construct(Array $initial = NULL)
+    {
+        if ($initial !== NULL) {
+            foreach ($initial as $key => $value) {
                 $this->offsetSet($key, $value);
             }
         }
@@ -63,10 +63,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator {
      * @return void
      *
      * @access public
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
-    public function offsetSet($offset, $value) {
+    public function offsetSet($offset, $value)
+    {
         if ($offset === null) {
             $this->data[] = $value;
         } else {
@@ -89,10 +88,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator {
      * @return bool If the offset exists.
      *
      * @access public
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
-    public function offsetExists($offset) {
+    public function offsetExists($offset)
+    {
         return (bool) array_key_exists(strtolower($offset), $this->data);
     }
 
@@ -109,10 +107,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator {
      * @return void
      *
      * @access public
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
-    public function offsetUnset($offset) {
+    public function offsetUnset($offset)
+    {
         $offsetlower = strtolower($offset);
         unset($this->data[$offsetlower]);
         unset($this->keys[$offsetlower]);
@@ -131,12 +128,10 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator {
      * @return mixed The data stored at the offset.
      *
      * @access public
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
-    public function offsetGet($offset) {
+    public function offsetGet($offset)
+    {
         $offsetlower = strtolower($offset);
-        // As isset() is false on 'NULL' anyway, use it, and return NULL, faster
         return isset($this->data[$offsetlower]) ? $this->data[$offsetlower] : NULL;
     }
 
@@ -150,10 +145,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator {
      * @return int The number of elements stored in the Array.
      *
      * @access public
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
-    public function count() {
+    public function count()
+    {
         return (int) count($this->data);
     }
 
@@ -167,10 +161,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator {
      * @return mixed Data at the current position.
      *
      * @access public
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
-    public function current() {
+    public function current()
+    {
         return current($this->data);
     }
 
@@ -184,10 +177,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator {
      * @return void
      *
      * @access public
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
-    public function next() {
+    public function next()
+    {
         next($this->data);
     }
 
@@ -201,10 +193,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator {
      * @return mixed Case-Sensitive key at current position.
      *
      * @access public
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
-    public function key() {
+    public function key()
+    {
         $key = key($this->data);
         return isset($this->keys[$key]) ? $this->keys[$key] : $key;
     }
@@ -219,10 +210,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator {
      * @return bool If the current position is valid.
      *
      * @access public
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
-    public function valid() {
+    public function valid()
+    {
         return (bool) !(key($this->data) === NULL);
     }
 
@@ -236,10 +226,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator {
      * @return void
      *
      * @access public
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
-    public function rewind() {
+    public function rewind()
+    {
         reset($this->data);
     }
 }
