@@ -77,3 +77,10 @@ if [[ ! -z "${at_author}" ]]; then
     echo -e "${at_author}" | perl -pe 's/^(.*)$/\@author found in \1/'
     exit 1
 fi
+
+# Prohibit screaming caps notation in php files.
+caps=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --color=always --line-number -H -e "FALSE[^']" -e "NULL" -e "TRUE" {} \;)
+if [[ ! -z "${caps}" ]]; then
+    echo -e "${caps}" | perl -pe 's/^(.*)$/All caps found in \1/'
+    exit 1
+fi
