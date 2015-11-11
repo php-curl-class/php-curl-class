@@ -39,9 +39,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @access public
      */
-    public function __construct(Array $initial = NULL)
+    public function __construct(Array $initial = null)
     {
-        if ($initial !== NULL) {
+        if ($initial !== null) {
             foreach ($initial as $key => $value) {
                 $this->offsetSet($key, $value);
             }
@@ -132,7 +132,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     public function offsetGet($offset)
     {
         $offsetlower = strtolower($offset);
-        return isset($this->data[$offsetlower]) ? $this->data[$offsetlower] : NULL;
+        return isset($this->data[$offsetlower]) ? $this->data[$offsetlower] : null;
     }
 
     /**
@@ -213,7 +213,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      */
     public function valid()
     {
-        return (bool) !(key($this->data) === NULL);
+        return (bool) !(key($this->data) === null);
     }
 
     /**
