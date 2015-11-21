@@ -628,6 +628,22 @@ class Curl
     {
         return isset($this->responseCookies[$key]) ? $this->responseCookies[$key] : null;
     }
+    
+    /**
+     * Request URL
+     * Request URL is used in cases where there was a url redirection, which is different from the original Request URL.
+     * 
+     * @returns string
+     */ 
+    public function getRequestUrl()
+    {
+        $request_line = explode(" ", $this->requestHeaders->offsetGet("Request-Line"))[1];
+        if(empty($request_line)){
+            return "";
+        }
+        $base_url = $this->requestHeaders->offsetGet("Host");
+        return (strpos($base_url, 'https') !== false)? $base_url.$request_line : "https://$base_url".$request_line;
+    }
 
     /**
      * Set Port
