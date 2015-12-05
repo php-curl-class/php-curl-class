@@ -7,6 +7,7 @@ class MultiCurl
     public $baseUrl = null;
     public $multiCurl;
     public $curls = array();
+	public $multiResults = array();
     private $curlFileHandles = array();
     private $nextCurlId = 1;
     private $isStarted = false;
@@ -476,7 +477,7 @@ class MultiCurl
                     foreach ($this->curls as $key => $ch) {
                         if ($ch->curl === $info_array['handle']) {
                             $ch->curlErrorCode = $info_array['result'];
-                            $ch->exec($ch->curl);
+                            $this->multiResults[] = $ch->exec($ch->curl);
                             curl_multi_remove_handle($this->multiCurl, $ch->curl);
                             unset($this->curls[$key]);
 
