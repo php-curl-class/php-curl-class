@@ -83,6 +83,9 @@ class Curl
     private $headers = array();
     private $options = array();
 
+    /**
+     * @var callable
+     */
     private $jsonDecoder = null;
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
