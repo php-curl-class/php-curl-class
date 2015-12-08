@@ -592,12 +592,6 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testDigestHttpAuth()
     {
-        // Skip Digest Access Authentication test on HHVM.
-        // https://github.com/facebook/hhvm/issues/5201
-        if (defined('HHVM_VERSION')) {
-            return;
-        }
-
         $username = 'myusername';
         $password = 'mypassword';
         $invalid_password = 'anotherpassword';
