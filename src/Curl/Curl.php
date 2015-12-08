@@ -612,6 +612,7 @@ class Curl
      *
      * @access public
      * @param  $key
+     * @return mixed
      */
     public function getCookie($key)
     {
@@ -623,6 +624,7 @@ class Curl
      *
      * @access public
      * @param  $key
+     * @return mixed
      */
     public function getResponseCookie($key)
     {
@@ -853,7 +855,8 @@ class Curl
      * Verbose
      *
      * @access public
-     * @param  $on
+     * @param bool $on
+     * @param resource $output
      */
     public function verbose($on = true, $output=STDERR)
     {
