@@ -165,6 +165,9 @@ $multi_curl->addGet('https://www.bing.com/search', array(
 ));
 
 $multi_curl->start();
+
+// Print the results array
+print_r($multi_curl->multiResults);
 ```
 
 ### Available Methods
