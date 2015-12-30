@@ -164,7 +164,7 @@ $multi_curl->addGet('https://www.bing.com/search', array(
     'q' => 'hello world',
 ));
 
-$multi_curl->start();
+$multi_curl->start(); // Blocks until all items in the queue have been processed.
 ```
 
 ### Available Methods
