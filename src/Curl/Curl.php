@@ -49,6 +49,11 @@ class Curl
     const VERSION = '4.8.2';
     const DEFAULT_TIMEOUT = 30;
 
+    protected static $defaultContentTypeExpressions = array(
+        'json' => '~^(?:application|text)/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?~i',
+        'xml'  => '~^(?:application|text)/(?:(?:atom|rss)\+)?xml~i'
+    );
+
     public $curl;
     public $id = null;
 
@@ -83,9 +88,9 @@ class Curl
     private $headers = array();
     private $options = array();
 
-    private $jsonDecoder = null;
-    private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
-    private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
+    private $payloadDecoders = array();
+    private $payloadEncoders = array();
+    private $contentTypeExpressions = array();
 
     /**
      * Construct
@@ -103,7 +108,6 @@ class Curl
         $this->curl = curl_init();
         $this->id = 1;
         $this->setDefaultUserAgent();
-        $this->setDefaultJsonDecoder();
         $this->setDefaultTimeout();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
@@ -133,51 +137,7 @@ class Curl
      */
     public function buildPostData($data)
     {
-        if (is_array($data)) {
-            if (self::is_array_multidim($data)) {
-                if (isset($this->headers['Content-Type']) &&
-                    preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
-                    $json_str = json_encode($data);
-                    if (!($json_str === false)) {
-                        $data = $json_str;
-                    }
-                } else {
-                    $data = self::http_build_multi_query($data);
-                }
-            } else {
-                $binary_data = false;
-                foreach ($data as $key => $value) {
-                    // Fix "Notice: Array to string conversion" when $value in curl_setopt($ch, CURLOPT_POSTFIELDS,
-                    // $value) is an array that contains an empty array.
-                    if (is_array($value) && empty($value)) {
-                        $data[$key] = '';
-                    // Fix "curl_setopt(): The usage of the @filename API for file uploading is deprecated. Please use
-                    // the CURLFile class instead". Ignore non-file values prefixed with the @ character.
-                    } elseif (is_string($value) && strpos($value, '@') === 0 && is_file(substr($value, 1))) {
-                        $binary_data = true;
-                        if (class_exists('CURLFile')) {
-                            $data[$key] = new \CURLFile(substr($value, 1));
-                        }
-                    } elseif ($value instanceof \CURLFile) {
-                        $binary_data = true;
-                    }
-                }
-
-                if (!$binary_data) {
-                    if (isset($this->headers['Content-Type']) &&
-                        preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
-                        $json_str = json_encode($data);
-                        if (!($json_str === false)) {
-                            $data = $json_str;
-                        }
-                    } else {
-                        $data = http_build_query($data, '', '&');
-                    }
-                }
-            }
-        }
-
-        return $data;
+        return $this->encodeData($this->normalizeContentType(), $data);
     }
 
     /**
@@ -206,7 +166,8 @@ class Curl
             curl_close($this->curl);
         }
         $this->options = null;
-        $this->jsonDecoder = null;
+        $this->payloadDecoders = array();
+        $this->payloadEncoders = array();
     }
 
     /**
@@ -676,22 +637,6 @@ class Curl
     }
 
     /**
-     * Set Default JSON Decoder
-     *
-     * @access public
-     */
-    public function setDefaultJsonDecoder()
-    {
-        $this->jsonDecoder = function($response) {
-            $json_obj = json_decode($response, false);
-            if (!($json_obj === null)) {
-                $response = $json_obj;
-            }
-            return $response;
-        };
-    }
-
-    /**
      * Set Default Timeout
      *
      * @access public
@@ -735,16 +680,196 @@ class Curl
     }
 
     /**
+     * Set Default JSON Decoder
+     *
+     * @access public
+     */
+    public function setDefaultJsonDecoder()
+    {
+        $this->setJsonDecoder(NULL);
+    }
+
+    /**
+     * Set Default XML Decoder
+     *
+     * @access public
+     */
+    public function setDefaultXMLDecoder()
+    {
+        $this->setXMLDecoder(NULL);
+    }
+
+    /**
      * Set JSON Decoder
      *
      * @access public
      * @param  $function
      */
-    public function setJsonDecoder($function)
+    public function setJsonDecoder($callback)
     {
-        if (is_callable($function)) {
-            $this->jsonDecoder = $function;
+        $this->setContentTypeDecoder('json', $callback);
+    }
+
+    /**
+     * Set XML Decoder
+     *
+     * @access public
+     * @param  $function
+     */
+    public function setXMLDecoder($callback)
+    {
+        $this->setContentTypeDecoder('xml', $callback);
+    }
+
+    /**
+     * Set Payload Decoder
+     *
+     * Sets a Callback to handle decoding of a payload type.
+     *
+     * @param string $type Content Type to decode.
+     * @param callable $callback Callback to handel the decoding (NULL to clear)
+     *
+     * @return void
+     *
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function setContentTypeDecoder($type, $callback) {
+        if($callback === NULL) {
+            unset($this->payloadDecoders[$type]);
+        } elseif (is_callable($callback)) {
+            $this->payloadDecoders[$type] = $callback;
+        } else {
+            throw new \Exception("Payload Decoder for Content-Type '$type' ".
+                "must be of type Callable.");
         }
+    }
+
+    /**
+     * Get Content Type Decoder
+     *
+     * Returns the Decoder Callback for a specified Content Type.
+     *
+     * @param string $content_type Content Type to decode.
+     *
+     * @return mixed Decoder
+     *
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function getContentTypeDecoder($content_type) {
+        $decoder = array($this, '__defaultDecode'.strtoupper($content_type));
+        if(isset($this->payloadDecoders[$content_type])) {
+            $decoder = $this->payloadDecoders[$content_type];
+        }
+        return is_callable($decoder) ? $decoder : NULL;
+    }
+
+    /**
+     * Set Default JSON Decoder
+     *
+     * @access public
+     */
+    public function setDefaultContentTypeEncoder($type)
+    {
+        $this->setContentTypeEncoder($type, NULL);
+    }
+
+    /**
+     * Set Payload Decoder
+     *
+     * Sets a Callback to handle decoding of a payload type.
+     *
+     * @param string $type Content Type to decode.
+     * @param callable $callback Callback to handel the decoding (NULL to clear)
+     *
+     * @return void
+     *
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function setContentTypeEncoder($type, $callback) {
+        if($callback === NULL) {
+            unset($this->payloadEncoders[$type]);
+        } elseif (is_callable($callback)) {
+            $this->payloadEncoders[$type] = $callback;
+        } else {
+            throw new \Exception("Payload Encoder for Content-Type '$type' ".
+                "must be of type Callable.");
+        }
+    }
+
+    /**
+     * Get Content Type Encoder
+     *
+     * @param string $content_type Content Type to Decode
+     *
+     * @return mixed Content Type Encoder
+     *
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function getContentTypeEncoder($content_type) {
+        $encoder = array($this, '__defaultEncode'.strtoupper($content_type));
+        if(isset($this->payloadEncoders[$content_type])) {
+            $encoder = $this->payloadEncoders[$content_type];
+        }
+        return is_callable($encoder) ? $encoder : NULL;
+    }
+
+    /**
+     * Set Default XML Decoder
+     *
+     * @access public
+     */
+    public function setDefaultContentTypeExpression($type)
+    {
+        $this->setContentTypeExpression($type, NULL);
+    }
+
+    /**
+     * Set Content Type Expression
+     *
+     * Sets a Regular Expression to use to match for a specified Content-Type.
+     *
+     * @param string $type Content Type to decode.
+     * @param callable $expression The expression to match for the content-type.
+     *
+     * @return void
+     *
+     * @access private
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function setContentTypeExpression($type, $expression) {
+        if($expression === NULL) {
+            unset($this->contentTypeExpressions[$type]);
+        } elseif (is_callable($expression)) {
+            $this->contentTypeExpressions[$type] = $expression;
+        } else {
+            throw new \Exception("Regular Expression for Content-Type '$type' ".
+                "must be a valid Regulair Expression.");
+        }
+    }
+
+    /**
+     * Get Content Type Expressions
+     *
+     * Returns the Regular Expressions to be used to detect various Content-Types.
+     *
+     * @return array All Regular Expressions for Content-Type Matching.
+     *
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function getContentTypeExpressions() {
+        return $this->contentTypeExpressions +
+            self::$defaultContentTypeExpressions;
     }
 
     /**
@@ -894,6 +1019,38 @@ class Curl
     }
 
     /**
+     * Normalize Content Type
+     *
+     * Applies Content-Type regulair expressions and returns the first-matching
+     * content type.  Supports the addition of new content types.
+     *
+     * @param mixed $headers (optional) The headers to detect the Content-Type
+     *
+     * @return string|null The content type, or NULL if no match found.
+     *
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function normalizeContentType($headers = null)
+    {
+        $content_type = '';
+        if(!(is_array($headers) || $headers instanceof CaseInsensitiveArray)) {
+            $headers = $this->headers;
+        }
+        if(isset($headers['Content-Type'])) {
+            $expressions = $this->getContentTypeExpressions();
+            foreach($expressions as $type => $preg_match) {
+                if(preg_match($preg_match, $headers['Content-Type'])) {
+                    $content_type = $type;
+                    break;
+                }
+            }
+        }
+        return (string) $content_type;
+    }
+
+    /**
      * Parse Headers
      *
      * @access private
@@ -950,24 +1107,181 @@ class Curl
      *
      * @return array
      */
-    private function parseResponse($response_headers, $raw_response)
-    {
-        $response = $raw_response;
-        if (isset($response_headers['Content-Type'])) {
-            if (preg_match($this->jsonPattern, $response_headers['Content-Type'])) {
-                $json_decoder = $this->jsonDecoder;
-                if (is_callable($json_decoder)) {
-                    $response = $json_decoder($response);
-                }
-            } elseif (preg_match($this->xmlPattern, $response_headers['Content-Type'])) {
-                $xml_obj = @simplexml_load_string($response);
-                if (!($xml_obj === false)) {
-                    $response = $xml_obj;
+    private function parseResponse($response_headers, $raw_response) {
+        return array(
+            $this->decodeData(
+                $this->normalizeContentType($response_headers), $raw_response
+            ),
+            $raw_response
+        );
+    }
+
+    /**
+     * Decode Data
+     *
+     * Parses a given Payload according to the parser assigned to the given
+     * Content Type.
+     *
+     * @param string $content_type Content Type of the Payload
+     * @param string $encoded The un-parsed Payload
+     *
+     * @return mixed[] The parsed Payload, or the RAW payload if error.
+     *
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function decodeData($content_type, $encoded) {
+        $decoder = $this->getContentTypeDecoder($content_type);
+        if (is_callable($decoder)) {
+            $decoded = call_user_func($decoder, $encoded);
+        } else {
+            $decoded = $encoded;
+        }
+        return $decoded;
+    }
+
+    /**
+     * Default Decode JSON
+     *
+     * The default JSON Payload Decoder
+     *
+     * @param string $encoded Un-decoded Payload
+     *
+     * @return mixed The decoded payload or the raw payload on error.
+     *
+     * @access private
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    private function __defaultDecodeJSON($encoded) {
+        $decoded = json_decode($encoded, false);
+        if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
+            // This doesn't seem right, this is NOT the JSON data...  :-/
+            $decoded = $encoded;
+        }
+        return $decoded;
+    }
+
+    /**
+     * Default Decode XML
+     *
+     * The default XML Payload Decoder.
+     *
+     * @param string $encoded The un-decoded Payload
+     *
+     * @return mixed The XML object or RAW payload on error.
+     *
+     * @access private
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    private function __defaultDecodeXML($encoded) {
+        $decoded = @simplexml_load_string($encoded);
+        if ($decoded === false) {
+            // This doesn't seem right, this is NOT the XML data...  :-/
+            $decoded = $encoded;
+        }
+        return $decoded;
+    }
+
+    /**
+     * Encode Data
+     *
+     * Encodes the provided data using the set or default Encoder according to
+     * the Content-Type.
+     *
+     * @param string $content_type The Content-Type to treat the data as.
+     * @param mixed $unencoded Unencoded data.
+     *
+     * @return mixed Encoded data, or Un-Encoded data on error.
+     *
+     * @access public
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    public function encodeData($content_type, $unencoded) {
+        $binary_data = false;
+        if (is_array($unencoded)) {
+            foreach ($unencoded as $key => $value) {
+                // Fix "Notice: Array to string conversion" when $value in curl_setopt($ch, CURLOPT_POSTFIELDS,
+                // $value) is an array that contains an empty array.
+                if (is_array($value) && empty($value)) {
+                    $unencoded[$key] = '';
+                // Fix "curl_setopt(): The usage of the @filename API for file uploading is deprecated. Please use
+                // the CURLFile class instead". Ignore non-file values prefixed with the @ character.
+                } elseif (is_string($value) && strpos($value, '@') === 0) {
+                    $file = substr($value, 1);
+                    if(is_file($file)) {
+                        $binary_data = true;
+                        if (class_exists('CURLFile')) {
+                            $unencoded[$key] = new \CURLFile($file);
+                        }
+                    }
+                } elseif ($value instanceof \CURLFile) {
+                    $binary_data = true;
                 }
             }
         }
 
-        return array($response, $raw_response);
+        $encoded = $unencoded;
+
+        if(!$binary_data) {
+            $encoder = $this->getContentTypeEncoder($content_type);
+            if(is_callable($encoder)) {
+                $encoded = call_user_func($encoder, $unencoded);
+            }
+        }
+
+        return $encoded;
+    }
+
+    /**
+     * Default Encode JSON
+     *
+     * The default JSON encoder.
+     *
+     * @param mixed $unencoded Unencoded Data.
+     *
+     * @return mixed The encoded JSON data.
+     *
+     * @access private
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    private function __defaultEncodeJSON($unencoded) {
+        if(is_array($unencoded)) {
+            $encoded = json_encode($unencoded);
+            if ($encoded === false && json_last_error() !== JSON_ERROR_NONE) {
+                // This doesn't seem right, this is NOT the JSON data...  :-/
+                $encoded = $unencoded;
+            }
+        } else{
+            $encoded = $unencoded;
+        }
+        return $encoded;
+    }
+
+    /**
+     * Default Encode
+     *
+     * The default Post Data Encoder.
+     *
+     * @param mixed $unencoded Unencoded Data.
+     *
+     * @return mixed The encoded data, or un-encoded if error or Binary.
+     *
+     * @access private
+     *
+     * @author Michael Mulligan <michael@bigroomstudios.com>
+     */
+    private function __defaultEncode($unencoded) {
+        if (is_array($unencoded)) {
+            $encoded = self::http_build_query($unencoded);
+        } else {
+            $encoded = $unencoded;
+        }
+        return $encoded;
     }
 
     /**
@@ -1030,6 +1344,25 @@ class Curl
         return implode('&', $query);
     }
 
+
+    /**
+     * Http Build Query
+     *
+     * @access public
+     * @param  $data
+     *
+     * @return string
+     */
+    public static function http_build_query($data)
+    {
+        if (self::is_array_multidim($data)) {
+            $query = self::http_build_multi_query($data);
+        } else {
+            $query = http_build_query($data, '', '&');
+        }
+        return (string) $query;
+    }
+
     /**
      * Is Array Assoc
      *
@@ -1040,7 +1373,12 @@ class Curl
      */
     public static function is_array_assoc($array)
     {
-        return (bool)count(array_filter(array_keys($array), 'is_string'));
+        $associative = FALSE;
+        if (is_array($array)) foreach($array as $k => $r) if (is_string($k)) {
+            $associative = TRUE;
+            break;
+        }
+        return (bool) $associative;
     }
 
     /**
@@ -1053,10 +1391,11 @@ class Curl
      */
     public static function is_array_multidim($array)
     {
-        if (!is_array($array)) {
-            return false;
+        $multi = FALSE;
+        if (is_array($array)) foreach($array as $k => $r) if (is_array($r)) {
+            $multi = TRUE;
+            break;
         }
-
-        return (bool)count(array_filter($array, 'is_array'));
+        return (bool) $multi;
     }
 }
