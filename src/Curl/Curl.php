@@ -544,7 +544,9 @@ class Curl
         if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
             $this->setHeader('Content-Length', strlen($put_data));
         }
-        $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
+        if (!empty($put_data)) {
+            $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
+        }
         return $this->exec();
     }
 
@@ -612,6 +614,7 @@ class Curl
      *
      * @access public
      * @param  $key
+     * @return mixed
      */
     public function getCookie($key)
     {
@@ -623,6 +626,7 @@ class Curl
      *
      * @access public
      * @param  $key
+     * @return mixed
      */
     public function getResponseCookie($key)
     {
@@ -853,7 +857,8 @@ class Curl
      * Verbose
      *
      * @access public
-     * @param  $on
+     * @param bool $on
+     * @param resource $output
      */
     public function verbose($on = true, $output=STDERR)
     {
