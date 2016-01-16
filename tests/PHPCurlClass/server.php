@@ -248,17 +248,17 @@ if ($test == 'http_basic_auth') {
 header('Content-Type: text/plain');
 
 $data_mapping = array(
-    'cookie' => '_COOKIE',
-    'delete' => '_GET',
-    'get' => '_GET',
-    'patch' => '_PATCH',
-    'post' => '_POST',
-    'put' => '_PUT',
-    'server' => '_SERVER',
+    'cookie' => $_COOKIE,
+    'delete' => $_GET,
+    'get' => $_GET,
+    'patch' => $_PATCH,
+    'post' => $_POST,
+    'put' => $_PUT,
+    'server' => $_SERVER,
 );
 
 if (!empty($test)) {
-    $data = $$data_mapping[$test];
+    $data = $data_mapping[$test];
     $value = isset($data[$key]) ? $data[$key] : '';
     echo $value;
 }
