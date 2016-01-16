@@ -544,7 +544,9 @@ class Curl
         if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
             $this->setHeader('Content-Length', strlen($put_data));
         }
-        $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
+        if (!empty($put_data)) {
+            $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
+        }
         return $this->exec();
     }
 
