@@ -25,7 +25,7 @@ To install PHP Curl Class, simply:
 
 ### Requirements
 
-PHP Curl Class works with PHP 5.3, 5.4, 5.5, 5.6, and HHVM.
+PHP Curl Class works with PHP 5.3, 5.4, 5.5, 5.6, 7.0, and HHVM.
 
 ### Quick Start and Examples
 
@@ -164,7 +164,7 @@ $multi_curl->addGet('https://www.bing.com/search', array(
     'q' => 'hello world',
 ));
 
-$multi_curl->start();
+$multi_curl->start(); // Blocks until all items in the queue have been processed.
 ```
 
 ### Available Methods
