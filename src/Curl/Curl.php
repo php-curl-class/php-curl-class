@@ -7,7 +7,8 @@ class Curl
 {
     const VERSION = '4.8.2';
     const DEFAULT_TIMEOUT = 30;
-    const RFC2616 = array(
+
+    public static $RFC2616 = array(
         // RFC2616: "any CHAR except CTLs or separators".
         // CHAR           = <any US-ASCII character (octets 0 - 127)>
         // CTL            = <any US-ASCII control character
@@ -24,7 +25,7 @@ class Curl
         'Y', 'Z', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
         'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '|', '~',
     );
-    const RFC6265 = array(
+    public static $RFC6265 = array(
         // RFC6265: "US-ASCII characters excluding CTLs, whitespace DQUOTE, comma, semicolon, and backslash".
         // %x21
         '!',
@@ -39,7 +40,6 @@ class Curl
         ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
         's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',
     );
-
 
     public $curl;
     public $id = null;
@@ -102,8 +102,8 @@ class Curl
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
         $this->setURL($base_url);
-        $this->RFC2616 = array_fill_keys(self::RFC2616, true);
-        $this->RFC6265 = array_fill_keys(self::RFC6265, true);
+        $this->rfc2616 = array_fill_keys(self::$RFC2616, true);
+        $this->rfc6265 = array_fill_keys(self::$RFC6265, true);
     }
 
     /**
@@ -581,7 +581,7 @@ class Curl
     {
         $name_chars = array();
         foreach (str_split($key) as $name_char) {
-            if (!isset($this->RFC2616[$name_char])) {
+            if (!isset($this->rfc2616[$name_char])) {
                 $name_chars[] = rawurlencode($name_char);
             } else {
                 $name_chars[] = $name_char;
@@ -590,7 +590,7 @@ class Curl
 
         $value_chars = array();
         foreach (str_split($value) as $value_char) {
-            if (!isset($this->RFC6265[$value_char])) {
+            if (!isset($this->rfc6265[$value_char])) {
                 $value_chars[] = rawurlencode($value_char);
             } else {
                 $value_chars[] = $value_char;
