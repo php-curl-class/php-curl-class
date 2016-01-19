@@ -250,6 +250,18 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('key=value', $curl->response);
     }
 
+    public function testEffectiveUrl()
+    {
+        $test = new Test();
+        $test->server('redirect', 'GET');
+        $this->assertEquals(Test::TEST_URL, $test->curl->effectiveUrl);
+
+        $test = new Test();
+        $test->curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+        $test->server('redirect', 'GET');
+        $this->assertEquals(Test::TEST_URL . '?redirect', $test->curl->effectiveUrl);
+    }
+
     public function testPostRequestMethod()
     {
         $test = new Test();

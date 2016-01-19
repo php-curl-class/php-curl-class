@@ -58,6 +58,7 @@ class Curl
 
     public $baseUrl = null;
     public $url = null;
+    public $effectiveUrl = null;
     public $requestHeaders = null;
     public $responseHeaders = null;
     public $rawResponseHeaders = '';
@@ -346,6 +347,7 @@ class Curl
         $this->httpError = in_array(floor($this->httpStatusCode / 100), array(4, 5));
         $this->error = $this->curlError || $this->httpError;
         $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;
+        $this->effectiveUrl = curl_getinfo($this->curl, CURLINFO_EFFECTIVE_URL);
 
         // NOTE: CURLINFO_HEADER_OUT set to true is required for requestHeaders
         // to not be empty (e.g. $curl->setOpt(CURLINFO_HEADER_OUT, true);).
