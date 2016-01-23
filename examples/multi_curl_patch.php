@@ -1,7 +1,6 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
-use \Curl\Curl;
 use \Curl\MultiCurl;
 
 $multi_curl = new MultiCurl();
