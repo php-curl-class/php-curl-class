@@ -67,9 +67,9 @@ class Curl
 
     public $beforeSendFunction = null;
     public $downloadCompleteFunction = null;
-    private $successFunction = null;
-    private $errorFunction = null;
-    private $completeFunction = null;
+    public $successFunction = null;
+    public $errorFunction = null;
+    public $completeFunction = null;
 
     private $cookies = array();
     private $responseCookies = array();

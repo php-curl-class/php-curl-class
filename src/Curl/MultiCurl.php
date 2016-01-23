@@ -556,10 +556,6 @@ class MultiCurl
         if (!($curlm_error_code === CURLM_OK)) {
             throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
         }
-        $curl->beforeSend($this->beforeSendFunction);
-        $curl->success($this->successFunction);
-        $curl->error($this->errorFunction);
-        $curl->complete($this->completeFunction);
         $this->curls[] = $curl;
         $curl->id = $this->nextCurlId++;
 
@@ -576,6 +572,20 @@ class MultiCurl
      */
     private function initHandle($curl)
     {
+        // Set callbacks if not already individually set.
+        if ($curl->beforeSendFunction === null) {
+            $curl->beforeSend($this->beforeSendFunction);
+        }
+        if ($curl->successFunction === null) {
+            $curl->success($this->successFunction);
+        }
+        if ($curl->errorFunction === null) {
+            $curl->error($this->errorFunction);
+        }
+        if ($curl->completeFunction === null) {
+            $curl->complete($this->completeFunction);
+        }
+
         foreach ($this->options as $option => $value) {
             $curl->setOpt($option, $value);
         }
