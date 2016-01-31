@@ -78,6 +78,7 @@ class Curl
 
     private $jsonDecoder = null;
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
+    private $xmlDecoder = null;
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
 
     /**
@@ -97,6 +98,7 @@ class Curl
         $this->id = 1;
         $this->setDefaultUserAgent();
         $this->setDefaultJsonDecoder();
+        $this->setDefaultXmlDecoder();
         $this->setDefaultTimeout();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
@@ -202,6 +204,7 @@ class Curl
         }
         $this->options = null;
         $this->jsonDecoder = null;
+        $this->xmlDecoder = null;
     }
 
     /**
@@ -690,6 +693,22 @@ class Curl
     }
 
     /**
+     * Set Default XML Decoder
+     *
+     * @access public
+     */
+    public function setDefaultXmlDecoder()
+    {
+        $this->xmlDecoder = function($response) {
+            $xml_obj = @simplexml_load_string($response);
+            if (!($xml_obj === false)) {
+                $response = $xml_obj;
+            }
+            return $response;
+        };
+    }
+
+    /**
      * Set Default Timeout
      *
      * @access public
@@ -742,6 +761,19 @@ class Curl
     {
         if (is_callable($function)) {
             $this->jsonDecoder = $function;
+        }
+    }
+
+    /**
+     * Set XML Decoder
+     *
+     * @access public
+     * @param  $function
+     */
+    public function setXmlDecoder($function)
+    {
+        if (is_callable($function)) {
+            $this->xmlDecoder = $function;
         }
     }
 
@@ -958,9 +990,9 @@ class Curl
                     $response = $json_decoder($response);
                 }
             } elseif (preg_match($this->xmlPattern, $response_headers['Content-Type'])) {
-                $xml_obj = @simplexml_load_string($response);
-                if (!($xml_obj === false)) {
-                    $response = $xml_obj;
+                $xml_decoder = $this->xmlDecoder;
+                if (is_callable($xml_decoder)) {
+                    $response = $xml_decoder($response);
                 }
             }
         }
