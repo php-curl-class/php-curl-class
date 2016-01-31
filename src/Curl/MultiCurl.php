@@ -21,6 +21,7 @@ class MultiCurl
     private $options = array();
 
     private $jsonDecoder = null;
+    private $xmlDecoder = null;
 
     /**
      * Construct
@@ -388,6 +389,19 @@ class MultiCurl
     }
 
     /**
+     * Set XML Decoder
+     *
+     * @access public
+     * @param  $function
+     */
+    public function setXmlDecoder($function)
+    {
+        if (is_callable($function)) {
+            $this->xmlDecoder = $function;
+        }
+    }
+
+    /**
      * Set Opt
      *
      * @access public
@@ -593,6 +607,7 @@ class MultiCurl
             $curl->setHeader($key, $value);
         }
         $curl->setJsonDecoder($this->jsonDecoder);
+        $curl->setXmlDecoder($this->xmlDecoder);
         $curl->call($curl->beforeSendFunction);
     }
 }

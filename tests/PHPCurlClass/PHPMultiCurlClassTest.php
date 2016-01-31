@@ -1961,6 +1961,36 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $get_2->response);
     }
 
+    public function testXMLDecoder()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'xml_with_cdata_response');
+        $multi_curl->setXmlDecoder(function($response) {
+            return 'foo';
+        });
+
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_1->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
+            PHPUnit_Framework_Assert::assertEquals('foo', $instance->response);
+        });
+
+        $get_2 = $multi_curl->addGet(Test::TEST_URL);
+        $get_2->beforeSend(function ($instance) {
+            $instance->setXmlDecoder(function($response) {
+                return 'bar';
+            });
+        });
+        $get_2->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
+            PHPUnit_Framework_Assert::assertEquals('bar', $instance->response);
+        });
+
+        $multi_curl->start();
+        $this->assertEquals('foo', $get_1->response);
+        $this->assertEquals('bar', $get_2->response);
+    }
+
     public function testDownloadCallback()
     {
         // Upload a file.
