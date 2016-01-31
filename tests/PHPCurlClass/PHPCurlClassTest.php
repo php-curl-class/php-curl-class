@@ -2585,4 +2585,23 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
         $this->assertNotEmpty($stderr);
     }
+
+    public function testXMLDecoder()
+    {
+        $data = array(
+            'key' => 'Content-Type',
+            'value' => 'text/xml',
+        );
+
+        $test = new Test();
+        $test->server('xml_with_cdata_response', 'POST', $data);
+        $this->assertFalse(strpos($test->curl->response->saveXML(), '<![CDATA[') === false);
+
+        $test = new Test();
+        $test->curl->setXmlDecoder(function($response) {
+            return simplexml_load_string($response, 'SimpleXMLElement', LIBXML_NOCDATA);
+        });
+        $test->server('xml_with_cdata_response', 'POST', $data);
+        $this->assertTrue(strpos($test->curl->response->saveXML(), '<![CDATA[') === false);
+    }
 }
