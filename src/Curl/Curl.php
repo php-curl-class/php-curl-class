@@ -445,8 +445,8 @@ class Curl
      */
     public function headerCallback($ch, $header)
     {
-        if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]+)/mi', $header, $cookie) == 1) {
-            $this->responseCookies[$cookie[1]] = $cookie[2];
+        if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]+)/mi', $header, $cookie) === 1) {
+            $this->responseCookies[$cookie[1]] = trim($cookie[2], " \n\r\t\0\x0B");
         }
         $this->rawResponseHeaders .= $header;
         return strlen($header);
@@ -630,6 +630,17 @@ class Curl
     public function getResponseCookie($key)
     {
         return isset($this->responseCookies[$key]) ? $this->responseCookies[$key] : null;
+    }
+
+    /**
+     * Get response cookies.
+     *
+     * @access public
+     * @return array
+     */
+    public function getResponseCookies()
+    {
+        return $this->responseCookies;
     }
 
     /**

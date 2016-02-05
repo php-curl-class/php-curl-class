@@ -753,6 +753,10 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $test = new Test();
         $test->server('multiple_cookie', 'GET');
         $this->assertEquals('cookie1=scrumptious,cookie2=mouthwatering', $test->curl->responseHeaders['Set-Cookie']);
+
+        $response_cookies = $test->curl->getResponseCookies();
+        $this->assertEquals('scrumptious', $response_cookies['cookie1']);
+        $this->assertEquals('mouthwatering', $response_cookies['cookie2']);
     }
 
     public function testDefaultTimeout()
