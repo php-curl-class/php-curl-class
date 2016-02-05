@@ -633,6 +633,17 @@ class Curl
     }
 
     /**
+     * Get response cookies.
+     *
+     * @access public
+     * @return array
+     */
+    public function getResponseCookies()
+    {
+        return $this->responseCookies;
+    }
+
+    /**
      * Set Port
      *
      * @access public
