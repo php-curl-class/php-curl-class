@@ -18,7 +18,7 @@ if (isset($_GET['code'])) {
         'client_id' => CLIENT_ID,
         'client_secret' => CLIENT_SECRET,
         'redirect_uri' => implode('', array(
-            isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http',
+            isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http',
             '://',
             $_SERVER['SERVER_NAME'],
             $_SERVER['SCRIPT_NAME'],
@@ -52,7 +52,7 @@ if (isset($_GET['code'])) {
     $curl->get('https://accounts.google.com/o/oauth2/auth', array(
         'scope' => 'https://www.googleapis.com/auth/plus.me',
         'redirect_uri' => implode('', array(
-            isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http',
+            isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http',
             '://',
             $_SERVER['SERVER_NAME'],
             $_SERVER['SCRIPT_NAME'],

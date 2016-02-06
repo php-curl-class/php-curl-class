@@ -36,7 +36,7 @@ if ($request_method === 'POST') {
 $test = isset($_SERVER['HTTP_X_DEBUG_TEST']) ? $_SERVER['HTTP_X_DEBUG_TEST'] : '';
 $key = isset($data_values['key']) ? $data_values['key'] : '';
 
-if ($test == 'http_basic_auth') {
+if ($test === 'http_basic_auth') {
     if (!isset($_SERVER['PHP_AUTH_USER'])) {
         header('WWW-Authenticate: Basic realm="My Realm"');
         header('HTTP/1.0 401 Unauthorized');
@@ -50,7 +50,7 @@ if ($test == 'http_basic_auth') {
         'password' => $_SERVER['PHP_AUTH_PW'],
     ));
     exit;
-} elseif ($test == 'http_digest_auth') {
+} elseif ($test === 'http_digest_auth') {
     $users = array(
         'myusername' => 'mypassword',
     );
