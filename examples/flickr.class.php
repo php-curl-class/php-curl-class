@@ -74,7 +74,7 @@ class Flickr
     {
         $oauth_data = $this->getOAuthParameters();
         $oauth_data['oauth_callback'] = implode('', array(
-            isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http',
+            isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http',
             '://',
             $_SERVER['SERVER_NAME'],
             $_SERVER['SCRIPT_NAME'],
