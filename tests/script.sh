@@ -84,3 +84,10 @@ if [[ ! -z "${caps}" ]]; then
     echo -e "${caps}" | perl -pe 's/^(.*)$/All caps found in \1/'
     exit 1
 fi
+
+# Require identical comparison operators (===, not ==) in php files.
+equal=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --color=always --line-number -H "[^!=]==[^=]" {} \;)
+if [[ ! -z "${equal}" ]]; then
+    echo -e "${equal}" | perl -pe 's/^(.*)$/Non-identical comparison operator found in \1/'
+    exit 1
+fi
