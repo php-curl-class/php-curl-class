@@ -45,40 +45,63 @@ class Curl
     public $id = null;
 
     public $error = false;
+    /** @var int  */
     public $errorCode = 0;
+    /** @var null|string */
     public $errorMessage = null;
 
+    /** @var bool  */
     public $curlError = false;
+    /** @var int  */
     public $curlErrorCode = 0;
+    /** @var null|string  */
     public $curlErrorMessage = null;
 
+    /** @var bool  */
     public $httpError = false;
+    /** @var int  */
     public $httpStatusCode = 0;
+    /** @var null|string  */
     public $httpErrorMessage = null;
 
+    /** @var null|string  */
     public $baseUrl = null;
+    /** @var null|string  */
     public $url = null;
+    /** @var null|string  */
     public $effectiveUrl = null;
     public $requestHeaders = null;
     public $responseHeaders = null;
     public $rawResponseHeaders = '';
     public $response = null;
+    /** @var null|string  */
     public $rawResponse = null;
 
+    /** @var null|callable  */
     public $beforeSendFunction = null;
+    /** @var null|callable  */
     public $downloadCompleteFunction = null;
+    /** @var null|callable  */
     public $successFunction = null;
+    /** @var null|callable  */
     public $errorFunction = null;
+    /** @var null|callable  */
     public $completeFunction = null;
 
+    /** @var array  */
     private $cookies = array();
+    /** @var array  */
     private $responseCookies = array();
+    /** @var array */
     private $headers = array();
+    /** @var array  */
     private $options = array();
 
     private $jsonDecoder = null;
+    /** @var string  */
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
     private $xmlDecoder = null;
+    /** @var string  */
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
 
     /**
@@ -1099,5 +1122,197 @@ class Curl
         }
 
         return (bool)count(array_filter($array, 'is_array'));
+    }
+
+    /**
+     * @return null
+     */
+    public function getBaseUrl()
+    {
+        return $this->baseUrl;
+    }
+
+    /**
+     * @return null
+     */
+    public function getBeforeSendFunction()
+    {
+        return $this->beforeSendFunction;
+    }
+
+    /**
+     * @return null
+     */
+    public function getCompleteFunction()
+    {
+        return $this->completeFunction;
+    }
+
+    /**
+     * @return resource
+     */
+    public function getCurl()
+    {
+        return $this->curl;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isCurlError()
+    {
+        return $this->curlError;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurlErrorCode()
+    {
+        return $this->curlErrorCode;
+    }
+
+    /**
+     * @return null
+     */
+    public function getCurlErrorMessage()
+    {
+        return $this->curlErrorMessage;
+    }
+
+    /**
+     * @return null
+     */
+    public function getDownloadCompleteFunction()
+    {
+        return $this->downloadCompleteFunction;
+    }
+
+    /**
+     * @return null
+     */
+    public function getEffectiveUrl()
+    {
+        return $this->effectiveUrl;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isError()
+    {
+        return $this->error;
+    }
+
+    /**
+     * @return int
+     */
+    public function getErrorCode()
+    {
+        return $this->errorCode;
+    }
+
+    /**
+     * @return null
+     */
+    public function getErrorFunction()
+    {
+        return $this->errorFunction;
+    }
+
+    /**
+     * @return null
+     */
+    public function getErrorMessage()
+    {
+        return $this->errorMessage;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isHttpError()
+    {
+        return $this->httpError;
+    }
+
+    /**
+     * @return null
+     */
+    public function getHttpErrorMessage()
+    {
+        return $this->httpErrorMessage;
+    }
+
+    /**
+     * @return int
+     */
+    public function getHttpStatusCode()
+    {
+        return $this->httpStatusCode;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return null
+     */
+    public function getRawResponse()
+    {
+        return $this->rawResponse;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRawResponseHeaders()
+    {
+        return $this->rawResponseHeaders;
+    }
+
+    /**
+     * @return null
+     */
+    public function getRequestHeaders()
+    {
+        return $this->requestHeaders;
+    }
+
+    /**
+     * @return null
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    /**
+     * @return null
+     */
+    public function getResponseHeaders()
+    {
+        return $this->responseHeaders;
+    }
+
+    /**
+     * @return null
+     */
+    public function getSuccessFunction()
+    {
+        return $this->successFunction;
+    }
+
+    /**
+     * @return null
+     */
+    public function getUrl()
+    {
+        return $this->url;
     }
 }
