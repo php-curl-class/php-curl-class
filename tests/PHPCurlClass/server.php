@@ -265,6 +265,24 @@ if ($test === 'http_basic_auth') {
     header('Content-Type: application/json');
     echo json_encode($data_values);
     exit;
+} elseif ($test === 'post_redirect_get') {
+    if (isset($_GET['redirect'])) {
+        echo "Redirected: $request_method";
+    } else {
+        if ($request_method === 'POST') {
+            if (function_exists('http_response_code')) {
+                http_response_code(303);
+            } else {
+                header('HTTP/1.1 303 See Other');
+            }
+
+            header('Location: ?redirect');
+        } else {
+            echo "Request method is $request_method, but POST was expected";
+        }
+    }
+
+    exit;
 }
 
 header('Content-Type: text/plain');
