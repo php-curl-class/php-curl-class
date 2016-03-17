@@ -23,6 +23,7 @@ class MultiCurl
     private $jsonDecoder = null;
     private $xmlDecoder = null;
 
+    private $concurrency = 0;
     private $autoClose = FALSE;
 
     /**
@@ -498,6 +499,10 @@ class MultiCurl
         $this->setOpt(CURLOPT_USERAGENT, $user_agent);
     }
 
+    public function setConcurrency($concurrency) {
+        $this->concurrency = max(0, (int) $concurrency);
+    }
+
     /**
      * Start
      *
@@ -505,24 +510,40 @@ class MultiCurl
      */
     public function start()
     {
-        foreach ($this->curls as $ch) {
-            $this->initHandle($ch);
-        }
-
         $this->isStarted = true;
 
+        reset($this->curls);
+
+        $running = array();
+
         do {
+            
+            if (count($this->curls)) {
+                while (
+                    ($id = key($this->curls)) != NULL &&
+                    ($this->concurrency <= 0 || (count($running) < $this->concurrency))
+                ) {
+                    $running[$id] = $id;
+                    $this->initHandle($this->curls[$id]);
+
+                    next($this->curls);
+                }
+            }
+
             curl_multi_select($this->multiCurl);
             curl_multi_exec($this->multiCurl, $active);
 
             while (!($info_array = curl_multi_info_read($this->multiCurl)) === false) {
                 if ($info_array['msg'] === CURLMSG_DONE) {
-                    foreach ($this->curls as $key => $ch) {
-                        if ($ch->curl === $info_array['handle']) {
+                    foreach ($running as $id) {
+                        if ((isset($this->curls[$id]) && $ch = $this->curls[$id]) &&
+                            $ch->curl === $info_array['handle']
+                        ) {
                             $ch->curlErrorCode = $info_array['result'];
                             $ch->exec($ch->curl);
                             curl_multi_remove_handle($this->multiCurl, $ch->curl);
-                            unset($this->curls[$key]);
+                            unset($running[$id]);
+                            unset($this->curls[$id]);
 
                             // Close open file handles and reset the curl instance.
                             if (isset($this->curlFileHandles[$ch->id])) {
