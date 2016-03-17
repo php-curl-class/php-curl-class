@@ -23,6 +23,8 @@ class MultiCurl
     private $jsonDecoder = null;
     private $xmlDecoder = null;
 
+    private $autoClose = FALSE;
+
     /**
      * Construct
      *
@@ -34,6 +36,22 @@ class MultiCurl
         $this->multiCurl = curl_multi_init();
         $this->headers = new CaseInsensitiveArray();
         $this->setURL($base_url);
+    }
+
+    /**
+	 * Auto Close 
+	 *
+	 * Wether to auto-close child Curl Requests one complete
+	 * 
+	 * @param bool $true (optional)
+	 * 
+	 * @return void
+	 * 
+	 * @access public 
+	 */
+    public function autoClose($true = TRUE)
+    {
+        $this->autoClose = (bool) $true;
     }
 
     /**
@@ -511,6 +529,11 @@ class MultiCurl
                                 $ch->downloadComplete($this->curlFileHandles[$ch->id]);
                                 unset($this->curlFileHandles[$ch->id]);
                             }
+
+                            if($this->autoClose) $ch->close();
+
+                            unset($ch);
+
                             break;
                         }
                     }
