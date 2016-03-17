@@ -93,21 +93,19 @@ class MultiCurl
     {
         $curl = new Curl();
         $curl->setURL($url);
+        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
+        $curl->setOpt(CURLOPT_HTTPGET, true);
+        $this->addHandle($curl);
 
         if (is_callable($mixed_filename)) {
             $callback = $mixed_filename;
             $curl->downloadCompleteFunction = $callback;
-            $fh = tmpfile();
+            $this->curlFileHandles[$curl->id] = TRUE;
         } else {
             $filename = $mixed_filename;
-            $fh = fopen($filename, 'wb');
+            $this->curlFileHandles[$curl->id] = $filename;
         }
 
-        $curl->setOpt(CURLOPT_FILE, $fh);
-        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
-        $curl->setOpt(CURLOPT_HTTPGET, true);
-        $this->addHandle($curl);
-        $this->curlFileHandles[$curl->id] = $fh;
         return $curl;
     }
 
@@ -546,7 +544,10 @@ class MultiCurl
                             unset($this->curls[$id]);
 
                             // Close open file handles and reset the curl instance.
-                            if (isset($this->curlFileHandles[$ch->id])) {
+                            if (
+                                isset($this->curlFileHandles[$ch->id]) &&
+                                is_resource($this->curlFileHandles[$ch->id])
+                            ) {
                                 $ch->downloadComplete($this->curlFileHandles[$ch->id]);
                                 unset($this->curlFileHandles[$ch->id]);
                             }
@@ -622,16 +623,7 @@ class MultiCurl
      */
     private function addHandle($curl)
     {
-        $curlm_error_code = curl_multi_add_handle($this->multiCurl, $curl->curl);
-        if (!($curlm_error_code === CURLM_OK)) {
-            throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
-        }
-        $this->curls[] = $curl;
-        $curl->id = $this->nextCurlId++;
-
-        if ($this->isStarted) {
-            $this->initHandle($curl);
-        }
+        $this->curls[($curl->id = $this->nextCurlId++)] = $curl;
     }
 
     /**
@@ -642,6 +634,24 @@ class MultiCurl
      */
     private function initHandle($curl)
     {
+        if (isset($this->curlFileHandles[$curl->id])) {
+            $mixed_handle = $this->curlFileHandles[$curl->id];
+            if ($mixed_handle === TRUE) {
+                $fh = tmpfile();
+            } else {
+                $filename = $mixed_handle;
+                $fh = fopen($filename, 'wb');
+            }
+
+            $curl->setOpt(CURLOPT_FILE, $fh);
+            $this->curlFileHandles[$curl->id] = $fh;
+        }
+
+        $curlm_error_code = curl_multi_add_handle($this->multiCurl, $curl->curl);
+        if (!($curlm_error_code === CURLM_OK)) {
+            throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
+        }
+
         // Set callbacks if not already individually set.
         if ($curl->beforeSendFunction === null) {
             $curl->beforeSend($this->beforeSendFunction);
