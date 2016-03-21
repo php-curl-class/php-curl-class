@@ -515,7 +515,7 @@ class MultiCurl
         $running = array();
 
         do {
-            
+
             if (count($this->curls)) {
                 while (
                     ($id = key($this->curls)) != NULL &&
