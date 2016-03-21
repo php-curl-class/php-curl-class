@@ -40,16 +40,16 @@ class MultiCurl
     }
 
     /**
-	 * Auto Close 
-	 *
-	 * Wether to auto-close child Curl Requests one complete
-	 * 
-	 * @param bool $true (optional)
-	 * 
-	 * @return void
-	 * 
-	 * @access public 
-	 */
+     * Auto Close 
+     *
+     * Wether to auto-close child Curl Requests one complete
+     * 
+     * @param bool $true (optional)
+     * 
+     * @return void
+     * 
+     * @access public 
+     */
     public function autoClose($true = TRUE)
     {
         $this->autoClose = (bool) $true;
