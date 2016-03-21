@@ -24,7 +24,7 @@ class MultiCurl
     private $xmlDecoder = null;
 
     private $concurrency = 0;
-    private $autoClose = FALSE;
+    private $autoClose = false;
 
     /**
      * Construct
@@ -50,7 +50,7 @@ class MultiCurl
      *
      * @access public
      */
-    public function autoClose($true = TRUE)
+    public function autoClose($true = true)
     {
         $this->autoClose = (bool) $true;
     }
@@ -100,7 +100,7 @@ class MultiCurl
         if (is_callable($mixed_filename)) {
             $callback = $mixed_filename;
             $curl->downloadCompleteFunction = $callback;
-            $this->curlFileHandles[$curl->id] = TRUE;
+            $this->curlFileHandles[$curl->id] = true;
         } else {
             $filename = $mixed_filename;
             $this->curlFileHandles[$curl->id] = $filename;
@@ -518,7 +518,7 @@ class MultiCurl
 
             if (count($this->curls)) {
                 while (
-                    ($id = key($this->curls)) != NULL &&
+                    ($id = key($this->curls)) != null &&
                     ($this->concurrency <= 0 || (count($running) < $this->concurrency))
                 ) {
                     $running[$id] = $id;
@@ -636,7 +636,7 @@ class MultiCurl
     {
         if (isset($this->curlFileHandles[$curl->id])) {
             $mixed_handle = $this->curlFileHandles[$curl->id];
-            if ($mixed_handle === TRUE) {
+            if ($mixed_handle === true) {
                 $fh = tmpfile();
             } else {
                 $filename = $mixed_handle;
