@@ -2,11 +2,20 @@
 
 namespace Curl;
 
+define(__NAMESPACE__.'\VERSION', '4.11.0');
+
+$curl_version = curl_version();
+define(__NAMESPACE__.'\DEFAULT_USER_AGENT',
+       'PHP-Curl-Class/' . VERSION .
+       ' (+https://github.com/php-curl-class/php-curl-class)' .
+       ' PHP/' . PHP_VERSION .
+       ' curl/' . $curl_version['version']);
 
 class Curl
 {
-    const VERSION = '4.11.0';
+    const VERSION = VERSION;
     const DEFAULT_TIMEOUT = 30;
+    const DEFAULT_USER_AGENT = DEFAULT_USER_AGENT;
 
     public static $RFC2616 = array(
         // RFC2616: "any CHAR except CTLs or separators".
@@ -815,11 +824,7 @@ class Curl
      */
     public function setDefaultUserAgent()
     {
-        $user_agent = 'PHP-Curl-Class/' . self::VERSION . ' (+https://github.com/php-curl-class/php-curl-class)';
-        $user_agent .= ' PHP/' . PHP_VERSION;
-        $curl_version = curl_version();
-        $user_agent .= ' curl/' . $curl_version['version'];
-        $this->setUserAgent($user_agent);
+        $this->setUserAgent(self::DEFAULT_USER_AGENT);
     }
 
     /**
