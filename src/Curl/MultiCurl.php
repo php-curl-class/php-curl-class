@@ -502,7 +502,7 @@ class MultiCurl
                     foreach ($this->curls as $key => $ch) {
                         if ($ch->curl === $info_array['handle']) {
                             $ch->curlErrorCode = $info_array['result'];
-                            $ch->exec($ch->curl);
+                            $ch->exec($ch->curl, false);
                             curl_multi_remove_handle($this->multiCurl, $ch->curl);
                             unset($this->curls[$key]);
 

@@ -43,27 +43,29 @@ class Curl
 
     public $curl;
     public $id = null;
-
-    public $error = false;
-    public $errorCode = 0;
-    public $errorMessage = null;
-
-    public $curlError = false;
-    public $curlErrorCode = 0;
-    public $curlErrorMessage = null;
-
-    public $httpError = false;
-    public $httpStatusCode = 0;
-    public $httpErrorMessage = null;
+    
+    private $deferredProperties = array(
+        'response',
+        'errorMessage',
+        'curlErrorMessage',
+        'httpErrorMessage',
+        'effectiveUrl',
+        'rawRequestHeaders',
+        'requestHeaders',
+        'responseHeaders',
+    );
 
     public $baseUrl = null;
     public $url = null;
-    public $effectiveUrl = null;
-    public $requestHeaders = null;
-    public $responseHeaders = null;
     public $rawResponseHeaders = '';
-    public $response = null;
     public $rawResponse = null;
+    
+    public $error;
+    public $errorCode;
+    public $curlError;
+    public $curlErrorCode;
+    public $httpError;
+    public $httpStatusCode;
 
     public $beforeSendFunction = null;
     public $downloadCompleteFunction = null;
@@ -327,46 +329,36 @@ class Curl
     }
 
     /**
-     * Exec
-     *
-     * @access public
-     * @param  $ch
-     *
-     * @return string
-     */
-    public function exec($ch = null)
+	 * Exec 
+	 *
+	 * @param CurlHandle $ch (optional) Curl Handle to use, supports Multi..
+	 * @param bool $return (optional) Wether or not to return the response. If false, effectively defers all parsing of the handle.
+	 * 
+	 * @return mixed Either the String response, or null 
+	 * 
+	 * @access public
+	 */
+    public function exec($ch = null, $return = true)
     {
-        $this->responseCookies = array();
+        $this->reset();
+        
         if ($ch !== null) {
             $this->rawResponse = curl_multi_getcontent($ch);
+            $this->curlErrorCode = 0;
         } else {
             $this->call($this->beforeSendFunction);
             $this->rawResponse = curl_exec($this->curl);
             $this->curlErrorCode = curl_errno($this->curl);
         }
-        $this->curlErrorMessage = curl_error($this->curl);
+        
         $this->curlError = $this->curlErrorCode !== 0;
+        
         $this->httpStatusCode = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
         $this->httpError = in_array(floor($this->httpStatusCode / 100), array(4, 5));
+        
         $this->error = $this->curlError || $this->httpError;
         $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;
-        $this->effectiveUrl = curl_getinfo($this->curl, CURLINFO_EFFECTIVE_URL);
-
-        // NOTE: CURLINFO_HEADER_OUT set to true is required for requestHeaders
-        // to not be empty (e.g. $curl->setOpt(CURLINFO_HEADER_OUT, true);).
-        if ($this->getOpt(CURLINFO_HEADER_OUT) === true) {
-            $this->requestHeaders = $this->parseRequestHeaders(curl_getinfo($this->curl, CURLINFO_HEADER_OUT));
-        }
-        $this->responseHeaders = $this->parseResponseHeaders($this->rawResponseHeaders);
-        list($this->response, $this->rawResponse) = $this->parseResponse($this->responseHeaders, $this->rawResponse);
-
-        $this->httpErrorMessage = '';
-        if ($this->error) {
-            if (isset($this->responseHeaders['Status-Line'])) {
-                $this->httpErrorMessage = $this->responseHeaders['Status-Line'];
-            }
-        }
-        $this->errorMessage = $this->curlError ? $this->curlErrorMessage : $this->httpErrorMessage;
+        
 
         if (!$this->error) {
             $this->call($this->successFunction);
@@ -376,7 +368,61 @@ class Curl
 
         $this->call($this->completeFunction);
 
-        return $this->response;
+        return $return ? $this->response : null;
+    }
+    
+    private function reset()
+    {
+        $this->responseCookies = array();
+        foreach(self::$deferredProperties as $prop) unset($this->$prop);
+    }
+    
+    public function __get($key) {
+        $return = null;
+        if(!in_array($key, self::$deferredProperties) && is_callable(array($this, $getter = "__get_$key"))) {
+            $return = $this->$key = $this->$getter();
+        }
+        return $return;
+    }
+    
+    private function __get_response()
+    {
+        return $this->parseResponse($this->responseHeaders, $this->rawResponse);
+    }
+    
+    private function __get_errorMessage()
+    {
+        return $this->curlError ? $this->curlErrorMessage : $this->httpErrorMessage;
+    }
+    
+    private function __get_curlErrorMessage()
+    {
+        return curl_error($this->curl);
+    }
+    
+    private function __get_httpErrorMessage()
+    {
+        return ($this->error && isset($this->responseHeaders['Status-Line'])) ? $this->responseHeaders['Status-Line'] : '';
+    }
+    
+    private function __get_effectiveUrl()
+    {
+        return curl_getinfo($this->curl, CURLINFO_EFFECTIVE_URL);
+    }
+    
+    private function __get_rawRequestHeaders()
+    {
+        return ($this->getOpt(CURLINFO_HEADER_OUT) === true ? curl_getinfo($this->curl, CURLINFO_HEADER_OUT) : null);
+    }
+    
+    private function __get_requestHeaders()
+    {
+        return $this->parseRequestHeaders($this->rawRequestHeaders);
+    }
+    
+    private function __get_responseHeaders()
+    {
+        return $this->parseResponseHeaders($this->rawResponseHeaders);
     }
 
     /**
@@ -1041,7 +1087,7 @@ class Curl
             }
         }
 
-        return array($response, $raw_response);
+        return $response;
     }
 
     /**
