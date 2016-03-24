@@ -862,7 +862,7 @@ class Curl
      */
     public function getOpt($option)
     {
-        return isset($this->options[$option]) ? $this->options[$option] : NULL;
+        return isset($this->options[$option]) ? $this->options[$option] : null;
     }
 
     /**
@@ -875,7 +875,7 @@ class Curl
      *
      * @access public
      */
-    public function isOptSet($option, $empty = FALSE) {
+    public function isOptSet($option, $empty = false) {
         return (bool) ($empty ? !empty($this->options[$option]) : isset($this->options[$option]));
     }
 
