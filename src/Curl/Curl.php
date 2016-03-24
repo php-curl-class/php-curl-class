@@ -866,7 +866,7 @@ class Curl
      */
     public function setJsonDecoder($function)
     {
-        if (is_callable($function)) {
+        if (is_callable($function) || is_null($function)) {
             $this->jsonDecoder = $function;
         }
     }
@@ -879,7 +879,7 @@ class Curl
      */
     public function setXmlDecoder($function)
     {
-        if (is_callable($function)) {
+        if (is_callable($function) || is_null($function)) {
             $this->xmlDecoder = $function;
         }
     }
