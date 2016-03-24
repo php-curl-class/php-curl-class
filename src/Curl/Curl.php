@@ -91,12 +91,12 @@ class Curl
     public $rawResponseHeaders = '';
     public $rawResponse = null;
 
-    public $error;
-    public $errorCode;
-    public $curlError;
-    public $curlErrorCode;
-    public $httpError;
-    public $httpStatusCode;
+    public $error = false;
+    public $errorCode = 0;
+    public $curlError = false;
+    public $curlErrorCode = 0;
+    public $httpError = false;
+    public $httpStatusCode = 0;
 
     public $beforeSendFunction = null;
     public $downloadCompleteFunction = null;
@@ -377,7 +377,6 @@ class Curl
 
         if ($ch !== null) {
             $this->rawResponse = curl_multi_getcontent($ch);
-            $this->curlErrorCode = 0;
         } else {
             $this->call($this->beforeSendFunction);
             $this->rawResponse = curl_exec($this->curl);
@@ -391,7 +390,6 @@ class Curl
 
         $this->error = $this->curlError || $this->httpError;
         $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;
-
 
         if (!$this->error) {
             $this->call($this->successFunction);
@@ -1069,11 +1067,14 @@ class Curl
      */
     private function parseRequestHeaders($raw_headers)
     {
-        $request_headers = new CaseInsensitiveArray();
-        list($first_line, $headers) = $this->parseHeaders($raw_headers);
-        $request_headers['Request-Line'] = $first_line;
-        foreach ($headers as $key => $value) {
-            $request_headers[$key] = $value;
+        $request_headers = null;
+        if($raw_headers !== null ){
+            $request_headers = new CaseInsensitiveArray();
+            list($first_line, $headers) = $this->parseHeaders($raw_headers);
+            $request_headers['Request-Line'] = $first_line;
+            foreach ($headers as $key => $value) {
+                $request_headers[$key] = $value;
+            }
         }
         return $request_headers;
     }
