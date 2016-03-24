@@ -75,7 +75,7 @@ class Curl
     public $curl;
     public $id = null;
 
-    private $deferredProperties = array(
+    private static $deferredProperties = array(
         'response',
         'errorMessage',
         'curlErrorMessage',
