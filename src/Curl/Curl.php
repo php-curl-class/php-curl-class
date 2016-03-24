@@ -6,10 +6,10 @@ define(__NAMESPACE__.'\VERSION', '4.11.0');
 
 $curl_version = curl_version();
 define(__NAMESPACE__.'\DEFAULT_USER_AGENT',
-       'PHP-Curl-Class/' . VERSION .
-       ' (+https://github.com/php-curl-class/php-curl-class)' .
-       ' PHP/' . PHP_VERSION .
-       ' curl/' . $curl_version['version']);
+        'PHP-Curl-Class/' . VERSION .
+        ' (+https://github.com/php-curl-class/php-curl-class)' .
+        ' PHP/' . PHP_VERSION .
+        ' curl/' . $curl_version['version']);
 
 
 function decodeJson($response)
@@ -138,9 +138,9 @@ class Curl
         $this->setURL($base_url);
 
         if (!self::$rfcLoaded) {
-           self::$rfcLoaded = true;
-           self::$RFC2616 = array_fill_keys(self::$RFC2616, true);
-           self::$RFC6265 = array_fill_keys(self::$RFC6265, true);
+            self::$rfcLoaded = true;
+            self::$RFC2616 = array_fill_keys(self::$RFC2616, true);
+            self::$RFC6265 = array_fill_keys(self::$RFC6265, true);
         }
     }
 
