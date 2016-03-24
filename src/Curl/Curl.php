@@ -412,7 +412,7 @@ class Curl
 
     public function __get($key) {
         $return = null;
-        if(!in_array($key, self::$deferredProperties) && is_callable(array($this, $getter = "__get_$key"))) {
+        if(in_array($key, self::$deferredProperties) && is_callable(array($this, $getter = "__get_$key"))) {
             $return = $this->$key = $this->$getter();
         }
         return $return;
