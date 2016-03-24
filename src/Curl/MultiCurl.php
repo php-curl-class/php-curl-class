@@ -21,6 +21,7 @@ class MultiCurl
     private $options = array();
 
     private $jsonDecoder = null;
+    private $xmlDecoder = null;
 
     /**
      * Construct
@@ -190,12 +191,16 @@ class MultiCurl
      * @access public
      * @param  $url
      * @param  $data
+     * @param  $post_redirect_get If true, will cause 303 redirections to be followed using
+     *     GET requests (default: false).
+     *     Note: Redirections are only followed if the CURLOPT_FOLLOWLOCATION option is set to true.
      *
      * @return object
      */
-    public function addPost($url, $data = array())
+    public function addPost($url, $data = array(), $post_redirect_get = false)
     {
         if (is_array($url)) {
+            $post_redirect_get = (bool)$data;
             $data = $url;
             $url = $this->baseUrl;
         }
@@ -207,7 +212,15 @@ class MultiCurl
         }
 
         $curl->setURL($url);
-        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
+
+        /*
+         * For post-redirect-get requests, the CURLOPT_CUSTOMREQUEST option must not
+         * be set, otherwise cURL will perform POST requests for redirections.
+         */
+        if (!$post_redirect_get) {
+            $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
+        }
+
         $curl->setOpt(CURLOPT_POST, true);
         $curl->setOpt(CURLOPT_POSTFIELDS, $curl->buildPostData($data));
         $this->addHandle($curl);
@@ -388,6 +401,19 @@ class MultiCurl
     }
 
     /**
+     * Set XML Decoder
+     *
+     * @access public
+     * @param  $function
+     */
+    public function setXmlDecoder($function)
+    {
+        if (is_callable($function)) {
+            $this->xmlDecoder = $function;
+        }
+    }
+
+    /**
      * Set Opt
      *
      * @access public
@@ -556,10 +582,6 @@ class MultiCurl
         if (!($curlm_error_code === CURLM_OK)) {
             throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
         }
-        $curl->beforeSend($this->beforeSendFunction);
-        $curl->success($this->successFunction);
-        $curl->error($this->errorFunction);
-        $curl->complete($this->completeFunction);
         $this->curls[] = $curl;
         $curl->id = $this->nextCurlId++;
 
@@ -576,6 +598,20 @@ class MultiCurl
      */
     private function initHandle($curl)
     {
+        // Set callbacks if not already individually set.
+        if ($curl->beforeSendFunction === null) {
+            $curl->beforeSend($this->beforeSendFunction);
+        }
+        if ($curl->successFunction === null) {
+            $curl->success($this->successFunction);
+        }
+        if ($curl->errorFunction === null) {
+            $curl->error($this->errorFunction);
+        }
+        if ($curl->completeFunction === null) {
+            $curl->complete($this->completeFunction);
+        }
+
         foreach ($this->options as $option => $value) {
             $curl->setOpt($option, $value);
         }
@@ -583,6 +619,7 @@ class MultiCurl
             $curl->setHeader($key, $value);
         }
         $curl->setJsonDecoder($this->jsonDecoder);
+        $curl->setXmlDecoder($this->xmlDecoder);
         $curl->call($curl->beforeSendFunction);
     }
 }

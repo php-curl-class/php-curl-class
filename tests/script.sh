@@ -70,3 +70,24 @@ if [[ ! -z "${long_lines}" ]]; then
     echo -e "${long_lines}" | perl -pe 's/^(.*)$/Long lines found in \1/'
     exit 1
 fi
+
+# Prohibit @author in php files.
+at_author=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --line-number -H "@author" {} \;)
+if [[ ! -z "${at_author}" ]]; then
+    echo -e "${at_author}" | perl -pe 's/^(.*)$/\@author found in \1/'
+    exit 1
+fi
+
+# Prohibit screaming caps notation in php files.
+caps=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --color=always --line-number -H -e "FALSE[^']" -e "NULL" -e "TRUE" {} \;)
+if [[ ! -z "${caps}" ]]; then
+    echo -e "${caps}" | perl -pe 's/^(.*)$/All caps found in \1/'
+    exit 1
+fi
+
+# Require identical comparison operators (===, not ==) in php files.
+equal=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --color=always --line-number -H "[^!=]==[^=]" {} \;)
+if [[ ! -z "${equal}" ]]; then
+    echo -e "${equal}" | perl -pe 's/^(.*)$/Non-identical comparison operator found in \1/'
+    exit 1
+fi

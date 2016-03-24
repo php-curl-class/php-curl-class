@@ -36,7 +36,7 @@ if ($request_method === 'POST') {
 $test = isset($_SERVER['HTTP_X_DEBUG_TEST']) ? $_SERVER['HTTP_X_DEBUG_TEST'] : '';
 $key = isset($data_values['key']) ? $data_values['key'] : '';
 
-if ($test == 'http_basic_auth') {
+if ($test === 'http_basic_auth') {
     if (!isset($_SERVER['PHP_AUTH_USER'])) {
         header('WWW-Authenticate: Basic realm="My Realm"');
         header('HTTP/1.0 401 Unauthorized');
@@ -50,7 +50,7 @@ if ($test == 'http_basic_auth') {
         'password' => $_SERVER['PHP_AUTH_PW'],
     ));
     exit;
-} elseif ($test == 'http_digest_auth') {
+} elseif ($test === 'http_digest_auth') {
     $users = array(
         'myusername' => 'mypassword',
     );
@@ -182,6 +182,28 @@ if ($test == 'http_basic_auth') {
     $rss->appendChild($channel);
     echo $doc->saveXML();
     exit;
+} elseif ($test === 'xml_with_cdata_response') {
+    header('Content-Type: text/xml');
+    echo '<?xml version="1.0" encoding="UTF-8"?>
+<rss>
+    <items>
+        <item>
+            <id>1</id>
+            <ref>33ee7e1eb504b6619c1b445ca1442c21</ref>
+            <title><![CDATA[The Title]]></title>
+            <description><![CDATA[The description.]]></description>
+            <link><![CDATA[https://www.example.com/page.html?foo=bar&baz=wibble#hash]]></link>
+        </item>
+        <item>
+            <id>2</id>
+            <ref>b5c0b187fe309af0f4d35982fd961d7e</ref>
+            <title><![CDATA[Another Title]]></title>
+            <description><![CDATA[Some description.]]></description>
+            <link><![CDATA[https://www.example.org/image.png?w=1265.73&h=782.26]]></link>
+        </item>
+    </items>
+</rss>';
+    exit;
 } elseif ($test === 'upload_response') {
     $tmp_filename = tempnam('/tmp', 'php-curl-class.');
     move_uploaded_file($_FILES['image']['tmp_name'], $tmp_filename);
@@ -243,22 +265,40 @@ if ($test == 'http_basic_auth') {
     header('Content-Type: application/json');
     echo json_encode($data_values);
     exit;
+} elseif ($test === 'post_redirect_get') {
+    if (isset($_GET['redirect'])) {
+        echo "Redirected: $request_method";
+    } else {
+        if ($request_method === 'POST') {
+            if (function_exists('http_response_code')) {
+                http_response_code(303);
+            } else {
+                header('HTTP/1.1 303 See Other');
+            }
+
+            header('Location: ?redirect');
+        } else {
+            echo "Request method is $request_method, but POST was expected";
+        }
+    }
+
+    exit;
 }
 
 header('Content-Type: text/plain');
 
 $data_mapping = array(
-    'cookie' => '_COOKIE',
-    'delete' => '_GET',
-    'get' => '_GET',
-    'patch' => '_PATCH',
-    'post' => '_POST',
-    'put' => '_PUT',
-    'server' => '_SERVER',
+    'cookie' => $_COOKIE,
+    'delete' => $_GET,
+    'get' => $_GET,
+    'patch' => $_PATCH,
+    'post' => $_POST,
+    'put' => $_PUT,
+    'server' => $_SERVER,
 );
 
 if (!empty($test)) {
-    $data = $$data_mapping[$test];
+    $data = $data_mapping[$test];
     $value = isset($data[$key]) ? $data[$key] : '';
     echo $value;
 }
