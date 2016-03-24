@@ -618,8 +618,14 @@ class MultiCurl
         foreach ($this->headers as $key => $value) {
             $curl->setHeader($key, $value);
         }
-        $curl->setJsonDecoder($this->jsonDecoder);
-        $curl->setXmlDecoder($this->xmlDecoder);
+        
+        if($this->jsonDecoder !== null) {
+            $curl->setJsonDecoder($this->jsonDecoder);
+        }
+        if($this->xmlDecoder !== null) {
+            $curl->setXmlDecoder($this->xmlDecoder);
+        }
+        
         $curl->call($curl->beforeSendFunction);
     }
 }

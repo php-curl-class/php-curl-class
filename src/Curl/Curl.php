@@ -2,7 +2,10 @@
 
 namespace Curl;
 
-define(__NAMESPACE__.'\VERSION', '4.11.0');
+const VERSION = '4.11.0';
+const DEFAULT_JSON_DECODER = '\Curl\decodeJson';
+const DEFAULT_XML_DECODER = '\Curl\decodeXml';
+const DEFAULT_TIMEOUT = 30;
 
 $curl_version = curl_version();
 define(__NAMESPACE__.'\DEFAULT_USER_AGENT',
@@ -10,7 +13,6 @@ define(__NAMESPACE__.'\DEFAULT_USER_AGENT',
         ' (+https://github.com/php-curl-class/php-curl-class)' .
         ' PHP/' . PHP_VERSION .
         ' curl/' . $curl_version['version']);
-
 
 function decodeJson($response)
 {
@@ -32,10 +34,6 @@ function decodeXml($response)
 
 class Curl
 {
-    const VERSION = VERSION;
-    const DEFAULT_TIMEOUT = 30;
-    const DEFAULT_USER_AGENT = DEFAULT_USER_AGENT;
-
     private static $rfcLoaded = false;
 
     private static $RFC2616 = array(
@@ -109,9 +107,9 @@ class Curl
     private $headers = array();
     private $options = array();
 
-    private $jsonDecoder = '\Curl\decodeJson';
+    private $jsonDecoder = DEFAULT_JSON_DECODER;
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
-    private $xmlDecoder = '\Curl\decodeXml';
+    private $xmlDecoder = DEFAULT_XML_DECODER;
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
 
     /**
@@ -806,7 +804,7 @@ class Curl
      */
     public function setDefaultJsonDecoder()
     {
-        $this->jsonDecoder = '\Curl\decodeJson';
+        $this->jsonDecoder = DEFAULT_JSON_DECODER;
     }
 
     /**
@@ -816,7 +814,7 @@ class Curl
      */
     public function setDefaultXmlDecoder()
     {
-        $this->xmlDecoder = '\Curl\decodeXml';
+        $this->xmlDecoder = DEFAULT_XML_DECODER;
     }
 
     /**
@@ -826,7 +824,7 @@ class Curl
      */
     public function setDefaultTimeout()
     {
-        $this->setTimeout(self::DEFAULT_TIMEOUT);
+        $this->setTimeout(DEFAULT_TIMEOUT);
     }
 
     /**
@@ -836,7 +834,7 @@ class Curl
      */
     public function setDefaultUserAgent()
     {
-        $this->setUserAgent(self::DEFAULT_USER_AGENT);
+        $this->setUserAgent(DEFAULT_USER_AGENT);
     }
 
     /**
@@ -866,7 +864,7 @@ class Curl
      */
     public function setJsonDecoder($function)
     {
-        if (is_callable($function) || is_null($function)) {
+        if (is_callable($function) || $function === false) {
             $this->jsonDecoder = $function;
         }
     }
@@ -879,7 +877,7 @@ class Curl
      */
     public function setXmlDecoder($function)
     {
-        if (is_callable($function) || is_null($function)) {
+        if (is_callable($function) || $function === false) {
             $this->xmlDecoder = $function;
         }
     }
@@ -1096,12 +1094,12 @@ class Curl
         if (isset($response_headers['Content-Type'])) {
             if (preg_match($this->jsonPattern, $response_headers['Content-Type'])) {
                 $json_decoder = $this->jsonDecoder;
-                if (is_callable($json_decoder)) {
+                if ($json_decoder) {
                     $response = $json_decoder($response);
                 }
             } elseif (preg_match($this->xmlPattern, $response_headers['Content-Type'])) {
                 $xml_decoder = $this->xmlDecoder;
-                if (is_callable($xml_decoder)) {
+                if ($xml_decoder) {
                     $response = $xml_decoder($response);
                 }
             }
