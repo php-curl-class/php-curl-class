@@ -35,7 +35,7 @@ class Curl
     const VERSION = VERSION;
     const DEFAULT_TIMEOUT = 30;
     const DEFAULT_USER_AGENT = DEFAULT_USER_AGENT;
-    
+
     private static $rfcLoaded = false;
 
     private static $RFC2616 = array(
@@ -55,7 +55,7 @@ class Curl
         'Y', 'Z', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
         'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '|', '~',
     );
-    
+
     private static $RFC6265 = array(
         // RFC6265: "US-ASCII characters excluding CTLs, whitespace DQUOTE, comma, semicolon, and backslash".
         // %x21
@@ -74,7 +74,7 @@ class Curl
 
     public $curl;
     public $id = null;
-    
+
     private $deferredProperties = array(
         'response',
         'errorMessage',
@@ -90,7 +90,7 @@ class Curl
     public $url = null;
     public $rawResponseHeaders = '';
     public $rawResponse = null;
-    
+
     public $error;
     public $errorCode;
     public $curlError;
@@ -136,7 +136,7 @@ class Curl
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
         $this->setURL($base_url);
-        
+
         if (!self::$rfcLoaded) {
            self::$rfcLoaded = true;
            self::$RFC2616 = array_fill_keys(self::$RFC2616, true);
@@ -362,19 +362,19 @@ class Curl
     }
 
     /**
-	 * Exec 
-	 *
-	 * @param CurlHandle $ch (optional) Curl Handle to use, supports Multi..
-	 * @param bool $return (optional) Wether or not to return the response. If false, effectively defers all parsing of the handle.
-	 * 
-	 * @return mixed Either the String response, or null 
-	 * 
-	 * @access public
-	 */
+     * Exec
+     *
+     * @param CurlHandle $ch (optional) Curl Handle to use, supports Multi..
+     * @param bool $return (optional) Wether or not to return the response. If false, effectively defers all parsing of the handle.
+     *
+     * @return mixed Either the String response, or null
+     *
+     * @access public
+     */
     public function exec($ch = null, $return = true)
     {
         $this->reset();
-        
+
         if ($ch !== null) {
             $this->rawResponse = curl_multi_getcontent($ch);
             $this->curlErrorCode = 0;
@@ -383,15 +383,15 @@ class Curl
             $this->rawResponse = curl_exec($this->curl);
             $this->curlErrorCode = curl_errno($this->curl);
         }
-        
+
         $this->curlError = $this->curlErrorCode !== 0;
-        
+
         $this->httpStatusCode = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
         $this->httpError = in_array(floor($this->httpStatusCode / 100), array(4, 5));
-        
+
         $this->error = $this->curlError || $this->httpError;
         $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;
-        
+
 
         if (!$this->error) {
             $this->call($this->successFunction);
@@ -403,13 +403,13 @@ class Curl
 
         return $return ? $this->response : null;
     }
-    
+
     private function reset()
     {
         $this->responseCookies = array();
         foreach(self::$deferredProperties as $prop) unset($this->$prop);
     }
-    
+
     public function __get($key) {
         $return = null;
         if(!in_array($key, self::$deferredProperties) && is_callable(array($this, $getter = "__get_$key"))) {
@@ -417,42 +417,42 @@ class Curl
         }
         return $return;
     }
-    
+
     private function __get_response()
     {
         return $this->parseResponse($this->responseHeaders, $this->rawResponse);
     }
-    
+
     private function __get_errorMessage()
     {
         return $this->curlError ? $this->curlErrorMessage : $this->httpErrorMessage;
     }
-    
+
     private function __get_curlErrorMessage()
     {
         return curl_error($this->curl);
     }
-    
+
     private function __get_httpErrorMessage()
     {
         return ($this->error && isset($this->responseHeaders['Status-Line'])) ? $this->responseHeaders['Status-Line'] : '';
     }
-    
+
     private function __get_effectiveUrl()
     {
         return curl_getinfo($this->curl, CURLINFO_EFFECTIVE_URL);
     }
-    
+
     private function __get_rawRequestHeaders()
     {
         return ($this->getOpt(CURLINFO_HEADER_OUT) === true ? curl_getinfo($this->curl, CURLINFO_HEADER_OUT) : null);
     }
-    
+
     private function __get_requestHeaders()
     {
         return $this->parseRequestHeaders($this->rawRequestHeaders);
     }
-    
+
     private function __get_responseHeaders()
     {
         return $this->parseResponseHeaders($this->rawResponseHeaders);
