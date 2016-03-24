@@ -365,7 +365,8 @@ class Curl
      * Exec
      *
      * @param CurlHandle $ch (optional) Curl Handle to use, supports Multi..
-     * @param bool $return (optional) Wether or not to return the response. If false, effectively defers all parsing of the handle.
+     * @param bool $return (optional) Whether or not to return the response. If
+     * false, effectively defers all parsing of the handle.
      *
      * @return mixed Either the String response, or null
      *
@@ -433,7 +434,8 @@ class Curl
 
     private function __get_httpErrorMessage()
     {
-        return ($this->error && isset($this->responseHeaders['Status-Line'])) ? $this->responseHeaders['Status-Line'] : '';
+        return ($this->error && isset($this->responseHeaders['Status-Line']))
+                ? $this->responseHeaders['Status-Line'] : '';
     }
 
     private function __get_effectiveUrl()
