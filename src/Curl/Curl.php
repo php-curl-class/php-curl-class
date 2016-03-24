@@ -135,7 +135,7 @@ class Curl
                 if (isset($this->headers['Content-Type']) &&
                     preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
                     $json_str = json_encode($data);
-                    if (!($json_str === false)) {
+                    if ($json_str !== false) {
                         $data = $json_str;
                     }
                 } else {
@@ -164,7 +164,7 @@ class Curl
                     if (isset($this->headers['Content-Type']) &&
                         preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
                         $json_str = json_encode($data);
-                        if (!($json_str === false)) {
+                        if ($json_str !== false) {
                             $data = $json_str;
                         }
                     } else {
@@ -337,7 +337,7 @@ class Curl
     public function exec($ch = null)
     {
         $this->responseCookies = array();
-        if (!($ch === null)) {
+        if ($ch !== null) {
             $this->rawResponse = curl_multi_getcontent($ch);
         } else {
             $this->call($this->beforeSendFunction);
@@ -345,7 +345,7 @@ class Curl
             $this->curlErrorCode = curl_errno($this->curl);
         }
         $this->curlErrorMessage = curl_error($this->curl);
-        $this->curlError = !($this->curlErrorCode === 0);
+        $this->curlError = $this->curlErrorCode !== 0;
         $this->httpStatusCode = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
         $this->httpError = in_array(floor($this->httpStatusCode / 100), array(4, 5));
         $this->error = $this->curlError || $this->httpError;
@@ -836,7 +836,7 @@ class Curl
             CURLOPT_RETURNTRANSFER => 'CURLOPT_RETURNTRANSFER',
         );
 
-        if (in_array($option, array_keys($required_options), true) && !($value === true)) {
+        if (in_array($option, array_keys($required_options), true) && $value !== true) {
             trigger_error($required_options[$option] . ' is a required option', E_USER_WARNING);
         }
 
