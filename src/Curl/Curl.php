@@ -843,8 +843,6 @@ class Curl
      * @return bool Complete success
      *
      * @access public
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
     public function setOpts(Array $options) {
         $return = true;
@@ -876,8 +874,6 @@ class Curl
      * @return bool Wether or not the Option is set/not empty.
      *
      * @access public
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
     public function isOptSet($option, $empty = FALSE) {
         return (bool) ($empty ? !empty($this->options[$option]) : isset($this->options[$option]));
