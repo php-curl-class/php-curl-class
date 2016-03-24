@@ -11,6 +11,25 @@ define(__NAMESPACE__.'\DEFAULT_USER_AGENT',
        ' PHP/' . PHP_VERSION .
        ' curl/' . $curl_version['version']);
 
+
+function decodeJson($response)
+{
+    $json_obj = json_decode($response, false);
+    if ($json_obj !== null) {
+        $response = $json_obj;
+    }
+    return $response;
+}
+
+function decodeXml($response)
+{
+    $xml_obj = @simplexml_load_string($response);
+    if ($xml_obj !== false) {
+        $response = $xml_obj;
+    }
+    return $response;
+}
+
 class Curl
 {
     const VERSION = VERSION;
@@ -87,9 +106,9 @@ class Curl
     private $headers = array();
     private $options = array();
 
-    private $jsonDecoder = null;
+    private $jsonDecoder = '\Curl\decodeJson';
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
-    private $xmlDecoder = null;
+    private $xmlDecoder = '\Curl\decodeXml';
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
 
     /**
@@ -108,8 +127,6 @@ class Curl
         $this->curl = curl_init();
         $this->id = 1;
         $this->setDefaultUserAgent();
-        $this->setDefaultJsonDecoder();
-        $this->setDefaultXmlDecoder();
         $this->setDefaultTimeout();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
@@ -782,13 +799,7 @@ class Curl
      */
     public function setDefaultJsonDecoder()
     {
-        $this->jsonDecoder = function($response) {
-            $json_obj = json_decode($response, false);
-            if (!($json_obj === null)) {
-                $response = $json_obj;
-            }
-            return $response;
-        };
+        $this->jsonDecoder = '\Curl\decodeJson';
     }
 
     /**
@@ -798,13 +809,7 @@ class Curl
      */
     public function setDefaultXmlDecoder()
     {
-        $this->xmlDecoder = function($response) {
-            $xml_obj = @simplexml_load_string($response);
-            if (!($xml_obj === false)) {
-                $response = $xml_obj;
-            }
-            return $response;
-        };
+        $this->xmlDecoder = '\Curl\decodeXml';
     }
 
     /**
