@@ -606,7 +606,7 @@ class Curl
         $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
-    
+
     public function rfcSanitize($unsanitized, $rfc)
     {
         $sanitized = '';
@@ -621,7 +621,7 @@ class Curl
                 }
             }
         }
-        
+
         return (string) $sanitized;
     }
 
