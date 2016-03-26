@@ -398,7 +398,7 @@ class Curl
 
         $this->call($this->completeFunction);
 
-        return $return ? $this->response : null;
+        return $return ? $this->response : empty($this->error);
     }
 
     private function reset()
