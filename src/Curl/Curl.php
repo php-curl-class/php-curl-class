@@ -3,6 +3,18 @@
 namespace Curl;
 
 if (!function_exists('http_parse_headers')) {
+    /**
+     * Http Parse Headers
+     *
+     * Parses Raw Headers String into PECL-compatible format, either using
+     * official methods, or a compatible implementation.
+     *
+     * @see https://secure.php.net/manual/en/function.http-parse-headers.php
+     *
+     * @param string $raw_headers Raw Headers String
+     *
+     * @return array Parsed Headers Array
+     */
     function http_parse_headers($raw_headers)
     {
         $headers = array();
@@ -1028,22 +1040,6 @@ class Curl
     {
         return $url . (empty($data) ? '' : '?' . http_build_query($data));
     }
-
-    /**
-     * Http Parse Headers
-     *
-     * Parses Raw Headers String into PECL-compatible format, either using
-     * official methods, or a compatible implementation.
-     *
-     * @see https://secure.php.net/manual/en/function.http-parse-headers.php
-     *
-     * @param string $raw_headers (optional) Raw Headers String
-     *
-     * @return array Parsed Headers Array
-     *
-     * @static
-     * @access private
-     */
 
     /**
      * Parse Headers
