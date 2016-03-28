@@ -9,7 +9,7 @@ define('INSTAGRAM_CLIENT_SECRET', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
 session_start();
 
 $redirect_uri = implode('', array(
-    isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http',
+    isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http',
     '://',
     $_SERVER['SERVER_NAME'],
     $_SERVER['SCRIPT_NAME'],

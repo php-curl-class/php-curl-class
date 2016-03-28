@@ -1548,6 +1548,203 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($put_complete_called);
     }
 
+    public function testCurlCallbackAddedAfter()
+    {
+        $delete_before_send_called = false;
+        $delete_success_called = false;
+        $delete_error_called = false;
+        $delete_complete_called = false;
+        $multi_curl = new MultiCurl();
+        $multi_curl->addDelete(Test::TEST_URL);
+        $multi_curl->beforeSend(function ($instance) use (&$delete_before_send_called) {
+            $delete_before_send_called = true;
+        });
+        $multi_curl->success(function ($instance) use (&$delete_success_called) {
+            $delete_success_called = true;
+        });
+        $multi_curl->error(function ($instance) use (&$delete_error_called) {
+            $delete_error_called = true;
+        });
+        $multi_curl->complete(function ($instance) use (&$delete_complete_called) {
+            $delete_complete_called = true;
+        });
+        $multi_curl->start();
+        $this->assertTrue($delete_before_send_called);
+        $this->assertTrue($delete_success_called);
+        $this->assertFalse($delete_error_called);
+        $this->assertTrue($delete_complete_called);
+
+        $download_before_send_called = false;
+        $download_success_called = false;
+        $download_error_called = false;
+        $download_complete_called = false;
+        $download_file_path = tempnam('/tmp', 'php-curl-class.');
+        $multi_curl = new MultiCurl();
+        $multi_curl->addDownload(Test::TEST_URL, $download_file_path);
+        $multi_curl->beforeSend(function ($instance) use (&$download_before_send_called) {
+            $download_before_send_called = true;
+        });
+        $multi_curl->success(function ($instance) use (&$download_success_called) {
+            $download_success_called = true;
+        });
+        $multi_curl->error(function ($instance) use (&$download_error_called) {
+            $download_error_called = true;
+        });
+        $multi_curl->complete(function ($instance) use (&$download_complete_called) {
+            $download_complete_called = true;
+        });
+        $multi_curl->start();
+        $this->assertTrue($download_before_send_called);
+        $this->assertTrue($download_success_called);
+        $this->assertFalse($download_error_called);
+        $this->assertTrue($download_complete_called);
+        $this->assertTrue(unlink($download_file_path));
+
+        $get_before_send_called = false;
+        $get_success_called = false;
+        $get_error_called = false;
+        $get_complete_called = false;
+        $multi_curl = new MultiCurl();
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->beforeSend(function ($instance) use (&$get_before_send_called) {
+            $get_before_send_called = true;
+        });
+        $multi_curl->success(function ($instance) use (&$get_success_called) {
+            $get_success_called = true;
+        });
+        $multi_curl->error(function ($instance) use (&$get_error_called) {
+            $get_error_called = true;
+        });
+        $multi_curl->complete(function ($instance) use (&$get_complete_called) {
+            $get_complete_called = true;
+        });
+        $multi_curl->start();
+        $this->assertTrue($get_before_send_called);
+        $this->assertTrue($get_success_called);
+        $this->assertFalse($get_error_called);
+        $this->assertTrue($get_complete_called);
+
+        $head_before_send_called = false;
+        $head_success_called = false;
+        $head_error_called = false;
+        $head_complete_called = false;
+        $multi_curl = new MultiCurl();
+        $multi_curl->addHead(Test::TEST_URL);
+        $multi_curl->beforeSend(function ($instance) use (&$head_before_send_called) {
+            $head_before_send_called = true;
+        });
+        $multi_curl->success(function ($instance) use (&$head_success_called) {
+            $head_success_called = true;
+        });
+        $multi_curl->error(function ($instance) use (&$head_error_called) {
+            $head_error_called = true;
+        });
+        $multi_curl->complete(function ($instance) use (&$head_complete_called) {
+            $head_complete_called = true;
+        });
+        $multi_curl->start();
+        $this->assertTrue($head_before_send_called);
+        $this->assertTrue($head_success_called);
+        $this->assertFalse($head_error_called);
+        $this->assertTrue($head_complete_called);
+
+        $options_before_send_called = false;
+        $options_success_called = false;
+        $options_error_called = false;
+        $options_complete_called = false;
+        $multi_curl = new MultiCurl();
+        $multi_curl->addOptions(Test::TEST_URL);
+        $multi_curl->beforeSend(function ($instance) use (&$options_before_send_called) {
+            $options_before_send_called = true;
+        });
+        $multi_curl->success(function ($instance) use (&$options_success_called) {
+            $options_success_called = true;
+        });
+        $multi_curl->error(function ($instance) use (&$options_error_called) {
+            $options_error_called = true;
+        });
+        $multi_curl->complete(function ($instance) use (&$options_complete_called) {
+            $options_complete_called = true;
+        });
+        $multi_curl->start();
+        $this->assertTrue($options_before_send_called);
+        $this->assertTrue($options_success_called);
+        $this->assertFalse($options_error_called);
+        $this->assertTrue($options_complete_called);
+
+        $patch_before_send_called = false;
+        $patch_success_called = false;
+        $patch_error_called = false;
+        $patch_complete_called = false;
+        $multi_curl = new MultiCurl();
+        $multi_curl->addPatch(Test::TEST_URL);
+        $multi_curl->beforeSend(function ($instance) use (&$patch_before_send_called) {
+            $patch_before_send_called = true;
+        });
+        $multi_curl->success(function ($instance) use (&$patch_success_called) {
+            $patch_success_called = true;
+        });
+        $multi_curl->error(function ($instance) use (&$patch_error_called) {
+            $patch_error_called = true;
+        });
+        $multi_curl->complete(function ($instance) use (&$patch_complete_called) {
+            $patch_complete_called = true;
+        });
+        $multi_curl->start();
+        $this->assertTrue($patch_before_send_called);
+        $this->assertTrue($patch_success_called);
+        $this->assertFalse($patch_error_called);
+        $this->assertTrue($patch_complete_called);
+
+        $post_before_send_called = false;
+        $post_success_called = false;
+        $post_error_called = false;
+        $post_complete_called = false;
+        $multi_curl = new MultiCurl();
+        $multi_curl->addPost(Test::TEST_URL);
+        $multi_curl->beforeSend(function ($instance) use (&$post_before_send_called) {
+            $post_before_send_called = true;
+        });
+        $multi_curl->success(function ($instance) use (&$post_success_called) {
+            $post_success_called = true;
+        });
+        $multi_curl->error(function ($instance) use (&$post_error_called) {
+            $post_error_called = true;
+        });
+        $multi_curl->complete(function ($instance) use (&$post_complete_called) {
+            $post_complete_called = true;
+        });
+        $multi_curl->start();
+        $this->assertTrue($post_before_send_called);
+        $this->assertTrue($post_success_called);
+        $this->assertFalse($post_error_called);
+        $this->assertTrue($post_complete_called);
+
+        $put_before_send_called = false;
+        $put_success_called = false;
+        $put_error_called = false;
+        $put_complete_called = false;
+        $multi_curl = new MultiCurl();
+        $multi_curl->addPut(Test::TEST_URL);
+        $multi_curl->beforeSend(function ($instance) use (&$put_before_send_called) {
+            $put_before_send_called = true;
+        });
+        $multi_curl->success(function ($instance) use (&$put_success_called) {
+            $put_success_called = true;
+        });
+        $multi_curl->error(function ($instance) use (&$put_error_called) {
+            $put_error_called = true;
+        });
+        $multi_curl->complete(function ($instance) use (&$put_complete_called) {
+            $put_complete_called = true;
+        });
+        $multi_curl->start();
+        $this->assertTrue($put_before_send_called);
+        $this->assertTrue($put_success_called);
+        $this->assertFalse($put_error_called);
+        $this->assertTrue($put_complete_called);
+    }
+
     public function testSetOptAndSetOptOverride()
     {
         $multi_curl_user_agent = 'multi curl user agent';
@@ -1751,6 +1948,36 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $get_2 = $multi_curl->addGet(Test::TEST_URL);
         $get_2->beforeSend(function ($instance) {
             $instance->setJsonDecoder(function($response) {
+                return 'bar';
+            });
+        });
+        $get_2->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
+            PHPUnit_Framework_Assert::assertEquals('bar', $instance->response);
+        });
+
+        $multi_curl->start();
+        $this->assertEquals('foo', $get_1->response);
+        $this->assertEquals('bar', $get_2->response);
+    }
+
+    public function testXMLDecoder()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'xml_with_cdata_response');
+        $multi_curl->setXmlDecoder(function($response) {
+            return 'foo';
+        });
+
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_1->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
+            PHPUnit_Framework_Assert::assertEquals('foo', $instance->response);
+        });
+
+        $get_2 = $multi_curl->addGet(Test::TEST_URL);
+        $get_2->beforeSend(function ($instance) {
+            $instance->setXmlDecoder(function($response) {
                 return 'bar';
             });
         });
@@ -1996,5 +2223,26 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_resource($multi_curl->multiCurl));
         $multi_curl->close();
         $this->assertFalse(is_resource($multi_curl->multiCurl));
+    }
+
+    public function testMultiPostRedirectGet()
+    {
+        // Deny post-redirect-get
+        $multi_curl = new MultiCurl(Test::TEST_URL);
+        $multi_curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+        $multi_curl->setHeader('X-DEBUG-TEST', 'post_redirect_get');
+        $multi_curl->addPost(array(), false)->complete(function($instance) {
+            PHPUnit_Framework_Assert::assertEquals('Redirected: POST', $instance->response);
+        });
+        $multi_curl->start();
+
+        // Allow post-redirect-get
+        $multi_curl = new MultiCurl(Test::TEST_URL);
+        $multi_curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+        $multi_curl->setHeader('X-DEBUG-TEST', 'post_redirect_get');
+        $multi_curl->addPost(array(), true)->complete(function($instance) {
+            PHPUnit_Framework_Assert::assertEquals('Redirected: GET', $instance->response);
+        });
+        $multi_curl->start();
     }
 }

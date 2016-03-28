@@ -26,14 +26,27 @@ class Test
         }
         return $this->curl->response;
     }
-}
 
-function test($instance, $before, $after)
-{
-    $instance->server('request_method', $before);
-    \PHPUnit_Framework_Assert::assertEquals($before, $instance->curl->responseHeaders['X-REQUEST-METHOD']);
-    $instance->server('request_method', $after);
-    \PHPUnit_Framework_Assert::assertEquals($after, $instance->curl->responseHeaders['X-REQUEST-METHOD']);
+    /*
+     * When chaining requests, the method must be forced, otherwise a
+     * previously forced method might be inherited.
+     * Especially, POSTs must be configured to not perform post-redirect-get.
+     */
+    private function chained_request($request_method)
+    {
+        if ($request_method === 'POST') {
+            $this->server('request_method', $request_method, array(), true);
+        } else {
+            $this->server('request_method', $request_method);
+        }
+        \PHPUnit_Framework_Assert::assertEquals($request_method, $this->curl->responseHeaders['X-REQUEST-METHOD']);
+    }
+
+    public function chain_requests($first, $second)
+    {
+        $this->chained_request($first);
+        $this->chained_request($second);
+    }
 }
 
 function create_png()

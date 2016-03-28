@@ -1,3 +1,4 @@
+set -x
 echo "TRAVIS_PHP_VERSION: ${TRAVIS_PHP_VERSION}"
 
 composer self-update
@@ -34,6 +35,8 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "5.5" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 elif [[ "${TRAVIS_PHP_VERSION}" == "5.6" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
+elif [[ "${TRAVIS_PHP_VERSION}" == "7.0" ]]; then
+    php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 elif [[ "${TRAVIS_PHP_VERSION}" == "hhvm" ]]; then
     sudo add-apt-repository -y ppa:nginx/stable
     sudo apt-get update
@@ -52,7 +55,10 @@ server {
 EOF
     sudo /usr/share/hhvm/install_fastcgi.sh
     sudo /etc/init.d/hhvm restart
-    sudo service nginx restart
+    sleep 5
+    sudo service nginx stop
+    sleep 5
+    sudo service nginx start
 elif [[ "${TRAVIS_PHP_VERSION}" == "nightly" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 fi
