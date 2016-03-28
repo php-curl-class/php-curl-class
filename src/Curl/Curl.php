@@ -2,6 +2,51 @@
 
 namespace Curl;
 
+if (!function_exists('http_parse_headers')) {
+    function http_parse_headers($raw_headers)
+    {
+        $headers = array();
+        if (is_string($raw_headers)) {
+            $key = 0;
+            foreach((array) preg_split(
+                '/\n/', (string) $raw_headers, null, PREG_SPLIT_NO_EMPTY
+            ) as $line) {
+                $parts = explode(':', $line, 2);
+                if (isset($parts[1])) {
+                    $key   = trim($parts[0]);
+                    $value = trim($parts[1]);
+                    if (!isset($headers[$key])) {
+                        $headers[$key] = $value;
+                    } else {
+                        $headers[$key] = array_merge(
+                            (array) $headers[$key],
+                            (array) $value
+                        );
+                    }
+                } else {
+                    $value = trim($parts[0]);
+                    if (!isset($headers[$key])) {
+                        $headers[$key] = $value;
+                    } else {
+                        if (substr($parts[0], 0, 1) === "\t") {
+                            $value = "\r\n\t$value";
+                        }
+                        if(is_array($headers[$key])) {
+                            end($headers[$key]);
+                            $i = key($headers[$key]);
+                            $headers[$key][$i] .= $value;
+                        } else {
+                            $headers[$key] .= $value;
+                        }
+                    }
+                }
+            }
+        } else {
+            trigger_error('\Curl\http_parse_headers() expects parameter 1 to be a string', E_USER_WARNING);
+        }
+        return (array) $headers;
+    }
+}
 
 class Curl
 {
@@ -999,52 +1044,6 @@ class Curl
      * @static
      * @access private
      */
-    private static function http_parse_headers($raw_headers = '') {
-        $headers = array();
-        if (is_string($raw_headers)) {
-            if (function_exists('http_parse_headers')) {
-                $headers = http_parse_headers($raw_headers);
-            } else {
-                $key = '';
-                foreach((array) preg_split(
-                    '/\n/', (string) $raw_headers, null, PREG_SPLIT_NO_EMPTY
-                ) as $line) {
-                    $parts = explode(':', $line, 2);
-                    if (isset($parts[1])) {
-                        $key   = trim($parts[0]);
-                        $value = trim($parts[1]);
-                        if (!isset($headers[$key])) {
-                            $headers[$key] = $value;
-                        } else {
-                            $headers[$key] = array_merge(
-                                (array) $headers[$key],
-                                (array) $value
-                            );
-                        }
-                    } else {
-                        $value = trim($parts[0]);
-                        if (substr($value, 0, 1) == "\t") {
-                            $value = "\r\n\t$value";
-                        }
-                        if (!isset($headers[$key])) {
-                            $headers[$key] = $value;
-                        } else {
-                            if(is_array($headers[$key])) {
-                                end($headers[$key]);
-                                $i = key($headers[$key]);
-                                $headers[$key][$i] .= $value;
-                            } else {
-                                $headers[$key] .= $value;
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            trigger_error('Curl::http_parse_headers() expects parameter 1 to be a string', E_USER_WARNING);
-        }
-        return (array) $headers;
-    }
 
     /**
      * Parse Headers
@@ -1071,7 +1070,7 @@ class Curl
 
         if(!empty($raw_headers)) {
             if($this->pecl_headers) {
-                foreach(self::http_parse_headers($raw_headers) as $key => $value) {
+                foreach(http_parse_headers($raw_headers) as $key => $value) {
                     $http_headers[$key] = $value;
                 }
             } else {
