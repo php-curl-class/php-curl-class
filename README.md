@@ -1,6 +1,6 @@
 # PHP Curl Class: HTTP requests made easy
 
-[![Build Status](https://travis-ci.org/php-curl-class/php-curl-class.png?branch=master)](https://travis-ci.org/php-curl-class/php-curl-class)
+[![Build Status](https://travis-ci.org/php-curl-class/php-curl-class.png)](https://travis-ci.org/php-curl-class/php-curl-class)
 [![Downloads](https://img.shields.io/packagist/dt/php-curl-class/php-curl-class.svg)](https://packagist.org/packages/php-curl-class/php-curl-class)
 
 [![License](https://img.shields.io/packagist/l/php-curl-class/php-curl-class.svg)](https://github.com/php-curl-class/php-curl-class/blob/master/LICENSE)
