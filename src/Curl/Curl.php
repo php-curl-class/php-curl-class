@@ -594,8 +594,6 @@ class Curl
      * @return void
      *
      * @access public
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
     public function setPeclHeaders($compatible = TRUE) {
         $this->pecl_headers = (bool) $compatible;
@@ -1000,8 +998,6 @@ class Curl
      *
      * @static
      * @access private
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
     private static function http_parse_headers($raw_headers = '') {
         $headers = array();
@@ -1062,8 +1058,6 @@ class Curl
      * @return \Curl\CaseInsensitiveArray The headers, parsed.
      *
      * @access private
-     *
-     * @author Michael Mulligan <michael@bigroomstudios.com>
      */
     private function parseHeaders($raw_headers, $first_name = '') {
         $http_headers = new CaseInsensitiveArray();
