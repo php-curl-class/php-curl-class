@@ -71,7 +71,7 @@ class Curl
     public $errorFunction = null;
     public $completeFunction = null;
 
-    private $pecl_headers = FALSE;
+    private $pecl_headers = false;
 
     private $cookies = array();
     private $responseCookies = array();
@@ -595,7 +595,7 @@ class Curl
      *
      * @access public
      */
-    public function setPeclHeaders($compatible = TRUE) {
+    public function setPeclHeaders($compatible = true) {
         $this->pecl_headers = (bool) $compatible;
     }
 
@@ -1007,7 +1007,7 @@ class Curl
             } else {
                 $key = '';
                 foreach((array) preg_split(
-                    '/\n/', (string) $raw_headers, NULL, PREG_SPLIT_NO_EMPTY
+                    '/\n/', (string) $raw_headers, null, PREG_SPLIT_NO_EMPTY
                 ) as $line) {
                     $parts = explode(':', $line, 2);
                     if (isset($parts[1])) {
@@ -1077,7 +1077,7 @@ class Curl
             } else {
 
                 foreach((array) preg_split(
-                    '/\n/', (string) $raw_headers, NULL, PREG_SPLIT_NO_EMPTY
+                    '/\n/', (string) $raw_headers, null, PREG_SPLIT_NO_EMPTY
                 ) as $header) {
 
                     list($key, $value) = explode(':', $header, 2);
@@ -1153,7 +1153,7 @@ class Curl
         // Find the actual HTTP response headers to parse.
         $response_header_array = explode("\r\n\r\n", $raw_response_headers);
         $response_headers = '';
-        while(($header = array_pop($response_header_array)) !== NULL) {
+        while(($header = array_pop($response_header_array)) !== null) {
             if (stripos($header, 'HTTP/') === 0) {
                 $response_headers = $header;
                 break;
