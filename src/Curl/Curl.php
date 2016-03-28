@@ -87,6 +87,8 @@ class Curl
      * @access public
      * @param  $base_url
      * @throws \ErrorException
+     *
+     * @author Mike Mulligan
      */
     public function __construct($base_url = null)
     {
@@ -100,10 +102,10 @@ class Curl
         $this->setDefaultJsonDecoder();
         $this->setDefaultXmlDecoder();
         $this->setDefaultTimeout();
-        $this->setOpt(CURLINFO_HEADER_OUT, true);
+        $this->setOpt(CURLINFO_HEADER_OUT, TRUE);
         $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
-        $this->headers = new CaseInsensitiveArray();
+        $this->headers = new CaseInsensitiveArray();       
         $this->setURL($base_url);
         $this->rfc2616 = array_fill_keys(self::$RFC2616, true);
         $this->rfc6265 = array_fill_keys(self::$RFC6265, true);
@@ -150,7 +152,7 @@ class Curl
                         $data[$key] = '';
                     // Fix "curl_setopt(): The usage of the @filename API for file uploading is deprecated. Please use
                     // the CURLFile class instead". Ignore non-file values prefixed with the @ character.
-                    } elseif (is_string($value) && strpos($value, '@') === 0 && is_file(substr($value, 1))) {
+                    } elseif (is_string($value) && strpos($value, '@') == 0 && is_file(substr($value, 1))) {
                         $binary_data = true;
                         if (class_exists('CURLFile')) {
                             $data[$key] = new \CURLFile(substr($value, 1));
