@@ -694,28 +694,28 @@ class Curl
      */
     public function setCookie($key, $value)
     {
-        $name_chars = array();
-        foreach (str_split($key) as $name_char) {
-            if (!isset(self::$RFC2616[$name_char])) {
-                $name_chars[] = rawurlencode($name_char);
+        $sanitary_name = '';
+        $RFC2616 = &self::$RFC2616;
+        foreach (str_split($key) as $char) {
+            if (isset($RFC2616[$char])) {
+                $sanitary_name .= $char;
             } else {
-                $name_chars[] = $name_char;
+                $sanitary_name .= rawurlencode($char);
             }
         }
 
-        $value_chars = array();
-        foreach (str_split($value) as $value_char) {
-            if (!isset(self::$RFC6265[$value_char])) {
-                $value_chars[] = rawurlencode($value_char);
+        $sanitary_value = '';
+        $RFC6265 = &self::$RFC6265;
+        foreach (str_split($value) as $char) {
+            if (isset($RFC6265[$char])) {
+                $sanitary_value .= $char;
             } else {
-                $value_chars[] = $value_char;
+                $sanitary_value .= rawurlencode($char);
             }
         }
 
-        $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
-        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function($k, $v) {
-            return $k . '=' . $v;
-        }, array_keys($this->cookies), array_values($this->cookies))));
+        $this->cookies[$sanitary_name] = "$sanitary_name=$sanitary_value";
+        $this->setOpt(CURLOPT_COOKIE, implode('; ', $this->cookies));
     }
 
     /**
