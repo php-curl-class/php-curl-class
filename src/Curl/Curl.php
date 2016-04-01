@@ -76,8 +76,8 @@ class Curl
     private $headers = array();
     private $options = array();
     
-    private $responseParsing = null;
-    private $responseHeadersParsing = null;
+    private $responseParsing = true;
+    private $responseHeadersParsing = true;
     private $jsonDecoder = null;
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
     private $xmlDecoder = null;
@@ -98,8 +98,6 @@ class Curl
 
         $this->curl = curl_init();
         $this->id = 1;
-        $this->responseParsing = true;
-        $this->responseHeadersParsing = true;
         $this->setDefaultUserAgent();
         $this->setDefaultJsonDecoder();
         $this->setDefaultXmlDecoder();
@@ -844,7 +842,7 @@ class Curl
      * @access public
      * @param  $function
      */
-    public function setJsonDecoder($function=null)
+    public function setJsonDecoder($function)
     {
         if (is_callable($function) || $function === null) {
             $this->jsonDecoder = $function;
@@ -857,7 +855,7 @@ class Curl
      * @access public
      * @param  $function
      */
-    public function setXmlDecoder($function=null)
+    public function setXmlDecoder($function)
     {
         if (is_callable($function) || $function === null) {
             $this->xmlDecoder = $function;

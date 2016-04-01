@@ -2,24 +2,23 @@
 
 namespace Curl;
 
-class MultiCurl
-{
+class MultiCurl {
+
     public $baseUrl = null;
     public $multiCurl;
     public $curls = array();
     private $curlFileHandles = array();
     private $nextCurlId = 1;
     private $isStarted = false;
-
     private $beforeSendFunction = null;
     private $successFunction = null;
     private $errorFunction = null;
     private $completeFunction = null;
-
     private $cookies = array();
     private $headers = array();
     private $options = array();
-
+    private $responseParsing = true;
+    private $responseHeadersParsing = true;
     private $jsonDecoder = null;
     private $xmlDecoder = null;
 
@@ -29,11 +28,38 @@ class MultiCurl
      * @access public
      * @param  $base_url
      */
-    public function __construct($base_url = null)
-    {
+    public function __construct($base_url = null) {
         $this->multiCurl = curl_multi_init();
         $this->headers = new CaseInsensitiveArray();
         $this->setURL($base_url);
+    }
+
+    /**
+     * Enables or disables parsing of response, 
+     * if enabled => header parsing must also be enabled
+     * 
+     * @access public
+     * @param  $onoff
+     */
+    public function setResponseParsing($onoff = true) {
+        $this->responseParsing = !!$onoff;
+        if ($onoff) {
+            $this->responseHeadersParsing = true;
+        }
+    }
+
+    /**
+     * Enables or disables the parsing of headers, 
+     * if disabled => it also disables the parsing of the response
+     * 
+     * @access public
+     * @param  $onoff
+     */
+    public function setHeadersResponseParsing($onoff = true) {
+        $this->responseHeadersParsing = !!$onoff;
+        if (!$onoff) {
+            $this->responseParsing = false;
+        }
     }
 
     /**
@@ -46,8 +72,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addDelete($url, $query_parameters = array(), $data = array())
-    {
+    public function addDelete($url, $query_parameters = array(), $data = array()) {
         if (is_array($url)) {
             $data = $query_parameters;
             $query_parameters = $url;
@@ -70,8 +95,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addDownload($url, $mixed_filename)
-    {
+    public function addDownload($url, $mixed_filename) {
         $curl = new Curl();
         $curl->setURL($url);
 
@@ -101,8 +125,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addGet($url, $data = array())
-    {
+    public function addGet($url, $data = array()) {
         if (is_array($url)) {
             $data = $url;
             $url = $this->baseUrl;
@@ -124,8 +147,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addHead($url, $data = array())
-    {
+    public function addHead($url, $data = array()) {
         if (is_array($url)) {
             $data = $url;
             $url = $this->baseUrl;
@@ -147,8 +169,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addOptions($url, $data = array())
-    {
+    public function addOptions($url, $data = array()) {
         if (is_array($url)) {
             $data = $url;
             $url = $this->baseUrl;
@@ -170,8 +191,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addPatch($url, $data = array())
-    {
+    public function addPatch($url, $data = array()) {
         if (is_array($url)) {
             $data = $url;
             $url = $this->baseUrl;
@@ -197,10 +217,9 @@ class MultiCurl
      *
      * @return object
      */
-    public function addPost($url, $data = array(), $post_redirect_get = false)
-    {
+    public function addPost($url, $data = array(), $post_redirect_get = false) {
         if (is_array($url)) {
-            $post_redirect_get = (bool)$data;
+            $post_redirect_get = (bool) $data;
             $data = $url;
             $url = $this->baseUrl;
         }
@@ -236,8 +255,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addPut($url, $data = array())
-    {
+    public function addPut($url, $data = array()) {
         if (is_array($url)) {
             $data = $url;
             $url = $this->baseUrl;
@@ -258,8 +276,7 @@ class MultiCurl
      * @access public
      * @param  $callback
      */
-    public function beforeSend($callback)
-    {
+    public function beforeSend($callback) {
         $this->beforeSendFunction = $callback;
     }
 
@@ -268,8 +285,7 @@ class MultiCurl
      *
      * @access public
      */
-    public function close()
-    {
+    public function close() {
         foreach ($this->curls as $ch) {
             $ch->close();
         }
@@ -285,8 +301,7 @@ class MultiCurl
      * @access public
      * @param  $callback
      */
-    public function complete($callback)
-    {
+    public function complete($callback) {
         $this->completeFunction = $callback;
     }
 
@@ -296,8 +311,7 @@ class MultiCurl
      * @access public
      * @param  $callback
      */
-    public function error($callback)
-    {
+    public function error($callback) {
         $this->errorFunction = $callback;
     }
 
@@ -309,8 +323,7 @@ class MultiCurl
      *
      * @return mixed
      */
-    public function getOpt($option)
-    {
+    public function getOpt($option) {
         return $this->options[$option];
     }
 
@@ -321,8 +334,7 @@ class MultiCurl
      * @param  $username
      * @param  $password
      */
-    public function setBasicAuthentication($username, $password = '')
-    {
+    public function setBasicAuthentication($username, $password = '') {
         $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
@@ -334,8 +346,7 @@ class MultiCurl
      * @param  $username
      * @param  $password
      */
-    public function setDigestAuthentication($username, $password = '')
-    {
+    public function setDigestAuthentication($username, $password = '') {
         $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
@@ -347,8 +358,7 @@ class MultiCurl
      * @param  $key
      * @param  $value
      */
-    public function setCookie($key, $value)
-    {
+    public function setCookie($key, $value) {
         $this->cookies[$key] = $value;
         $this->setOpt(CURLOPT_COOKIE, str_replace('+', '%20', http_build_query($this->cookies, '', '; ')));
     }
@@ -359,8 +369,7 @@ class MultiCurl
      * @access public
      * @param  $cookie_file
      */
-    public function setCookieFile($cookie_file)
-    {
+    public function setCookieFile($cookie_file) {
         $this->setOpt(CURLOPT_COOKIEFILE, $cookie_file);
     }
 
@@ -370,8 +379,7 @@ class MultiCurl
      * @access public
      * @param  $cookie_jar
      */
-    public function setCookieJar($cookie_jar)
-    {
+    public function setCookieJar($cookie_jar) {
         $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
     }
 
@@ -382,8 +390,7 @@ class MultiCurl
      * @param  $key
      * @param  $value
      */
-    public function setHeader($key, $value)
-    {
+    public function setHeader($key, $value) {
         $this->headers[$key] = $value;
     }
 
@@ -393,9 +400,8 @@ class MultiCurl
      * @access public
      * @param  $function
      */
-    public function setJsonDecoder($function)
-    {
-        if (is_callable($function)) {
+    public function setJsonDecoder($function) {
+        if (is_callable($function) || $function === null) {
             $this->jsonDecoder = $function;
         }
     }
@@ -406,9 +412,8 @@ class MultiCurl
      * @access public
      * @param  $function
      */
-    public function setXmlDecoder($function)
-    {
-        if (is_callable($function)) {
+    public function setXmlDecoder($function) {
+        if (is_callable($function) || $function === null) {
             $this->xmlDecoder = $function;
         }
     }
@@ -420,8 +425,7 @@ class MultiCurl
      * @param  $option
      * @param  $value
      */
-    public function setOpt($option, $value)
-    {
+    public function setOpt($option, $value) {
         $this->options[$option] = $value;
     }
 
@@ -431,8 +435,7 @@ class MultiCurl
      * @access public
      * @param  $referer
      */
-    public function setReferer($referer)
-    {
+    public function setReferer($referer) {
         $this->setReferrer($referer);
     }
 
@@ -442,8 +445,7 @@ class MultiCurl
      * @access public
      * @param  $referrer
      */
-    public function setReferrer($referrer)
-    {
+    public function setReferrer($referrer) {
         $this->setOpt(CURLOPT_REFERER, $referrer);
     }
 
@@ -453,8 +455,7 @@ class MultiCurl
      * @access public
      * @param  $seconds
      */
-    public function setTimeout($seconds)
-    {
+    public function setTimeout($seconds) {
         $this->setOpt(CURLOPT_TIMEOUT, $seconds);
     }
 
@@ -464,8 +465,7 @@ class MultiCurl
      * @access public
      * @param  $url
      */
-    public function setURL($url)
-    {
+    public function setURL($url) {
         $this->baseUrl = $url;
     }
 
@@ -475,8 +475,7 @@ class MultiCurl
      * @access public
      * @param  $user_agent
      */
-    public function setUserAgent($user_agent)
-    {
+    public function setUserAgent($user_agent) {
         $this->setOpt(CURLOPT_USERAGENT, $user_agent);
     }
 
@@ -485,8 +484,7 @@ class MultiCurl
      *
      * @access public
      */
-    public function start()
-    {
+    public function start() {
         foreach ($this->curls as $ch) {
             $this->initHandle($ch);
         }
@@ -531,8 +529,7 @@ class MultiCurl
      * @access public
      * @param  $callback
      */
-    public function success($callback)
-    {
+    public function success($callback) {
         $this->successFunction = $callback;
     }
 
@@ -542,8 +539,7 @@ class MultiCurl
      * @access public
      * @param  $key
      */
-    public function unsetHeader($key)
-    {
+    public function unsetHeader($key) {
         $this->setHeader($key, '');
         unset($this->headers[$key]);
     }
@@ -554,8 +550,7 @@ class MultiCurl
      * @access public
      * @param  $on
      */
-    public function verbose($on = true)
-    {
+    public function verbose($on = true) {
         $this->setOpt(CURLOPT_VERBOSE, $on);
     }
 
@@ -564,8 +559,7 @@ class MultiCurl
      *
      * @access public
      */
-    public function __destruct()
-    {
+    public function __destruct() {
         $this->close();
     }
 
@@ -576,8 +570,7 @@ class MultiCurl
      * @param  $curl
      * @throws \ErrorException
      */
-    private function addHandle($curl)
-    {
+    private function addHandle(Curl $curl) {
         $curlm_error_code = curl_multi_add_handle($this->multiCurl, $curl->curl);
         if (!($curlm_error_code === CURLM_OK)) {
             throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
@@ -596,8 +589,7 @@ class MultiCurl
      * @access private
      * @param  $curl
      */
-    private function initHandle($curl)
-    {
+    private function initHandle(Curl $curl) {
         // Set callbacks if not already individually set.
         if ($curl->beforeSendFunction === null) {
             $curl->beforeSend($this->beforeSendFunction);
@@ -620,6 +612,9 @@ class MultiCurl
         }
         $curl->setJsonDecoder($this->jsonDecoder);
         $curl->setXmlDecoder($this->xmlDecoder);
+        $curl->setHeadersResponseParsing($this->responseHeadersParsing);
+        $curl->setResponseParsing($this->responseParsing);
         $curl->call($curl->beforeSendFunction);
     }
+
 }
