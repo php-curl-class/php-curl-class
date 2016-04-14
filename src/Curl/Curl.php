@@ -782,8 +782,6 @@ class Curl
      * @access public
      * @param  $key
      * @param  $value
-     *
-     * @return string
      */
     public function setHeader($key, $value)
     {
