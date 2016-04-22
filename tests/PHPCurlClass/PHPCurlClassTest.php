@@ -2650,4 +2650,58 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $test->server('xml_with_cdata_response', 'POST', $data);
         $this->assertTrue(strpos($test->curl->response->saveXML(), '<![CDATA[') === false);
     }
+
+    public function testGetters()
+    {
+        $curl = new Curl();
+
+        $curl->baseUrl = "cc";
+        $this->assertEquals("cc",$curl->getBaseUrl());
+        $curl->beforeSendFunction = "dd";
+        $this->assertEquals("dd",$curl->getBeforeSendFunction());
+        $curl->completeFunction = "ee";
+        $this->assertEquals("ee",$curl->getCompleteFunction());
+        $curl->curl = "bb";
+        $this->assertEquals("bb", $curl->getCurl());
+        $curl->curlError = true;
+        $this->assertTrue($curl->isCurlError());
+        $curl->curlErrorCode = "ff";
+        $this->assertEquals("ff",$curl->getCurlErrorCode());
+        $curl->curlErrorMessage = "gg";
+        $this->assertEquals("gg",$curl->getCurlErrorMessage());
+        $curl->downloadCompleteFunction = "hh";
+        $this->assertEquals("hh",$curl->getDownloadCompleteFunction());
+        $curl->effectiveUrl = "ii";
+        $this->assertEquals("ii",$curl->getEffectiveUrl());
+        $curl->error = true;
+        $this->assertTrue($curl->isError());
+        $curl->errorCode = "jj";
+        $this->assertEquals("jj",$curl->getErrorCode());
+        $curl->errorFunction = "kk";
+        $this->assertEquals("kk",$curl->getErrorFunction());
+        $curl->errorMessage = "ll";
+        $this->assertEquals("ll",$curl->getErrorMessage());
+        $curl->httpError = true;
+        $this->assertTrue($curl->isHttpError());
+        $curl->httpErrorMessage = "mm";
+        $this->assertEquals("mm",$curl->getHttpErrorMessage());
+        $curl->httpStatusCode = "nn";
+        $this->assertEquals("nn",$curl->getHttpStatusCode());
+        $curl->id = "oo";
+        $this->assertEquals("oo",$curl->getId());
+        $curl->rawResponse = "pp";
+        $this->assertEquals("pp",$curl->getRawResponse());
+        $curl->rawResponseHeaders = "qq";
+        $this->assertEquals("qq",$curl->getRawResponseHeaders());
+        $curl->requestHeaders = "rr";
+        $this->assertEquals("rr",$curl->getRequestHeaders());
+        $curl->response = "ss";
+        $this->assertEquals("ss",$curl->getResponse());
+        $curl->responseHeaders = "uu";
+        $this->assertEquals("uu",$curl->getResponseHeaders());
+        $curl->successFunction = "vv";
+        $this->assertEquals("vv",$curl->getSuccessFunction());
+        $curl->url = "aa";
+        $this->assertEquals("aa",$curl->getUrl());
+    }
 }
