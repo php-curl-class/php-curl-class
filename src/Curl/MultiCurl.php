@@ -502,7 +502,7 @@ class MultiCurl
                     foreach ($this->curls as $key => $ch) {
                         if ($ch->curl === $info_array['handle']) {
                             $ch->curlErrorCode = $info_array['result'];
-                            $ch->exec($ch->curl);
+                            $ch->exec($ch->curl, false);
                             curl_multi_remove_handle($this->multiCurl, $ch->curl);
                             unset($this->curls[$key]);
 
@@ -579,7 +579,7 @@ class MultiCurl
     private function addHandle($curl)
     {
         $curlm_error_code = curl_multi_add_handle($this->multiCurl, $curl->curl);
-        if (!($curlm_error_code === CURLM_OK)) {
+        if ($curlm_error_code !== CURLM_OK) {
             throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
         }
         $this->curls[] = $curl;
@@ -618,8 +618,14 @@ class MultiCurl
         foreach ($this->headers as $key => $value) {
             $curl->setHeader($key, $value);
         }
-        $curl->setJsonDecoder($this->jsonDecoder);
-        $curl->setXmlDecoder($this->xmlDecoder);
+
+        if($this->jsonDecoder !== null) {
+            $curl->setJsonDecoder($this->jsonDecoder);
+        }
+        if($this->xmlDecoder !== null) {
+            $curl->setXmlDecoder($this->xmlDecoder);
+        }
+
         $curl->call($curl->beforeSendFunction);
     }
 }

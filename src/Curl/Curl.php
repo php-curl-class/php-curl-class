@@ -2,13 +2,41 @@
 
 namespace Curl;
 
+const VERSION = '4.11.0';
+const DEFAULT_JSON_DECODER = '\Curl\decodeJson';
+const DEFAULT_XML_DECODER = '\Curl\decodeXml';
+const DEFAULT_TIMEOUT = 30;
+
+$curl_version = curl_version();
+define(__NAMESPACE__.'\DEFAULT_USER_AGENT',
+        'PHP-Curl-Class/' . VERSION .
+        ' (+https://github.com/php-curl-class/php-curl-class)' .
+        ' PHP/' . PHP_VERSION .
+        ' curl/' . $curl_version['version']);
+
+function decodeJson($response)
+{
+    $json_obj = json_decode($response, false);
+    if ($json_obj !== null) {
+        $response = $json_obj;
+    }
+    return $response;
+}
+
+function decodeXml($response)
+{
+    $xml_obj = @simplexml_load_string($response);
+    if ($xml_obj !== false) {
+        $response = $xml_obj;
+    }
+    return $response;
+}
 
 class Curl
 {
-    const VERSION = '4.11.0';
-    const DEFAULT_TIMEOUT = 30;
+    private static $rfcLoaded = false;
 
-    public static $RFC2616 = array(
+    private static $RFC2616 = array(
         // RFC2616: "any CHAR except CTLs or separators".
         // CHAR           = <any US-ASCII character (octets 0 - 127)>
         // CTL            = <any US-ASCII control character
@@ -25,7 +53,8 @@ class Curl
         'Y', 'Z', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
         'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '|', '~',
     );
-    public static $RFC6265 = array(
+
+    private static $RFC6265 = array(
         // RFC6265: "US-ASCII characters excluding CTLs, whitespace DQUOTE, comma, semicolon, and backslash".
         // %x21
         '!',
@@ -44,26 +73,28 @@ class Curl
     public $curl;
     public $id = null;
 
-    public $error = false;
-    public $errorCode = 0;
-    public $errorMessage = null;
-
-    public $curlError = false;
-    public $curlErrorCode = 0;
-    public $curlErrorMessage = null;
-
-    public $httpError = false;
-    public $httpStatusCode = 0;
-    public $httpErrorMessage = null;
+    private static $deferredProperties = array(
+        'response',
+        'errorMessage',
+        'curlErrorMessage',
+        'httpErrorMessage',
+        'effectiveUrl',
+        'rawRequestHeaders',
+        'requestHeaders',
+        'responseHeaders',
+    );
 
     public $baseUrl = null;
     public $url = null;
-    public $effectiveUrl = null;
-    public $requestHeaders = null;
-    public $responseHeaders = null;
     public $rawResponseHeaders = '';
-    public $response = null;
     public $rawResponse = null;
+
+    public $error = false;
+    public $errorCode = 0;
+    public $curlError = false;
+    public $curlErrorCode = 0;
+    public $httpError = false;
+    public $httpStatusCode = 0;
 
     public $beforeSendFunction = null;
     public $downloadCompleteFunction = null;
@@ -76,9 +107,9 @@ class Curl
     private $headers = array();
     private $options = array();
 
-    private $jsonDecoder = null;
+    private $jsonDecoder = DEFAULT_JSON_DECODER;
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
-    private $xmlDecoder = null;
+    private $xmlDecoder = DEFAULT_XML_DECODER;
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
 
     /**
@@ -97,16 +128,18 @@ class Curl
         $this->curl = curl_init();
         $this->id = 1;
         $this->setDefaultUserAgent();
-        $this->setDefaultJsonDecoder();
-        $this->setDefaultXmlDecoder();
         $this->setDefaultTimeout();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
         $this->setURL($base_url);
-        $this->rfc2616 = array_fill_keys(self::$RFC2616, true);
-        $this->rfc6265 = array_fill_keys(self::$RFC6265, true);
+
+        if (!self::$rfcLoaded) {
+            self::$rfcLoaded = true;
+            self::$RFC2616 = array_fill_keys(self::$RFC2616, true);
+            self::$RFC6265 = array_fill_keys(self::$RFC6265, true);
+        }
     }
 
     /**
@@ -135,7 +168,7 @@ class Curl
                 if (isset($this->headers['Content-Type']) &&
                     preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
                     $json_str = json_encode($data);
-                    if (!($json_str === false)) {
+                    if ($json_str !== false) {
                         $data = $json_str;
                     }
                 } else {
@@ -164,7 +197,7 @@ class Curl
                     if (isset($this->headers['Content-Type']) &&
                         preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
                         $json_str = json_encode($data);
-                        if (!($json_str === false)) {
+                        if ($json_str !== false) {
                             $data = $json_str;
                         }
                     } else {
@@ -329,44 +362,33 @@ class Curl
     /**
      * Exec
      *
-     * @access public
-     * @param  $ch
+     * @param CurlHandle $ch (optional) Curl Handle to use, supports Multi..
+     * @param bool $return (optional) Whether or not to return the response. If
+     * false, effectively defers all parsing of the handle.
      *
-     * @return string
+     * @return mixed Either the String response, or null
+     *
+     * @access public
      */
-    public function exec($ch = null)
+    public function exec($ch = null, $return = true)
     {
-        $this->responseCookies = array();
-        if (!($ch === null)) {
+        $this->reset();
+
+        if ($ch !== null) {
             $this->rawResponse = curl_multi_getcontent($ch);
         } else {
             $this->call($this->beforeSendFunction);
             $this->rawResponse = curl_exec($this->curl);
             $this->curlErrorCode = curl_errno($this->curl);
         }
-        $this->curlErrorMessage = curl_error($this->curl);
-        $this->curlError = !($this->curlErrorCode === 0);
+
+        $this->curlError = $this->curlErrorCode !== 0;
+
         $this->httpStatusCode = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
         $this->httpError = in_array(floor($this->httpStatusCode / 100), array(4, 5));
+
         $this->error = $this->curlError || $this->httpError;
         $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;
-        $this->effectiveUrl = curl_getinfo($this->curl, CURLINFO_EFFECTIVE_URL);
-
-        // NOTE: CURLINFO_HEADER_OUT set to true is required for requestHeaders
-        // to not be empty (e.g. $curl->setOpt(CURLINFO_HEADER_OUT, true);).
-        if ($this->getOpt(CURLINFO_HEADER_OUT) === true) {
-            $this->requestHeaders = $this->parseRequestHeaders(curl_getinfo($this->curl, CURLINFO_HEADER_OUT));
-        }
-        $this->responseHeaders = $this->parseResponseHeaders($this->rawResponseHeaders);
-        list($this->response, $this->rawResponse) = $this->parseResponse($this->responseHeaders, $this->rawResponse);
-
-        $this->httpErrorMessage = '';
-        if ($this->error) {
-            if (isset($this->responseHeaders['Status-Line'])) {
-                $this->httpErrorMessage = $this->responseHeaders['Status-Line'];
-            }
-        }
-        $this->errorMessage = $this->curlError ? $this->curlErrorMessage : $this->httpErrorMessage;
 
         if (!$this->error) {
             $this->call($this->successFunction);
@@ -376,7 +398,62 @@ class Curl
 
         $this->call($this->completeFunction);
 
-        return $this->response;
+        return $return ? $this->response : empty($this->error);
+    }
+
+    private function reset()
+    {
+        $this->responseCookies = array();
+        foreach(self::$deferredProperties as $prop) unset($this->$prop);
+    }
+
+    public function __get($key) {
+        $return = null;
+        if(in_array($key, self::$deferredProperties) && is_callable(array($this, $getter = "__get_$key"))) {
+            $return = $this->$key = $this->$getter();
+        }
+        return $return;
+    }
+
+    private function __get_response()
+    {
+        return $this->parseResponse($this->responseHeaders, $this->rawResponse);
+    }
+
+    private function __get_errorMessage()
+    {
+        return $this->curlError ? $this->curlErrorMessage : $this->httpErrorMessage;
+    }
+
+    private function __get_curlErrorMessage()
+    {
+        return curl_error($this->curl);
+    }
+
+    private function __get_httpErrorMessage()
+    {
+        return ($this->error && isset($this->responseHeaders['Status-Line']))
+                ? $this->responseHeaders['Status-Line'] : '';
+    }
+
+    private function __get_effectiveUrl()
+    {
+        return curl_getinfo($this->curl, CURLINFO_EFFECTIVE_URL);
+    }
+
+    private function __get_rawRequestHeaders()
+    {
+        return ($this->getOpt(CURLINFO_HEADER_OUT) === true ? curl_getinfo($this->curl, CURLINFO_HEADER_OUT) : null);
+    }
+
+    private function __get_requestHeaders()
+    {
+        return $this->parseRequestHeaders($this->rawRequestHeaders);
+    }
+
+    private function __get_responseHeaders()
+    {
+        return $this->parseResponseHeaders($this->rawResponseHeaders);
     }
 
     /**
@@ -617,28 +694,28 @@ class Curl
      */
     public function setCookie($key, $value)
     {
-        $name_chars = array();
-        foreach (str_split($key) as $name_char) {
-            if (!isset($this->rfc2616[$name_char])) {
-                $name_chars[] = rawurlencode($name_char);
+        $sanitary_name = '';
+        $RFC2616 = &self::$RFC2616;
+        foreach (str_split($key) as $char) {
+            if (isset($RFC2616[$char])) {
+                $sanitary_name .= $char;
             } else {
-                $name_chars[] = $name_char;
+                $sanitary_name .= rawurlencode($char);
             }
         }
 
-        $value_chars = array();
-        foreach (str_split($value) as $value_char) {
-            if (!isset($this->rfc6265[$value_char])) {
-                $value_chars[] = rawurlencode($value_char);
+        $sanitary_value = '';
+        $RFC6265 = &self::$RFC6265;
+        foreach (str_split($value) as $char) {
+            if (isset($RFC6265[$char])) {
+                $sanitary_value .= $char;
             } else {
-                $value_chars[] = $value_char;
+                $sanitary_value .= rawurlencode($char);
             }
         }
 
-        $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
-        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function($k, $v) {
-            return $k . '=' . $v;
-        }, array_keys($this->cookies), array_values($this->cookies))));
+        $this->cookies[$sanitary_name] = "$sanitary_name=$sanitary_value";
+        $this->setOpt(CURLOPT_COOKIE, implode('; ', $this->cookies));
     }
 
     /**
@@ -727,13 +804,7 @@ class Curl
      */
     public function setDefaultJsonDecoder()
     {
-        $this->jsonDecoder = function($response) {
-            $json_obj = json_decode($response, false);
-            if (!($json_obj === null)) {
-                $response = $json_obj;
-            }
-            return $response;
-        };
+        $this->jsonDecoder = DEFAULT_JSON_DECODER;
     }
 
     /**
@@ -743,13 +814,7 @@ class Curl
      */
     public function setDefaultXmlDecoder()
     {
-        $this->xmlDecoder = function($response) {
-            $xml_obj = @simplexml_load_string($response);
-            if (!($xml_obj === false)) {
-                $response = $xml_obj;
-            }
-            return $response;
-        };
+        $this->xmlDecoder = DEFAULT_XML_DECODER;
     }
 
     /**
@@ -759,7 +824,7 @@ class Curl
      */
     public function setDefaultTimeout()
     {
-        $this->setTimeout(self::DEFAULT_TIMEOUT);
+        $this->setTimeout(DEFAULT_TIMEOUT);
     }
 
     /**
@@ -769,11 +834,7 @@ class Curl
      */
     public function setDefaultUserAgent()
     {
-        $user_agent = 'PHP-Curl-Class/' . self::VERSION . ' (+https://github.com/php-curl-class/php-curl-class)';
-        $user_agent .= ' PHP/' . PHP_VERSION;
-        $curl_version = curl_version();
-        $user_agent .= ' curl/' . $curl_version['version'];
-        $this->setUserAgent($user_agent);
+        $this->setUserAgent(DEFAULT_USER_AGENT);
     }
 
     /**
@@ -801,7 +862,7 @@ class Curl
      */
     public function setJsonDecoder($function)
     {
-        if (is_callable($function)) {
+        if (is_callable($function) || $function === false) {
             $this->jsonDecoder = $function;
         }
     }
@@ -814,7 +875,7 @@ class Curl
      */
     public function setXmlDecoder($function)
     {
-        if (is_callable($function)) {
+        if (is_callable($function) || $function === false) {
             $this->xmlDecoder = $function;
         }
     }
@@ -834,7 +895,7 @@ class Curl
             CURLOPT_RETURNTRANSFER => 'CURLOPT_RETURNTRANSFER',
         );
 
-        if (in_array($option, array_keys($required_options), true) && !($value === true)) {
+        if (in_array($option, array_keys($required_options), true) && $value !== true) {
             trigger_error($required_options[$option] . ' is a required option', E_USER_WARNING);
         }
 
@@ -1004,11 +1065,14 @@ class Curl
      */
     private function parseRequestHeaders($raw_headers)
     {
-        $request_headers = new CaseInsensitiveArray();
-        list($first_line, $headers) = $this->parseHeaders($raw_headers);
-        $request_headers['Request-Line'] = $first_line;
-        foreach ($headers as $key => $value) {
-            $request_headers[$key] = $value;
+        $request_headers = null;
+        if($raw_headers !== null ){
+            $request_headers = new CaseInsensitiveArray();
+            list($first_line, $headers) = $this->parseHeaders($raw_headers);
+            $request_headers['Request-Line'] = $first_line;
+            foreach ($headers as $key => $value) {
+                $request_headers[$key] = $value;
+            }
         }
         return $request_headers;
     }
@@ -1028,18 +1092,18 @@ class Curl
         if (isset($response_headers['Content-Type'])) {
             if (preg_match($this->jsonPattern, $response_headers['Content-Type'])) {
                 $json_decoder = $this->jsonDecoder;
-                if (is_callable($json_decoder)) {
+                if ($json_decoder) {
                     $response = $json_decoder($response);
                 }
             } elseif (preg_match($this->xmlPattern, $response_headers['Content-Type'])) {
                 $xml_decoder = $this->xmlDecoder;
-                if (is_callable($xml_decoder)) {
+                if ($xml_decoder) {
                     $response = $xml_decoder($response);
                 }
             }
         }
 
-        return array($response, $raw_response);
+        return $response;
     }
 
     /**
