@@ -697,7 +697,7 @@ class Curl
     {
         $this->setOpt(CURLOPT_CONNECTTIMEOUT, $seconds);
     }
-    
+
     /**
      * Set Cookie String
      *
@@ -716,7 +716,7 @@ class Curl
             }
         }
     }
-    
+
     /**
      * Set Cookie File
      *
