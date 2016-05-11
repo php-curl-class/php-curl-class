@@ -708,7 +708,7 @@ class Curl
     {
         if(preg_match_all('/\s*([^;=]+)=([^;]+)/i',$string,$matches) > 0){
             if(isset($matches[1]) && isset($matches[2])){
-                if(count($matches[1]) == count($matches[2])){
+                if(count($matches[1]) === count($matches[2])){
                     foreach ($matches[1] as $handle => $key) {
                         $this->setCookie($key, $matches[2][$handle]);
                     }
