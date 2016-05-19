@@ -80,6 +80,7 @@ class Curl
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
     private $xmlDecoder = null;
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
+    private $defaultDecoder = null;
 
     /**
      * Construct
@@ -99,6 +100,7 @@ class Curl
         $this->setDefaultUserAgent();
         $this->setDefaultJsonDecoder();
         $this->setDefaultXmlDecoder();
+        $this->setDefaultDecoder();
         $this->setDefaultTimeout();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
@@ -753,6 +755,25 @@ class Curl
     }
 
     /**
+     * Set Default Decoder
+     *
+     * @access public
+     * @param  $decoder string|callable
+     */
+    public function setDefaultDecoder($decoder = 'json')
+    {
+        if (is_callable($decoder)) {
+            $this->defaultDecoder = $decoder;
+        } else {
+            if ($decoder === 'json') {
+                $this->defaultDecoder = $this->jsonDecoder;
+            } elseif ($decoder === 'xml') {
+                $this->defaultDecoder = $this->xmlDecoder;
+            }
+        }
+    }
+
+    /**
      * Set Default Timeout
      *
      * @access public
@@ -1035,6 +1056,11 @@ class Curl
                 $xml_decoder = $this->xmlDecoder;
                 if (is_callable($xml_decoder)) {
                     $response = $xml_decoder($response);
+                }
+            } else {
+                $decoder = $this->defaultDecoder;
+                if (is_callable($decoder)) {
+                    $response = $decoder($response);
                 }
             }
         }
