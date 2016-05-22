@@ -5,22 +5,19 @@
 
 [![License](https://img.shields.io/packagist/l/php-curl-class/php-curl-class.svg)](https://github.com/php-curl-class/php-curl-class/blob/master/LICENSE)
 
-PHP Curl Class is an object-oriented wrapper of the PHP cURL extension that makes it easy to send HTTP requests and integrate with web APIs.
-
+لطفا پیشنهادات خود را جهت بهتر شدن پروژه ذکر کنید
 ---
 
-- [Installation](#installation)
-- [Requirements](#requirements)
-- [Quick Start and Examples](#quick-start-and-examples)
-- [Available Methods](#available-methods)
-- [Contribute](#contribute)
-
+- [نصب](#installation)
+- [احتیاجات](#requirements)
+- [نمونه کد](#quick-start-and-examples)
+- [متد ها](#available-methods)
+ 
 ---
 
-### Installation
+### نصب
 
-To install PHP Curl Class, simply:
-
+برای نصب فقط  از طریق composer
     $ composer require php-curl-class/php-curl-class
 
 ### Requirements
