@@ -56,6 +56,7 @@ class Curl
     public $httpStatusCode = 0;
     public $httpErrorMessage = null;
 
+    public $totalTime = 0;
     public $baseUrl = null;
     public $url = null;
     public $effectiveUrl = null;
