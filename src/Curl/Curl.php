@@ -76,7 +76,9 @@ class Curl
     private $responseCookies = array();
     private $headers = array();
     private $options = array();
-
+    
+    private $responseParsing = true;
+    private $responseHeadersParsing = true;
     private $jsonDecoder = null;
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
     private $xmlDecoder = null;
@@ -108,6 +110,34 @@ class Curl
         $this->setURL($base_url);
         $this->rfc2616 = array_fill_keys(self::$RFC2616, true);
         $this->rfc6265 = array_fill_keys(self::$RFC6265, true);
+    }
+    
+    /**
+     * Enables or disables parsing of response, 
+     * if enabled => header parsing must also be enabled
+     * 
+     * @access public
+     * @param  $onoff
+     */
+    public function setResponseParsing($onoff = true) {
+        $this->responseParsing = !!$onoff;
+        if ($onoff) {
+            $this->responseHeadersParsing = true;
+        }
+    }
+
+    /**
+     * Enables or disables the parsing of headers, 
+     * if disabled => it also disables the parsing of the response
+     * 
+     * @access public
+     * @param  $onoff
+     */
+    public function setHeadersResponseParsing($onoff = true) {
+        $this->responseHeadersParsing = !!$onoff;
+        if(!$onoff) {
+            $this->responseParsing = false;
+        }
     }
 
     /**
@@ -359,13 +389,24 @@ class Curl
         if ($this->getOpt(CURLINFO_HEADER_OUT) === true) {
             $this->requestHeaders = $this->parseRequestHeaders(curl_getinfo($this->curl, CURLINFO_HEADER_OUT));
         }
-        $this->responseHeaders = $this->parseResponseHeaders($this->rawResponseHeaders);
-        list($this->response, $this->rawResponse) = $this->parseResponse($this->responseHeaders, $this->rawResponse);
+        if ($this->responseHeadersParsing) {
+            $this->responseHeaders = $this->parseResponseHeaders($this->rawResponseHeaders);
+            if ($this->responseParsing) {
+                list($this->response, $this->rawResponse) = $this->parseResponse($this->responseHeaders, $this->rawResponse);
+            } else {
+                $this->response = $this->rawResponse;
+            }
+        } else {
+            $this->response = $this->rawResponse;
+            $this->responseHeaders = null;
+        }
 
         $this->httpErrorMessage = '';
         if ($this->error) {
-            if (isset($this->responseHeaders['Status-Line'])) {
+            if ($this->responseHeadersParsing && isset($this->responseHeaders['Status-Line'])) {
                 $this->httpErrorMessage = $this->responseHeaders['Status-Line'];
+            } else {
+                $this->httpErrorMessage = "Header parsing disabled, so status can't be shown.";
             }
         }
         $this->errorMessage = $this->curlError ? $this->curlErrorMessage : $this->httpErrorMessage;
@@ -803,7 +844,7 @@ class Curl
      */
     public function setJsonDecoder($function)
     {
-        if (is_callable($function)) {
+        if (is_callable($function) || $function === null) {
             $this->jsonDecoder = $function;
         }
     }
@@ -816,7 +857,7 @@ class Curl
      */
     public function setXmlDecoder($function)
     {
-        if (is_callable($function)) {
+        if (is_callable($function) || $function === null) {
             $this->xmlDecoder = $function;
         }
     }
@@ -1027,15 +1068,15 @@ class Curl
     private function parseResponse($response_headers, $raw_response)
     {
         $response = $raw_response;
-        if (isset($response_headers['Content-Type'])) {
+        if (is_string($raw_response) && isset($response_headers['Content-Type'])) {
             if (preg_match($this->jsonPattern, $response_headers['Content-Type'])) {
                 $json_decoder = $this->jsonDecoder;
-                if (is_callable($json_decoder)) {
+                if ($json_decoder !== null) {
                     $response = $json_decoder($response);
                 }
             } elseif (preg_match($this->xmlPattern, $response_headers['Content-Type'])) {
                 $xml_decoder = $this->xmlDecoder;
-                if (is_callable($xml_decoder)) {
+                if ($xml_decoder !== null) {
                     $response = $xml_decoder($response);
                 }
             }
