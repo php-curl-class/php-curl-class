@@ -388,7 +388,7 @@ class Curl
      * @param  $url
      * @param  $data
      *
-     * @return string
+     * @return mixed Returns the value provided by exec.
      */
     public function get($url, $data = array())
     {
