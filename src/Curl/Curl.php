@@ -333,7 +333,7 @@ class Curl
      * @access public
      * @param  $ch
      *
-     * @return string
+     * @return mixed Returns the value provided by parseResponse.
      */
     public function exec($ch = null)
     {
@@ -360,7 +360,7 @@ class Curl
             $this->requestHeaders = $this->parseRequestHeaders(curl_getinfo($this->curl, CURLINFO_HEADER_OUT));
         }
         $this->responseHeaders = $this->parseResponseHeaders($this->rawResponseHeaders);
-        list($this->response, $this->rawResponse) = $this->parseResponse($this->responseHeaders, $this->rawResponse);
+        $this->response = $this->parseResponse($this->responseHeaders, $this->rawResponse);
 
         $this->httpErrorMessage = '';
         if ($this->error) {
@@ -1022,7 +1022,10 @@ class Curl
      * @param  $response_headers
      * @param  $raw_response
      *
-     * @return array
+     * @return mixed
+         Provided the content-type is determined to be json or xml:
+           Returns stdClass object when the default json decoder is used and the content-type is json.
+           Returns SimpleXMLElement object when the default xml decoder is used and the content-type is xml.
      */
     private function parseResponse($response_headers, $raw_response)
     {
@@ -1041,7 +1044,7 @@ class Curl
             }
         }
 
-        return array($response, $raw_response);
+        return $response;
     }
 
     /**
