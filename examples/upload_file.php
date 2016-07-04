@@ -6,6 +6,12 @@ use \Curl\Curl;
 $myfile = curl_file_create('cats.jpg', 'image/png', 'test_name');
 
 $curl = new Curl();
+
+// HINT: If API documentation refers to using something like curl -F "myimage=image.png",
+// curl --form "myimage=image.png", or the html form is similar to <form enctype="multipart/form-data" method="post">,
+// then try uncommenting the following line:
+// $curl->setHeader('Content-Type', 'multipart/form-data');
+
 $curl->post('https://httpbin.org/post', array(
     'myfile' => $myfile,
 ));
