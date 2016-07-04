@@ -552,11 +552,18 @@ class MultiCurl
      * Verbose
      *
      * @access public
-     * @param  $on
+     * @param  bool $on
+     * @param  resource $output
      */
-    public function verbose($on = true)
+    public function verbose($on = true, $output=STDERR)
     {
+        // Turn off CURLINFO_HEADER_OUT for verbose to work. This has the side
+        // effect of causing Curl::requestHeaders to be empty.
+        if ($on) {
+            $this->setOpt(CURLINFO_HEADER_OUT, false);
+        }
         $this->setOpt(CURLOPT_VERBOSE, $on);
+        $this->setOpt(CURLOPT_STDERR, $output);
     }
 
     /**
