@@ -1023,9 +1023,9 @@ class Curl
      * @param  $raw_response
      *
      * @return mixed
-         Provided the content-type is determined to be json or xml:
-           Returns stdClass object when the default json decoder is used and the content-type is json.
-           Returns SimpleXMLElement object when the default xml decoder is used and the content-type is xml.
+     *   Provided the content-type is determined to be json or xml:
+     *     Returns stdClass object when the default json decoder is used and the content-type is json.
+     *     Returns SimpleXMLElement object when the default xml decoder is used and the content-type is xml.
      */
     private function parseResponse($response_headers, $raw_response)
     {
