@@ -2245,4 +2245,21 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         });
         $multi_curl->start();
     }
+
+    public function testAlternativeStandardErrorOutput()
+    {
+
+        $buffer = fopen('php://memory', 'w+');
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->verbose(true, $buffer);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->start();
+
+        rewind($buffer);
+        $stderr = stream_get_contents($buffer);
+        fclose($buffer);
+
+        $this->assertNotEmpty($stderr);
+    }
 }

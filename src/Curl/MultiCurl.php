@@ -191,16 +191,16 @@ class MultiCurl
      * @access public
      * @param  $url
      * @param  $data
-     * @param  $post_redirect_get If true, will cause 303 redirections to be followed using
+     * @param  $follow_303_with_post If true, will cause 303 redirections to be followed using
      *     GET requests (default: false).
      *     Note: Redirections are only followed if the CURLOPT_FOLLOWLOCATION option is set to true.
      *
      * @return object
      */
-    public function addPost($url, $data = array(), $post_redirect_get = false)
+    public function addPost($url, $data = array(), $follow_303_with_post = false)
     {
         if (is_array($url)) {
-            $post_redirect_get = (bool)$data;
+            $follow_303_with_post = (bool)$data;
             $data = $url;
             $url = $this->baseUrl;
         }
@@ -217,7 +217,7 @@ class MultiCurl
          * For post-redirect-get requests, the CURLOPT_CUSTOMREQUEST option must not
          * be set, otherwise cURL will perform POST requests for redirections.
          */
-        if (!$post_redirect_get) {
+        if (!$follow_303_with_post) {
             $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         }
 
@@ -552,11 +552,18 @@ class MultiCurl
      * Verbose
      *
      * @access public
-     * @param  $on
+     * @param  bool $on
+     * @param  resource $output
      */
-    public function verbose($on = true)
+    public function verbose($on = true, $output=STDERR)
     {
+        // Turn off CURLINFO_HEADER_OUT for verbose to work. This has the side
+        // effect of causing Curl::requestHeaders to be empty.
+        if ($on) {
+            $this->setOpt(CURLINFO_HEADER_OUT, false);
+        }
         $this->setOpt(CURLOPT_VERBOSE, $on);
+        $this->setOpt(CURLOPT_STDERR, $output);
     }
 
     /**
