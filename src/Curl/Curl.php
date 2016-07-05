@@ -89,7 +89,7 @@ class Curl
      * @param  $base_url
      * @throws \ErrorException
      */
-    public function __construct($base_url = null)
+    public function __construct($base_url = null, Array $options = array())
     {
         if (!extension_loaded('curl')) {
             throw new \ErrorException('cURL library is not loaded');
@@ -101,9 +101,11 @@ class Curl
         $this->setDefaultJsonDecoder();
         $this->setDefaultXmlDecoder();
         $this->setDefaultTimeout();
-        $this->setOpt(CURLINFO_HEADER_OUT, true);
-        $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
-        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
+        $this->setOpts($options + array(
+            CURLINFO_HEADER_OUT => true,
+            CURLOPT_HEADERFUNCTION => array($this, 'headerCallback'),
+            CURLOPT_RETURNTRANSFER => true
+        ));
         $this->headers = new CaseInsensitiveArray();
         $this->setURL($base_url);
         $this->rfc2616 = array_fill_keys(self::$RFC2616, true);
@@ -400,19 +402,6 @@ class Curl
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $this->setOpt(CURLOPT_HTTPGET, true);
         return $this->exec();
-    }
-
-    /**
-     * Get Opt
-     *
-     * @access public
-     * @param  $option
-     *
-     * @return mixed
-     */
-    public function getOpt($option)
-    {
-        return $this->options[$option];
     }
 
     /**
@@ -841,7 +830,53 @@ class Curl
         }
 
         $this->options[$option] = $value;
-        return curl_setopt($this->curl, $option, $value);
+        return (bool) curl_setopt($this->curl, $option, $value);
+    }
+
+    /**
+     * Set Opts
+     *
+     * Set multiple Options at once (in an associative Array)
+     *
+     * @param mixed[] $options Associative Array of Curl Options
+     *
+     * @return bool Complete success
+     *
+     * @access public
+     */
+    public function setOpts(Array $options) {
+        $return = true;
+        foreach((array) $options as $option => $value) {
+            $return = $this->setOpt($option, $value) && $return;
+        }
+        return (bool) $return;
+    }
+
+    /**
+     * Get Opt
+     *
+     * @access public
+     * @param  $option
+     *
+     * @return mixed
+     */
+    public function getOpt($option)
+    {
+        return isset($this->options[$option]) ? $this->options[$option] : null;
+    }
+
+    /**
+     * Is Opt Set
+     *
+     * @param string $option Option Name
+     * @param bool $empty (optional) If Empty counts as NOT SET
+     *
+     * @return bool Wether or not the Option is set/not empty.
+     *
+     * @access public
+     */
+    public function isOptSet($option, $empty = false) {
+        return (bool) ($empty ? !empty($this->options[$option]) : isset($this->options[$option]));
     }
 
     /**
