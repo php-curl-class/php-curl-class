@@ -58,7 +58,6 @@ class Curl
 
     public $baseUrl = null;
     public $url = null;
-    public $effectiveUrl = null;
     public $requestHeaders = null;
     public $responseHeaders = null;
     public $rawResponseHeaders = '';
@@ -83,6 +82,7 @@ class Curl
     private $defaultDecoder = null;
 
     private static $deferredProperties = array(
+        'effectiveUrl',
         'totalTime',
     );
 
@@ -351,16 +351,15 @@ class Curl
         }
         $this->curlErrorMessage = curl_error($this->curl);
         $this->curlError = !($this->curlErrorCode === 0);
-        $this->httpStatusCode = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
+        $this->httpStatusCode = $this->getInfo(CURLINFO_HTTP_CODE);
         $this->httpError = in_array(floor($this->httpStatusCode / 100), array(4, 5));
         $this->error = $this->curlError || $this->httpError;
         $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;
-        $this->effectiveUrl = curl_getinfo($this->curl, CURLINFO_EFFECTIVE_URL);
 
         // NOTE: CURLINFO_HEADER_OUT set to true is required for requestHeaders
         // to not be empty (e.g. $curl->setOpt(CURLINFO_HEADER_OUT, true);).
         if ($this->getOpt(CURLINFO_HEADER_OUT) === true) {
-            $this->requestHeaders = $this->parseRequestHeaders(curl_getinfo($this->curl, CURLINFO_HEADER_OUT));
+            $this->requestHeaders = $this->parseRequestHeaders($this->getInfo(CURLINFO_HEADER_OUT));
         }
         $this->responseHeaders = $this->parseResponseHeaders($this->rawResponseHeaders);
         $this->response = $this->parseResponse($this->responseHeaders, $this->rawResponse);
@@ -403,6 +402,17 @@ class Curl
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $this->setOpt(CURLOPT_HTTPGET, true);
         return $this->exec();
+    }
+
+    /**
+     * Get Info
+     *
+     * @access public
+     * @param  $opt
+     */
+    public function getInfo($opt)
+    {
+        return curl_getinfo($this->curl, $opt);
     }
 
     /**
@@ -984,8 +994,22 @@ class Curl
         return $return;
     }
 
+    /**
+     * Get Effective Url
+     *
+     * @access private
+     */
+    private function __get_effectiveUrl() {
+        return $this->getInfo(CURLINFO_EFFECTIVE_URL);
+    }
+
+    /**
+     * Get Total Time
+     *
+     * @access private
+     */
     private function __get_totalTime() {
-        return curl_getinfo($this->curl, CURLINFO_TOTAL_TIME);
+        return $this->getInfo(CURLINFO_TOTAL_TIME);
     }
 
     /**
