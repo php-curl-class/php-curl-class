@@ -2650,4 +2650,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $test->server('xml_with_cdata_response', 'POST', $data);
         $this->assertTrue(strpos($test->curl->response->saveXML(), '<![CDATA[') === false);
     }
+
+    public function testTotalTime()
+    {
+        $test = new Test();
+        $test->server('request_method', 'GET');
+        $this->assertTrue(is_float($test->curl->totalTime));
+    }
 }

@@ -56,7 +56,6 @@ class Curl
     public $httpStatusCode = 0;
     public $httpErrorMessage = null;
 
-    public $totalTime = 0;
     public $baseUrl = null;
     public $url = null;
     public $effectiveUrl = null;
@@ -81,6 +80,10 @@ class Curl
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
     private $xmlDecoder = null;
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
+
+    private static $deferredProperties = array(
+        'totalTime',
+    );
 
     /**
      * Construct
@@ -348,7 +351,6 @@ class Curl
         $this->curlErrorMessage = curl_error($this->curl);
         $this->curlError = !($this->curlErrorCode === 0);
         $this->httpStatusCode = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
-        $this->totalTime = curl_getinfo($this->curl, CURLINFO_TOTAL_TIME);
         $this->httpError = in_array(floor($this->httpStatusCode / 100), array(4, 5));
         $this->error = $this->curlError || $this->httpError;
         $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;
@@ -951,6 +953,19 @@ class Curl
     public function __destruct()
     {
         $this->close();
+    }
+
+    public function __get($name)
+    {
+        $return = null;
+        if (in_array($name, self::$deferredProperties) && is_callable(array($this, $getter = '__get_' . $name))) {
+            $return = $this->$name = $this->$getter();
+        }
+        return $return;
+    }
+
+    private function __get_totalTime() {
+        return curl_getinfo($this->curl, CURLINFO_TOTAL_TIME);
     }
 
     /**
