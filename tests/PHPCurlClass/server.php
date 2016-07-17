@@ -299,6 +299,12 @@ $data_mapping = array(
 
 if (!empty($test)) {
     $data = $data_mapping[$test];
-    $value = isset($data[$key]) ? $data[$key] : '';
+    if (empty($key)) {
+        // Return all values when a key is not specified.
+        $value = http_build_query($data);
+    } else {
+        // Return individual value when a key is specified.
+        $value = isset($data[$key]) ? $data[$key] : '';
+    }
     echo $value;
 }

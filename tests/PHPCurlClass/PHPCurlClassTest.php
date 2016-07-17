@@ -706,7 +706,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testCookies()
+    public function testSetCookie()
     {
         $test = new Test();
         $test->curl->setCookie('mycookie', 'yum');
@@ -715,7 +715,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         )));
     }
 
-    public function testCookieEncodingSpace()
+    public function testSetCookieEncodingSpace()
     {
         $curl = new Curl();
         $curl->setCookie('cookie', 'Om nom nom nom');
@@ -727,7 +727,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('cookie=Om%20nom%20nom%20nom', $options[CURLOPT_COOKIE]);
     }
 
-    public function testMultipleCookies()
+    public function testSetMultipleCookies()
     {
         $curl = new Curl();
         $curl->setCookie('cookie', 'Om nom nom nom');
@@ -740,7 +740,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('cookie=Om%20nom%20nom%20nom; foo=bar', $options[CURLOPT_COOKIE]);
     }
 
-    public function testCookieEncodingColon()
+    public function testSetCookieEncodingColon()
     {
         $curl = new Curl();
         $curl->setCookie('JSESSIONID', '0000wd-PcsB3bZ-KzYGAqm_rKlm:17925chrl');
@@ -750,6 +750,21 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $reflectionProperty->setAccessible(true);
         $options = $reflectionProperty->getValue($curl);
         $this->assertEquals('JSESSIONID=0000wd-PcsB3bZ-KzYGAqm_rKlm:17925chrl', $options[CURLOPT_COOKIE]);
+    }
+
+    public function testSetCookieString()
+    {
+        $cookie_string = 'fruit=apple; color=red';
+
+        $test = new Test();
+        $test->curl->setCookieString($cookie_string);
+
+        $reflectionClass = new ReflectionClass('\Curl\Curl');
+        $reflectionProperty = $reflectionClass->getProperty('options');
+        $reflectionProperty->setAccessible(true);
+        $options = $reflectionProperty->getValue($test->curl);
+        $this->assertEquals($cookie_string, $options[CURLOPT_COOKIE]);
+        $this->assertEquals('fruit=apple&color=red', $test->server('cookie', 'GET'));
     }
 
     public function testCookieFile()
