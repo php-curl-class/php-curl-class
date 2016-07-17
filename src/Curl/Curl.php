@@ -714,6 +714,17 @@ class Curl
     }
 
     /**
+     * Set Cookie String
+     *
+     * @access public
+     * @param  $string
+     */
+    public function setCookieString($string)
+    {
+        return $this->setOpt(CURLOPT_COOKIE, $string);
+    }
+
+    /**
      * Set Cookie File
      *
      * @access public
