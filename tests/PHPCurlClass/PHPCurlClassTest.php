@@ -1040,7 +1040,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(file_exists($file_path));
     }
 
-    public function testJSONRequest()
+    public function testJsonRequest()
     {
         foreach (
             array(
@@ -1091,7 +1091,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testJSONResponse()
+    public function testJsonResponse()
     {
         foreach (array(
             'Content-Type',
@@ -1133,7 +1133,30 @@ class CurlTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testJSONDecoder()
+    public function testJsonDecoderOptions()
+    {
+        // Implicit default json decoder should return object.
+        $test = new Test();
+        $test->server('json_response', 'GET');
+        $this->assertTrue(is_object($test->curl->response));
+
+        // Explicit default json decoder should return object.
+        $test = new Test();
+        $test->curl->setDefaultJsonDecoder();
+        $test->server('json_response', 'GET');
+        $this->assertTrue(is_object($test->curl->response));
+
+        // Explicit default json decoder with options should return associative array as specified.
+        $assoc = true;
+        $depth = 512;
+        $options = 0;
+        $test = new Test();
+        $test->curl->setDefaultJsonDecoder($assoc, $depth, $options);
+        $test->server('json_response', 'GET');
+        $this->assertTrue(is_array($test->curl->response));
+    }
+
+    public function testJsonDecoder()
     {
         $data = array(
             'key' => 'Content-Type',
@@ -1154,7 +1177,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($test->curl->response));
     }
 
-    public function testJSONContentTypeDetection()
+    public function testJsonContentTypeDetection()
     {
         $json_content_types = array(
             'application/alto-costmap+json',
