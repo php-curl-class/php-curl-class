@@ -750,11 +750,16 @@ class Curl
      * Set Default JSON Decoder
      *
      * @access public
+     * @param  $assoc
+     * @param  $depth
+     * @param  $options
      */
     public function setDefaultJsonDecoder()
     {
-        $this->jsonDecoder = function($response) {
-            $json_obj = json_decode($response, false);
+        $args = func_get_args();
+        $this->jsonDecoder = function($response) use ($args) {
+            array_unshift($args, $response);
+            $json_obj = call_user_func_array('json_decode', $args);
             if (!($json_obj === null)) {
                 $response = $json_obj;
             }
