@@ -759,6 +759,14 @@ class Curl
         $args = func_get_args();
         $this->jsonDecoder = function($response) use ($args) {
             array_unshift($args, $response);
+
+            // Call json_decode() without the $options parameter in PHP
+            // versions less than 5.4.0 as the $options parameter was added in
+            // PHP version 5.4.0.
+            if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+                $args = array_slice($args, 0, 3);
+            }
+
             $json_obj = call_user_func_array('json_decode', $args);
             if (!($json_obj === null)) {
                 $response = $json_obj;
