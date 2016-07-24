@@ -136,16 +136,14 @@ class Curl
     public function buildPostData($data)
     {
         if (is_array($data)) {
-            if (self::is_array_multidim($data)) {
-                if (isset($this->headers['Content-Type']) &&
-                    preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
-                    $json_str = json_encode($data);
-                    if (!($json_str === false)) {
-                        $data = $json_str;
-                    }
-                } else {
-                    $data = self::http_build_multi_query($data);
+            if (isset($this->headers['Content-Type']) &&
+                preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
+                $json_str = json_encode($data);
+                if (!($json_str === false)) {
+                    $data = $json_str;
                 }
+            } else if (self::is_array_multidim($data)) {
+                $data = self::http_build_multi_query($data);
             } else {
                 $binary_data = false;
                 foreach ($data as $key => $value) {
@@ -166,15 +164,7 @@ class Curl
                 }
 
                 if (!$binary_data) {
-                    if (isset($this->headers['Content-Type']) &&
-                        preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
-                        $json_str = json_encode($data);
-                        if (!($json_str === false)) {
-                            $data = $json_str;
-                        }
-                    } else {
-                        $data = http_build_query($data, '', '&');
-                    }
+                    $data = http_build_query($data, '', '&');
                 }
             }
         }
