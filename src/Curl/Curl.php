@@ -2,7 +2,6 @@
 
 namespace Curl;
 
-
 class Curl
 {
     const VERSION = '4.13.0';
@@ -613,6 +612,24 @@ class Curl
         $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
     }
 
+    public function rfcSanitize($unsanitized, $rfc)
+    {
+        $sanitized = '';
+        $rfc = "rfc$rfc";
+        if(isset($this->$rfc)) {
+            $safe = $this->$rfc;
+            foreach (str_split($unsanitized) as $char) {
+                if (!isset($safe[$char])) {
+                    $sanitized .= rawurlencode($char);
+                } else {
+                    $sanitized .= $char;
+                }
+            }
+        }
+
+        return (string) $sanitized;
+    }
+
     /**
      * Set Cookie
      *
@@ -622,28 +639,11 @@ class Curl
      */
     public function setCookie($key, $value)
     {
-        $name_chars = array();
-        foreach (str_split($key) as $name_char) {
-            if (!isset($this->rfc2616[$name_char])) {
-                $name_chars[] = rawurlencode($name_char);
-            } else {
-                $name_chars[] = $name_char;
-            }
-        }
+        $key = $this->rfcSanitize($key, '2616');
+        $value = $this->rfcSanitize($value, '6265');
+        $this->cookies[$key] = "$key=$value";
 
-        $value_chars = array();
-        foreach (str_split($value) as $value_char) {
-            if (!isset($this->rfc6265[$value_char])) {
-                $value_chars[] = rawurlencode($value_char);
-            } else {
-                $value_chars[] = $value_char;
-            }
-        }
-
-        $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
-        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function($k, $v) {
-            return $k . '=' . $v;
-        }, array_keys($this->cookies), array_values($this->cookies))));
+        return $this->setOpt(CURLOPT_COOKIE, implode('; ', $this->cookies));
     }
 
     /**
