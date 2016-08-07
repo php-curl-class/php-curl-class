@@ -135,38 +135,42 @@ class Curl
      */
     public function buildPostData($data)
     {
+        $binary_data = false;
         if (is_array($data)) {
+            // Return JSON-encoded string when the request's content-type is JSON.
             if (isset($this->headers['Content-Type']) &&
                 preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
                 $json_str = json_encode($data);
                 if (!($json_str === false)) {
                     $data = $json_str;
                 }
-            } else if (self::is_array_multidim($data)) {
-                $data = self::http_build_multi_query($data);
             } else {
-                $binary_data = false;
-                foreach ($data as $key => $value) {
-                    // Fix "Notice: Array to string conversion" when $value in curl_setopt($ch, CURLOPT_POSTFIELDS,
-                    // $value) is an array that contains an empty array.
-                    if (is_array($value) && empty($value)) {
-                        $data[$key] = '';
-                    // Fix "curl_setopt(): The usage of the @filename API for file uploading is deprecated. Please use
-                    // the CURLFile class instead". Ignore non-file values prefixed with the @ character.
-                    } elseif (is_string($value) && strpos($value, '@') === 0 && is_file(substr($value, 1))) {
-                        $binary_data = true;
-                        if (class_exists('CURLFile')) {
-                            $data[$key] = new \CURLFile(substr($value, 1));
-                        }
-                    } elseif ($value instanceof \CURLFile) {
-                        $binary_data = true;
-                    }
+                // Manually build a single-dimensional array from a multi-dimensional array as using curl_setopt($ch,
+                // CURLOPT_POSTFIELDS, $data) doesn't correctly handle multi-dimensional arrays when files are
+                // referenced.
+                if (self::is_array_multidim($data)) {
+                    $data = self::array_flatten_multidim($data);
                 }
 
-                if (!$binary_data) {
-                    $data = http_build_query($data, '', '&');
+                // Modify array values to ensure any referenced files are properly handled depending on the support of
+                // the @filename API or CURLFile usage. This also fixes the warning "curl_setopt(): The usage of the
+                // @filename API for file uploading is deprecated. Please use the CURLFile class instead". Ignore
+                // non-file values prefixed with the @ character.
+                if (class_exists('CURLFile')) {
+                    foreach ($data as $key => $value) {
+                        if (is_string($value) && strpos($value, '@') === 0 && is_file(substr($value, 1))) {
+                            $binary_data = true;
+                            $data[$key] = new \CURLFile(substr($value, 1));
+                        } else if ($value instanceof \CURLFile) {
+                            $binary_data = true;
+                        }
+                    }
                 }
             }
+        }
+
+        if (!$binary_data && (is_array($data) || is_object($data))) {
+            $data = http_build_query($data, '', '&');
         }
 
         return $data;
@@ -579,7 +583,9 @@ class Curl
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
         $put_data = $this->buildPostData($data);
         if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
-            $this->setHeader('Content-Length', strlen($put_data));
+            if (is_string($put_data)) {
+                $this->setHeader('Content-Length', strlen($put_data));
+            }
         }
         if (!empty($put_data)) {
             $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
@@ -1154,38 +1160,6 @@ class Curl
     }
 
     /**
-     * Http Build Multi Query
-     *
-     * @access public
-     * @param  $data
-     * @param  $key
-     *
-     * @return string
-     */
-    public static function http_build_multi_query($data, $key = null)
-    {
-        $query = array();
-
-        if (empty($data)) {
-            return $key . '=';
-        }
-
-        $is_array_assoc = self::is_array_assoc($data);
-
-        foreach ($data as $k => $value) {
-            if (is_string($value) || is_numeric($value)) {
-                $brackets = $is_array_assoc ? '[' . $k . ']' : '[]';
-                $query[] = urlencode($key === null ? $k : $key . $brackets) . '=' . rawurlencode($value);
-            } elseif (is_array($value)) {
-                $nested = $key === null ? $k : $key . '[' . $k . ']';
-                $query[] = self::http_build_multi_query($value, $nested);
-            }
-        }
-
-        return implode('&', $query);
-    }
-
-    /**
      * Is Array Assoc
      *
      * @access public
@@ -1213,5 +1187,42 @@ class Curl
         }
 
         return (bool)count(array_filter($array, 'is_array'));
+    }
+
+    /**
+     * Array Flatten Multidim
+     *
+     * @access public
+     * @param  $array
+     * @param  $prefix
+     *
+     * @return array
+     */
+    public static function array_flatten_multidim($array, $prefix = false) {
+        $return = array();
+        if (is_array($array) || is_object($array)) {
+            if (empty($array)) {
+                $return[$prefix] = '';
+            } else {
+                foreach ($array as $key => $value) {
+                    if (is_scalar($value)) {
+                        if ($prefix) {
+                            $return[$prefix . '[' . $key . ']'] = $value;
+                        } else {
+                            $return[$key] = $value;
+                        }
+                    } else {
+                        if (class_exists('CURLFile') && $value instanceof \CURLFile) {
+                            $return[$key] = $value;
+                        } else {
+                            $return = array_merge($return, self::array_flatten_multidim($value, $prefix ? $prefix . '[' . $key . ']' : $key));
+                        }
+                    }
+                }
+            }
+        } else if ($array === null) {
+            $return[$prefix] = $array;
+        }
+        return $return;
     }
 }

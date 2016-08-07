@@ -310,25 +310,21 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testPostAssociativeArrayData()
     {
-        $test = new Test();
-        $this->assertEquals(
-            'username=myusername' .
-            '&password=mypassword' .
-            '&more_data%5Bparam1%5D=something' .
-            '&more_data%5Bparam2%5D=other%20thing' .
-            '&more_data%5Bparam3%5D=123' .
-            '&more_data%5Bparam4%5D=3.14',
-            $test->server('post_multidimensional', 'POST', array(
-                'username' => 'myusername',
-                'password' => 'mypassword',
-                'more_data' => array(
-                    'param1' => 'something',
-                    'param2' => 'other thing',
-                    'param3' => 123,
-                    'param4' => 3.14,
-                ),
-            ))
+        $data = array(
+            'username' => 'myusername',
+            'password' => 'mypassword',
+            'more_data' => array(
+                'param1' => 'something',
+                'param2' => 'other thing',
+                'param3' => 123,
+                'param4' => 3.14,
+            ),
         );
+
+        $test = new Test();
+        $test->curl->setDefaultJsonDecoder(true);
+        $response = $test->server('post_multidimensional', 'POST', $data);
+        $this->assertEquals($data, $response['post']);
     }
 
     public function testPostContentLength()
@@ -353,18 +349,79 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testPostMultidimensionalData()
     {
-        $test = new Test();
-        $this->assertEquals(
-            'key=file&file%5B%5D=wibble&file%5B%5D=wubble&file%5B%5D=wobble',
-            $test->server('post_multidimensional', 'POST', array(
-                'key' => 'file',
-                'file' => array(
-                    'wibble',
-                    'wubble',
-                    'wobble',
-                ),
-            ))
+        $data = array(
+            'key' => 'file',
+            'file' => array(
+                'wibble',
+                'wubble',
+                'wobble',
+            ),
         );
+
+        $this->assertEquals('key=file&file[0]=wibble&file[1]=wubble&file[2]=wobble', urldecode(http_build_query($data)));
+
+        $test = new Test();
+        $test->curl->setDefaultJsonDecoder(true);
+        $response = $test->server('post_multidimensional', 'POST', $data);
+        $this->assertEquals($data, $response['post']);
+    }
+
+    public function testPostMultidimensionalDataWithFile()
+    {
+        $tests = array();
+
+        $file_path_1 = Helper\get_png();
+        $tests[] = array(
+            'file_path' => $file_path_1,
+            'post_data_image' => '@' . $file_path_1,
+        );
+
+        if (class_exists('CURLFile')) {
+            $file_path_2 = Helper\get_png();
+            $tests[] = array(
+                'file_path' => $file_path_2,
+                'post_data_image' => new CURLFile($file_path_2),
+            );
+        }
+
+        foreach ($tests as $test_data) {
+            $file_path = $test_data['file_path'];
+            $post_data_image = $test_data['post_data_image'];
+
+            $test = new Test();
+
+            // Return associative for comparison.
+            $assoc = true;
+            $test->curl->setDefaultJsonDecoder($assoc);
+
+            // Keep POST data separate from FILES data for comparison.
+            $post_data_without_file = array(
+                'key' => 'value',
+                'alpha' => array(
+                    'a' => '1',
+                    'b' => '2',
+                    'c' => '3',
+                ),
+            );
+            $post_data = $post_data_without_file;
+            $post_data['image'] = $post_data_image;
+
+            $test->server('post_multidimensional_with_file', 'POST', $post_data);
+
+            // Expect "Content-Type: multipart/form-data" in request headers.
+            preg_match('/^multipart\/form-data; boundary=/', $test->curl->requestHeaders['Content-Type'], $content_type);
+            $this->assertTrue(!empty($content_type));
+
+            // Expect received POST data to match POSTed data less the file.
+            $this->assertTrue($test->curl->response['post'] === $post_data_without_file);
+
+            // Expect POSTed files is received as $_FILES.
+            $this->assertTrue(isset($test->curl->response['files']['image']['tmp_name']));
+            $this->assertEquals(0, $test->curl->response['files']['image']['error']);
+
+            unlink($file_path);
+            $this->assertFalse(file_exists($file_path));
+        }
     }
 
     public function testPostFilePathUpload()
