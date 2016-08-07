@@ -162,7 +162,7 @@ class Curl
                         if (class_exists('CURLFile')) {
                             $data[$key] = new \CURLFile(substr($value, 1));
                         }
-                    } else if ($value instanceof \CURLFile) {
+                    } elseif ($value instanceof \CURLFile) {
                         $binary_data = true;
                     }
                 }
@@ -1222,7 +1222,7 @@ class Curl
                     }
                 }
             }
-        } else if ($array === null) {
+        } elseif ($array === null) {
             $return[$prefix] = $array;
         }
         return $return;

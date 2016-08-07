@@ -68,14 +68,14 @@ $results['files_to_change_count'] = count($results['files_to_change']);
 if ($results['errors_count'] > 0) {
     echo 'ERROR: Unable to read files.' . "\n";
     exit(1);
-} else if ($results['files_found_count'] === 0) {
+} elseif ($results['files_found_count'] === 0) {
     echo 'Current directory "' . $cwd . '"' . "\n";
     echo 'ERROR: No read files found in current directory.' . "\n";
     exit(1);
-} else if ($results['files_to_change_count'] === 0) {
+} elseif ($results['files_to_change_count'] === 0) {
     echo 'OK: No files to change.' . "\n";
     exit(0);
-} else if ($results['files_to_change_count'] > 0) {
+} elseif ($results['files_to_change_count'] > 0) {
     echo $results['files_to_change_count'] . ' of ' . $results['files_found_count'] . ' files to change found.' . "\n";
     echo 'Continue? [y/n] ';
     if (!in_array(trim(fgets(STDIN)), array('y', 'Y'))) {
