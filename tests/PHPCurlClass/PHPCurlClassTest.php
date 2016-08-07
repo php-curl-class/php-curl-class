@@ -358,7 +358,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
             ),
         );
 
-        $this->assertEquals('key=file&file[0]=wibble&file[1]=wubble&file[2]=wobble', urldecode(http_build_query($data)));
+        $this->assertEquals(
+            'key=file&file[0]=wibble&file[1]=wubble&file[2]=wobble', urldecode(http_build_query($data)));
 
         $test = new Test();
         $test->curl->setDefaultJsonDecoder(true);
@@ -409,7 +410,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
             $test->server('post_multidimensional_with_file', 'POST', $post_data);
 
             // Expect "Content-Type: multipart/form-data" in request headers.
-            preg_match('/^multipart\/form-data; boundary=/', $test->curl->requestHeaders['Content-Type'], $content_type);
+            preg_match(
+                '/^multipart\/form-data; boundary=/', $test->curl->requestHeaders['Content-Type'], $content_type);
             $this->assertTrue(!empty($content_type));
 
             // Expect received POST data to match POSTed data less the file.

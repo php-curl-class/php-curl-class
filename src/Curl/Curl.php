@@ -1215,7 +1215,9 @@ class Curl
                         if (class_exists('CURLFile') && $value instanceof \CURLFile) {
                             $return[$key] = $value;
                         } else {
-                            $return = array_merge($return, self::array_flatten_multidim($value, $prefix ? $prefix . '[' . $key . ']' : $key));
+                            $return = array_merge(
+                                $return, self::array_flatten_multidim(
+                                    $value, $prefix ? $prefix . '[' . $key . ']' : $key));
                         }
                     }
                 }
