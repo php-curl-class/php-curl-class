@@ -62,7 +62,7 @@ $curl->post('https://www.example.com/login/', array(
 ```php
 $curl = new Curl();
 $curl->setBasicAuthentication('username', 'password');
-$curl->setUserAgent('');
+$curl->setUserAgent('MyUserAgent/0.0.1 (+https://www.example.com/bot.html)');
 $curl->setReferrer('');
 $curl->setHeader('X-Requested-With', 'XMLHttpRequest');
 $curl->setCookie('key', 'value');
