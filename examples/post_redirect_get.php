@@ -3,7 +3,7 @@
 // using GET requests).
 $curl = new Curl();
 $curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
-$curl->post('http://www.example.com/login/', array(
+$curl->post('https://www.example.com/login/', array(
     'username' => 'myusername',
     'password' => 'mypassword',
 ));
@@ -13,7 +13,7 @@ $curl->post('http://www.example.com/login/', array(
 // https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.4
 $curl = new Curl();
 $curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
-$curl->post('http://www.example.com/login/', array(
+$curl->post('https://www.example.com/login/', array(
     'username' => 'myusername',
     'password' => 'mypassword',
 ), false);

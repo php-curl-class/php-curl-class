@@ -9,7 +9,7 @@ if (isset($_GET['after'])) {
 }
 
 $curl = new Curl();
-$curl->get('http://www.reddit.com/r/pics/top/.json', $data);
+$curl->get('https://www.reddit.com/r/pics/top/.json', $data);
 
 echo '<ul>';
 
