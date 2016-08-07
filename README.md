@@ -41,19 +41,19 @@ require __DIR__ . '/vendor/autoload.php';
 use \Curl\Curl;
 
 $curl = new Curl();
-$curl->get('http://www.example.com/');
+$curl->get('https://www.example.com/');
 ```
 
 ```php
 $curl = new Curl();
-$curl->get('http://www.example.com/search', array(
+$curl->get('https://www.example.com/search', array(
     'q' => 'keyword',
 ));
 ```
 
 ```php
 $curl = new Curl();
-$curl->post('http://www.example.com/login/', array(
+$curl->post('https://www.example.com/login/', array(
     'username' => 'myusername',
     'password' => 'mypassword',
 ));
@@ -62,11 +62,11 @@ $curl->post('http://www.example.com/login/', array(
 ```php
 $curl = new Curl();
 $curl->setBasicAuthentication('username', 'password');
-$curl->setUserAgent('');
+$curl->setUserAgent('MyUserAgent/0.0.1 (+https://www.example.com/bot.html)');
 $curl->setReferrer('');
 $curl->setHeader('X-Requested-With', 'XMLHttpRequest');
 $curl->setCookie('key', 'value');
-$curl->get('http://www.example.com/');
+$curl->get('https://www.example.com/');
 
 if ($curl->error) {
     echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage;
@@ -87,7 +87,7 @@ $curl->get('https://encrypted.example.com/');
 
 ```php
 $curl = new Curl();
-$curl->put('http://api.example.com/user/', array(
+$curl->put('https://api.example.com/user/', array(
     'first_name' => 'Zach',
     'last_name' => 'Borboa',
 ));
@@ -95,21 +95,21 @@ $curl->put('http://api.example.com/user/', array(
 
 ```php
 $curl = new Curl();
-$curl->patch('http://api.example.com/profile/', array(
+$curl->patch('https://api.example.com/profile/', array(
     'image' => '@path/to/file.jpg',
 ));
 ```
 
 ```php
 $curl = new Curl();
-$curl->patch('http://api.example.com/profile/', array(
+$curl->patch('https://api.example.com/profile/', array(
     'image' => new CURLFile('path/to/file.jpg'),
 ));
 ```
 
 ```php
 $curl = new Curl();
-$curl->delete('http://api.example.com/user/', array(
+$curl->delete('https://api.example.com/user/', array(
     'id' => '1234',
 ));
 ```

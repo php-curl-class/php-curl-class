@@ -94,6 +94,13 @@ if [[ ! -z "${equal}" ]]; then
     ((errors++))
 fi
 
+# Require keyword "elseif" to be used instead of "else if" so that all control keywords look like single words.
+elseif=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --color=always --line-number -H "else\s+if" {} \;)
+if [[ ! -z "${elseif}" ]]; then
+    echo -e "${elseif}" | perl -pe 's/^(.*)$/Found "else if" instead of "elseif" in \1/'
+    ((errors++))
+fi
+
 if [ $errors -eq 0 ]; then
     exit 0
 else
