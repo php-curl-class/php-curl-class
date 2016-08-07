@@ -156,14 +156,14 @@ class Curl
                 // the @filename API or CURLFile usage. This also fixes the warning "curl_setopt(): The usage of the
                 // @filename API for file uploading is deprecated. Please use the CURLFile class instead". Ignore
                 // non-file values prefixed with the @ character.
-                if (class_exists('CURLFile')) {
-                    foreach ($data as $key => $value) {
-                        if (is_string($value) && strpos($value, '@') === 0 && is_file(substr($value, 1))) {
-                            $binary_data = true;
+                foreach ($data as $key => $value) {
+                    if (is_string($value) && strpos($value, '@') === 0 && is_file(substr($value, 1))) {
+                        $binary_data = true;
+                        if (class_exists('CURLFile')) {
                             $data[$key] = new \CURLFile(substr($value, 1));
-                        } else if ($value instanceof \CURLFile) {
-                            $binary_data = true;
                         }
+                    } else if ($value instanceof \CURLFile) {
+                        $binary_data = true;
                     }
                 }
             }

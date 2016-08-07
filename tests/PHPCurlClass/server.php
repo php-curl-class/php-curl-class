@@ -117,7 +117,7 @@ if ($test === 'http_basic_auth') {
     echo json_encode(array(
         'post' => $_POST,
         'files' => $_FILES,
-    ), JSON_PRETTY_PRINT);
+    ));
     exit;
 } elseif ($test === 'post_file_path_upload') {
     echo Helper\mime_type($_FILES[$key]['tmp_name']);
