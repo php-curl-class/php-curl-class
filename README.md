@@ -23,6 +23,10 @@ To install PHP Curl Class, simply:
 
     $ composer require php-curl-class/php-curl-class
 
+For latest commit version:
+
+    $ composer require php-curl-class/php-curl-class @dev
+
 ### Requirements
 
 PHP Curl Class works with PHP 5.3, 5.4, 5.5, 5.6, 7.0, and HHVM.
