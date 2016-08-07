@@ -110,8 +110,14 @@ if ($test === 'http_basic_auth') {
 } elseif ($test === 'patch') {
     echo $http_raw_post_data;
     exit;
-} elseif ($test === 'post_multidimensional') {
-    echo $http_raw_post_data;
+} elseif (
+    $test === 'post_multidimensional' ||
+    $test === 'post_multidimensional_with_file') {
+    header('Content-Type: application/json');
+    echo json_encode(array(
+        'post' => $_POST,
+        'files' => $_FILES,
+    ));
     exit;
 } elseif ($test === 'post_file_path_upload') {
     echo Helper\mime_type($_FILES[$key]['tmp_name']);
