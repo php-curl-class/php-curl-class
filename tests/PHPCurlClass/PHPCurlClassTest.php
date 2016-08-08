@@ -2759,6 +2759,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
     {
         $option = CURLOPT_ENCODING;
         $value = 'gzip';
+        $null = chr(0);
 
         // Ensure the option is stored when curl_setopt() succeeds.
         $curl = new Curl();
@@ -2775,7 +2776,6 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
         // Ensure the option is not stored when curl_setopt() fails. Make curl_setopt() return false and suppress
         // errors. Triggers warning: "curl_setopt(): Curl option contains invalid characters (\0)".
-        $null = chr(0);
         $curl = new Curl();
         $success = @$curl->setOpt($option, $null);
 
@@ -2786,5 +2786,20 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
         $this->assertFalse($success);
         $this->assertFalse(isset($options[$option]));
+
+        // Ensure options following a Curl::setOpt() failure are not set when using Curl::setOpts().
+        $options = array(
+            $option => $null,
+            CURLOPT_COOKIE => 'a=b',
+        );
+        $curl = new Curl();
+        @$curl->setOpts($options);
+
+        $reflector = new ReflectionObject($curl);
+        $property = $reflector->getProperty('options');
+        $property->setAccessible(true);
+        $options = $property->getValue($curl);
+
+        $this->assertFalse(isset($options[CURLOPT_COOKIE]));
     }
 }

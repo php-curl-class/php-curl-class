@@ -900,6 +900,25 @@ class Curl
     }
 
     /**
+     * Set Opts
+     *
+     * @access public
+     * @param  $options
+     *
+     * @return boolean
+     *   Returns TRUE if all options were successfully set. If an option could not be successfully set, FALSE is
+     *   immediately returned, ignoring any future options in the options array. Similar to curl_setopt_array().
+     */
+    public function setOpts($options)
+    {
+        foreach ($options as $option => $value) {
+            if (!$this->setOpt($option, $value)) {
+                return false;
+            }
+        }
+    }
+
+    /**
      * Set Referer
      *
      * @access public
