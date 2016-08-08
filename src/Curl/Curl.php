@@ -906,7 +906,7 @@ class Curl
      * @param  $options
      *
      * @return boolean
-     *   Returns TRUE if all options were successfully set. If an option could not be successfully set, FALSE is
+     *   Returns true if all options were successfully set. If an option could not be successfully set, false is
      *   immediately returned, ignoring any future options in the options array. Similar to curl_setopt_array().
      */
     public function setOpts($options)
