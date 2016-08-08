@@ -892,8 +892,11 @@ class Curl
             trigger_error($required_options[$option] . ' is a required option', E_USER_WARNING);
         }
 
-        $this->options[$option] = $value;
-        return curl_setopt($this->curl, $option, $value);
+        $success = curl_setopt($this->curl, $option, $value);
+        if ($success) {
+            $this->options[$option] = $value;
+        }
+        return $success;
     }
 
     /**
