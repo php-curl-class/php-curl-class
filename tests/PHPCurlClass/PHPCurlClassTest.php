@@ -2754,4 +2754,57 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $test->server('request_method', 'GET');
         $this->assertTrue(is_float($test->curl->totalTime));
     }
+
+    public function testOptionSet()
+    {
+        // Skip this test on 5.3, 5.4, and HHVM.
+        if (version_compare(PHP_VERSION, '5.5.0', '<') || defined('HHVM_VERSION')) {
+            return;
+        }
+
+        $option = CURLOPT_ENCODING;
+        $value = 'gzip';
+        $null = chr(0);
+
+        // Ensure the option is stored when curl_setopt() succeeds.
+        $curl = new Curl();
+        $success = $curl->setOpt($option, $value);
+
+        $reflector = new ReflectionObject($curl);
+        $property = $reflector->getProperty('options');
+        $property->setAccessible(true);
+        $options = $property->getValue($curl);
+
+        $this->assertTrue($success);
+        $this->assertTrue(isset($options[$option]));
+        $this->assertEquals($value, $options[$option]);
+
+        // Ensure the option is not stored when curl_setopt() fails. Make curl_setopt() return false and suppress
+        // errors. Triggers warning: "curl_setopt(): Curl option contains invalid characters (\0)".
+        $curl = new Curl();
+        $success = @$curl->setOpt($option, $null);
+
+        $reflector = new ReflectionObject($curl);
+        $property = $reflector->getProperty('options');
+        $property->setAccessible(true);
+        $options = $property->getValue($curl);
+
+        $this->assertFalse($success);
+        $this->assertFalse(isset($options[$option]));
+
+        // Ensure options following a Curl::setOpt() failure are not set when using Curl::setOpts().
+        $options = array(
+            $option => $null,
+            CURLOPT_COOKIE => 'a=b',
+        );
+        $curl = new Curl();
+        @$curl->setOpts($options);
+
+        $reflector = new ReflectionObject($curl);
+        $property = $reflector->getProperty('options');
+        $property->setAccessible(true);
+        $options = $property->getValue($curl);
+
+        $this->assertFalse(isset($options[CURLOPT_COOKIE]));
+    }
 }

@@ -892,8 +892,30 @@ class Curl
             trigger_error($required_options[$option] . ' is a required option', E_USER_WARNING);
         }
 
-        $this->options[$option] = $value;
-        return curl_setopt($this->curl, $option, $value);
+        $success = curl_setopt($this->curl, $option, $value);
+        if ($success) {
+            $this->options[$option] = $value;
+        }
+        return $success;
+    }
+
+    /**
+     * Set Opts
+     *
+     * @access public
+     * @param  $options
+     *
+     * @return boolean
+     *   Returns true if all options were successfully set. If an option could not be successfully set, false is
+     *   immediately returned, ignoring any future options in the options array. Similar to curl_setopt_array().
+     */
+    public function setOpts($options)
+    {
+        foreach ($options as $option => $value) {
+            if (!$this->setOpt($option, $value)) {
+                return false;
+            }
+        }
     }
 
     /**
@@ -1198,7 +1220,8 @@ class Curl
      *
      * @return array
      */
-    public static function array_flatten_multidim($array, $prefix = false) {
+    public static function array_flatten_multidim($array, $prefix = false)
+    {
         $return = array();
         if (is_array($array) || is_object($array)) {
             if (empty($array)) {
