@@ -2757,6 +2757,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testOptionSet()
     {
+        // Skip this test on 5.3, 5.4, and HHVM.
+        if (version_compare(PHP_VERSION, '5.5.0', '<') || defined('HHVM_VERSION')) {
+            return;
+        }
+
         $option = CURLOPT_ENCODING;
         $value = 'gzip';
         $null = chr(0);
