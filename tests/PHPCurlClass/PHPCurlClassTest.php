@@ -2754,4 +2754,37 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $test->server('request_method', 'GET');
         $this->assertTrue(is_float($test->curl->totalTime));
     }
+
+    public function testOptionSet()
+    {
+        $option = CURLOPT_ENCODING;
+        $value = 'gzip';
+
+        // Ensure the option is stored when curl_setopt() succeeds.
+        $curl = new Curl();
+        $success = $curl->setOpt($option, $value);
+
+        $reflector = new ReflectionObject($curl);
+        $property = $reflector->getProperty('options');
+        $property->setAccessible(true);
+        $options = $property->getValue($curl);
+
+        $this->assertTrue($success);
+        $this->assertTrue(isset($options[$option]));
+        $this->assertEquals($value, $options[$option]);
+
+        // Ensure the option is not stored when curl_setopt() fails. Make curl_setopt() return false and suppress
+        // errors. Triggers warning: "curl_setopt(): Curl option contains invalid characters (\0)".
+        $null = chr(0);
+        $curl = new Curl();
+        $success = @$curl->setOpt($option, $null);
+
+        $reflector = new ReflectionObject($curl);
+        $property = $reflector->getProperty('options');
+        $property->setAccessible(true);
+        $options = $property->getValue($curl);
+
+        $this->assertFalse($success);
+        $this->assertFalse(isset($options[$option]));
+    }
 }
