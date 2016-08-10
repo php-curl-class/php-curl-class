@@ -81,8 +81,8 @@ var_dump($curl->responseHeaders);
 
 ```php
 $curl = new Curl();
-$curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
-$curl->get('https://encrypted.example.com/');
+$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+$curl->get('https://shortn.example.com/bHbVsP');
 ```
 
 ```php
