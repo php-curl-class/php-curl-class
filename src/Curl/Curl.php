@@ -592,6 +592,36 @@ class Curl
         }
         return $this->exec();
     }
+    
+    /**
+     * Custom
+     *
+     * @access public
+     * @param  $method
+     * @param  $url
+     * @param  $data
+     *
+     * @return string
+     */
+    public function custom($method, $url, $data = array())
+    {
+        if (is_array($url)) {
+            $data = $url;
+            $url = $this->baseUrl;
+        }
+        $this->setURL($url);
+        $this->setOpt(CURLOPT_CUSTOMREQUEST, $method);
+        $put_data = $this->buildPostData($data);
+        if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
+            if (is_string($put_data)) {
+                $this->setHeader('Content-Length', strlen($put_data));
+            }
+        }
+        if (!empty($put_data)) {
+            $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
+        }
+        return $this->exec();
+    }
 
     /**
      * Set Basic Authentication
