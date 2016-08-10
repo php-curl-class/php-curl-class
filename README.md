@@ -262,7 +262,7 @@ MultiCurl::setXmlDecoder($function)
 MultiCurl::start()
 MultiCurl::success($callback)
 MultiCurl::unsetHeader($key)
-MultiCurl::verbose($on = true, $output=STDERR)
+MultiCurl::verbose($on = true, $output = STDERR)
 ```
 
 ### Contribute
