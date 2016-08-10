@@ -1235,7 +1235,7 @@ class Curl
                             $return[$key] = $value;
                         }
                     } else {
-                        if (class_exists('CURLFile') && $value instanceof \CURLFile) {
+                        if ($value instanceof \CURLFile) {
                             $return[$key] = $value;
                         } else {
                             $return = array_merge(

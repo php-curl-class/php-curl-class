@@ -555,7 +555,7 @@ class MultiCurl
      * @param  bool $on
      * @param  resource $output
      */
-    public function verbose($on = true, $output=STDERR)
+    public function verbose($on = true, $output = STDERR)
     {
         // Turn off CURLINFO_HEADER_OUT for verbose to work. This has the side
         // effect of causing Curl::requestHeaders to be empty.
