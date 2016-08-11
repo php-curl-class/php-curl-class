@@ -594,7 +594,7 @@ class Curl
     }
     
     /**
-     * Custom
+     * Search
      *
      * @access public
      * @param  $method
