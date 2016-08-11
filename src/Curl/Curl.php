@@ -603,14 +603,14 @@ class Curl
      *
      * @return string
      */
-    public function custom($method, $url, $data = array())
+    public function search($url, $data = array())
     {
         if (is_array($url)) {
             $data = $url;
             $url = $this->baseUrl;
         }
         $this->setURL($url);
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, $method);
+        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'SEARCH');
         $put_data = $this->buildPostData($data);
         if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
             if (is_string($put_data)) {
