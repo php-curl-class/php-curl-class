@@ -1094,7 +1094,7 @@ class Curl
      */
     private function buildURL($url, $data = array())
     {
-        return $url . (empty($data) ? '' : '?' . http_build_query($data));
+        return $url . (empty($data) ? '' : '?' . http_build_query($data, '', '&'));
     }
 
     /**

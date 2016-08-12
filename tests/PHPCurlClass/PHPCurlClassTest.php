@@ -2807,4 +2807,29 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
         $this->assertFalse(isset($options[CURLOPT_COOKIE]));
     }
+
+    public function testBuildUrlArgSeparator()
+    {
+        $base_url = 'https://www.example.com/path';
+        $data = array(
+            'arg' => 'value',
+            'another' => 'one',
+        );
+        $expected_url = $base_url . '?arg=value&another=one';
+
+        foreach (array(false, '&amp;', '&') as $arg_separator) {
+            if ($arg_separator) {
+                ini_set('arg_separator.output', $arg_separator);
+            }
+
+            $curl = new Curl();
+
+            $reflector = new ReflectionObject($curl);
+            $method = $reflector->getMethod('buildURL');
+            $method->setAccessible(true);
+
+            $actual_url = $method->invoke($curl, $base_url, $data);
+            $this->assertEquals($expected_url, $actual_url);
+        }
+    }
 }
