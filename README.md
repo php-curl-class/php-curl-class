@@ -173,6 +173,8 @@ $multi_curl->addGet('https://www.bing.com/search', array(
 $multi_curl->start(); // Blocks until all items in the queue have been processed.
 ```
 
+More examples are available under [/examples](https://github.com/php-curl-class/php-curl-class/tree/master/examples).
+
 ### Available Methods
 ```php
 Curl::__construct($base_url = null)
