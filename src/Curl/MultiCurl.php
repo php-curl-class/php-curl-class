@@ -246,7 +246,9 @@ class MultiCurl
         $curl->setURL($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
         $put_data = $curl->buildPostData($data);
-        $curl->setHeader('Content-Length', strlen($put_data));
+        if (is_string($put_data)) {
+            $curl->setHeader('Content-Length', strlen($put_data));
+        }
         $curl->setOpt(CURLOPT_POSTFIELDS, $put_data);
         $this->addHandle($curl);
         return $curl;
@@ -271,7 +273,9 @@ class MultiCurl
         $curl->setURL($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'SEARCH');
         $put_data = $curl->buildPostData($data);
-        $curl->setHeader('Content-Length', strlen($put_data));
+        if (is_string($put_data)) {
+            $curl->setHeader('Content-Length', strlen($put_data));
+        }
         $curl->setOpt(CURLOPT_POSTFIELDS, $put_data);
         $this->addHandle($curl);
         return $curl;
