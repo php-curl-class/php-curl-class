@@ -592,7 +592,7 @@ class Curl
         }
         return $this->exec();
     }
-    
+
     /**
      * Search
      *
