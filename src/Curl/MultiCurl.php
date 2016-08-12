@@ -23,6 +23,9 @@ class MultiCurl
     private $jsonDecoder = null;
     private $xmlDecoder = null;
 
+    private $concurrency = 0;
+    private $autoClose = false;
+
     /**
      * Construct
      *
@@ -34,6 +37,22 @@ class MultiCurl
         $this->multiCurl = curl_multi_init();
         $this->headers = new CaseInsensitiveArray();
         $this->setURL($base_url);
+    }
+
+    /**
+     * Auto Close
+     *
+     * Wether to auto-close child Curl Requests one complete
+     *
+     * @param bool $true (optional)
+     *
+     * @return void
+     *
+     * @access public
+     */
+    public function autoClose($true = true)
+    {
+        $this->autoClose = (bool) $true;
     }
 
     /**
@@ -74,21 +93,19 @@ class MultiCurl
     {
         $curl = new Curl();
         $curl->setURL($url);
+        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
+        $curl->setOpt(CURLOPT_HTTPGET, true);
+        $this->addHandle($curl);
 
         if (is_callable($mixed_filename)) {
             $callback = $mixed_filename;
             $curl->downloadCompleteFunction = $callback;
-            $fh = tmpfile();
+            $this->curlFileHandles[$curl->id] = true;
         } else {
             $filename = $mixed_filename;
-            $fh = fopen($filename, 'wb');
+            $this->curlFileHandles[$curl->id] = $filename;
         }
 
-        $curl->setOpt(CURLOPT_FILE, $fh);
-        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
-        $curl->setOpt(CURLOPT_HTTPGET, true);
-        $this->addHandle($curl);
-        $this->curlFileHandles[$curl->id] = $fh;
         return $curl;
     }
 
@@ -509,6 +526,10 @@ class MultiCurl
         $this->setOpt(CURLOPT_USERAGENT, $user_agent);
     }
 
+    public function setConcurrency($concurrency) {
+        $this->concurrency = max(0, (int) $concurrency);
+    }
+
     /**
      * Start
      *
@@ -516,30 +537,54 @@ class MultiCurl
      */
     public function start()
     {
-        foreach ($this->curls as $ch) {
-            $this->initHandle($ch);
-        }
-
         $this->isStarted = true;
 
+        reset($this->curls);
+
+        $running = array();
+
         do {
+
+            if (count($this->curls)) {
+                while (
+                    ($id = key($this->curls)) != null &&
+                    ($this->concurrency <= 0 || (count($running) < $this->concurrency))
+                ) {
+                    $running[$id] = $id;
+                    $this->initHandle($this->curls[$id]);
+
+                    next($this->curls);
+                }
+            }
+
             curl_multi_select($this->multiCurl);
             curl_multi_exec($this->multiCurl, $active);
 
             while (!($info_array = curl_multi_info_read($this->multiCurl)) === false) {
                 if ($info_array['msg'] === CURLMSG_DONE) {
-                    foreach ($this->curls as $key => $ch) {
-                        if ($ch->curl === $info_array['handle']) {
+                    foreach ($running as $id) {
+                        if ((isset($this->curls[$id]) && $ch = $this->curls[$id]) &&
+                            $ch->curl === $info_array['handle']
+                        ) {
                             $ch->curlErrorCode = $info_array['result'];
                             $ch->exec($ch->curl);
                             curl_multi_remove_handle($this->multiCurl, $ch->curl);
-                            unset($this->curls[$key]);
+                            unset($running[$id]);
+                            unset($this->curls[$id]);
 
                             // Close open file handles and reset the curl instance.
-                            if (isset($this->curlFileHandles[$ch->id])) {
+                            if (
+                                isset($this->curlFileHandles[$ch->id]) &&
+                                is_resource($this->curlFileHandles[$ch->id])
+                            ) {
                                 $ch->downloadComplete($this->curlFileHandles[$ch->id]);
                                 unset($this->curlFileHandles[$ch->id]);
                             }
+
+                            if($this->autoClose) $ch->close();
+
+                            unset($ch);
+
                             break;
                         }
                     }
@@ -614,16 +659,7 @@ class MultiCurl
      */
     private function addHandle($curl)
     {
-        $curlm_error_code = curl_multi_add_handle($this->multiCurl, $curl->curl);
-        if (!($curlm_error_code === CURLM_OK)) {
-            throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
-        }
-        $this->curls[] = $curl;
-        $curl->id = $this->nextCurlId++;
-
-        if ($this->isStarted) {
-            $this->initHandle($curl);
-        }
+        $this->curls[($curl->id = $this->nextCurlId++)] = $curl;
     }
 
     /**
@@ -634,6 +670,24 @@ class MultiCurl
      */
     private function initHandle($curl)
     {
+        if (isset($this->curlFileHandles[$curl->id])) {
+            $mixed_handle = $this->curlFileHandles[$curl->id];
+            if ($mixed_handle === true) {
+                $fh = tmpfile();
+            } else {
+                $filename = $mixed_handle;
+                $fh = fopen($filename, 'wb');
+            }
+
+            $curl->setOpt(CURLOPT_FILE, $fh);
+            $this->curlFileHandles[$curl->id] = $fh;
+        }
+
+        $curlm_error_code = curl_multi_add_handle($this->multiCurl, $curl->curl);
+        if (!($curlm_error_code === CURLM_OK)) {
+            throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
+        }
+
         // Set callbacks if not already individually set.
         if ($curl->beforeSendFunction === null) {
             $curl->beforeSend($this->beforeSendFunction);

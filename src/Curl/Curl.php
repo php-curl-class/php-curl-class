@@ -2,7 +2,6 @@
 
 namespace Curl;
 
-
 class Curl
 {
     const VERSION = '5.0.0';
