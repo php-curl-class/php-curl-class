@@ -597,7 +597,6 @@ class Curl
      * Search
      *
      * @access public
-     * @param  $method
      * @param  $url
      * @param  $data
      *
