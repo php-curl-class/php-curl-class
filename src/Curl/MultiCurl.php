@@ -516,6 +516,10 @@ class MultiCurl
      */
     public function start()
     {
+        if ($this->isStarted) {
+            return;
+        }
+
         foreach ($this->curls as $ch) {
             $this->initHandle($ch);
         }
