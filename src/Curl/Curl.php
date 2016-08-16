@@ -69,6 +69,7 @@ class Curl
     public $successFunction = null;
     public $errorFunction = null;
     public $completeFunction = null;
+    public $fileHandle = null;
 
     private $cookies = array();
     private $responseCookies = array();
