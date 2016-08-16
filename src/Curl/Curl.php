@@ -69,6 +69,7 @@ class Curl
     public $successFunction = null;
     public $errorFunction = null;
     public $completeFunction = null;
+    public $fileHandle = null;
 
     private $cookies = array();
     private $responseCookies = array();
@@ -336,12 +337,12 @@ class Curl
     public function exec($ch = null)
     {
         $this->responseCookies = array();
-        if (!($ch === null)) {
-            $this->rawResponse = curl_multi_getcontent($ch);
-        } else {
+        if ($ch === null) {
             $this->call($this->beforeSendFunction);
             $this->rawResponse = curl_exec($this->curl);
             $this->curlErrorCode = curl_errno($this->curl);
+        } else {
+            $this->rawResponse = curl_multi_getcontent($ch);
         }
         $this->curlErrorMessage = curl_error($this->curl);
         $this->curlError = !($this->curlErrorCode === 0);

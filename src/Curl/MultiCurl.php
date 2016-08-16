@@ -7,7 +7,6 @@ class MultiCurl
     public $baseUrl = null;
     public $multiCurl;
     public $curls = array();
-    private $curlFileHandles = array();
     private $nextCurlId = 1;
     private $isStarted = false;
 
@@ -75,20 +74,23 @@ class MultiCurl
         $curl = new Curl();
         $curl->setURL($url);
 
+        // Use tmpfile() or php://temp to avoid "Too many open files" error.
         if (is_callable($mixed_filename)) {
             $callback = $mixed_filename;
             $curl->downloadCompleteFunction = $callback;
-            $fh = tmpfile();
+            $curl->fileHandle = tmpfile();
         } else {
             $filename = $mixed_filename;
-            $fh = fopen($filename, 'wb');
+            $curl->downloadCompleteFunction = function($instance, $fh) use ($filename) {
+                file_put_contents($filename, stream_get_contents($fh));
+            };
+            $curl->fileHandle = fopen('php://temp', 'wb');
         }
 
-        $curl->setOpt(CURLOPT_FILE, $fh);
+        $curl->setOpt(CURLOPT_FILE, $curl->fileHandle);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $curl->setOpt(CURLOPT_HTTPGET, true);
         $this->addHandle($curl);
-        $this->curlFileHandles[$curl->id] = $fh;
         return $curl;
     }
 
@@ -516,6 +518,10 @@ class MultiCurl
      */
     public function start()
     {
+        if ($this->isStarted) {
+            return;
+        }
+
         foreach ($this->curls as $ch) {
             $this->initHandle($ch);
         }
@@ -536,9 +542,8 @@ class MultiCurl
                             unset($this->curls[$key]);
 
                             // Close open file handles and reset the curl instance.
-                            if (isset($this->curlFileHandles[$ch->id])) {
-                                $ch->downloadComplete($this->curlFileHandles[$ch->id]);
-                                unset($this->curlFileHandles[$ch->id]);
+                            if (!($ch->fileHandle === null)) {
+                                $ch->downloadComplete($ch->fileHandle);
                             }
                             break;
                         }
