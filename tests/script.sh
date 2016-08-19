@@ -101,4 +101,11 @@ if [[ ! -z "${elseif}" ]]; then
     ((errors++))
 fi
 
+# Require both braces on else statement line; "} else {" and not "}\nelse {".
+elses=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --line-number -H --perl-regexp '^(\s+)?else(\s+)?{' {} \;)
+if [[ ! -z "${elses}" ]]; then
+    echo -e "${elses}" | perl -pe 's/^(.*)$/Found newline before "else" statement in \1/'
+    ((errors++))
+fi
+
 exit "${errors}"
