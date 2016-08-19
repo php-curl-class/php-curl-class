@@ -8,8 +8,7 @@ $curl->get('https://httpbin.org/get');
 
 if ($curl->error) {
     echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage;
-}
-else {
+} else {
     echo 'Response:' . "\n";
     var_dump($curl->response);
 }
