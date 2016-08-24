@@ -2,7 +2,6 @@
 
 namespace Curl;
 
-
 class Curl
 {
     const VERSION = '5.1.0';
@@ -549,11 +548,13 @@ class Curl
         } else {
             if (isset($this->options[CURLOPT_CUSTOMREQUEST])) {
                 if ((version_compare(PHP_VERSION, '5.5.11') < 0) || defined('HHVM_VERSION')) {
-                    trigger_error('Due to technical limitations of PHP <= 5.5.11 and HHVM, it is not possible to '
+                    trigger_error(
+                        'Due to technical limitations of PHP <= 5.5.11 and HHVM, it is not possible to '
                         . 'perform a post-redirect-get request using a php-curl-class Curl object that '
                         . 'has already been used to perform other types of requests. Either use a new '
                         . 'php-curl-class Curl object or upgrade your PHP engine.',
-                        E_USER_ERROR);
+                        E_USER_ERROR
+                    );
                 } else {
                     $this->setOpt(CURLOPT_CUSTOMREQUEST, null);
                 }
@@ -677,7 +678,7 @@ class Curl
         }
 
         $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
-        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function($k, $v) {
+        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function ($k, $v) {
             return $k . '=' . $v;
         }, array_keys($this->cookies), array_values($this->cookies))));
     }
@@ -783,7 +784,7 @@ class Curl
     public function setDefaultJsonDecoder()
     {
         $args = func_get_args();
-        $this->jsonDecoder = function($response) use ($args) {
+        $this->jsonDecoder = function ($response) use ($args) {
             array_unshift($args, $response);
 
             // Call json_decode() without the $options parameter in PHP
@@ -808,7 +809,7 @@ class Curl
      */
     public function setDefaultXmlDecoder()
     {
-        $this->xmlDecoder = function($response) {
+        $this->xmlDecoder = function ($response) {
             $xml_obj = @simplexml_load_string($response);
             if (!($xml_obj === false)) {
                 $response = $xml_obj;
@@ -1071,7 +1072,8 @@ class Curl
      *
      * @access private
      */
-    private function __get_effectiveUrl() {
+    private function __get_effectiveUrl()
+    {
         return $this->getInfo(CURLINFO_EFFECTIVE_URL);
     }
 
@@ -1080,7 +1082,8 @@ class Curl
      *
      * @access private
      */
-    private function __get_totalTime() {
+    private function __get_totalTime()
+    {
         return $this->getInfo(CURLINFO_TOTAL_TIME);
     }
 
@@ -1269,8 +1272,12 @@ class Curl
                             $return[$key] = $value;
                         } else {
                             $return = array_merge(
-                                $return, self::array_flatten_multidim(
-                                    $value, $prefix ? $prefix . '[' . $key . ']' : $key));
+                                $return,
+                                self::array_flatten_multidim(
+                                    $value,
+                                    $prefix ? $prefix . '[' . $key . ']' : $key
+                                )
+                            );
                         }
                     }
                 }

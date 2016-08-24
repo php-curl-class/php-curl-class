@@ -3,15 +3,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
 
-function construct_url($photo, $size = 's', $ext = 'jpg')
-{
-    $url = 'http://farm' . $photo->farm . '.staticflickr.com/' .  $photo->server . '/' .
-        $photo->id . '_' . $photo->secret . '_' . $size . '.' . $ext;
-
-    return $url;
-}
-
-define('FLICKR_API_KEY', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+const FLICKR_API_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
 
 $data = array(
     'method' => 'flickr.photos.search',
@@ -27,5 +19,9 @@ $curl = new Curl();
 $curl->get('https://api.flickr.com/services/rest/', $data);
 
 foreach ($curl->response->photos->photo as $photo) {
-    echo '<img alt="" src="' . construct_url($photo) . '" height="75" width="75" />';
+    $size = 's';
+    $ext = 'jpg';
+    $url = 'http://farm' . $photo->farm . '.staticflickr.com/' .  $photo->server . '/' .
+        $photo->id . '_' . $photo->secret . '_' . $size . '.' . $ext;
+    echo '<img alt="" src="' . $url . '" height="75" width="75" />';
 }

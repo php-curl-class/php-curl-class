@@ -39,7 +39,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @access public
      */
-    public function __construct(Array $initial = null)
+    public function __construct(array $initial = null)
     {
         if ($initial !== null) {
             foreach ($initial as $key => $value) {

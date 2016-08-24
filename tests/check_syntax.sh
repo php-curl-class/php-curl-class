@@ -1,6 +1,7 @@
 phpcs \
-    --extensions=php \
+    --extensions="php" \
     --ignore="*/vendor/*" \
-    --standard=PSR2 \
+    --standard="ruleset.xml" \
     -p \
+    -s \
     ..

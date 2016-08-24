@@ -6,8 +6,7 @@ $current_version = Curl\Curl::VERSION;
 list($major, $minor, $patch) = explode('.', $current_version);
 $new_version = implode('.', array($major, $minor, (string)((int)$patch += 1)));
 
-foreach(
-    array(
+foreach (array(
         array(
             dirname(__FILE__) . '/../src/Curl/Curl.php',
             '/const VERSION = \'(?:\d+.\d+.\d+)\';/',
