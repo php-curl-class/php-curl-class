@@ -1,1 +1,7 @@
-phpcs --standard=PSR2 --extensions=php ..
+phpcs \
+    --extensions="php" \
+    --ignore="*/vendor/*" \
+    --standard="ruleset.xml" \
+    -p \
+    -s \
+    ..

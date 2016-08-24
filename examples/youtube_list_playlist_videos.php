@@ -3,7 +3,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
 
-define('YOUTUBE_API_KEY', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+const YOUTUBE_API_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 
 $playlistId = 'RDHJb0VYVtaNc';
 

@@ -3,8 +3,8 @@ require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
 
-define('API_KEY', '');
-define('API_SECRET', '');
+const API_KEY = '';
+const API_SECRET = '';
 
 $url = 'https://coinbase.com/api/v1/account/balance';
 

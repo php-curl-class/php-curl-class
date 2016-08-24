@@ -3,8 +3,8 @@ require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
 
-define('GRATIPAY_USERNAME', 'XXXXXXXXXX');
-define('GRATIPAY_API_KEY', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX');
+const GRATIPAY_USERNAME = 'XXXXXXXXXX';
+const GRATIPAY_API_KEY = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 
 $data = array(
     array(

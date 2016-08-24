@@ -3,7 +3,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
 
-define('INSTAGRAM_CLIENT_ID', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+const INSTAGRAM_CLIENT_ID = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 
 $curl = new Curl();
 $curl->get('https://api.instagram.com/v1/media/search', array(

@@ -3,7 +3,6 @@ require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
 
-
 const OAUTH2_AUTH_URL = 'https://accounts.google.com/o/oauth2/auth';
 const OAUTH2_TOKEN_URI = 'https://www.googleapis.com/oauth2/v4/token';
 
