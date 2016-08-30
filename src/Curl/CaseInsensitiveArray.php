@@ -35,7 +35,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @param mixed[] $initial (optional) Existing Array to convert.
      *
-     * @return void
+     * @return CaseInsensitiveArray
      *
      * @access public
      */
@@ -204,8 +204,6 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * Valid
      *
      * @see https://secure.php.net/manual/en/iterator.valid.php
-     *
-     * @param void
      *
      * @return bool If the current position is valid.
      *

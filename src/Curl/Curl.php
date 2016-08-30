@@ -403,6 +403,8 @@ class Curl
      *
      * @access public
      * @param  $opt
+     *
+     * @return mixed
      */
     public function getInfo($opt)
     {
@@ -514,8 +516,8 @@ class Curl
      * @access public
      * @param  $url
      * @param  $data
-     * @param  $follow_303_with_post If true, will cause 303 redirections to be followed using
-     *     a POST request (default: false).
+     * @param  $follow_303_with_post
+     *     If true, will cause 303 redirections to be followed using a POST request (default: false).
      *     Notes:
      *       - Redirections are only followed if the CURLOPT_FOLLOWLOCATION option is set to true.
      *       - According to the HTTP specs (see [1]), a 303 redirection should be followed using
@@ -688,6 +690,7 @@ class Curl
      *
      * @access public
      * @param  $key
+     *
      * @return mixed
      */
     public function getCookie($key)
@@ -700,6 +703,7 @@ class Curl
      *
      * @access public
      * @param  $key
+     *
      * @return mixed
      */
     public function getResponseCookie($key)
@@ -711,6 +715,7 @@ class Curl
      * Get response cookies.
      *
      * @access public
+     *
      * @return array
      */
     public function getResponseCookies()
@@ -745,6 +750,8 @@ class Curl
      *
      * @access public
      * @param  $string
+     *
+     * @return bool
      */
     public function setCookieString($string)
     {
@@ -947,6 +954,7 @@ class Curl
                 return false;
             }
         }
+        return true;
     }
 
     /**
