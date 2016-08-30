@@ -947,6 +947,7 @@ class Curl
                 return false;
             }
         }
+        return true;
     }
 
     /**

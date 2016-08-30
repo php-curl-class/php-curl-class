@@ -2837,14 +2837,34 @@ class CurlTest extends PHPUnit_Framework_TestCase
             CURLOPT_COOKIE => 'a=b',
         );
         $curl = new Curl();
-        @$curl->setOpts($options);
+        $success = @$curl->setOpts($options);
 
         $reflector = new ReflectionObject($curl);
         $property = $reflector->getProperty('options');
         $property->setAccessible(true);
         $options = $property->getValue($curl);
 
+        $this->assertFalse($success);
         $this->assertFalse(isset($options[CURLOPT_COOKIE]));
+
+        // Ensure Curl::setOpts() returns true when all options are successfully set.
+        $options = array(
+            CURLOPT_COOKIE => 'a=b',
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_VERBOSE => true,
+        );
+        $curl = new Curl();
+        $success = $curl->setOpts($options);
+
+        $reflector = new ReflectionObject($curl);
+        $property = $reflector->getProperty('options');
+        $property->setAccessible(true);
+        $options = $property->getValue($curl);
+
+        $this->assertTrue($success);
+        $this->assertEquals('a=b', $options[CURLOPT_COOKIE]);
+        $this->assertTrue($options[CURLOPT_FOLLOWLOCATION]);
+        $this->assertTrue($options[CURLOPT_VERBOSE]);
     }
 
     public function testBuildUrlArgSeparator()
