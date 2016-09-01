@@ -340,10 +340,11 @@ class Curl
             $this->call($this->beforeSendFunction);
             $this->rawResponse = curl_exec($this->curl);
             $this->curlErrorCode = curl_errno($this->curl);
+            $this->curlErrorMessage = curl_error($this->curl);
         } else {
             $this->rawResponse = curl_multi_getcontent($ch);
+            $this->curlErrorMessage = curl_error($ch);
         }
-        $this->curlErrorMessage = curl_error($this->curl);
         $this->curlError = !($this->curlErrorCode === 0);
         $this->httpStatusCode = $this->getInfo(CURLINFO_HTTP_CODE);
         $this->httpError = in_array(floor($this->httpStatusCode / 100), array(4, 5));
