@@ -204,6 +204,7 @@ class Curl
         $this->options = null;
         $this->jsonDecoder = null;
         $this->xmlDecoder = null;
+        $this->defaultDecoder = null;
     }
 
     /**
