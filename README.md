@@ -70,8 +70,7 @@ $curl->get('https://www.example.com/');
 
 if ($curl->error) {
     echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage;
-}
-else {
+} else {
     echo $curl->response;
 }
 
