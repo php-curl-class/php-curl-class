@@ -536,6 +536,9 @@ class MultiCurl
                 if ($info_array['msg'] === CURLMSG_DONE) {
                     foreach ($this->curls as $key => $ch) {
                         if ($ch->curl === $info_array['handle']) {
+                            // Set the error code for multi handles using the "result" key in the array returned by
+                            // curl_multi_info_read(). Using curl_errno() on a multi handle will incorrectly return 0
+                            // for errors.
                             $ch->curlErrorCode = $info_array['result'];
                             $ch->exec($ch->curl);
                             curl_multi_remove_handle($this->multiCurl, $ch->curl);
