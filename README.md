@@ -148,7 +148,8 @@ $multi_curl = new MultiCurl();
 
 $multi_curl->success(function($instance) {
     echo 'call to "' . $instance->url . '" was successful.' . "\n";
-    echo 'response: ' . $instance->response . "\n";
+    echo 'response:' . "\n";
+    var_dump($instance->response);
 });
 $multi_curl->error(function($instance) {
     echo 'call to "' . $instance->url . '" was unsuccessful.' . "\n";
