@@ -350,7 +350,10 @@ class Curl
 
         // Include additional error code information in error message when possible.
         if ($this->curlError && function_exists('curl_strerror')) {
-            $this->curlErrorMessage = curl_strerror($this->curlErrorCode) . ': ' . $this->curlErrorMessage;
+            $this->curlErrorMessage =
+                curl_strerror($this->curlErrorCode) . (
+                    empty($this->curlErrorMessage) ? '' : ': ' . $this->curlErrorMessage
+                );
         }
 
         $this->httpStatusCode = $this->getInfo(CURLINFO_HTTP_CODE);
