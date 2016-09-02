@@ -1,5 +1,5 @@
-# Check syntax in php files.
-find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec php -l {} \;
+# Check syntax in php files. Use `xargs' over `find -exec' as xargs exits with a value of 1 when any command errors.
+find . -type "f" -iname "*.php" ! -path "*/vendor/*" | xargs -L "1" php -l
 
 errors=0
 
