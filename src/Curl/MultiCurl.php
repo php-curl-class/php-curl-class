@@ -543,11 +543,6 @@ class MultiCurl
                             $ch->exec($ch->curl);
                             curl_multi_remove_handle($this->multiCurl, $ch->curl);
                             unset($this->curls[$key]);
-
-                            // Close open file handles and reset the curl instance.
-                            if (!($ch->fileHandle === null)) {
-                                $ch->downloadComplete($ch->fileHandle);
-                            }
                             break;
                         }
                     }

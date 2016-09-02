@@ -385,6 +385,11 @@ class Curl
 
         $this->call($this->completeFunction);
 
+        // Close open file handles and reset the curl instance.
+        if (!($this->fileHandle === null)) {
+            $this->downloadComplete($this->fileHandle);
+        }
+
         return $this->response;
     }
 
