@@ -100,7 +100,7 @@ class Curl
         }
 
         $this->curl = curl_init();
-        $this->id = 1;
+        $this->id = uniqid('', true);
         $this->setDefaultUserAgent();
         $this->setDefaultJsonDecoder();
         $this->setDefaultXmlDecoder();

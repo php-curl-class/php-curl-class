@@ -6,8 +6,10 @@ class MultiCurl
 {
     public $baseUrl = null;
     public $multiCurl;
-    public $curls = array();
-    private $nextCurlId = 1;
+    public $windowSize = 25;
+
+    private $curls = array();
+    private $activeCurls = array();
     private $isStarted = false;
 
     private $beforeSendFunction = null;
@@ -524,8 +526,13 @@ class MultiCurl
 
         $this->isStarted = true;
 
-        foreach ($this->curls as $ch) {
-            $this->initHandle($ch);
+        $window_size = $this->windowSize;
+        if ($window_size > count($this->curls)) {
+            $window_size = count($this->curls);
+        }
+
+        for ($i = 0; $i < $window_size; $i++) {
+            $this->initHandle(array_pop($this->curls));
         }
 
         do {
@@ -534,15 +541,22 @@ class MultiCurl
 
             while (!($info_array = curl_multi_info_read($this->multiCurl)) === false) {
                 if ($info_array['msg'] === CURLMSG_DONE) {
-                    foreach ($this->curls as $key => $ch) {
+                    foreach ($this->activeCurls as $key => $ch) {
                         if ($ch->curl === $info_array['handle']) {
                             // Set the error code for multi handles using the "result" key in the array returned by
                             // curl_multi_info_read(). Using curl_errno() on a multi handle will incorrectly return 0
                             // for errors.
                             $ch->curlErrorCode = $info_array['result'];
                             $ch->exec($ch->curl);
+
+                            unset($this->activeCurls[$key]);
+
+                            // Start a new request before removing the handle of the completed one.
+                            if (count($this->curls) >= 1) {
+                                $this->initHandle(array_pop($this->curls));
+                            }
                             curl_multi_remove_handle($this->multiCurl, $ch->curl);
-                            unset($this->curls[$key]);
+
                             break;
                         }
                     }
@@ -550,7 +564,7 @@ class MultiCurl
             }
 
             if (!$active) {
-                $active = count($this->curls);
+                $active = count($this->activeCurls);
             }
         } while ($active > 0);
 
@@ -616,12 +630,7 @@ class MultiCurl
      */
     private function queueHandle($curl)
     {
-        $curl->id = $this->nextCurlId++;
-        $this->curls[] = $curl;
-
-        if ($this->isStarted) {
-            $this->initHandle($curl);
-        }
+        $this->curls[$curl->id] = $curl;
     }
 
     /**
@@ -661,6 +670,7 @@ class MultiCurl
             throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
         }
 
+        $this->activeCurls[$curl->id] = $curl;
         $curl->call($curl->beforeSendFunction);
     }
 }
