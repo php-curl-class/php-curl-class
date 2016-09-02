@@ -3,7 +3,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
 
-const FLICKR_API_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+const FLICKR_API_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 
 $data = array(
     'method' => 'flickr.photos.search',

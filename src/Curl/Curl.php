@@ -100,7 +100,7 @@ class Curl
         }
 
         $this->curl = curl_init();
-        $this->id = 1;
+        $this->id = uniqid('', true);
         $this->setDefaultUserAgent();
         $this->setDefaultJsonDecoder();
         $this->setDefaultXmlDecoder();
@@ -384,6 +384,11 @@ class Curl
         }
 
         $this->call($this->completeFunction);
+
+        // Close open file handles and reset the curl instance.
+        if (!($this->fileHandle === null)) {
+            $this->downloadComplete($this->fileHandle);
+        }
 
         return $this->response;
     }

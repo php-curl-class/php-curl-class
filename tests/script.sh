@@ -1,7 +1,10 @@
-# Check syntax in php files.
-find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec php -l {} \;
-
 errors=0
+
+# Check syntax in php files. Use `xargs' over `find -exec' as xargs exits with a value of 1 when any command errors.
+find . -type "f" -iname "*.php" ! -path "*/vendor/*" | xargs -L "1" php -l
+if [[ "${?}" -ne 0 ]]; then
+    ((errors++))
+fi
 
 # Run tests.
 phpunit --configuration tests/phpunit.xml
