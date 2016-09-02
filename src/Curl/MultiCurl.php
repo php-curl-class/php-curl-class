@@ -56,7 +56,7 @@ class MultiCurl
         $curl->setURL($url, $query_parameters);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
         $curl->setOpt(CURLOPT_POSTFIELDS, $curl->buildPostData($data));
-        $this->addHandle($curl);
+        $this->queueHandle($curl);
         return $curl;
     }
 
@@ -90,7 +90,7 @@ class MultiCurl
         $curl->setOpt(CURLOPT_FILE, $curl->fileHandle);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $curl->setOpt(CURLOPT_HTTPGET, true);
-        $this->addHandle($curl);
+        $this->queueHandle($curl);
         return $curl;
     }
 
@@ -113,7 +113,7 @@ class MultiCurl
         $curl->setURL($url, $data);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $curl->setOpt(CURLOPT_HTTPGET, true);
-        $this->addHandle($curl);
+        $this->queueHandle($curl);
         return $curl;
     }
 
@@ -136,7 +136,7 @@ class MultiCurl
         $curl->setURL($url, $data);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
         $curl->setOpt(CURLOPT_NOBODY, true);
-        $this->addHandle($curl);
+        $this->queueHandle($curl);
         return $curl;
     }
 
@@ -159,7 +159,7 @@ class MultiCurl
         $curl->setURL($url, $data);
         $curl->unsetHeader('Content-Length');
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
-        $this->addHandle($curl);
+        $this->queueHandle($curl);
         return $curl;
     }
 
@@ -183,7 +183,7 @@ class MultiCurl
         $curl->unsetHeader('Content-Length');
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $curl->setOpt(CURLOPT_POSTFIELDS, $data);
-        $this->addHandle($curl);
+        $this->queueHandle($curl);
         return $curl;
     }
 
@@ -225,7 +225,7 @@ class MultiCurl
 
         $curl->setOpt(CURLOPT_POST, true);
         $curl->setOpt(CURLOPT_POSTFIELDS, $curl->buildPostData($data));
-        $this->addHandle($curl);
+        $this->queueHandle($curl);
         return $curl;
     }
 
@@ -252,7 +252,7 @@ class MultiCurl
             $curl->setHeader('Content-Length', strlen($put_data));
         }
         $curl->setOpt(CURLOPT_POSTFIELDS, $put_data);
-        $this->addHandle($curl);
+        $this->queueHandle($curl);
         return $curl;
     }
 
@@ -279,7 +279,7 @@ class MultiCurl
             $curl->setHeader('Content-Length', strlen($put_data));
         }
         $curl->setOpt(CURLOPT_POSTFIELDS, $put_data);
-        $this->addHandle($curl);
+        $this->queueHandle($curl);
         return $curl;
     }
 
@@ -614,20 +614,15 @@ class MultiCurl
     }
 
     /**
-     * Add Handle
+     * Queue Handle
      *
      * @access private
      * @param  $curl
-     * @throws \ErrorException
      */
-    private function addHandle($curl)
+    private function queueHandle($curl)
     {
-        $curlm_error_code = curl_multi_add_handle($this->multiCurl, $curl->curl);
-        if (!($curlm_error_code === CURLM_OK)) {
-            throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
-        }
-        $this->curls[] = $curl;
         $curl->id = $this->nextCurlId++;
+        $this->curls[] = $curl;
 
         if ($this->isStarted) {
             $this->initHandle($curl);
@@ -639,6 +634,7 @@ class MultiCurl
      *
      * @access private
      * @param  $curl
+     * @throws \ErrorException
      */
     private function initHandle($curl)
     {
@@ -664,6 +660,12 @@ class MultiCurl
         }
         $curl->setJsonDecoder($this->jsonDecoder);
         $curl->setXmlDecoder($this->xmlDecoder);
+
+        $curlm_error_code = curl_multi_add_handle($this->multiCurl, $curl->curl);
+        if (!($curlm_error_code === CURLM_OK)) {
+            throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
+        }
+
         $curl->call($curl->beforeSendFunction);
     }
 }
