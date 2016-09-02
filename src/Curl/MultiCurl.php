@@ -522,11 +522,11 @@ class MultiCurl
             return;
         }
 
+        $this->isStarted = true;
+
         foreach ($this->curls as $ch) {
             $this->initHandle($ch);
         }
-
-        $this->isStarted = true;
 
         do {
             curl_multi_select($this->multiCurl);
