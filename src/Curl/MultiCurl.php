@@ -483,6 +483,19 @@ class MultiCurl
     }
 
     /**
+     * Set Opts
+     *
+     * @access public
+     * @param  $options
+     */
+    public function setOpts($options)
+    {
+        foreach ($options as $option => $value) {
+            $this->setOpt($option, $value);
+        }
+    }
+
+    /**
      * Set Referer
      *
      * @access public
