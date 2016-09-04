@@ -257,10 +257,10 @@ class Curl
     /**
      * Download Complete
      *
-     * @access public
+     * @access private
      * @param  $fh
      */
-    public function downloadComplete($fh)
+    private function downloadComplete($fh)
     {
         if (!$this->error && $this->downloadCompleteFunction) {
             rewind($fh);
