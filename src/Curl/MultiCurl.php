@@ -386,6 +386,17 @@ class MultiCurl
     }
 
     /**
+     * Set Port
+     *
+     * @access public
+     * @param  $port
+     */
+    public function setPort($port)
+    {
+        $this->setOpt(CURLOPT_PORT, intval($port));
+    }
+
+    /**
      * Set Connect Timeout
      *
      * @access public
