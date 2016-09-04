@@ -387,6 +387,17 @@ class MultiCurl
     }
 
     /**
+     * Set Connect Timeout
+     *
+     * @access public
+     * @param  $seconds
+     */
+    public function setConnectTimeout($seconds)
+    {
+        $this->setOpt(CURLOPT_CONNECTTIMEOUT, $seconds);
+    }
+
+    /**
      * Set Cookie String
      *
      * @access public
