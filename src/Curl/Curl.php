@@ -437,7 +437,7 @@ class Curl
      */
     public function getOpt($option)
     {
-        return $this->options[$option];
+        return isset($this->options[$option]) ? $this->options[$option] : null;
     }
 
     /**
