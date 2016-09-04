@@ -2001,31 +2001,37 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
 
     public function testCookies()
     {
-        $data = array('key' => 'mycookie');
-
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'cookie');
+        $multi_curl->setHeader('X-DEBUG-TEST', 'setcookie');
         $multi_curl->setCookie('mycookie', 'yum');
+        $multi_curl->setCookie('cookie-for-all-before', 'a');
 
-        $get_1 = $multi_curl->addGet(Test::TEST_URL, $data);
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_1->setCookie('cookie-for-1st-request', '1');
         $get_1->complete(function ($instance) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertEquals('yum', $instance->response);
+            PHPUnit_Framework_Assert::assertEquals('yum', $instance->responseCookies['mycookie']);
+            PHPUnit_Framework_Assert::assertEquals('a', $instance->responseCookies['cookie-for-all-before']);
+            PHPUnit_Framework_Assert::assertEquals('b', $instance->responseCookies['cookie-for-all-after']);
+            PHPUnit_Framework_Assert::assertEquals('1', $instance->responseCookies['cookie-for-1st-request']);
         });
 
-        $get_2 = $multi_curl->addGet(Test::TEST_URL, $data);
+        $get_2 = $multi_curl->addGet(Test::TEST_URL);
+        $get_2->setCookie('cookie-for-2nd-request', '2');
         $get_2->beforeSend(function ($instance) {
             $instance->setCookie('mycookie', 'yummy');
         });
         $get_2->complete(function ($instance) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertEquals('yummy', $instance->response);
+            PHPUnit_Framework_Assert::assertEquals('yummy', $instance->responseCookies['mycookie']);
+            PHPUnit_Framework_Assert::assertEquals('a', $instance->responseCookies['cookie-for-all-before']);
+            PHPUnit_Framework_Assert::assertEquals('b', $instance->responseCookies['cookie-for-all-after']);
+            PHPUnit_Framework_Assert::assertEquals('2', $instance->responseCookies['cookie-for-2nd-request']);
         });
 
+        $multi_curl->setCookie('cookie-for-all-after', 'b');
         $multi_curl->start();
 
-        $this->assertEquals('yum', $get_1->response);
-        $this->assertEquals('yummy', $get_2->response);
+        $this->assertEquals('yum', $get_1->responseCookies['mycookie']);
+        $this->assertEquals('yummy', $get_2->responseCookies['mycookie']);
     }
 
     public function testJSONDecoder()

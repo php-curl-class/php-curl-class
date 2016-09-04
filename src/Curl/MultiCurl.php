@@ -383,7 +383,6 @@ class MultiCurl
     public function setCookie($key, $value)
     {
         $this->cookies[$key] = $value;
-        $this->setOpt(CURLOPT_COOKIE, str_replace('+', '%20', http_build_query($this->cookies, '', '; ')));
     }
 
     /**
@@ -699,6 +698,9 @@ class MultiCurl
         foreach ($this->headers as $key => $value) {
             $curl->setHeader($key, $value);
         }
+        foreach ($this->cookies as $key => $value) {
+            $curl->setCookie($key, $value);
+        }
         $curl->setJsonDecoder($this->jsonDecoder);
         $curl->setXmlDecoder($this->xmlDecoder);
 
@@ -708,6 +710,7 @@ class MultiCurl
         }
 
         $this->activeCurls[$curl->id] = $curl;
+        $this->responseCookies = array();
         $curl->call($curl->beforeSendFunction);
     }
 }

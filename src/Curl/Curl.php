@@ -60,6 +60,7 @@ class Curl
     public $requestHeaders = null;
     public $responseHeaders = null;
     public $rawResponseHeaders = '';
+    public $responseCookies = array();
     public $response = null;
     public $rawResponse = null;
 
@@ -71,7 +72,6 @@ class Curl
     public $fileHandle = null;
 
     private $cookies = array();
-    private $responseCookies = array();
     private $headers = array();
     private $options = array();
 
@@ -336,8 +336,8 @@ class Curl
      */
     public function exec($ch = null)
     {
-        $this->responseCookies = array();
         if ($ch === null) {
+            $this->responseCookies = array();
             $this->call($this->beforeSendFunction);
             $this->rawResponse = curl_exec($this->curl);
             $this->curlErrorCode = curl_errno($this->curl);
