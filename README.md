@@ -29,7 +29,7 @@ For latest commit version:
 
 ### Requirements
 
-PHP Curl Class works with PHP 5.3, 5.4, 5.5, 5.6, 7.0, and HHVM.
+PHP Curl Class works with PHP 5.3, 5.4, 5.5, 5.6, 7.0, 7.1, and HHVM.
 
 ### Quick Start and Examples
 
@@ -187,7 +187,6 @@ Curl::close()
 Curl::complete($callback)
 Curl::delete($url, $query_parameters = array(), $data = array())
 Curl::download($url, $mixed_filename)
-Curl::downloadComplete($fh)
 Curl::error($callback)
 Curl::exec($ch = null)
 Curl::get($url, $data = array())
@@ -195,7 +194,6 @@ Curl::getCookie($key)
 Curl::getInfo($opt)
 Curl::getOpt($option)
 Curl::getResponseCookie($key)
-Curl::getResponseCookies()
 Curl::head($url, $data = array())
 Curl::headerCallback($ch, $header)
 Curl::options($url, $data = array())
@@ -250,13 +248,17 @@ MultiCurl::complete($callback)
 MultiCurl::error($callback)
 MultiCurl::getOpt($option)
 MultiCurl::setBasicAuthentication($username, $password = '')
+MultiCurl::setConnectTimeout($seconds)
 MultiCurl::setCookie($key, $value)
 MultiCurl::setCookieFile($cookie_file)
 MultiCurl::setCookieJar($cookie_jar)
+MultiCurl::setCookieString($string)
 MultiCurl::setDigestAuthentication($username, $password = '')
 MultiCurl::setHeader($key, $value)
 MultiCurl::setJsonDecoder($function)
 MultiCurl::setOpt($option, $value)
+MultiCurl::setOpts($options)
+MultiCurl::setPort($port)
 MultiCurl::setReferer($referer)
 MultiCurl::setReferrer($referrer)
 MultiCurl::setTimeout($seconds)

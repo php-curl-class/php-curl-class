@@ -303,8 +303,8 @@ class MultiCurl
      */
     public function close()
     {
-        foreach ($this->curls as $ch) {
-            $ch->close();
+        foreach ($this->curls as $curl) {
+            $curl->close();
         }
 
         if (is_resource($this->multiCurl)) {
@@ -344,7 +344,7 @@ class MultiCurl
      */
     public function getOpt($option)
     {
-        return $this->options[$option];
+        return isset($this->options[$option]) ? $this->options[$option] : null;
     }
 
     /**
@@ -383,7 +383,41 @@ class MultiCurl
     public function setCookie($key, $value)
     {
         $this->cookies[$key] = $value;
-        $this->setOpt(CURLOPT_COOKIE, str_replace('+', '%20', http_build_query($this->cookies, '', '; ')));
+    }
+
+    /**
+     * Set Port
+     *
+     * @access public
+     * @param  $port
+     */
+    public function setPort($port)
+    {
+        $this->setOpt(CURLOPT_PORT, intval($port));
+    }
+
+    /**
+     * Set Connect Timeout
+     *
+     * @access public
+     * @param  $seconds
+     */
+    public function setConnectTimeout($seconds)
+    {
+        $this->setOpt(CURLOPT_CONNECTTIMEOUT, $seconds);
+    }
+
+    /**
+     * Set Cookie String
+     *
+     * @access public
+     * @param  $string
+     *
+     * @return bool
+     */
+    public function setCookieString($string)
+    {
+        return $this->setOpt(CURLOPT_COOKIE, $string);
     }
 
     /**
@@ -456,6 +490,19 @@ class MultiCurl
     public function setOpt($option, $value)
     {
         $this->options[$option] = $value;
+    }
+
+    /**
+     * Set Opts
+     *
+     * @access public
+     * @param  $options
+     */
+    public function setOpts($options)
+    {
+        foreach ($options as $option => $value) {
+            $this->setOpt($option, $value);
+        }
     }
 
     /**
@@ -662,6 +709,9 @@ class MultiCurl
         foreach ($this->headers as $key => $value) {
             $curl->setHeader($key, $value);
         }
+        foreach ($this->cookies as $key => $value) {
+            $curl->setCookie($key, $value);
+        }
         $curl->setJsonDecoder($this->jsonDecoder);
         $curl->setXmlDecoder($this->xmlDecoder);
 
@@ -671,6 +721,7 @@ class MultiCurl
         }
 
         $this->activeCurls[$curl->id] = $curl;
+        $this->responseCookies = array();
         $curl->call($curl->beforeSendFunction);
     }
 }

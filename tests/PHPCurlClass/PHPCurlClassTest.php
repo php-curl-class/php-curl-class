@@ -201,53 +201,46 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $data = array('key' => 'value');
 
         $curl = new Curl();
-        $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->setUrl(Test::TEST_URL);
         $curl->delete($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
-        $this->assertEquals('key=value', $curl->response);
+        $this->assertEquals('DELETE /?key=value HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL . '?key=value', $curl->effectiveUrl);
 
         $curl = new Curl();
-        $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->setUrl(Test::TEST_URL);
         $curl->get($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
-        $this->assertEquals('key=value', $curl->response);
+        $this->assertEquals('GET /?key=value HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL . '?key=value', $curl->effectiveUrl);
 
         $curl = new Curl();
-        $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->setUrl(Test::TEST_URL);
         $curl->head($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
         $this->assertEquals('HEAD /?key=value HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL . '?key=value', $curl->effectiveUrl);
 
         $curl = new Curl();
-        $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->setUrl(Test::TEST_URL);
         $curl->options($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
-        $this->assertEquals('key=value', $curl->response);
+        $this->assertEquals('OPTIONS /?key=value HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL . '?key=value', $curl->effectiveUrl);
 
         $curl = new Curl();
-        $curl->setHeader('X-DEBUG-TEST', 'request_method');
         $curl->setUrl(Test::TEST_URL);
         $curl->patch($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
-        $this->assertEquals('PATCH', $curl->response);
+        $this->assertEquals('PATCH / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
 
         $curl = new Curl();
-        $curl->setHeader('X-DEBUG-TEST', 'post');
         $curl->setUrl(Test::TEST_URL);
         $curl->post($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
-        $this->assertEquals('key=value', $curl->response);
+        $this->assertEquals('POST / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
 
         $curl = new Curl();
-        $curl->setHeader('X-DEBUG-TEST', 'put');
         $curl->setUrl(Test::TEST_URL);
         $curl->put($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
-        $this->assertEquals('key=value', $curl->response);
+        $this->assertEquals('PUT / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
     }
 
     public function testEffectiveUrl()
@@ -877,9 +870,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $test->server('multiple_cookie', 'GET');
         $this->assertEquals('cookie1=scrumptious,cookie2=mouthwatering', $test->curl->responseHeaders['Set-Cookie']);
 
-        $response_cookies = $test->curl->getResponseCookies();
-        $this->assertEquals('scrumptious', $response_cookies['cookie1']);
-        $this->assertEquals('mouthwatering', $response_cookies['cookie2']);
+        $this->assertEquals('scrumptious', $test->curl->responseCookies['cookie1']);
+        $this->assertEquals('mouthwatering', $test->curl->responseCookies['cookie2']);
     }
 
     public function testDefaultTimeout()

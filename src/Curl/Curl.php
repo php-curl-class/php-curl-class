@@ -60,6 +60,7 @@ class Curl
     public $requestHeaders = null;
     public $responseHeaders = null;
     public $rawResponseHeaders = '';
+    public $responseCookies = array();
     public $response = null;
     public $rawResponse = null;
 
@@ -71,7 +72,6 @@ class Curl
     public $fileHandle = null;
 
     private $cookies = array();
-    private $responseCookies = array();
     private $headers = array();
     private $options = array();
 
@@ -257,10 +257,10 @@ class Curl
     /**
      * Download Complete
      *
-     * @access public
+     * @access private
      * @param  $fh
      */
-    public function downloadComplete($fh)
+    private function downloadComplete($fh)
     {
         if (!$this->error && $this->downloadCompleteFunction) {
             rewind($fh);
@@ -336,8 +336,8 @@ class Curl
      */
     public function exec($ch = null)
     {
-        $this->responseCookies = array();
         if ($ch === null) {
+            $this->responseCookies = array();
             $this->call($this->beforeSendFunction);
             $this->rawResponse = curl_exec($this->curl);
             $this->curlErrorCode = curl_errno($this->curl);
@@ -437,7 +437,7 @@ class Curl
      */
     public function getOpt($option)
     {
-        return $this->options[$option];
+        return isset($this->options[$option]) ? $this->options[$option] : null;
     }
 
     /**
@@ -725,18 +725,6 @@ class Curl
     public function getResponseCookie($key)
     {
         return isset($this->responseCookies[$key]) ? $this->responseCookies[$key] : null;
-    }
-
-    /**
-     * Get response cookies.
-     *
-     * @access public
-     *
-     * @return array
-     */
-    public function getResponseCookies()
-    {
-        return $this->responseCookies;
     }
 
     /**

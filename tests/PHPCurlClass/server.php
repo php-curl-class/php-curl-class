@@ -143,6 +143,11 @@ if ($test === 'http_basic_auth') {
 } elseif ($test === 'request_uri') {
     echo $_SERVER['REQUEST_URI'];
     exit;
+} elseif ($test === 'setcookie') {
+    foreach ($_COOKIE as $key => $value) {
+        setcookie($key, $value);
+    }
+    exit;
 } elseif ($test === 'cookiejar') {
     setcookie('mycookie', 'yum');
     exit;
