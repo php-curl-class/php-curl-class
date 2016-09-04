@@ -1853,6 +1853,31 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($curl_user_agent, $get_2->response);
     }
 
+    public function testSetHeaderAndOverride()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('header-for-all-before', 'a');
+
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_1->setHeader('header-for-1st-request', '1');
+        $get_1->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertEquals('a', $instance->requestHeaders['header-for-all-before']);
+            PHPUnit_Framework_Assert::assertEquals('b', $instance->requestHeaders['header-for-all-after']);
+            PHPUnit_Framework_Assert::assertEquals('1', $instance->requestHeaders['header-for-1st-request']);
+        });
+
+        $get_2 = $multi_curl->addGet(Test::TEST_URL);
+        $get_2->setHeader('header-for-2nd-request', '2');
+        $get_2->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertEquals('a', $instance->requestHeaders['header-for-all-before']);
+            PHPUnit_Framework_Assert::assertEquals('b', $instance->requestHeaders['header-for-all-after']);
+            PHPUnit_Framework_Assert::assertEquals('2', $instance->requestHeaders['header-for-2nd-request']);
+        });
+
+        $multi_curl->setHeader('header-for-all-after', 'b');
+        $multi_curl->start();
+    }
+
     public function testBasicHttpAuthSuccess()
     {
         $username1 = 'myusername';
