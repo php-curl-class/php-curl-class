@@ -2230,65 +2230,76 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $data = array('key' => 'value');
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'get');
         $multi_curl->setUrl(Test::TEST_URL);
         $multi_curl->addDelete($data)->complete(function ($instance) {
-            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->baseUrl);
-            PHPUnit_Framework_Assert::assertEquals('key=value', $instance->response);
+            PHPUnit_Framework_Assert::assertEquals(
+                'DELETE /?key=value HTTP/1.1',
+                $instance->requestHeaders['Request-Line']
+            );
+            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL . '?key=value', $instance->effectiveUrl);
         });
         $multi_curl->start();
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'get');
         $multi_curl->setUrl(Test::TEST_URL);
         $multi_curl->addGet($data)->complete(function ($instance) {
-            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->baseUrl);
-            PHPUnit_Framework_Assert::assertEquals('key=value', $instance->response);
+            PHPUnit_Framework_Assert::assertEquals(
+                'GET /?key=value HTTP/1.1',
+                $instance->requestHeaders['Request-Line']
+            );
+            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL . '?key=value', $instance->effectiveUrl);
         });
         $multi_curl->start();
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'get');
         $multi_curl->setUrl(Test::TEST_URL);
         $multi_curl->addHead($data)->complete(function ($instance) {
-            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->baseUrl);
             PHPUnit_Framework_Assert::assertEquals(
                 'HEAD /?key=value HTTP/1.1',
                 $instance->requestHeaders['Request-Line']
             );
+            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL . '?key=value', $instance->effectiveUrl);
         });
         $multi_curl->start();
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'get');
         $multi_curl->setUrl(Test::TEST_URL);
         $multi_curl->addOptions($data)->complete(function ($instance) {
-            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->baseUrl);
-            PHPUnit_Framework_Assert::assertEquals('key=value', $instance->response);
+            PHPUnit_Framework_Assert::assertEquals(
+                'OPTIONS /?key=value HTTP/1.1',
+                $instance->requestHeaders['Request-Line']
+            );
+            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL . '?key=value', $instance->effectiveUrl);
         });
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'request_method');
         $multi_curl->setUrl(Test::TEST_URL);
         $multi_curl->addPatch($data)->complete(function ($instance) {
-            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->baseUrl);
-            PHPUnit_Framework_Assert::assertEquals('PATCH', $instance->response);
+            PHPUnit_Framework_Assert::assertEquals(
+                'PATCH / HTTP/1.1',
+                $instance->requestHeaders['Request-Line']
+            );
+            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->effectiveUrl);
         });
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'post');
         $multi_curl->setUrl(Test::TEST_URL);
         $multi_curl->addPost($data)->complete(function ($instance) {
-            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->baseUrl);
-            PHPUnit_Framework_Assert::assertEquals('key=value', $instance->response);
+            PHPUnit_Framework_Assert::assertEquals(
+                'POST / HTTP/1.1',
+                $instance->requestHeaders['Request-Line']
+            );
+            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->effectiveUrl);
         });
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'put');
         $multi_curl->setUrl(Test::TEST_URL);
         $multi_curl->addPut($data)->complete(function ($instance) {
-            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->baseUrl);
-            PHPUnit_Framework_Assert::assertEquals('key=value', $instance->response);
+            PHPUnit_Framework_Assert::assertEquals(
+                'PUT / HTTP/1.1',
+                $instance->requestHeaders['Request-Line']
+            );
+            PHPUnit_Framework_Assert::assertEquals(Test::TEST_URL, $instance->effectiveUrl);
         });
     }
 
