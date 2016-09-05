@@ -6,11 +6,11 @@ class MultiCurl
 {
     public $baseUrl = null;
     public $multiCurl;
-    public $windowSize = 25;
 
     private $curls = array();
     private $activeCurls = array();
     private $isStarted = false;
+    private $windowSize = 25;
 
     private $beforeSendFunction = null;
     private $successFunction = null;
