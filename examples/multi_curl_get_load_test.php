@@ -4,7 +4,7 @@ require __DIR__ . '/vendor/autoload.php';
 use \Curl\MultiCurl;
 
 $server_count = 10;
-$urls = [];
+$urls = array();
 $port = 8000;
 for ($i = 0; $i < $server_count; $i++) {
     $port += 1;
