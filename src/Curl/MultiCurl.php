@@ -10,7 +10,7 @@ class MultiCurl
     private $curls = array();
     private $activeCurls = array();
     private $isStarted = false;
-    private $windowSize = 25;
+    private $concurrency = 25;
 
     private $beforeSendFunction = null;
     private $successFunction = null;
@@ -573,12 +573,12 @@ class MultiCurl
 
         $this->isStarted = true;
 
-        $window_size = $this->windowSize;
-        if ($window_size > count($this->curls)) {
-            $window_size = count($this->curls);
+        $concurrency = $this->concurrency;
+        if ($concurrency > count($this->curls)) {
+            $concurrency = count($this->curls);
         }
 
-        for ($i = 0; $i < $window_size; $i++) {
+        for ($i = 0; $i < $concurrency; $i++) {
             $this->initHandle(array_pop($this->curls));
         }
 
