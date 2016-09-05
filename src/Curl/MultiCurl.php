@@ -361,6 +361,17 @@ class MultiCurl
     }
 
     /**
+     * Set Concurrency
+     *
+     * @access public
+     * @param  $concurrency
+     */
+    public function setConcurrency($concurrency)
+    {
+        $this->concurrency = $concurrency;
+    }
+
+    /**
      * Set Digest Authentication
      *
      * @access public
