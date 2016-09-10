@@ -145,19 +145,36 @@ ul {
 <code>
 $ composer require php-curl-class/php-curl-class &amp;&gt; /dev/null<br />
 $ php --interactive<br />
-php &gt; <span class="pl-s1"><span class="pl-k">require</span> <span class="pl-c1">__DIR__</span> <span class="pl-k">.</span> <span class="pl-s"><span class="pl-pds">'</span>/vendor/autoload.php<span class="pl-pds">'</span></span>;</span><br />
+php &gt; <span class="pl-s1"><span class="pl-k">require</span> <span class="pl-c1">__DIR__</span> <span
+class="pl-k">.</span> <span class="pl-s"><span class="pl-pds">'</span>/vendor/autoload.php<span
+class="pl-pds">'</span></span>;</span><br />
 php &gt; <span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">\Curl\Curl</span>;</span><br />
-php &gt; <span class="pl-s1"><span class="pl-smi">$curl</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">\Curl\</span><span class="pl-c1">Curl</span>();</span><br />
-php &gt; <span class="pl-s1"><span class="pl-smi">$curl</span><span class="pl-k">-&gt;</span>setBasicAuthentication(<span class="pl-s"><span class="pl-pds">'</span>user<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>pass<span class="pl-pds">'</span></span>);</span><br />
-php &gt; <span class="pl-s1"><span class="pl-smi">$curl</span><span class="pl-k">-&gt;</span>get(<span class="pl-s"><span class="pl-pds">'</span>https://api.github.com/user<span class="pl-pds">'</span></span>);</span><br />
-php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span class="pl-k">-&gt;</span><span class="pl-smi">httpStatusCode</span>;</span><br />
+php &gt; <span class="pl-s1"><span class="pl-smi">$curl</span> <span class="pl-k">=</span> <span
+class="pl-k">new</span> <span class="pl-c1">\Curl\</span><span class="pl-c1">Curl</span>();</span><br />
+php &gt; <span class="pl-s1"><span class="pl-smi">$curl</span><span
+class="pl-k">-&gt;</span>setBasicAuthentication(<span class="pl-s"><span class="pl-pds">'</span>user<span
+class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>pass<span
+class="pl-pds">'</span></span>);</span><br />
+php &gt; <span class="pl-s1"><span class="pl-smi">$curl</span><span class="pl-k">-&gt;</span>get(<span
+class="pl-s"><span class="pl-pds">'</span>https://api.github.com/user<span class="pl-pds">'</span></span>);</span><br />
+php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span
+class="pl-k">-&gt;</span><span class="pl-smi">httpStatusCode</span>;</span><br />
 <span class="pl-s1"><span class="pl-c1">200</span></span><br />
-php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span class="pl-k">-&gt;</span><span class="pl-smi">responseHeaders</span>[<span class="pl-s"><span class="pl-pds">'</span>content-type<span class="pl-pds">'</span></span>];</span><br />
-<span class="pl-s1"><span class="pl-s"><span class="pl-pds"></span>application/json; charset=utf-8<span class="pl-pds"></span></span></span><br />
-php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span class="pl-k">-&gt;</span><span class="pl-smi">response</span><span class="pl-k">-&gt;</span><span class="pl-smi">login</span>;</span><br />
-<span class="pl-s1"><span class="pl-s"><span class="pl-pds"></span>php-curl-class<span class="pl-pds"></span></span></span><br />
-php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span class="pl-k">-&gt;</span><span class="pl-smi">rawResponse</span>;</span><br />
-<span class="pl-s1"><span class="pl-s"><span class="pl-pds"></span>{"login":"php-curl-class","id":7654321,"avatar_url": ...}<span class="pl-pds"></span></span></span><br />
+php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span
+class="pl-k">-&gt;</span><span class="pl-smi">responseHeaders</span>[<span class="pl-s"><span
+class="pl-pds">'</span>content-type<span class="pl-pds">'</span></span>];</span><br />
+<span class="pl-s1"><span class="pl-s"><span class="pl-pds"></span>application/json; charset=utf-8<span
+class="pl-pds"></span></span></span><br />
+php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span
+class="pl-k">-&gt;</span><span class="pl-smi">response</span><span class="pl-k">-&gt;</span><span
+class="pl-smi">login</span>;</span><br />
+<span class="pl-s1"><span class="pl-s"><span class="pl-pds"></span>php-curl-class<span
+class="pl-pds"></span></span></span><br />
+php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span
+class="pl-k">-&gt;</span><span class="pl-smi">rawResponse</span>;</span><br />
+<span class="pl-s1"><span class="pl-s"><span
+class="pl-pds"></span>{"login":"php-curl-class","id":7654321,"avatar_url": ...}<span
+class="pl-pds"></span></span></span><br />
 </code>
 
 <ul>
