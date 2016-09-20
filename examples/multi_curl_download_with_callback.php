@@ -3,7 +3,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\MultiCurl;
 
-$callback = function($instance, $tmpfile) {
+$callback = function ($instance, $tmpfile) {
     $save_to_path = '/tmp/' . basename($instance->url);
     $fh = fopen($save_to_path, 'wb');
     stream_copy_to_stream($tmpfile, $fh);

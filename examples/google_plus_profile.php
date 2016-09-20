@@ -3,8 +3,8 @@ require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
 
-define('CLIENT_ID', 'XXXXXXXXXXXX.apps.googleusercontent.com');
-define('CLIENT_SECRET', 'XXXXXXXXXXXXXXXXXXXXXXXX');
+const CLIENT_ID = 'XXXXXXXXXXXX.apps.googleusercontent.com';
+const CLIENT_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXX';
 
 session_start();
 

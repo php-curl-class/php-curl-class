@@ -201,53 +201,46 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $data = array('key' => 'value');
 
         $curl = new Curl();
-        $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->setUrl(Test::TEST_URL);
         $curl->delete($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
-        $this->assertEquals('key=value', $curl->response);
+        $this->assertEquals('DELETE /?key=value HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL . '?key=value', $curl->effectiveUrl);
 
         $curl = new Curl();
-        $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->setUrl(Test::TEST_URL);
         $curl->get($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
-        $this->assertEquals('key=value', $curl->response);
+        $this->assertEquals('GET /?key=value HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL . '?key=value', $curl->effectiveUrl);
 
         $curl = new Curl();
-        $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->setUrl(Test::TEST_URL);
         $curl->head($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
         $this->assertEquals('HEAD /?key=value HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL . '?key=value', $curl->effectiveUrl);
 
         $curl = new Curl();
-        $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->setUrl(Test::TEST_URL);
         $curl->options($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
-        $this->assertEquals('key=value', $curl->response);
+        $this->assertEquals('OPTIONS /?key=value HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL . '?key=value', $curl->effectiveUrl);
 
         $curl = new Curl();
-        $curl->setHeader('X-DEBUG-TEST', 'request_method');
         $curl->setUrl(Test::TEST_URL);
         $curl->patch($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
-        $this->assertEquals('PATCH', $curl->response);
+        $this->assertEquals('PATCH / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
 
         $curl = new Curl();
-        $curl->setHeader('X-DEBUG-TEST', 'post');
         $curl->setUrl(Test::TEST_URL);
         $curl->post($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
-        $this->assertEquals('key=value', $curl->response);
+        $this->assertEquals('POST / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
 
         $curl = new Curl();
-        $curl->setHeader('X-DEBUG-TEST', 'put');
         $curl->setUrl(Test::TEST_URL);
         $curl->put($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
-        $this->assertEquals('key=value', $curl->response);
+        $this->assertEquals('PUT / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
     }
 
     public function testEffectiveUrl()
@@ -310,25 +303,21 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testPostAssociativeArrayData()
     {
-        $test = new Test();
-        $this->assertEquals(
-            'username=myusername' .
-            '&password=mypassword' .
-            '&more_data%5Bparam1%5D=something' .
-            '&more_data%5Bparam2%5D=other%20thing' .
-            '&more_data%5Bparam3%5D=123' .
-            '&more_data%5Bparam4%5D=3.14',
-            $test->server('post_multidimensional', 'POST', array(
-                'username' => 'myusername',
-                'password' => 'mypassword',
-                'more_data' => array(
-                    'param1' => 'something',
-                    'param2' => 'other thing',
-                    'param3' => 123,
-                    'param4' => 3.14,
-                ),
-            ))
+        $data = array(
+            'username' => 'myusername',
+            'password' => 'mypassword',
+            'more_data' => array(
+                'param1' => 'something',
+                'param2' => 'other thing',
+                'param3' => 123,
+                'param4' => 3.14,
+            ),
         );
+
+        $test = new Test();
+        $test->curl->setDefaultJsonDecoder(true);
+        $response = $test->server('post_multidimensional', 'POST', $data);
+        $this->assertEquals($data, $response['post']);
     }
 
     public function testPostContentLength()
@@ -353,18 +342,86 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testPostMultidimensionalData()
     {
-        $test = new Test();
-        $this->assertEquals(
-            'key=file&file%5B%5D=wibble&file%5B%5D=wubble&file%5B%5D=wobble',
-            $test->server('post_multidimensional', 'POST', array(
-                'key' => 'file',
-                'file' => array(
-                    'wibble',
-                    'wubble',
-                    'wobble',
-                ),
-            ))
+        $data = array(
+            'key' => 'file',
+            'file' => array(
+                'wibble',
+                'wubble',
+                'wobble',
+            ),
         );
+
+        $this->assertEquals(
+            'key=file&file[0]=wibble&file[1]=wubble&file[2]=wobble',
+            urldecode(http_build_query($data))
+        );
+
+        $test = new Test();
+        $test->curl->setDefaultJsonDecoder(true);
+        $response = $test->server('post_multidimensional', 'POST', $data);
+        $this->assertEquals($data, $response['post']);
+    }
+
+    public function testPostMultidimensionalDataWithFile()
+    {
+        $tests = array();
+
+        $file_path_1 = Helper\get_png();
+        $tests[] = array(
+            'file_path' => $file_path_1,
+            'post_data_image' => '@' . $file_path_1,
+        );
+
+        if (class_exists('CURLFile')) {
+            $file_path_2 = Helper\get_png();
+            $tests[] = array(
+                'file_path' => $file_path_2,
+                'post_data_image' => new CURLFile($file_path_2),
+            );
+        }
+
+        foreach ($tests as $test_data) {
+            $file_path = $test_data['file_path'];
+            $post_data_image = $test_data['post_data_image'];
+
+            $test = new Test();
+
+            // Return associative for comparison.
+            $assoc = true;
+            $test->curl->setDefaultJsonDecoder($assoc);
+
+            // Keep POST data separate from FILES data for comparison.
+            $post_data_without_file = array(
+                'key' => 'value',
+                'alpha' => array(
+                    'a' => '1',
+                    'b' => '2',
+                    'c' => '3',
+                ),
+            );
+            $post_data = $post_data_without_file;
+            $post_data['image'] = $post_data_image;
+
+            $test->server('post_multidimensional_with_file', 'POST', $post_data);
+
+            // Expect "Content-Type: multipart/form-data" in request headers.
+            preg_match(
+                '/^multipart\/form-data; boundary=/',
+                $test->curl->requestHeaders['Content-Type'],
+                $content_type
+            );
+            $this->assertTrue(!empty($content_type));
+
+            // Expect received POST data to match POSTed data less the file.
+            $this->assertTrue($test->curl->response['post'] === $post_data_without_file);
+
+            // Expect POSTed files is received as $_FILES.
+            $this->assertTrue(isset($test->curl->response['files']['image']['tmp_name']));
+            $this->assertEquals(0, $test->curl->response['files']['image']['error']);
+
+            unlink($file_path);
+            $this->assertFalse(file_exists($file_path));
+        }
     }
 
     public function testPostFilePathUpload()
@@ -442,8 +499,10 @@ class CurlTest extends PHPUnit_Framework_TestCase
             // post-redirect-get request will trigger a PHP error
             $test->server('post_redirect_get', 'POST');
 
-            $this->assertTrue(false,
-                'Reusing an existing Curl object on incompatible PHP engines shall trigger an error.');
+            $this->assertTrue(
+                false,
+                'Reusing an existing Curl object on incompatible PHP engines shall trigger an error.'
+            );
         } catch (PHPUnit_Framework_Error $e) {
             $this->assertTrue(true);
         }
@@ -607,7 +666,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl->setHeader('X-DEBUG-TEST', 'download_response');
         $curl->download(Test::TEST_URL . '?' . http_build_query(array(
             'file_path' => $uploaded_file_path,
-        )), function($instance, $fh) use (&$callback_called) {
+        )), function ($instance, $fh) use (&$callback_called) {
             PHPUnit_Framework_Assert::assertFalse($callback_called);
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertTrue(is_resource($fh));
@@ -706,7 +765,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testCookies()
+    public function testSetCookie()
     {
         $test = new Test();
         $test->curl->setCookie('mycookie', 'yum');
@@ -715,7 +774,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         )));
     }
 
-    public function testCookieEncodingSpace()
+    public function testSetCookieEncodingSpace()
     {
         $curl = new Curl();
         $curl->setCookie('cookie', 'Om nom nom nom');
@@ -727,7 +786,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('cookie=Om%20nom%20nom%20nom', $options[CURLOPT_COOKIE]);
     }
 
-    public function testMultipleCookies()
+    public function testSetMultipleCookies()
     {
         $curl = new Curl();
         $curl->setCookie('cookie', 'Om nom nom nom');
@@ -740,7 +799,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('cookie=Om%20nom%20nom%20nom; foo=bar', $options[CURLOPT_COOKIE]);
     }
 
-    public function testCookieEncodingColon()
+    public function testSetCookieEncodingColon()
     {
         $curl = new Curl();
         $curl->setCookie('JSESSIONID', '0000wd-PcsB3bZ-KzYGAqm_rKlm:17925chrl');
@@ -750,6 +809,21 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $reflectionProperty->setAccessible(true);
         $options = $reflectionProperty->getValue($curl);
         $this->assertEquals('JSESSIONID=0000wd-PcsB3bZ-KzYGAqm_rKlm:17925chrl', $options[CURLOPT_COOKIE]);
+    }
+
+    public function testSetCookieString()
+    {
+        $cookie_string = 'fruit=apple; color=red';
+
+        $test = new Test();
+        $test->curl->setCookieString($cookie_string);
+
+        $reflectionClass = new ReflectionClass('\Curl\Curl');
+        $reflectionProperty = $reflectionClass->getProperty('options');
+        $reflectionProperty->setAccessible(true);
+        $options = $reflectionProperty->getValue($test->curl);
+        $this->assertEquals($cookie_string, $options[CURLOPT_COOKIE]);
+        $this->assertEquals('fruit=apple&color=red', $test->server('cookie', 'GET'));
     }
 
     public function testCookieFile()
@@ -796,9 +870,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $test->server('multiple_cookie', 'GET');
         $this->assertEquals('cookie1=scrumptious,cookie2=mouthwatering', $test->curl->responseHeaders['Set-Cookie']);
 
-        $response_cookies = $test->curl->getResponseCookies();
-        $this->assertEquals('scrumptious', $response_cookies['cookie1']);
-        $this->assertEquals('mouthwatering', $response_cookies['cookie2']);
+        $this->assertEquals('scrumptious', $test->curl->responseCookies['cookie1']);
+        $this->assertEquals('mouthwatering', $test->curl->responseCookies['cookie2']);
     }
 
     public function testDefaultTimeout()
@@ -1025,7 +1098,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(file_exists($file_path));
     }
 
-    public function testJSONRequest()
+    public function testJsonRequest()
     {
         foreach (
             array(
@@ -1076,7 +1149,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testJSONResponse()
+    public function testJsonResponse()
     {
         foreach (array(
             'Content-Type',
@@ -1118,7 +1191,30 @@ class CurlTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testJSONDecoder()
+    public function testJsonDecoderOptions()
+    {
+        // Implicit default json decoder should return object.
+        $test = new Test();
+        $test->server('json_response', 'GET');
+        $this->assertTrue(is_object($test->curl->response));
+
+        // Explicit default json decoder should return object.
+        $test = new Test();
+        $test->curl->setDefaultJsonDecoder();
+        $test->server('json_response', 'GET');
+        $this->assertTrue(is_object($test->curl->response));
+
+        // Explicit default json decoder with options should return associative array as specified.
+        $assoc = true;
+        $depth = 512;
+        $options = 0;
+        $test = new Test();
+        $test->curl->setDefaultJsonDecoder($assoc, $depth, $options);
+        $test->server('json_response', 'GET');
+        $this->assertTrue(is_array($test->curl->response));
+    }
+
+    public function testJsonDecoder()
     {
         $data = array(
             'key' => 'Content-Type',
@@ -1131,7 +1227,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(is_array($test->curl->response));
 
         $test = new Test();
-        $test->curl->setJsonDecoder(function($response) {
+        $test->curl->setJsonDecoder(function ($response) {
             return json_decode($response, true);
         });
         $test->server('json_response', 'POST', $data);
@@ -1139,7 +1235,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($test->curl->response));
     }
 
-    public function testJSONContentTypeDetection()
+    public function testJsonContentTypeDetection()
     {
         $json_content_types = array(
             'application/alto-costmap+json',
@@ -2386,7 +2482,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl = $test->curl;
         $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->beforeSend(function ($instance) use (
-            &$before_send_called, &$success_called, &$error_called, &$complete_called) {
+            &$before_send_called,
+            &$success_called,
+            &$error_called,
+            &$complete_called
+        ) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($before_send_called);
             PHPUnit_Framework_Assert::assertFalse($success_called);
@@ -2395,7 +2495,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
             $before_send_called = true;
         });
         $curl->success(function ($instance) use (
-            &$before_send_called, &$success_called, &$error_called, &$complete_called) {
+            &$before_send_called,
+            &$success_called,
+            &$error_called,
+            &$complete_called
+        ) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertTrue($before_send_called);
             PHPUnit_Framework_Assert::assertFalse($success_called);
@@ -2404,11 +2508,19 @@ class CurlTest extends PHPUnit_Framework_TestCase
             $success_called = true;
         });
         $curl->error(function ($instance) use (
-            &$before_send_called, &$success_called, &$error_called, &$complete_called) {
+            &$before_send_called,
+            &$success_called,
+            &$error_called,
+            &$complete_called
+        ) {
             $error_called = true;
         });
         $curl->complete(function ($instance) use (
-            &$before_send_called, &$success_called, &$error_called, &$complete_called) {
+            &$before_send_called,
+            &$success_called,
+            &$error_called,
+            &$complete_called
+        ) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertTrue($before_send_called);
             PHPUnit_Framework_Assert::assertTrue($success_called);
@@ -2437,7 +2549,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 2000);
         $curl->beforeSend(function ($instance) use (
-            &$before_send_called, &$success_called, &$error_called, &$complete_called) {
+            &$before_send_called,
+            &$success_called,
+            &$error_called,
+            &$complete_called
+        ) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertFalse($before_send_called);
             PHPUnit_Framework_Assert::assertFalse($success_called);
@@ -2446,11 +2562,19 @@ class CurlTest extends PHPUnit_Framework_TestCase
             $before_send_called = true;
         });
         $curl->success(function ($instance) use (
-            &$before_send_called, &$success_called, &$error_called, &$complete_called) {
+            &$before_send_called,
+            &$success_called,
+            &$error_called,
+            &$complete_called
+        ) {
             $success_called = true;
         });
         $curl->error(function ($instance) use (
-            &$before_send_called, &$success_called, &$error_called, &$complete_called) {
+            &$before_send_called,
+            &$success_called,
+            &$error_called,
+            &$complete_called
+        ) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertTrue($before_send_called);
             PHPUnit_Framework_Assert::assertFalse($success_called);
@@ -2459,7 +2583,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
             $error_called = true;
         });
         $curl->complete(function ($instance) use (
-            &$before_send_called, &$success_called, &$error_called, &$complete_called) {
+            &$before_send_called,
+            &$success_called,
+            &$error_called,
+            &$complete_called
+        ) {
             PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
             PHPUnit_Framework_Assert::assertTrue($before_send_called);
             PHPUnit_Framework_Assert::assertFalse($success_called);
@@ -2603,7 +2731,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         // indicate a memory leak.
         $max_memory_diff = 1000;
         foreach ($results as $i => $result) {
-            $memory_diff = $result['after'] - $result['before'];;
+            $memory_diff = $result['after'] - $result['before'];
 
             // Skip the first test to allow memory usage to settle.
             if ($i >= 1) {
@@ -2644,10 +2772,115 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(strpos($test->curl->response->saveXML(), '<![CDATA[') === false);
 
         $test = new Test();
-        $test->curl->setXmlDecoder(function($response) {
+        $test->curl->setXmlDecoder(function ($response) {
             return simplexml_load_string($response, 'SimpleXMLElement', LIBXML_NOCDATA);
         });
         $test->server('xml_with_cdata_response', 'POST', $data);
         $this->assertTrue(strpos($test->curl->response->saveXML(), '<![CDATA[') === false);
+    }
+
+    public function testTotalTime()
+    {
+        $test = new Test();
+        $test->server('request_method', 'GET');
+        $this->assertTrue(is_float($test->curl->totalTime));
+    }
+
+    public function testOptionSet()
+    {
+        // Skip this test on 5.3, 5.4, and HHVM.
+        if (version_compare(PHP_VERSION, '5.5.0', '<') || defined('HHVM_VERSION')) {
+            return;
+        }
+
+        $option = CURLOPT_ENCODING;
+        $value = 'gzip';
+        $null = chr(0);
+
+        // Ensure the option is stored when curl_setopt() succeeds.
+        $curl = new Curl();
+        $success = $curl->setOpt($option, $value);
+
+        $reflector = new ReflectionObject($curl);
+        $property = $reflector->getProperty('options');
+        $property->setAccessible(true);
+        $options = $property->getValue($curl);
+
+        $this->assertTrue($success);
+        $this->assertTrue(isset($options[$option]));
+        $this->assertEquals($value, $options[$option]);
+
+        // Ensure the option is not stored when curl_setopt() fails. Make curl_setopt() return false and suppress
+        // errors. Triggers warning: "curl_setopt(): Curl option contains invalid characters (\0)".
+        $curl = new Curl();
+        $success = @$curl->setOpt($option, $null);
+
+        $reflector = new ReflectionObject($curl);
+        $property = $reflector->getProperty('options');
+        $property->setAccessible(true);
+        $options = $property->getValue($curl);
+
+        $this->assertFalse($success);
+        $this->assertFalse(isset($options[$option]));
+
+        // Ensure options following a Curl::setOpt() failure are not set when using Curl::setOpts().
+        $options = array(
+            $option => $null,
+            CURLOPT_COOKIE => 'a=b',
+        );
+        $curl = new Curl();
+        $success = @$curl->setOpts($options);
+
+        $reflector = new ReflectionObject($curl);
+        $property = $reflector->getProperty('options');
+        $property->setAccessible(true);
+        $options = $property->getValue($curl);
+
+        $this->assertFalse($success);
+        $this->assertFalse(isset($options[CURLOPT_COOKIE]));
+
+        // Ensure Curl::setOpts() returns true when all options are successfully set.
+        $options = array(
+            CURLOPT_COOKIE => 'a=b',
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_VERBOSE => true,
+        );
+        $curl = new Curl();
+        $success = $curl->setOpts($options);
+
+        $reflector = new ReflectionObject($curl);
+        $property = $reflector->getProperty('options');
+        $property->setAccessible(true);
+        $options = $property->getValue($curl);
+
+        $this->assertTrue($success);
+        $this->assertEquals('a=b', $options[CURLOPT_COOKIE]);
+        $this->assertTrue($options[CURLOPT_FOLLOWLOCATION]);
+        $this->assertTrue($options[CURLOPT_VERBOSE]);
+    }
+
+    public function testBuildUrlArgSeparator()
+    {
+        $base_url = 'https://www.example.com/path';
+        $data = array(
+            'arg' => 'value',
+            'another' => 'one',
+        );
+        $expected_url = $base_url . '?arg=value&another=one';
+
+        foreach (array(false, '&amp;', '&') as $arg_separator) {
+            if ($arg_separator) {
+                ini_set('arg_separator.output', $arg_separator);
+            }
+
+            $curl = new Curl();
+
+            $reflector = new ReflectionObject($curl);
+            $method = $reflector->getMethod('buildURL');
+            $method->setAccessible(true);
+
+            $actual_url = $method->invoke($curl, $base_url, $data);
+            $this->assertEquals($expected_url, $actual_url);
+        }
     }
 }

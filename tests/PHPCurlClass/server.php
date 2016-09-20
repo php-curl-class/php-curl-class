@@ -62,7 +62,12 @@ if ($test === 'http_basic_auth') {
     if (empty($_SERVER['PHP_AUTH_DIGEST'])) {
         header('HTTP/1.1 401 Unauthorized');
         header(sprintf(
-            'WWW-Authenticate: Digest realm="%s", qop="%s", nonce="%s", opaque="%s"', $realm, $qop, $nonce, $opaque));
+            'WWW-Authenticate: Digest realm="%s", qop="%s", nonce="%s", opaque="%s"',
+            $realm,
+            $qop,
+            $nonce,
+            $opaque
+        ));
         echo 'canceled';
         exit;
     }
@@ -76,8 +81,12 @@ if ($test === 'http_basic_auth') {
         'uri' => '',
         'response' => '',
     );
-    preg_match_all('@(' . implode('|', array_keys($data)) . ')=(?:([\'"])([^\2]+?)\2|([^\s,]+))@',
-        $_SERVER['PHP_AUTH_DIGEST'], $matches, PREG_SET_ORDER);
+    preg_match_all(
+        '@(' . implode('|', array_keys($data)) . ')=(?:([\'"])([^\2]+?)\2|([^\s,]+))@',
+        $_SERVER['PHP_AUTH_DIGEST'],
+        $matches,
+        PREG_SET_ORDER
+    );
     foreach ($matches as $match) {
         $data[$match['1']] = $match['3'] ? $match['3'] : $match['4'];
     }
@@ -85,7 +94,8 @@ if ($test === 'http_basic_auth') {
     $A1 = md5($data['username'] . ':' . $realm . ':' . $users[$data['username']]);
     $A2 = md5($_SERVER['REQUEST_METHOD'] . ':' . $data['uri']);
     $valid_response = md5(
-        $A1 . ':' . $data['nonce'] . ':' . $data['nc'] . ':' . $data['cnonce'] . ':' . $data['qop'] . ':' . $A2);
+        $A1 . ':' . $data['nonce'] . ':' . $data['nc'] . ':' . $data['cnonce'] . ':' . $data['qop'] . ':' . $A2
+    );
 
     if (!($data['response'] === $valid_response)) {
         header('HTTP/1.1 401 Unauthorized');
@@ -110,8 +120,12 @@ if ($test === 'http_basic_auth') {
 } elseif ($test === 'patch') {
     echo $http_raw_post_data;
     exit;
-} elseif ($test === 'post_multidimensional') {
-    echo $http_raw_post_data;
+} elseif ($test === 'post_multidimensional' || $test === 'post_multidimensional_with_file') {
+    header('Content-Type: application/json');
+    echo json_encode(array(
+        'post' => $_POST,
+        'files' => $_FILES,
+    ));
     exit;
 } elseif ($test === 'post_file_path_upload') {
     echo Helper\mime_type($_FILES[$key]['tmp_name']);
@@ -128,6 +142,11 @@ if ($test === 'http_basic_auth') {
     exit;
 } elseif ($test === 'request_uri') {
     echo $_SERVER['REQUEST_URI'];
+    exit;
+} elseif ($test === 'setcookie') {
+    foreach ($_COOKIE as $key => $value) {
+        setcookie($key, $value);
+    }
     exit;
 } elseif ($test === 'cookiejar') {
     setcookie('mycookie', 'yum');
@@ -299,6 +318,12 @@ $data_mapping = array(
 
 if (!empty($test)) {
     $data = $data_mapping[$test];
-    $value = isset($data[$key]) ? $data[$key] : '';
+    if (empty($key)) {
+        // Return all values when a key is not specified.
+        $value = http_build_query($data);
+    } else {
+        // Return individual value when a key is specified.
+        $value = isset($data[$key]) ? $data[$key] : '';
+    }
     echo $value;
 }

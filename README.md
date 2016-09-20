@@ -23,9 +23,13 @@ To install PHP Curl Class, simply:
 
     $ composer require php-curl-class/php-curl-class
 
+For latest commit version:
+
+    $ composer require php-curl-class/php-curl-class @dev
+
 ### Requirements
 
-PHP Curl Class works with PHP 5.3, 5.4, 5.5, 5.6, 7.0, and HHVM.
+PHP Curl Class works with PHP 5.3, 5.4, 5.5, 5.6, 7.0, 7.1, and HHVM.
 
 ### Quick Start and Examples
 
@@ -37,57 +41,36 @@ require __DIR__ . '/vendor/autoload.php';
 use \Curl\Curl;
 
 $curl = new Curl();
-$curl->get('http://www.example.com/');
+$curl->get('https://www.example.com/');
 ```
 
 ```php
 $curl = new Curl();
-$curl->get('http://www.example.com/search', array(
+$curl->get('https://www.example.com/search', array(
     'q' => 'keyword',
 ));
 ```
 
 ```php
 $curl = new Curl();
-$curl->post('http://www.example.com/login/', array(
+$curl->post('https://www.example.com/login/', array(
     'username' => 'myusername',
     'password' => 'mypassword',
 ));
-
-// Perform a post-redirect-get request (POST data and follow 303 redirections using GET requests).
-$curl = new Curl();
-$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);¬
-$curl->post('http://www.example.com/login/', array(
-    'username' => 'myusername',
-    'password' => 'mypassword',
-));
-
-// POST data and follow 303 redirections by POSTing data again.
-// Please note that 303 redirections should not be handled this way:
-// https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.4
-$curl = new Curl();
-$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);¬
-$curl->post('http://www.example.com/login/', array(
-    'username' => 'myusername',
-    'password' => 'mypassword',
-), false);
 ```
-
-A POST request performs by default a post-redirect-get (see above). Other request methods force an option which conflicts with the post-redirect-get behavior. Due to technical limitations of PHP engines <5.5.11 and HHVM, it is not possible to reset this option. It is therefore impossible to perform a post-redirect-get request using a php-curl-class Curl object that has already been used to perform other types of requests. Either use a new php-curl-class Curl object or upgrade your PHP engine.
 
 ```php
 $curl = new Curl();
 $curl->setBasicAuthentication('username', 'password');
-$curl->setUserAgent('');
+$curl->setUserAgent('MyUserAgent/0.0.1 (+https://www.example.com/bot.html)');
 $curl->setReferrer('');
 $curl->setHeader('X-Requested-With', 'XMLHttpRequest');
 $curl->setCookie('key', 'value');
-$curl->get('http://www.example.com/');
+$curl->get('https://www.example.com/');
 
 if ($curl->error) {
     echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage;
-}
-else {
+} else {
     echo $curl->response;
 }
 
@@ -97,13 +80,13 @@ var_dump($curl->responseHeaders);
 
 ```php
 $curl = new Curl();
-$curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
-$curl->get('https://encrypted.example.com/');
+$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+$curl->get('https://shortn.example.com/bHbVsP');
 ```
 
 ```php
 $curl = new Curl();
-$curl->put('http://api.example.com/user/', array(
+$curl->put('https://api.example.com/user/', array(
     'first_name' => 'Zach',
     'last_name' => 'Borboa',
 ));
@@ -111,21 +94,21 @@ $curl->put('http://api.example.com/user/', array(
 
 ```php
 $curl = new Curl();
-$curl->patch('http://api.example.com/profile/', array(
+$curl->patch('https://api.example.com/profile/', array(
     'image' => '@path/to/file.jpg',
 ));
 ```
 
 ```php
 $curl = new Curl();
-$curl->patch('http://api.example.com/profile/', array(
+$curl->patch('https://api.example.com/profile/', array(
     'image' => new CURLFile('path/to/file.jpg'),
 ));
 ```
 
 ```php
 $curl = new Curl();
-$curl->delete('http://api.example.com/user/', array(
+$curl->delete('https://api.example.com/user/', array(
     'id' => '1234',
 ));
 ```
@@ -165,7 +148,8 @@ $multi_curl = new MultiCurl();
 
 $multi_curl->success(function($instance) {
     echo 'call to "' . $instance->url . '" was successful.' . "\n";
-    echo 'response: ' . $instance->response . "\n";
+    echo 'response:' . "\n";
+    var_dump($instance->response);
 });
 $multi_curl->error(function($instance) {
     echo 'call to "' . $instance->url . '" was unsuccessful.' . "\n";
@@ -189,10 +173,13 @@ $multi_curl->addGet('https://www.bing.com/search', array(
 $multi_curl->start(); // Blocks until all items in the queue have been processed.
 ```
 
+More examples are available under [/examples](https://github.com/php-curl-class/php-curl-class/tree/master/examples).
+
 ### Available Methods
 ```php
 Curl::__construct($base_url = null)
 Curl::__destruct()
+Curl::__get($name)
 Curl::beforeSend($callback)
 Curl::buildPostData($data)
 Curl::call()
@@ -200,26 +187,28 @@ Curl::close()
 Curl::complete($callback)
 Curl::delete($url, $query_parameters = array(), $data = array())
 Curl::download($url, $mixed_filename)
-Curl::downloadComplete($fh)
 Curl::error($callback)
 Curl::exec($ch = null)
 Curl::get($url, $data = array())
 Curl::getCookie($key)
+Curl::getInfo($opt)
 Curl::getOpt($option)
 Curl::getResponseCookie($key)
-Curl::getResponseCookies()
 Curl::head($url, $data = array())
 Curl::headerCallback($ch, $header)
 Curl::options($url, $data = array())
 Curl::patch($url, $data = array())
-Curl::post($url, $data = array(), $post_redirect_get = false)
+Curl::post($url, $data = array(), $follow_303_with_post = false)
 Curl::progress($callback)
 Curl::put($url, $data = array())
+Curl::search($url, $data = array())
 Curl::setBasicAuthentication($username, $password = '')
 Curl::setConnectTimeout($seconds)
 Curl::setCookie($key, $value)
 Curl::setCookieFile($cookie_file)
 Curl::setCookieJar($cookie_jar)
+Curl::setCookieString($string)
+Curl::setDefaultDecoder($decoder = 'json')
 Curl::setDefaultJsonDecoder()
 Curl::setDefaultTimeout()
 Curl::setDefaultUserAgent()
@@ -228,6 +217,7 @@ Curl::setDigestAuthentication($username, $password = '')
 Curl::setHeader($key, $value)
 Curl::setJsonDecoder($function)
 Curl::setOpt($option, $value)
+Curl::setOpts($options)
 Curl::setPort($port)
 Curl::setReferer($referer)
 Curl::setReferrer($referrer)
@@ -237,8 +227,8 @@ Curl::setUserAgent($user_agent)
 Curl::setXmlDecoder($function)
 Curl::success($callback)
 Curl::unsetHeader($key)
-Curl::verbose($on = true, $output=STDERR)
-Curl::http_build_multi_query($data, $key = null)
+Curl::verbose($on = true, $output = STDERR)
+Curl::array_flatten_multidim($array, $prefix = false)
 Curl::is_array_assoc($array)
 Curl::is_array_multidim($array)
 MultiCurl::__construct($base_url = null)
@@ -249,21 +239,27 @@ MultiCurl::addGet($url, $data = array())
 MultiCurl::addHead($url, $data = array())
 MultiCurl::addOptions($url, $data = array())
 MultiCurl::addPatch($url, $data = array())
-MultiCurl::addPost($url, $data = array(), $post_redirect_get = false)
+MultiCurl::addPost($url, $data = array(), $follow_303_with_post = false)
 MultiCurl::addPut($url, $data = array())
+MultiCurl::addSearch($url, $data = array())
 MultiCurl::beforeSend($callback)
 MultiCurl::close()
 MultiCurl::complete($callback)
 MultiCurl::error($callback)
 MultiCurl::getOpt($option)
 MultiCurl::setBasicAuthentication($username, $password = '')
+MultiCurl::setConcurrency($concurrency)
+MultiCurl::setConnectTimeout($seconds)
 MultiCurl::setCookie($key, $value)
 MultiCurl::setCookieFile($cookie_file)
 MultiCurl::setCookieJar($cookie_jar)
+MultiCurl::setCookieString($string)
 MultiCurl::setDigestAuthentication($username, $password = '')
 MultiCurl::setHeader($key, $value)
 MultiCurl::setJsonDecoder($function)
 MultiCurl::setOpt($option, $value)
+MultiCurl::setOpts($options)
+MultiCurl::setPort($port)
 MultiCurl::setReferer($referer)
 MultiCurl::setReferrer($referrer)
 MultiCurl::setTimeout($seconds)
@@ -273,7 +269,7 @@ MultiCurl::setXmlDecoder($function)
 MultiCurl::start()
 MultiCurl::success($callback)
 MultiCurl::unsetHeader($key)
-MultiCurl::verbose($on = true)
+MultiCurl::verbose($on = true, $output = STDERR)
 ```
 
 ### Contribute

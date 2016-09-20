@@ -1,7 +1,10 @@
-# Check syntax in php files.
-find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec php -l {} \;
-
 errors=0
+
+# Check syntax in php files. Use `xargs' over `find -exec' as xargs exits with a value of 1 when any command errors.
+find . -type "f" -iname "*.php" ! -path "*/vendor/*" | xargs -L "1" php -l
+if [[ "${?}" -ne 0 ]]; then
+    ((errors++))
+fi
 
 # Run tests.
 phpunit --configuration tests/phpunit.xml
@@ -10,14 +13,14 @@ if [[ "${?}" -ne 0 ]]; then
 fi
 
 # Enforce line ending consistency in php files.
-crlf_file=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --files-with-matches $'\r' {} \;)
+crlf_file=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --files-with-matches $'\r' {} \;)
 if [[ ! -z "${crlf_file}" ]]; then
     echo "${crlf_file}" | perl -pe 's/(.*)/CRLF line terminators found in \1/'
     ((errors++))
 fi
 
 # Enforce indentation character consistency in php files.
-tab_char=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --line-number -H --perl-regexp "\t" {} \;)
+tab_char=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --line-number -H --perl-regexp "\t" {} \;)
 if [[ ! -z "${tab_char}" ]]; then
     echo -e "${tab_char}" | perl -pe 's/^(.*)$/Tab character found in \1/'
     ((errors++))
@@ -60,7 +63,7 @@ if [[ "${TRAVIS_PHP_VERSION}" != "hhvm" ]]; then
 fi
 
 # Prohibit trailing whitespace in php files.
-trailing_whitespace=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --line-number -H " +$" {} \;)
+trailing_whitespace=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --color=always --line-number -H " +$" {} \;)
 if [[ ! -z "${trailing_whitespace}" ]]; then
     echo -e "${trailing_whitespace}" | perl -pe 's/^(.*)$/Trailing whitespace found in \1/'
     ((errors++))
@@ -74,7 +77,7 @@ if [[ ! -z "${long_lines}" ]]; then
 fi
 
 # Prohibit @author in php files.
-at_author=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --line-number -H "@author" {} \;)
+at_author=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --color=always --line-number -H "@author" {} \;)
 if [[ ! -z "${at_author}" ]]; then
     echo -e "${at_author}" | perl -pe 's/^(.*)$/\@author found in \1/'
     ((errors++))
@@ -94,8 +97,18 @@ if [[ ! -z "${equal}" ]]; then
     ((errors++))
 fi
 
-if [ $errors -eq 0 ]; then
-    exit 0
-else
-    exit 1
+# Require keyword "elseif" to be used instead of "else if" so that all control keywords look like single words.
+elseif=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --color=always --line-number -H "else\s+if" {} \;)
+if [[ ! -z "${elseif}" ]]; then
+    echo -e "${elseif}" | perl -pe 's/^(.*)$/Found "else if" instead of "elseif" in \1/'
+    ((errors++))
 fi
+
+# Require both braces on else statement line; "} else {" and not "}\nelse {".
+elses=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --line-number -H --perl-regexp '^(\s+)?else(\s+)?{' {} \;)
+if [[ ! -z "${elses}" ]]; then
+    echo -e "${elses}" | perl -pe 's/^(.*)$/Found newline before "else" statement in \1/'
+    ((errors++))
+fi
+
+exit "${errors}"

@@ -5,7 +5,7 @@ use \Curl\Curl;
 
 $address = 'Paris, France';
 $curl = new Curl();
-$curl->get('http://maps.googleapis.com/maps/api/geocode/json', array(
+$curl->get('https://maps.googleapis.com/maps/api/geocode/json', array(
     'address' => $address,
 ));
 
