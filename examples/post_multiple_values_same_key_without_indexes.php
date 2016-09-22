@@ -1,4 +1,8 @@
 <?php
+// keywords:
+// Django: MultiValueDict, QueryDict, request.GET.getlist(), request.POST.getlist(),
+// Java: request.getParameterValues()
+
 require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
