@@ -1,6 +1,6 @@
 <?php
 // keywords:
-// Django: MultiValueDict, QueryDict, request.GET.getlist(), request.POST.getlist(),
+// Django: MultiValueDict, QueryDict, request.GET.getlist(), request.POST.getlist(), urllib.urlencode, parse.urlencode
 // Java: request.getParameterValues()
 
 require __DIR__ . '/vendor/autoload.php';
