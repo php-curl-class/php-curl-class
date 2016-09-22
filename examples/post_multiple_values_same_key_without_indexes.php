@@ -1,0 +1,31 @@
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use \Curl\Curl;
+
+// curl "https://httpbin.org/post" -d "foo=bar&foo=baz"
+
+function http_build_query_without_indexes($query) {
+    $array = array();
+    foreach ($query as $key => $value) {
+        $key = rawurlencode($key);
+        if (is_array($value)) {
+            foreach ($value as $v) {
+                $v = rawurlencode($v);
+                $array[] = $key . '=' . $v;
+            }
+        } else {
+            $value = rawurlencode($value);
+            $array[] = $key . '=' . $value;
+        }
+    }
+    return implode('&', $array);
+}
+
+$curl = new Curl();
+$curl->post('https://httpbin.org/post', http_build_query_without_indexes(array(
+    'foo' => array(
+        'bar',
+        'baz',
+    ),
+)));
