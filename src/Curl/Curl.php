@@ -702,7 +702,7 @@ class Curl
     }
 
     /**
-     * Get cookie.
+     * Get cookie
      *
      * @access public
      * @param  $key
@@ -715,7 +715,7 @@ class Curl
     }
 
     /**
-     * Get response cookie.
+     * Get response cookie
      *
      * @access public
      * @param  $key
