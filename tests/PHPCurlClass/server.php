@@ -244,6 +244,14 @@ if ($test === 'http_basic_auth') {
     header('ETag: ' . md5_file($unsafe_file_path));
     readfile($unsafe_file_path);
     exit;
+} elseif ($test === 'download_file_size') {
+    $bytes = $_GET['bytes'];
+    $str = str_repeat('.', $bytes);
+    header('Content-Type: application/octet-stream');
+    header('Content-Length: ' . strlen($str));
+    header('ETag: ' . md5($str));
+    echo $str;
+    exit;
 } elseif ($test === 'timeout') {
     $unsafe_seconds = $_GET['seconds'];
     $start = time();
