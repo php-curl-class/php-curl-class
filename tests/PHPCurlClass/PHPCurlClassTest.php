@@ -688,6 +688,102 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(file_exists($uploaded_file_path));
     }
 
+    public function testMaxFilesize()
+    {
+        $tests = array(
+            array(
+                'bytes' => 1,
+                'max_filesize' => false,
+                'expect_error' => false,
+            ),
+            array(
+                'bytes' => 1,
+                'max_filesize' => 1,
+                'expect_error' => false,
+            ),
+            array(
+                'bytes' => 1,
+                'max_filesize' => 2,
+                'expect_error' => false,
+            ),
+            array(
+                'bytes' => 1,
+                'max_filesize' => 0,
+                'expect_error' => true,
+            ),
+
+            array(
+                'bytes' => 2,
+                'max_filesize' => false,
+                'expect_error' => false,
+            ),
+            array(
+                'bytes' => 2,
+                'max_filesize' => 2,
+                'expect_error' => false,
+            ),
+            array(
+                'bytes' => 2,
+                'max_filesize' => 3,
+                'expect_error' => false,
+            ),
+            array(
+                'bytes' => 2,
+                'max_filesize' => 1,
+                'expect_error' => true,
+            ),
+
+            array(
+                'bytes' => 1000,
+                'max_filesize' => false,
+                'expect_error' => false,
+            ),
+            array(
+                'bytes' => 1000,
+                'max_filesize' => 1000,
+                'expect_error' => false,
+            ),
+            array(
+                'bytes' => 1000,
+                'max_filesize' => 1001,
+                'expect_error' => false,
+            ),
+            array(
+                'bytes' => 1000,
+                'max_filesize' => 999,
+                'expect_error' => true,
+            ),
+            array(
+                'bytes' => 1000,
+                'max_filesize' => 0,
+                'expect_error' => true,
+            ),
+        );
+        foreach ($tests as $test) {
+            $bytes = $test['bytes'];
+            $max_filesize = $test['max_filesize'];
+            $expect_error = $test['expect_error'];
+
+            $test = new Test();
+            if (!($max_filesize === false)) {
+                $test->curl->setMaxFilesize($max_filesize);
+            }
+            $test->server('download_file_size', 'GET', array(
+                'bytes' => $bytes,
+            ));
+
+            // Ensure exceeding download limit aborts the transfer and sets a CURLE_ABORTED_BY_CALLBACK error.
+            if ($expect_error) {
+                $this->assertTrue($test->curl->error);
+                $this->assertEquals($test->curl->errorCode, CURLE_ABORTED_BY_CALLBACK);
+            } else {
+                $str = str_repeat('.', $bytes);
+                $this->assertEquals($test->curl->responseHeaders['etag'], md5($str));
+                $this->assertEquals($test->curl->response, $str);
+            }
+        }
+    }
+
     public function testBasicHttpAuth()
     {
         $test = new Test();

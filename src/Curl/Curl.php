@@ -728,6 +728,31 @@ class Curl
     }
 
     /**
+     * Set Max Filesize
+     *
+     * @access public
+     * @param  $bytes
+     */
+    public function setMaxFilesize($bytes)
+    {
+        // Make compatible with PHP version both before and after 5.5.0. PHP 5.5.0 added the cURL resource as the first
+        // argument to the CURLOPT_PROGRESSFUNCTION callback.
+        $gte_v550 = version_compare(PHP_VERSION, '5.5.0') >= 0;
+        if ($gte_v550) {
+            $callback = function($resource, $download_size, $downloaded, $upload_size, $uploaded) use ($bytes) {
+                // Abort the transfer when $downloaded bytes exceeds maximum $bytes by returning a non-zero value.
+                return $downloaded > $bytes ? 1 : 0;
+            };
+        } else {
+            $callback = function($download_size, $downloaded, $upload_size, $uploaded) {
+                return $downloaded > $bytes ? 1 : 0;
+            };
+        }
+
+        $this->progress($callback);
+    }
+
+    /**
      * Set Port
      *
      * @access public
