@@ -744,7 +744,7 @@ class Curl
                 return $downloaded > $bytes ? 1 : 0;
             };
         } else {
-            $callback = function($download_size, $downloaded, $upload_size, $uploaded) {
+            $callback = function($download_size, $downloaded, $upload_size, $uploaded) use ($bytes) {
                 return $downloaded > $bytes ? 1 : 0;
             };
         }
