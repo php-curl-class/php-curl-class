@@ -71,7 +71,8 @@ $curl->get('https://www.example.com/');
 if ($curl->error) {
     echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage;
 } else {
-    echo $curl->response;
+    echo 'Response:' . "\n";
+    var_dump($curl->response);
 }
 
 var_dump($curl->requestHeaders);
