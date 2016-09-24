@@ -495,7 +495,7 @@ class Curl
             $url = $this->baseUrl;
         }
         $this->setURL($url, $data);
-        $this->unsetHeader('Content-Length');
+        $this->removeHeader('Content-Length');
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         return $this->exec();
     }
@@ -517,7 +517,7 @@ class Curl
         }
 
         if (is_array($data) && empty($data)) {
-            $this->unsetHeader('Content-Length');
+            $this->removeHeader('Content-Length');
         }
 
         $this->setURL($url);
@@ -900,6 +900,8 @@ class Curl
     /**
      * Set Header
      *
+     * Add extra header to include in the request.
+     *
      * @access public
      * @param  $key
      * @param  $value
@@ -1058,13 +1060,28 @@ class Curl
     /**
      * Unset Header
      *
+     * Remove extra header previously set using Curl::setHeader().
+     *
      * @access public
      * @param  $key
      */
     public function unsetHeader($key)
     {
-        $this->setHeader($key, '');
         unset($this->headers[$key]);
+    }
+
+    /**
+     * Remove Header
+     *
+     * Remove an internal header from the request.
+     * Using `curl -H "Host:" ...' is equivalent to $curl->removeHeader('Host');.
+     *
+     * @access public
+     * @param  $key
+     */
+    public function removeHeader($key)
+    {
+        $this->setHeader($key, '');
     }
 
     /**

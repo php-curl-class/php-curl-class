@@ -159,7 +159,7 @@ class MultiCurl
         }
         $curl = new Curl();
         $curl->setURL($url, $data);
-        $curl->unsetHeader('Content-Length');
+        $curl->removeHeader('Content-Length');
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         $this->queueHandle($curl);
         return $curl;
@@ -182,7 +182,7 @@ class MultiCurl
         }
         $curl = new Curl();
         $curl->setURL($url);
-        $curl->unsetHeader('Content-Length');
+        $curl->removeHeader('Content-Length');
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $curl->setOpt(CURLOPT_POSTFIELDS, $data);
         $this->queueHandle($curl);
@@ -212,7 +212,7 @@ class MultiCurl
         $curl = new Curl();
 
         if (is_array($data) && empty($data)) {
-            $curl->unsetHeader('Content-Length');
+            $curl->removeHeader('Content-Length');
         }
 
         $curl->setURL($url);
@@ -643,13 +643,28 @@ class MultiCurl
     /**
      * Unset Header
      *
+     * Remove extra header previously set using Curl::setHeader().
+     *
      * @access public
      * @param  $key
      */
     public function unsetHeader($key)
     {
-        $this->setHeader($key, '');
         unset($this->headers[$key]);
+    }
+
+    /**
+     * Remove Header
+     *
+     * Remove an internal header from the request.
+     * Using `curl -H "Host:" ...' is equivalent to $curl->removeHeader('Host');.
+     *
+     * @access public
+     * @param  $key
+     */
+    public function removeHeader($key)
+    {
+        $this->setHeader($key, '');
     }
 
     /**
