@@ -159,7 +159,7 @@ class MultiCurl
         }
         $curl = new Curl();
         $curl->setURL($url, $data);
-        $curl->unsetHeader('Content-Length');
+        $curl->removeHeader('Content-Length');
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         $this->queueHandle($curl);
         return $curl;
@@ -182,7 +182,7 @@ class MultiCurl
         }
         $curl = new Curl();
         $curl->setURL($url);
-        $curl->unsetHeader('Content-Length');
+        $curl->removeHeader('Content-Length');
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $curl->setOpt(CURLOPT_POSTFIELDS, $data);
         $this->queueHandle($curl);
@@ -212,7 +212,7 @@ class MultiCurl
         $curl = new Curl();
 
         if (is_array($data) && empty($data)) {
-            $curl->unsetHeader('Content-Length');
+            $curl->removeHeader('Content-Length');
         }
 
         $curl->setURL($url);
@@ -456,6 +456,8 @@ class MultiCurl
     /**
      * Set Header
      *
+     * Add extra header to include in the request.
+     *
      * @access public
      * @param  $key
      * @param  $value
@@ -463,6 +465,21 @@ class MultiCurl
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
+    }
+
+    /**
+     * Set Headers
+     *
+     * Add extra headers to include in the request.
+     *
+     * @access public
+     * @param  $headers
+     */
+    public function setHeaders($headers)
+    {
+        foreach ($headers as $key => $value) {
+            $this->headers[$key] = $value;
+        }
     }
 
     /**
@@ -643,13 +660,28 @@ class MultiCurl
     /**
      * Unset Header
      *
+     * Remove extra header previously set using Curl::setHeader().
+     *
      * @access public
      * @param  $key
      */
     public function unsetHeader($key)
     {
-        $this->setHeader($key, '');
         unset($this->headers[$key]);
+    }
+
+    /**
+     * Remove Header
+     *
+     * Remove an internal header from the request.
+     * Using `curl -H "Host:" ...' is equivalent to $curl->removeHeader('Host');.
+     *
+     * @access public
+     * @param  $key
+     */
+    public function removeHeader($key)
+    {
+        $this->setHeader($key, '');
     }
 
     /**
@@ -714,15 +746,13 @@ class MultiCurl
             $curl->complete($this->completeFunction);
         }
 
-        foreach ($this->options as $option => $value) {
-            $curl->setOpt($option, $value);
-        }
-        foreach ($this->headers as $key => $value) {
-            $curl->setHeader($key, $value);
-        }
+        $curl->setOpts($this->options);
+        $curl->setHeaders($this->headers);
+
         foreach ($this->cookies as $key => $value) {
             $curl->setCookie($key, $value);
         }
+
         $curl->setJsonDecoder($this->jsonDecoder);
         $curl->setXmlDecoder($this->xmlDecoder);
 

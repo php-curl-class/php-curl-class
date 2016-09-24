@@ -63,7 +63,7 @@ $curl->post('https://www.example.com/login/', array(
 $curl = new Curl();
 $curl->setBasicAuthentication('username', 'password');
 $curl->setUserAgent('MyUserAgent/0.0.1 (+https://www.example.com/bot.html)');
-$curl->setReferrer('');
+$curl->setReferrer('https://www.example.com/url?url=https%3A%2F%2Fwww.example.com%2F');
 $curl->setHeader('X-Requested-With', 'XMLHttpRequest');
 $curl->setCookie('key', 'value');
 $curl->get('https://www.example.com/');
@@ -71,7 +71,8 @@ $curl->get('https://www.example.com/');
 if ($curl->error) {
     echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage;
 } else {
-    echo $curl->response;
+    echo 'Response:' . "\n";
+    var_dump($curl->response);
 }
 
 var_dump($curl->requestHeaders);
@@ -201,6 +202,7 @@ Curl::patch($url, $data = array())
 Curl::post($url, $data = array(), $follow_303_with_post = false)
 Curl::progress($callback)
 Curl::put($url, $data = array())
+Curl::removeHeader($key)
 Curl::search($url, $data = array())
 Curl::setBasicAuthentication($username, $password = '')
 Curl::setConnectTimeout($seconds)
@@ -215,6 +217,7 @@ Curl::setDefaultUserAgent()
 Curl::setDefaultXmlDecoder()
 Curl::setDigestAuthentication($username, $password = '')
 Curl::setHeader($key, $value)
+Curl::setHeaders($headers)
 Curl::setJsonDecoder($function)
 Curl::setMaxFilesize($bytes)
 Curl::setOpt($option, $value)
@@ -248,6 +251,7 @@ MultiCurl::close()
 MultiCurl::complete($callback)
 MultiCurl::error($callback)
 MultiCurl::getOpt($option)
+MultiCurl::removeHeader($key)
 MultiCurl::setBasicAuthentication($username, $password = '')
 MultiCurl::setConcurrency($concurrency)
 MultiCurl::setConnectTimeout($seconds)
@@ -257,6 +261,7 @@ MultiCurl::setCookieJar($cookie_jar)
 MultiCurl::setCookieString($string)
 MultiCurl::setDigestAuthentication($username, $password = '')
 MultiCurl::setHeader($key, $value)
+MultiCurl::setHeaders($headers)
 MultiCurl::setJsonDecoder($function)
 MultiCurl::setOpt($option, $value)
 MultiCurl::setOpts($options)
