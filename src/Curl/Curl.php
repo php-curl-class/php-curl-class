@@ -1068,6 +1068,11 @@ class Curl
     public function unsetHeader($key)
     {
         unset($this->headers[$key]);
+        $headers = array();
+        foreach ($this->headers as $key => $value) {
+            $headers[] = $key . ': ' . $value;
+        }
+        $this->setOpt(CURLOPT_HTTPHEADER, $headers);
     }
 
     /**

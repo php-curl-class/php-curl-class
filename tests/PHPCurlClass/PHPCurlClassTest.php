@@ -2979,4 +2979,25 @@ class CurlTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($expected_url, $actual_url);
         }
     }
+
+    public function testUnsetHeader()
+    {
+        $request_key = 'X-Request-Id';
+        $request_value = '1';
+        $data = array(
+            'test' => 'server',
+            'key' => 'HTTP_X_REQUEST_ID',
+        );
+
+        $curl = new Curl();
+        $curl->setHeader($request_key, $request_value);
+        $curl->get(Test::TEST_URL, $data);
+        $this->assertEquals($request_value, $curl->response);
+
+        $curl = new Curl();
+        $curl->setHeader($request_key, $request_value);
+        $curl->unsetHeader($request_key);
+        $curl->get(Test::TEST_URL, $data);
+        $this->assertEquals('', $curl->response);
+    }
 }

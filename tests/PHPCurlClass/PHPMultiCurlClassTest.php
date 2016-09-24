@@ -2383,4 +2383,29 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
 
         $this->assertNotEmpty($stderr);
     }
+
+    public function testUnsetHeader()
+    {
+        $request_key = 'X-Request-Id';
+        $request_value = '1';
+        $data = array(
+            'test' => 'server',
+            'key' => 'HTTP_X_REQUEST_ID',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader($request_key, $request_value);
+        $multi_curl->addGet(Test::TEST_URL, $data)->complete(function ($instance) use ($request_value) {
+            PHPUnit_Framework_Assert::assertEquals($request_value, $instance->response);
+        });
+        $multi_curl->start();
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader($request_key, $request_value);
+        $multi_curl->unsetHeader($request_key);
+        $multi_curl->addGet(Test::TEST_URL, $data)->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertEquals('', $instance->response);
+        });
+        $multi_curl->start();
+    }
 }
