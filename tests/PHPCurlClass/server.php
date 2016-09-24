@@ -36,7 +36,7 @@ if ($request_method === 'POST') {
 $test = '';
 if (isset($_SERVER['HTTP_X_DEBUG_TEST'])) {
     $test = $_SERVER['HTTP_X_DEBUG_TEST'];
-} else if (isset($_GET['test'])) {
+} elseif (isset($_GET['test'])) {
     $test = $_GET['test'];
 }
 $key = isset($data_values['key']) ? $data_values['key'] : '';

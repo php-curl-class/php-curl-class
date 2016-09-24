@@ -746,15 +746,13 @@ class MultiCurl
             $curl->complete($this->completeFunction);
         }
 
-        foreach ($this->options as $option => $value) {
-            $curl->setOpt($option, $value);
-        }
-        foreach ($this->headers as $key => $value) {
-            $curl->setHeader($key, $value);
-        }
+        $curl->setOpts($this->options);
+        $curl->setHeaders($this->headers);
+
         foreach ($this->cookies as $key => $value) {
             $curl->setCookie($key, $value);
         }
+
         $curl->setJsonDecoder($this->jsonDecoder);
         $curl->setXmlDecoder($this->xmlDecoder);
 
