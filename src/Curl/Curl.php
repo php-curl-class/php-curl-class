@@ -109,7 +109,7 @@ class Curl
         $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
-        $this->setURL($base_url);
+        $this->setUrl($base_url);
         $this->rfc2616 = array_fill_keys(self::$RFC2616, true);
         $this->rfc6265 = array_fill_keys(self::$RFC6265, true);
     }
@@ -248,7 +248,7 @@ class Curl
             $url = $this->baseUrl;
         }
 
-        $this->setURL($url, $query_parameters);
+        $this->setUrl($url, $query_parameters);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
         $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
         return $this->exec();
@@ -408,7 +408,7 @@ class Curl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $this->setURL($url, $data);
+        $this->setUrl($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $this->setOpt(CURLOPT_HTTPGET, true);
         return $this->exec();
@@ -455,7 +455,7 @@ class Curl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $this->setURL($url, $data);
+        $this->setUrl($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
         $this->setOpt(CURLOPT_NOBODY, true);
         return $this->exec();
@@ -494,7 +494,7 @@ class Curl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $this->setURL($url, $data);
+        $this->setUrl($url, $data);
         $this->removeHeader('Content-Length');
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         return $this->exec();
@@ -520,7 +520,7 @@ class Curl
             $this->removeHeader('Content-Length');
         }
 
-        $this->setURL($url);
+        $this->setUrl($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
         return $this->exec();
@@ -559,7 +559,7 @@ class Curl
             $url = $this->baseUrl;
         }
 
-        $this->setURL($url);
+        $this->setUrl($url);
 
         if ($follow_303_with_post) {
             $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
@@ -599,7 +599,7 @@ class Curl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $this->setURL($url);
+        $this->setUrl($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
         $put_data = $this->buildPostData($data);
         if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
@@ -628,7 +628,7 @@ class Curl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $this->setURL($url);
+        $this->setUrl($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'SEARCH');
         $put_data = $this->buildPostData($data);
         if (empty($this->options[CURLOPT_INFILE]) && empty($this->options[CURLOPT_INFILESIZE])) {
@@ -1049,7 +1049,7 @@ class Curl
      * @param  $url
      * @param  $data
      */
-    public function setURL($url, $data = array())
+    public function setUrl($url, $data = array())
     {
         $this->baseUrl = $url;
         $this->url = $this->buildURL($url, $data);

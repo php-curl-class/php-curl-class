@@ -8,7 +8,7 @@ $pages = 10;
 $q = 'coffee';
 
 $curl = new Curl();
-$curl->setURL('https://www.example.com/search');
+$curl->setUrl('https://www.example.com/search');
 
 for ($i = 1; $i <= $pages; $i++) {
     // https://www.example.com/search?q=coffee&page=N
