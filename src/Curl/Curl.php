@@ -739,12 +739,12 @@ class Curl
         // argument to the CURLOPT_PROGRESSFUNCTION callback.
         $gte_v550 = version_compare(PHP_VERSION, '5.5.0') >= 0;
         if ($gte_v550) {
-            $callback = function($resource, $download_size, $downloaded, $upload_size, $uploaded) use ($bytes) {
+            $callback = function ($resource, $download_size, $downloaded, $upload_size, $uploaded) use ($bytes) {
                 // Abort the transfer when $downloaded bytes exceeds maximum $bytes by returning a non-zero value.
                 return $downloaded > $bytes ? 1 : 0;
             };
         } else {
-            $callback = function($download_size, $downloaded, $upload_size, $uploaded) use ($bytes) {
+            $callback = function ($download_size, $downloaded, $upload_size, $uploaded) use ($bytes) {
                 return $downloaded > $bytes ? 1 : 0;
             };
         }
