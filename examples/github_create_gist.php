@@ -9,7 +9,8 @@ echo 'hello, world';
 EOF;
 
 $curl = new Curl();
-$curl->post('https://api.github.com/gists', json_encode(array(
+$curl->setHeader('Content-Type', 'application/json');
+$curl->post('https://api.github.com/gists', array(
     'description' => 'PHP-Curl-Class test.',
     'public' => 'true',
     'files' => array(
@@ -17,6 +18,6 @@ $curl->post('https://api.github.com/gists', json_encode(array(
             'content' => $content,
         ),
     ),
-)));
+));
 
 echo 'Gist created at ' . $curl->response->html_url . "\n";

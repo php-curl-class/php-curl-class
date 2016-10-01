@@ -22,7 +22,7 @@ $data = array(
 $curl = new Curl();
 $curl->setHeader('Content-Type', 'application/json');
 $curl->setBasicAuthentication(GRATIPAY_API_KEY);
-$curl->post('https://gratipay.com/' . GRATIPAY_USERNAME . '/tips.json', json_encode($data));
+$curl->post('https://gratipay.com/' . GRATIPAY_USERNAME . '/tips.json', $data);
 
 foreach ($curl->response as $tip) {
     echo $tip->amount . ' given to ' . $tip->username . '.' . "\n";
