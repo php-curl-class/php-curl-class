@@ -286,6 +286,19 @@ class MultiCurl
     }
 
     /**
+     * Adds a Curl instance to the handle queue
+     *
+     * @access public
+     * @param  $curl
+     *
+     * @return void
+     */
+    public function addCurl(Curl $curl)
+    {
+        $this->queueHandle($curl);
+    }
+
+    /**
      * Before Send
      *
      * @access public

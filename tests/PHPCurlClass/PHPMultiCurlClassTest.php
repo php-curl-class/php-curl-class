@@ -2408,4 +2408,16 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         });
         $multi_curl->start();
     }
+
+    public function testAddCurl()
+    {
+        $curl = new Curl\Curl();
+        $curl->setUrl(Test::TEST_URL);
+        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
+        $curl->setOpt(CURLOPT_HTTPGET, true);
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->addCurl($curl);
+        $multi_curl->start();
+    }
 }
