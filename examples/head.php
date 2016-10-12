@@ -3,16 +3,16 @@ require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
 
-// curl --request GET "https://httpbin.org/get?key=value"
+// curl --head "http://127.0.0.1:8000/?key=value"
 
 $curl = new Curl();
-$curl->get('https://httpbin.org/get', array(
+$curl->head('http://127.0.0.1:8000/', array(
     'key' => 'value',
 ));
 
 if ($curl->error) {
     echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage;
 } else {
-    echo 'Response:' . "\n";
-    var_dump($curl->response);
+    echo 'Response headers:' . "\n";
+    var_dump($curl->responseHeaders);
 }
