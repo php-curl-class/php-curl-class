@@ -13,6 +13,7 @@ PHP Curl Class is an object-oriented wrapper of the PHP cURL extension that make
 - [Requirements](#requirements)
 - [Quick Start and Examples](#quick-start-and-examples)
 - [Available Methods](#available-methods)
+- [Security](#security)
 - [Contribute](#contribute)
 
 ---
@@ -278,6 +279,10 @@ MultiCurl::success($callback)
 MultiCurl::unsetHeader($key)
 MultiCurl::verbose($on = true, $output = STDERR)
 ```
+
+### Security
+
+See [SECURITY.md](https://github.com/php-curl-class/php-curl-class/blob/master/SECURITY.md).
 
 ### Contribute
 1. Check for open issues or open a new issue to start a discussion around a bug or feature.
