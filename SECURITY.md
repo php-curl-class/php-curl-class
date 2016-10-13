@@ -1,7 +1,9 @@
-### Security Considerations
+# Security Considerations
 
-* Url may point to system files. Don't blindly accept arbitrary urls from users. Curl supports many protocols including
-  `FILE`. The following would show the contents of `file:///etc/passwd`.
+### Url may point to system files
+
+* Don't blindly accept urls from users as they may point to system files. Curl supports many protocols including `FILE`.
+  The following would show the contents of `file:///etc/passwd`.
 
 ```bash
 # Attacker.
@@ -31,8 +33,12 @@ if (!is_website_url($url)) {
 }
 ```
 
-* Url may point to internal urls behind firewall (e.g. http://192.168.0.1/ or ftp://192.168.0.1/). Use a whitelist to
-  allow certain urls. Definitely don't use a blacklist.
+### Url may point to internal urls
+
+* Url may point to internal urls including those behind a firewall (e.g. http://192.168.0.1/ or ftp://192.168.0.1/). Use
+  a whitelist to allow certain urls rather than a blacklist.
+
+### Request data may refer to system files
 
 * Request data prefixed with the @ character may have special interpretation and read from system files.
 
@@ -49,6 +55,8 @@ $curl->post('http://www.anotherwebsite.com/', array(
 ));
 ```
 
+### Unsafe response with redirection enabled
+
 * Requests with redirection enabled may return responses from unexpected sources.
   Downloading https://www.example.com/image.png may redirect and download https://www.evil.com/virus.exe
 
@@ -57,6 +65,8 @@ $curl = new Curl();
 $curl->setOpt(CURLOPT_FOLLOWLOCATION, true); // DANGER!
 $curl->download('http://www.example.com/image.png', 'my_image.png');
 ```
+
+### Keep SSL protections enabled.
 
 * Do not disable SSL protections.
 
