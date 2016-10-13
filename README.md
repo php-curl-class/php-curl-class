@@ -282,7 +282,7 @@ MultiCurl::verbose($on = true, $output = STDERR)
 
 ### Security
 
-See [SECURITY.md](https://github.com/php-curl-class/php-curl-class/blob/master/SECURITY.md).
+See [SECURITY](https://github.com/php-curl-class/php-curl-class/blob/master/SECURITY.md) for security considerations.
 
 ### Contribute
 1. Check for open issues or open a new issue to start a discussion around a bug or feature.
