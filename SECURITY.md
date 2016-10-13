@@ -40,7 +40,7 @@ if (!is_website_url($url)) {
 
 ### Request data may refer to system files
 
-* Request data prefixed with the @ character may have special interpretation and read from system files.
+* Request data prefixed with the `@` character may have special interpretation and read from system files.
 
 ```bash
 # Attacker.
@@ -63,7 +63,7 @@ $curl->post('http://www.anotherwebsite.com/', array(
 ```php
 $curl = new Curl();
 $curl->setOpt(CURLOPT_FOLLOWLOCATION, true); // DANGER!
-$curl->download('http://www.example.com/image.png', 'my_image.png');
+$curl->download('https://www.example.com/image.png', 'my_image.png');
 ```
 
 ### Keep SSL protections enabled.
