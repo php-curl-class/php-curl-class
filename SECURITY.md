@@ -6,7 +6,7 @@
 ```bash
 # Attacker.
 $ curl https://www.example.com/display_webpage.php?url=file%3A%2F%2F%2Fetc%2Fpasswd
-``
+```
 
 ```php
 // display_webpage.php
@@ -39,7 +39,7 @@ if (!is_website_url($url)) {
 ```bash
 # Attacker.
 $ curl https://www.example.com/upload_photo.php --data "photo=@/etc/password"
-``
+```
 
 ```php
 // upload_photo.php
