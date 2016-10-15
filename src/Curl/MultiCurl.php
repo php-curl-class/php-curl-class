@@ -11,6 +11,7 @@ class MultiCurl
     private $activeCurls = array();
     private $isStarted = false;
     private $concurrency = 25;
+    private $nextCurlId = 0;
 
     private $beforeSendFunction = null;
     private $successFunction = null;
@@ -736,6 +737,8 @@ class MultiCurl
      */
     private function queueHandle($curl)
     {
+        // Use sequential ids to allow for ordered post processing.
+        $curl->id = $this->nextCurlId++;
         $this->curls[$curl->id] = $curl;
     }
 

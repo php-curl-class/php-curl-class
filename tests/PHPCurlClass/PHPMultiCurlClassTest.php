@@ -2420,4 +2420,25 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $multi_curl->addCurl($curl);
         $multi_curl->start();
     }
+
+    public function testSequentialId()
+    {
+        $completed = array();
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->complete(function ($instance) use (&$completed) {
+            $completed[] = $instance;
+        });
+
+        for ($i = 0; $i < 100; $i++) {
+            $multi_curl->addPost(Test::TEST_URL, $i);
+        }
+
+        $multi_curl->start();
+
+        foreach ($completed as $instance) {
+            $sequential_id = $instance->getOpt(CURLOPT_POSTFIELDS);
+            $this->assertEquals($sequential_id, $instance->id);
+        }
+    }
 }
