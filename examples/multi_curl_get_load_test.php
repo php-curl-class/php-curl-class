@@ -30,7 +30,7 @@ $multi_curl->complete(function ($instance) use (&$complete) {
 $limit = 1000;
 for ($i = 0; $i < $limit; $i++) {
     $url = $urls[mt_rand(0, count($urls) - 1)];
-    $instance = $multi_curl->addGet($url);
+    $multi_curl->addGet($url);
 }
 
 $multi_curl->start();
