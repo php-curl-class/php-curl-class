@@ -44,7 +44,7 @@ if (!is_website_url($url)) {
 
 ```bash
 # Attacker.
-$ curl https://www.example.com/upload_photo.php --data "photo=@/etc/password"
+$ curl https://www.example.com/upload_photo.php --data "photo=@/etc/passwd"
 ```
 
 ```php
