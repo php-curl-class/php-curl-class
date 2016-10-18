@@ -43,9 +43,17 @@ use \Curl\Curl;
 
 $curl = new Curl();
 $curl->get('https://www.example.com/');
+
+if ($curl->error) {
+    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage;
+} else {
+    echo 'Response:' . "\n";
+    var_dump($curl->response);
+}
 ```
 
 ```php
+// https://www.example.com/search?q=keyword
 $curl = new Curl();
 $curl->get('https://www.example.com/search', array(
     'q' => 'keyword',
