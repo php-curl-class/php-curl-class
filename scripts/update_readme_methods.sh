@@ -3,7 +3,7 @@ before=$(head -n $(
     perl -pe 's/^(\d+):.*/\1/') "README.md")
 
 after=$(tail -n +$(
-    grep --context="0" --line-number --max-count="1" "### Contribute" "README.md" |
+    grep --context="0" --line-number --max-count="1" "### Security" "README.md" |
     perl -pe 's/^(\d+):.*/\1/') "README.md")
 
 echo "${before}" > "README.md"
