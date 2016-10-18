@@ -66,6 +66,12 @@ $curl->setOpt(CURLOPT_FOLLOWLOCATION, true); // DANGER!
 $curl->download('https://www.example.com/image.png', 'my_image.png');
 ```
 
+```php
+$curl = new Curl();
+$curl->setOpt(CURLOPT_FOLLOWLOCATION, true); // DANGER!
+$curl->get('https://www.example.com/image.png');
+```
+
 ### Keep SSL protections enabled.
 
 * Do not disable SSL protections.
