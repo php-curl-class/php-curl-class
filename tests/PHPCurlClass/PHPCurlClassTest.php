@@ -3000,4 +3000,45 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl->get(Test::TEST_URL, $data);
         $this->assertEquals('', $curl->response);
     }
+
+    public function testGetInfo()
+    {
+        $test = new Test();
+        $test->server('server', 'GET');
+        $info = $test->curl->getInfo();
+
+        $expected_keys = array(
+            'url',
+            'content_type',
+            'http_code',
+            'header_size',
+            'request_size',
+            'filetime',
+            'ssl_verify_result',
+            'redirect_count',
+            'total_time',
+            'namelookup_time',
+            'connect_time',
+            'pretransfer_time',
+            'size_upload',
+            'size_download',
+            'speed_download',
+            'speed_upload',
+            'download_content_length',
+            'upload_content_length',
+            'starttransfer_time',
+            'redirect_time',
+            'certinfo',
+            'primary_ip',
+            'primary_port',
+            'local_ip',
+            'local_port',
+            'redirect_url',
+            'request_header',
+        );
+
+        foreach ($expected_keys as $key) {
+            $this->assertArrayHasKey($key, $info);
+        }
+    }
 }
