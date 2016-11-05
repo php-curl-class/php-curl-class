@@ -422,9 +422,16 @@ class Curl
      *
      * @return mixed
      */
-    public function getInfo($opt)
+    public function getInfo($opt = null)
     {
-        return curl_getinfo($this->curl, $opt);
+        $args = array();
+        $args[] = $this->curl;
+
+        if (func_num_args()) {
+            $args[] = $opt;
+        }
+
+        return call_user_func_array('curl_getinfo', $args);
     }
 
     /**
