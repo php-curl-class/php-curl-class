@@ -3037,6 +3037,22 @@ class CurlTest extends PHPUnit_Framework_TestCase
             'request_header',
         );
 
+        // Not all keys are included on PHP 5.3 (tested 5.3.29).
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+            foreach (array('primary_ip', 'primary_port', 'local_ip', 'local_port') as $value) {
+                $key = array_search($value, $expected_keys);
+                unset($expected_keys[$key]);
+            }
+        }
+
+        // Not all keys are included on HHVM (tested 3.6.6).
+        if (defined('HHVM_VERSION')) {
+            foreach (array('certinfo', 'primary_ip', 'primary_port', 'local_ip', 'redirect_url') as $value) {
+                $key = array_search($value, $expected_keys);
+                unset($expected_keys[$key]);
+            }
+        }
+
         foreach ($expected_keys as $key) {
             $this->assertArrayHasKey($key, $info);
         }
