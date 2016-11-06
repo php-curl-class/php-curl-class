@@ -89,3 +89,29 @@ if (function_exists('finfo_open')) {
         return $mime_type;
     }
 }
+
+function upload_file_to_server($upload_file_path) {
+    $upload_test = new Test();
+    $upload_test->server('upload_response', 'POST', array(
+        'image' => '@' . $upload_file_path,
+    ));
+    $uploaded_file_path = $upload_test->curl->response->file_path;
+
+    // Ensure files are not the same path.
+    assert(!($upload_file_path === $uploaded_file_path));
+
+    // Ensure file uploaded successfully.
+    assert(md5_file($upload_file_path) === $upload_test->curl->responseHeaders['ETag']);
+
+    return $uploaded_file_path;
+}
+
+function remove_file_from_server($uploaded_file_path) {
+    $download_test = new Test();
+
+    // Ensure file successfully removed.
+    assert('true' === $download_test->server('upload_cleanup', 'POST', array(
+        'file_path' => $uploaded_file_path,
+    )));
+    assert(file_exists($uploaded_file_path) === false);
+}

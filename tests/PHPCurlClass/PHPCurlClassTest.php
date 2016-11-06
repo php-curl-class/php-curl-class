@@ -609,15 +609,9 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testDownload()
     {
-        // Upload a file.
+        // Create and upload a file.
         $upload_file_path = Helper\get_png();
-        $upload_test = new Test();
-        $upload_test->server('upload_response', 'POST', array(
-            'image' => '@' . $upload_file_path,
-        ));
-        $uploaded_file_path = $upload_test->curl->response->file_path;
-        $this->assertNotEquals($upload_file_path, $uploaded_file_path);
-        $this->assertEquals(md5_file($upload_file_path), $upload_test->curl->responseHeaders['ETag']);
+        $uploaded_file_path = Helper\upload_file_to_server($upload_file_path);
 
         // Download the file.
         $downloaded_file_path = tempnam('/tmp', 'php-curl-class.');
@@ -638,27 +632,19 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(is_bool($download_test->curl->rawResponse));
 
         // Remove server file.
-        $download_test = new Test();
-        $this->assertEquals('true', $download_test->server('upload_cleanup', 'POST', array(
-            'file_path' => $uploaded_file_path,
-        )));
+        Helper\remove_file_from_server($uploaded_file_path);
 
         unlink($upload_file_path);
         unlink($downloaded_file_path);
         $this->assertFalse(file_exists($upload_file_path));
-        $this->assertFalse(file_exists($uploaded_file_path));
         $this->assertFalse(file_exists($downloaded_file_path));
     }
 
     public function testDownloadCallback()
     {
-        // Upload a file.
+        // Create and upload a file.
         $upload_file_path = Helper\get_png();
-        $upload_test = new Test();
-        $upload_test->server('upload_response', 'POST', array(
-            'image' => '@' . $upload_file_path,
-        ));
-        $uploaded_file_path = $upload_test->curl->response->file_path;
+        $uploaded_file_path = Helper\upload_file_to_server($upload_file_path);
 
         // Download the file.
         $callback_called = false;
@@ -679,13 +665,10 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($callback_called);
 
         // Remove server file.
-        $this->assertEquals('true', $upload_test->server('upload_cleanup', 'POST', array(
-            'file_path' => $uploaded_file_path,
-        )));
+        Helper\remove_file_from_server($uploaded_file_path);
 
         unlink($upload_file_path);
         $this->assertFalse(file_exists($upload_file_path));
-        $this->assertFalse(file_exists($uploaded_file_path));
     }
 
     public function testMaxFilesize()
