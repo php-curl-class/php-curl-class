@@ -692,6 +692,24 @@ class CurlTest extends PHPUnit_Framework_TestCase
                 $filesize - 3,
                 $filesize - 2,
                 $filesize - 1,
+
+                // A partial temporary file having the exact same file size as the complete source file should only
+                // occur under certain circumstances (almost never). When the download successfully completed, the
+                // temporary file should have been moved to the download destination save path. However, it is possible
+                // that a larger file download was interrupted after which the source file was updated and now has the
+                // exact same file size as the partial temporary. When resuming the download, the range is now
+                // unsatisfiable as the first byte position exceeds the available range. The entire file should be
+                // downloaded again.
+                $filesize - 0,
+
+                // A partial temporary file having a larger file size than the complete source file should only occur
+                // under certain circumstances. This is possible when a download was interrupted after which the source
+                // file was updated with a smaller file. When resuming the download, the range is now unsatisfiable as
+                // the first byte position exceeds the the available range. The entire file should be downloaded again.
+                $filesize + 1,
+                $filesize + 2,
+                $filesize + 3,
+
             ) as $length) {
 
             $source = Test::TEST_URL;
@@ -749,10 +767,12 @@ class CurlTest extends PHPUnit_Framework_TestCase
                 $this->assertEquals($expected_bytes_downloaded, $bytes_downloaded);
             }
             $this->assertEquals($expected_http_status_code, $curl->httpStatusCode);
-            $this->assertEquals($filesize, filesize($destination));
 
-            unlink($destination);
-            $this->assertFalse(file_exists($destination));
+            if (!$curl->error) {
+                $this->assertEquals($filesize, filesize($destination));
+                unlink($destination);
+                $this->assertFalse(file_exists($destination));
+            }
         }
 
         // Remove server file.
