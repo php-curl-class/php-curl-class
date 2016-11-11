@@ -1,4 +1,5 @@
 <?php
+
 namespace Helper;
 
 use Curl\Curl;
@@ -65,6 +66,15 @@ function create_tmp_file($data)
     fwrite($tmp_file, $data);
     rewind($tmp_file);
     return $tmp_file;
+}
+
+function get_tmp_file_path()
+{
+    // Return temporary file path without creating file.
+    $tmp_file_path =
+        rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) .
+        DIRECTORY_SEPARATOR . 'php-curl-class.' . uniqid(rand(), true);
+    return $tmp_file_path;
 }
 
 function get_png()
