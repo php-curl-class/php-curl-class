@@ -262,7 +262,8 @@ if ($test === 'http_basic_auth') {
     exit;
 } elseif ($test === 'download_file_range') {
     $unsafe_file_path = $_GET['file_path'];
-    (new ContentRangeServer\ContentRangeServer())->serve($unsafe_file_path);
+    $server = new ContentRangeServer\ContentRangeServer();
+    $server->serve($unsafe_file_path);
     exit;
 } elseif ($test === 'timeout') {
     $unsafe_seconds = $_GET['seconds'];
