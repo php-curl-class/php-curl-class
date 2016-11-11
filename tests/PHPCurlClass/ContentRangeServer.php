@@ -8,8 +8,6 @@ class ContentRangeServer
 {
     public function serve($path)
     {
-        $range = new RangeHeader($_SERVER['HTTP_RANGE']);
-
         $filesize = filesize($path);
         $fp = fopen($path, 'r');
 
@@ -19,16 +17,25 @@ class ContentRangeServer
             header('Accept-Ranges: bytes');
             fpassthru($fp);
         } else {
-            header('HTTP/1.1 206 Partial Content');
-            header('Content-Length: ' . $range->getLength($filesize));
-            header('Content-Range: ' . $range->getContentRangeHeader($filesize));
+            $range = new RangeHeader($_SERVER['HTTP_RANGE'], $path);
 
-            $start = $range->getFirstBytePosition($filesize);
+            if (!$range->isValid()) {
+                header('HTTP/1.1 416 Requested Range Not Satisfiable');
+                header('Content-Range: ' . $range->getContentRangeHeader());
+                exit;
+            }
+
+            $length = $range->getLength();
+
+            header('HTTP/1.1 206 Partial Content');
+            header('Content-Length: ' . $length);
+            header('Content-Range: ' . $range->getContentRangeHeader());
+
+            $start = $range->getFirstBytePosition();
             if ($start > 0) {
                 fseek($fp, $start, SEEK_SET);
             }
 
-            $length = $range->getLength($filesize);
             $chunk_size = 4096;
             while ($length) {
                 $read = $length > $chunk_size ? $chunk_size : $length;
