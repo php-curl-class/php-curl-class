@@ -609,15 +609,9 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testDownload()
     {
-        // Upload a file.
+        // Create and upload a file.
         $upload_file_path = Helper\get_png();
-        $upload_test = new Test();
-        $upload_test->server('upload_response', 'POST', array(
-            'image' => '@' . $upload_file_path,
-        ));
-        $uploaded_file_path = $upload_test->curl->response->file_path;
-        $this->assertNotEquals($upload_file_path, $uploaded_file_path);
-        $this->assertEquals(md5_file($upload_file_path), $upload_test->curl->responseHeaders['ETag']);
+        $uploaded_file_path = Helper\upload_file_to_server($upload_file_path);
 
         // Download the file.
         $downloaded_file_path = tempnam('/tmp', 'php-curl-class.');
@@ -638,27 +632,19 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(is_bool($download_test->curl->rawResponse));
 
         // Remove server file.
-        $download_test = new Test();
-        $this->assertEquals('true', $download_test->server('upload_cleanup', 'POST', array(
-            'file_path' => $uploaded_file_path,
-        )));
+        Helper\remove_file_from_server($uploaded_file_path);
 
         unlink($upload_file_path);
         unlink($downloaded_file_path);
         $this->assertFalse(file_exists($upload_file_path));
-        $this->assertFalse(file_exists($uploaded_file_path));
         $this->assertFalse(file_exists($downloaded_file_path));
     }
 
     public function testDownloadCallback()
     {
-        // Upload a file.
+        // Create and upload a file.
         $upload_file_path = Helper\get_png();
-        $upload_test = new Test();
-        $upload_test->server('upload_response', 'POST', array(
-            'image' => '@' . $upload_file_path,
-        ));
-        $uploaded_file_path = $upload_test->curl->response->file_path;
+        $uploaded_file_path = Helper\upload_file_to_server($upload_file_path);
 
         // Download the file.
         $callback_called = false;
@@ -679,13 +665,101 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($callback_called);
 
         // Remove server file.
-        $this->assertEquals('true', $upload_test->server('upload_cleanup', 'POST', array(
-            'file_path' => $uploaded_file_path,
-        )));
+        Helper\remove_file_from_server($uploaded_file_path);
 
         unlink($upload_file_path);
         $this->assertFalse(file_exists($upload_file_path));
-        $this->assertFalse(file_exists($uploaded_file_path));
+    }
+
+    public function testDownloadRange()
+    {
+        // Create and upload a file.
+        $filename = Helper\get_png();
+        $uploaded_file_path = Helper\upload_file_to_server($filename);
+
+        $filesize = filesize($filename);
+
+        foreach (array(
+                false,
+                0,
+                1,
+                2,
+                3,
+                5,
+                10,
+                25,
+                50,
+                $filesize - 3,
+                $filesize - 2,
+                $filesize - 1,
+            ) as $length) {
+
+            $source = Test::TEST_URL;
+            $destination = Helper\get_tmp_file_path();
+
+            // Start with no file.
+            if ($length === false) {
+                $this->assertFalse(file_exists($destination));
+
+            // Start with $length bytes of file.
+            } else {
+
+                // Simulate resuming partially downloaded temporary file.
+                $partial_filename = $destination . '.pccdownload';
+
+                if ($length === 0) {
+                    $partial_content = '';
+                } else {
+                    $file = fopen($filename, 'rb');
+                    $partial_content = fread($file, $length);
+                    fclose($file);
+                }
+
+                // Partial content size should be $length bytes large for testing resume download behavior.
+                if ($length <= $filesize) {
+                    $this->assertEquals($length, strlen($partial_content));
+
+                // Partial content should not be larger than the original file size.
+                } else {
+                    $this->assertEquals($filesize, strlen($partial_content));
+                }
+
+                file_put_contents($partial_filename, $partial_content);
+                $this->assertEquals(strlen($partial_content), strlen(file_get_contents($partial_filename)));
+            }
+
+            // Download (the remaining bytes of) the file.
+            $curl = new Curl();
+            $curl->setHeader('X-DEBUG-TEST', 'download_file_range');
+            $curl->download($source . '?' . http_build_query(array(
+                'file_path' => $uploaded_file_path,
+            )), $destination);
+
+            clearstatcache();
+
+            $expected_bytes_downloaded = $filesize - min($length, $filesize);
+            $bytes_downloaded = $curl->responseHeaders['content-length'];
+            if ($length === false || $length === 0) {
+                $expected_http_status_code = 200; // 200 OK
+                $this->assertEquals($expected_bytes_downloaded, $bytes_downloaded);
+            } elseif ($length >= $filesize) {
+                $expected_http_status_code = 416; // 416 Requested Range Not Satisfiable
+            } else {
+                $expected_http_status_code = 206; // 206 Partial Content
+                $this->assertEquals($expected_bytes_downloaded, $bytes_downloaded);
+            }
+            $this->assertEquals($expected_http_status_code, $curl->httpStatusCode);
+            $this->assertEquals($filesize, filesize($destination));
+
+            unlink($destination);
+            $this->assertFalse(file_exists($destination));
+        }
+
+        // Remove server file.
+        Helper\remove_file_from_server($uploaded_file_path);
+
+        unlink($filename);
+        $this->assertFalse(file_exists($filename));
     }
 
     public function testMaxFilesize()

@@ -1,4 +1,7 @@
 <?php
+
+require_once 'ContentRangeServer.php';
+require_once 'RangeHeader.php';
 require_once 'Helper.php';
 
 use \Helper\Test;
@@ -256,6 +259,11 @@ if ($test === 'http_basic_auth') {
     header('Content-Length: ' . strlen($str));
     header('ETag: ' . md5($str));
     echo $str;
+    exit;
+} elseif ($test === 'download_file_range') {
+    $unsafe_file_path = $_GET['file_path'];
+    $server = new ContentRangeServer\ContentRangeServer();
+    $server->serve($unsafe_file_path);
     exit;
 } elseif ($test === 'timeout') {
     $unsafe_seconds = $_GET['seconds'];

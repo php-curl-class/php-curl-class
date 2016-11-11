@@ -305,7 +305,27 @@ class Curl
             $fh = tmpfile();
         } else {
             $filename = $mixed_filename;
-            $fh = fopen($filename, 'wb');
+
+            // Use a temporary file when downloading. Not using a temporary file can cause an error when an existing
+            // file has already fully completed downloading and a new download is started with the same destination save
+            // path. The download request will include header "Range: bytes=$filesize-" which is syntactically valid,
+            // but unsatisfiable.
+            $download_filename = $filename . '.pccdownload';
+
+            $mode = 'wb';
+            // Attempt to resume download only when a temporary download file exists and is not empty.
+            if (file_exists($download_filename) && $filesize = filesize($download_filename)) {
+                $mode = 'ab';
+                $first_byte_position = $filesize;
+                $range = $first_byte_position . '-';
+                $this->setOpt(CURLOPT_RANGE, $range);
+            }
+            $fh = fopen($download_filename, $mode);
+
+            // Move the downloaded temporary file to the destination save path.
+            $this->downloadCompleteFunction = function ($fh) use ($download_filename, $filename) {
+                rename($download_filename, $filename);
+            };
         }
 
         $this->setOpt(CURLOPT_FILE, $fh);
