@@ -13,7 +13,7 @@ $curl->patch('https://httpbin.org/patch', array(
 ));
 
 if ($curl->error) {
-    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage;
+    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
 } else {
     echo 'Response:' . "\n";
     var_dump($curl->response);

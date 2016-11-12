@@ -13,7 +13,7 @@ $curl->post('https://httpbin.org/post', array(
 ));
 
 if ($curl->error) {
-    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage;
+    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
 } else {
     echo 'Data server received via POST:' . "\n";
     var_dump($curl->response->form);

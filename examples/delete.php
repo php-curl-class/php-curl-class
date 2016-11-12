@@ -18,7 +18,7 @@ $curl->delete('https://httpbin.org/delete',
 );
 
 if ($curl->error) {
-    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage;
+    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
 } else {
     echo 'Data server received via DELETE:' . "\n";
     var_dump($curl->response->form);
