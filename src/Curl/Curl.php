@@ -83,6 +83,8 @@ class Curl
 
     private static $deferredProperties = array(
         'effectiveUrl',
+        'rfc2616',
+        'rfc6265',
         'totalTime',
     );
 
@@ -110,8 +112,6 @@ class Curl
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
         $this->setUrl($base_url);
-        $this->rfc2616 = array_fill_keys(self::$RFC2616, true);
-        $this->rfc6265 = array_fill_keys(self::$RFC6265, true);
     }
 
     /**
@@ -1182,6 +1182,26 @@ class Curl
     private function __get_effectiveUrl()
     {
         return $this->getInfo(CURLINFO_EFFECTIVE_URL);
+    }
+
+    /**
+     * Get RFC 2616
+     *
+     * @access private
+     */
+    private function __get_rfc2616()
+    {
+        return array_fill_keys(self::$RFC2616, true);
+    }
+
+    /**
+     * Get RFC 6265
+     *
+     * @access private
+     */
+    private function __get_rfc6265()
+    {
+        return array_fill_keys(self::$RFC6265, true);
     }
 
     /**
