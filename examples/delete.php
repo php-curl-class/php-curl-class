@@ -6,7 +6,8 @@ use \Curl\Curl;
 // curl --request DELETE "https://httpbin.org/delete?key=value" --data "a=1&b=2&c=3"
 
 $curl = new Curl();
-$curl->delete('https://httpbin.org/delete',
+$curl->delete(
+    'https://httpbin.org/delete',
     array(
         'key' => 'value',
     ),

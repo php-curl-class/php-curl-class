@@ -711,7 +711,6 @@ class CurlTest extends PHPUnit_Framework_TestCase
                 $filesize + 3,
 
             ) as $length) {
-
             $source = Test::TEST_URL;
             $destination = Helper\get_tmp_file_path();
 
@@ -721,7 +720,6 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
             // Start with $length bytes of file.
             } else {
-
                 // Simulate resuming partially downloaded temporary file.
                 $partial_filename = $destination . '.pccdownload';
 
