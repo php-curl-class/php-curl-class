@@ -1922,7 +1922,7 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         // Skip Digest Access Authentication test on HHVM.
         // https://github.com/facebook/hhvm/issues/5201
         if (defined('HHVM_VERSION')) {
-            return;
+            $this->markTestSkipped();
         }
 
         $username = 'myusername';

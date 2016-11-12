@@ -898,7 +898,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         // Skip Digest Access Authentication test on HHVM.
         // https://github.com/facebook/hhvm/issues/5201
         if (defined('HHVM_VERSION')) {
-            return;
+            $this->markTestSkipped();
         }
 
         $username = 'myusername';
@@ -1271,7 +1271,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
     public function testPostCurlFileFormDataContentType()
     {
         if (!class_exists('CURLFile')) {
-            return;
+            $this->markTestSkipped();
         }
 
         $file_path = Helper\get_png();
@@ -2896,7 +2896,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         // Skip memory leak test failing for PHP 7.
         // "Failed asserting that 8192 is less than 1000."
         if (getenv('TRAVIS_PHP_VERSION') === '7.0') {
-            return;
+            $this->markTestSkipped();
         }
 
         ob_start();
@@ -2934,7 +2934,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
     {
         // Skip test on HHVM due to "Segmentation fault".
         if (defined('HHVM_VERSION')) {
-            return;
+            $this->markTestSkipped();
         }
 
         $buffer = fopen('php://memory', 'w+');
@@ -2980,7 +2980,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
     {
         // Skip this test on 5.3, 5.4, and HHVM.
         if (version_compare(PHP_VERSION, '5.5.0', '<') || defined('HHVM_VERSION')) {
-            return;
+            $this->markTestSkipped();
         }
 
         $option = CURLOPT_ENCODING;
