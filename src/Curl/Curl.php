@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '7.0.1';
+    const VERSION = '7.1.0';
     const DEFAULT_TIMEOUT = 30;
 
     public static $RFC2616 = array(
