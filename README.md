@@ -5,7 +5,7 @@
 
 [![License](https://img.shields.io/packagist/l/php-curl-class/php-curl-class.svg)](https://github.com/php-curl-class/php-curl-class/blob/master/LICENSE)
 
-PHP Curl Class is an object-oriented wrapper of the PHP cURL extension that makes it easy to send HTTP requests and integrate with web APIs.
+PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.
 
 ---
 
