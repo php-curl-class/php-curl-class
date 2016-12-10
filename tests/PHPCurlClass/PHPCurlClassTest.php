@@ -1016,7 +1016,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testCookieFile()
     {
-        $cookie_file = dirname(__FILE__) . '/cookies.txt';
+        $cookie_file = dirname(__FILE__) . '/cookiefile.txt';
         $cookie_data = implode("\t", array(
             '127.0.0.1', // domain
             'FALSE',     // tailmatch
@@ -1029,10 +1029,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
         file_put_contents($cookie_file, $cookie_data);
 
         $test = new Test();
-        $test->curl->setCookieFile($cookie_file);
-        $this->assertEquals('yum', $test->server('cookie', 'GET', array(
-            'key' => 'mycookie',
-        )));
+        $test->curl->setOpt(CURLOPT_COOKIEFILE, $cookie_file);
+        $this->assertEquals($cookie_data, file_get_contents($test->curl->getOpt(CURLOPT_COOKIEFILE)));
 
         unlink($cookie_file);
         $this->assertFalse(file_exists($cookie_file));
@@ -1040,16 +1038,16 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testCookieJar()
     {
-        $cookie_file = dirname(__FILE__) . '/cookies.txt';
+        $cookie_jar = dirname(__FILE__) . '/cookiejar.txt';
 
         $test = new Test();
-        $test->curl->setCookieJar($cookie_file);
+        $test->curl->setCookieJar($cookie_jar);
         $test->server('cookiejar', 'GET');
         $test->curl->close();
 
-        $this->assertTrue(!(strpos(file_get_contents($cookie_file), "\t" . 'mycookie' . "\t" . 'yum') === false));
-        unlink($cookie_file);
-        $this->assertFalse(file_exists($cookie_file));
+        $this->assertTrue(!(strpos(file_get_contents($cookie_jar), "\t" . 'mycookie' . "\t" . 'yum') === false));
+        unlink($cookie_jar);
+        $this->assertFalse(file_exists($cookie_jar));
     }
 
     public function testMultipleCookieResponse()
