@@ -1029,7 +1029,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         file_put_contents($cookie_file, $cookie_data);
 
         $test = new Test();
-        $test->curl->setOpt(CURLOPT_COOKIEFILE, $cookie_file);
+        $test->curl->setCookieFile($cookie_file);
         $this->assertEquals($cookie_data, file_get_contents($test->curl->getOpt(CURLOPT_COOKIEFILE)));
         $this->assertEquals('yum', $test->server('cookie', 'GET', array(
             'key' => 'mycookie',
