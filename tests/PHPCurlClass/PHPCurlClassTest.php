@@ -1025,7 +1025,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
             '0',         // expires
             'mycookie',  // name
             'yum',       // value
-        ));
+        )) . "\n";
         file_put_contents($cookie_file, $cookie_data);
 
         $test = new Test();
