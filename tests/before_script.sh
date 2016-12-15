@@ -1,5 +1,7 @@
 set -x
 echo "TRAVIS_PHP_VERSION: ${TRAVIS_PHP_VERSION}"
+php -r "var_dump(phpversion());"
+php -r "var_dump(curl_version());"
 
 composer self-update
 composer install --prefer-source --no-interaction
