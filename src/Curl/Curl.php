@@ -819,10 +819,12 @@ class Curl
      *
      * @access public
      * @param  $cookie_file
+     *
+     * @return boolean
      */
     public function setCookieFile($cookie_file)
     {
-        $this->setOpt(CURLOPT_COOKIEFILE, $cookie_file);
+        return $this->setOpt(CURLOPT_COOKIEFILE, $cookie_file);
     }
 
     /**
@@ -830,10 +832,12 @@ class Curl
      *
      * @access public
      * @param  $cookie_jar
+     *
+     * @return boolean
      */
     public function setCookieJar($cookie_jar)
     {
-        $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
+        return $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
     }
 
     /**
