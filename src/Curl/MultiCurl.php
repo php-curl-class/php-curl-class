@@ -414,6 +414,19 @@ class MultiCurl
     }
 
     /**
+     * Set Cookies
+     *
+     * @access public
+     * @param  $cookies
+     */
+    public function setCookies($cookies)
+    {
+        foreach ($cookies as $key => $value) {
+            $this->cookies[$key] = $value;
+        }
+    }
+
+    /**
      * Set Port
      *
      * @access public
