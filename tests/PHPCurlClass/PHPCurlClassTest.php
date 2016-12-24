@@ -14,7 +14,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testArrayAssociative()
     {
-        $this->assertTrue(Curl::is_array_assoc(array(
+        $this->assertTrue(\Curl\ArrayUtil::is_array_assoc(array(
             'foo' => 'wibble',
             'bar' => 'wubble',
             'baz' => 'wobble',
@@ -23,7 +23,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     public function testArrayIndexed()
     {
-        $this->assertFalse(Curl::is_array_assoc(array(
+        $this->assertFalse(\Curl\ArrayUtil::is_array_assoc(array(
             'wibble',
             'wubble',
             'wobble',
