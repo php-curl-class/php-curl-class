@@ -981,12 +981,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
     {
         $curl = new Curl();
         $curl->setCookie('cookie', 'Om nom nom nom');
-
-        $reflectionClass = new ReflectionClass('\Curl\Curl');
-        $reflectionProperty = $reflectionClass->getProperty('options');
-        $reflectionProperty->setAccessible(true);
-        $options = $reflectionProperty->getValue($curl);
-        $this->assertEquals('cookie=Om%20nom%20nom%20nom', $options[CURLOPT_COOKIE]);
+        $this->assertEquals('cookie=Om%20nom%20nom%20nom', $curl->getOpt(CURLOPT_COOKIE));
     }
 
     public function testSetMultipleCookies()
@@ -994,24 +989,14 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl = new Curl();
         $curl->setCookie('cookie', 'Om nom nom nom');
         $curl->setCookie('foo', 'bar');
-
-        $reflectionClass = new ReflectionClass('\Curl\Curl');
-        $reflectionProperty = $reflectionClass->getProperty('options');
-        $reflectionProperty->setAccessible(true);
-        $options = $reflectionProperty->getValue($curl);
-        $this->assertEquals('cookie=Om%20nom%20nom%20nom; foo=bar', $options[CURLOPT_COOKIE]);
+        $this->assertEquals('cookie=Om%20nom%20nom%20nom; foo=bar', $curl->getOpt(CURLOPT_COOKIE));
     }
 
     public function testSetCookieEncodingColon()
     {
         $curl = new Curl();
         $curl->setCookie('JSESSIONID', '0000wd-PcsB3bZ-KzYGAqm_rKlm:17925chrl');
-
-        $reflectionClass = new ReflectionClass('\Curl\Curl');
-        $reflectionProperty = $reflectionClass->getProperty('options');
-        $reflectionProperty->setAccessible(true);
-        $options = $reflectionProperty->getValue($curl);
-        $this->assertEquals('JSESSIONID=0000wd-PcsB3bZ-KzYGAqm_rKlm:17925chrl', $options[CURLOPT_COOKIE]);
+        $this->assertEquals('JSESSIONID=0000wd-PcsB3bZ-KzYGAqm_rKlm:17925chrl', $curl->getOpt(CURLOPT_COOKIE));
     }
 
     public function testSetCookieString()
@@ -1020,12 +1005,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
         $test = new Test();
         $test->curl->setCookieString($cookie_string);
-
-        $reflectionClass = new ReflectionClass('\Curl\Curl');
-        $reflectionProperty = $reflectionClass->getProperty('options');
-        $reflectionProperty->setAccessible(true);
-        $options = $reflectionProperty->getValue($test->curl);
-        $this->assertEquals($cookie_string, $options[CURLOPT_COOKIE]);
+        $this->assertEquals($cookie_string, $test->curl->getOpt(CURLOPT_COOKIE));
         $this->assertEquals('fruit=apple&color=red', $test->server('cookie', 'GET'));
     }
 
@@ -3005,27 +2985,16 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl = new Curl();
         $success = $curl->setOpt($option, $value);
 
-        $reflector = new ReflectionObject($curl);
-        $property = $reflector->getProperty('options');
-        $property->setAccessible(true);
-        $options = $property->getValue($curl);
-
         $this->assertTrue($success);
-        $this->assertTrue(isset($options[$option]));
-        $this->assertEquals($value, $options[$option]);
+        $this->assertEquals($value, $curl->getOpt($option));
 
         // Ensure the option is not stored when curl_setopt() fails. Make curl_setopt() return false and suppress
         // errors. Triggers warning: "curl_setopt(): Curl option contains invalid characters (\0)".
         $curl = new Curl();
         $success = @$curl->setOpt($option, $null);
 
-        $reflector = new ReflectionObject($curl);
-        $property = $reflector->getProperty('options');
-        $property->setAccessible(true);
-        $options = $property->getValue($curl);
-
         $this->assertFalse($success);
-        $this->assertFalse(isset($options[$option]));
+        $this->assertNull($curl->getOpt($option));
 
         // Ensure options following a Curl::setOpt() failure are not set when using Curl::setOpts().
         $options = array(
@@ -3035,13 +3004,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl = new Curl();
         $success = @$curl->setOpts($options);
 
-        $reflector = new ReflectionObject($curl);
-        $property = $reflector->getProperty('options');
-        $property->setAccessible(true);
-        $options = $property->getValue($curl);
-
         $this->assertFalse($success);
-        $this->assertFalse(isset($options[CURLOPT_COOKIE]));
+        $this->assertNull($curl->getOpt(CURLOPT_COOKIE));
 
         // Ensure Curl::setOpts() returns true when all options are successfully set.
         $options = array(
@@ -3052,15 +3016,10 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl = new Curl();
         $success = $curl->setOpts($options);
 
-        $reflector = new ReflectionObject($curl);
-        $property = $reflector->getProperty('options');
-        $property->setAccessible(true);
-        $options = $property->getValue($curl);
-
         $this->assertTrue($success);
-        $this->assertEquals('a=b', $options[CURLOPT_COOKIE]);
-        $this->assertTrue($options[CURLOPT_FOLLOWLOCATION]);
-        $this->assertTrue($options[CURLOPT_VERBOSE]);
+        $this->assertEquals('a=b', $curl->getOpt(CURLOPT_COOKIE));
+        $this->assertTrue($curl->getOpt(CURLOPT_FOLLOWLOCATION));
+        $this->assertTrue($curl->getOpt(CURLOPT_VERBOSE));
     }
 
     public function testBuildUrlArgSeparator()
