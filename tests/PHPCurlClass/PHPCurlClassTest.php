@@ -957,9 +957,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
     {
         $test = new Test();
         $test->curl->setCookie('mycookie', 'yum');
-        $this->assertEquals('yum', $test->server('cookie', 'GET', array(
-            'key' => 'mycookie',
-        )));
+        $test->server('setcookie', 'GET');
+        $this->assertEquals('yum', $test->curl->responseCookies['mycookie']);
     }
 
     public function testSetCookies()
@@ -971,9 +970,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
         );
         $test = new Test();
         $test->curl->setCookies($cookies);
-        $test->server('cookie', 'GET');
+        $test->server('setcookie', 'GET');
 
-        $this->assertEquals(http_build_query($cookies, '', '&'), $test->curl->response);
+        $this->assertEquals('yum', $test->curl->responseCookies['mycookie']);
+        $this->assertEquals('apple', $test->curl->responseCookies['fruit']);
+        $this->assertEquals('red', $test->curl->responseCookies['color']);
     }
 
     public function testSetCookieEncodingSpace()
