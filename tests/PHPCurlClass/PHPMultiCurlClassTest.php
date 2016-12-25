@@ -2486,4 +2486,22 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($sequential_id, $instance->id);
         }
     }
+
+    public function testAscendingNumericalOrder()
+    {
+        $counter = 0;
+        $multi_curl = new MultiCurl();
+        $multi_curl->setConcurrency(1);
+        $multi_curl->complete(function ($instance) use (&$counter) {
+            $sequential_id = $instance->getOpt(CURLOPT_POSTFIELDS);
+            PHPUnit_Framework_Assert::assertEquals($counter, $sequential_id);
+            $counter++;
+        });
+
+        for ($i = 0; $i < 100; $i++) {
+            $multi_curl->addPost(Test::TEST_URL, $i);
+        }
+
+        $multi_curl->start();
+    }
 }
