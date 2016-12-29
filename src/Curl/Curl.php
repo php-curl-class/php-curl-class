@@ -2,6 +2,8 @@
 
 namespace Curl;
 
+use Curl\ArrayUtil;
+
 class Curl
 {
     const VERSION = '7.1.0';
@@ -148,8 +150,8 @@ class Curl
                 // Manually build a single-dimensional array from a multi-dimensional array as using curl_setopt($ch,
                 // CURLOPT_POSTFIELDS, $data) doesn't correctly handle multi-dimensional arrays when files are
                 // referenced.
-                if (\Curl\ArrayUtil::is_array_multidim($data)) {
-                    $data = \Curl\ArrayUtil::array_flatten_multidim($data);
+                if (ArrayUtil::is_array_multidim($data)) {
+                    $data = ArrayUtil::array_flatten_multidim($data);
                 }
 
                 // Modify array values to ensure any referenced files are properly handled depending on the support of
