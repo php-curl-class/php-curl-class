@@ -72,11 +72,11 @@ $curl->setOpt(CURLOPT_FOLLOWLOCATION, true); // DANGER!
 $curl->get('https://www.example.com/image.png');
 ```
 
-### Keep SSL protections enabled.
+### Keep SSL protections enabled
 
 * Do not disable SSL protections.
 
 ```php
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE); // DANGER!
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // DANGER!
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // DANGER!
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // DANGER!
 ```
