@@ -5,7 +5,7 @@
 
 [![License](https://img.shields.io/packagist/l/php-curl-class/php-curl-class.svg)](https://github.com/php-curl-class/php-curl-class/blob/master/LICENSE)
 
-PHP Curl Class is an object-oriented wrapper of the PHP cURL extension that makes it easy to send HTTP requests and integrate with web APIs.
+PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.
 
 ---
 
@@ -13,6 +13,7 @@ PHP Curl Class is an object-oriented wrapper of the PHP cURL extension that make
 - [Requirements](#requirements)
 - [Quick Start and Examples](#quick-start-and-examples)
 - [Available Methods](#available-methods)
+- [Security](#security)
 - [Contribute](#contribute)
 
 ---
@@ -42,9 +43,17 @@ use \Curl\Curl;
 
 $curl = new Curl();
 $curl->get('https://www.example.com/');
+
+if ($curl->error) {
+    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
+} else {
+    echo 'Response:' . "\n";
+    var_dump($curl->response);
+}
 ```
 
 ```php
+// https://www.example.com/search?q=keyword
 $curl = new Curl();
 $curl->get('https://www.example.com/search', array(
     'q' => 'keyword',
@@ -63,15 +72,16 @@ $curl->post('https://www.example.com/login/', array(
 $curl = new Curl();
 $curl->setBasicAuthentication('username', 'password');
 $curl->setUserAgent('MyUserAgent/0.0.1 (+https://www.example.com/bot.html)');
-$curl->setReferrer('');
+$curl->setReferrer('https://www.example.com/url?url=https%3A%2F%2Fwww.example.com%2F');
 $curl->setHeader('X-Requested-With', 'XMLHttpRequest');
 $curl->setCookie('key', 'value');
 $curl->get('https://www.example.com/');
 
 if ($curl->error) {
-    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage;
+    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
 } else {
-    echo $curl->response;
+    echo 'Response:' . "\n";
+    var_dump($curl->response);
 }
 
 var_dump($curl->requestHeaders);
@@ -191,7 +201,7 @@ Curl::error($callback)
 Curl::exec($ch = null)
 Curl::get($url, $data = array())
 Curl::getCookie($key)
-Curl::getInfo($opt)
+Curl::getInfo($opt = null)
 Curl::getOpt($option)
 Curl::getResponseCookie($key)
 Curl::head($url, $data = array())
@@ -201,6 +211,7 @@ Curl::patch($url, $data = array())
 Curl::post($url, $data = array(), $follow_303_with_post = false)
 Curl::progress($callback)
 Curl::put($url, $data = array())
+Curl::removeHeader($key)
 Curl::search($url, $data = array())
 Curl::setBasicAuthentication($username, $password = '')
 Curl::setConnectTimeout($seconds)
@@ -208,6 +219,7 @@ Curl::setCookie($key, $value)
 Curl::setCookieFile($cookie_file)
 Curl::setCookieJar($cookie_jar)
 Curl::setCookieString($string)
+Curl::setCookies($cookies)
 Curl::setDefaultDecoder($decoder = 'json')
 Curl::setDefaultJsonDecoder()
 Curl::setDefaultTimeout()
@@ -215,24 +227,24 @@ Curl::setDefaultUserAgent()
 Curl::setDefaultXmlDecoder()
 Curl::setDigestAuthentication($username, $password = '')
 Curl::setHeader($key, $value)
+Curl::setHeaders($headers)
 Curl::setJsonDecoder($function)
+Curl::setMaxFilesize($bytes)
 Curl::setOpt($option, $value)
 Curl::setOpts($options)
 Curl::setPort($port)
 Curl::setReferer($referer)
 Curl::setReferrer($referrer)
 Curl::setTimeout($seconds)
-Curl::setURL($url, $data = array())
+Curl::setUrl($url, $data = array())
 Curl::setUserAgent($user_agent)
 Curl::setXmlDecoder($function)
 Curl::success($callback)
 Curl::unsetHeader($key)
 Curl::verbose($on = true, $output = STDERR)
-Curl::array_flatten_multidim($array, $prefix = false)
-Curl::is_array_assoc($array)
-Curl::is_array_multidim($array)
 MultiCurl::__construct($base_url = null)
 MultiCurl::__destruct()
+MultiCurl::addCurl(Curl $curl)
 MultiCurl::addDelete($url, $query_parameters = array(), $data = array())
 MultiCurl::addDownload($url, $mixed_filename)
 MultiCurl::addGet($url, $data = array())
@@ -247,6 +259,7 @@ MultiCurl::close()
 MultiCurl::complete($callback)
 MultiCurl::error($callback)
 MultiCurl::getOpt($option)
+MultiCurl::removeHeader($key)
 MultiCurl::setBasicAuthentication($username, $password = '')
 MultiCurl::setConcurrency($concurrency)
 MultiCurl::setConnectTimeout($seconds)
@@ -254,8 +267,10 @@ MultiCurl::setCookie($key, $value)
 MultiCurl::setCookieFile($cookie_file)
 MultiCurl::setCookieJar($cookie_jar)
 MultiCurl::setCookieString($string)
+MultiCurl::setCookies($cookies)
 MultiCurl::setDigestAuthentication($username, $password = '')
 MultiCurl::setHeader($key, $value)
+MultiCurl::setHeaders($headers)
 MultiCurl::setJsonDecoder($function)
 MultiCurl::setOpt($option, $value)
 MultiCurl::setOpts($options)
@@ -263,7 +278,7 @@ MultiCurl::setPort($port)
 MultiCurl::setReferer($referer)
 MultiCurl::setReferrer($referrer)
 MultiCurl::setTimeout($seconds)
-MultiCurl::setURL($url)
+MultiCurl::setUrl($url)
 MultiCurl::setUserAgent($user_agent)
 MultiCurl::setXmlDecoder($function)
 MultiCurl::start()
@@ -271,6 +286,10 @@ MultiCurl::success($callback)
 MultiCurl::unsetHeader($key)
 MultiCurl::verbose($on = true, $output = STDERR)
 ```
+
+### Security
+
+See [SECURITY](https://github.com/php-curl-class/php-curl-class/blob/master/SECURITY.md) for security considerations.
 
 ### Contribute
 1. Check for open issues or open a new issue to start a discussion around a bug or feature.

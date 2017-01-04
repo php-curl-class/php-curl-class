@@ -15,6 +15,6 @@ $file = fopen($tmpnam, 'wb+');
 
 // Use file_get_contents_chunked() rather than file_get_contents() to avoid error:
 // "Fatal error:  Allowed memory size of ... bytes exhausted (tried to allocate ... bytes) in ... on line 0".
-file_get_contents_chunked('php://input', 4096, function($chunk) use (&$file) {
+file_get_contents_chunked('php://input', 4096, function ($chunk) use (&$file) {
     fwrite($file, $chunk);
 });

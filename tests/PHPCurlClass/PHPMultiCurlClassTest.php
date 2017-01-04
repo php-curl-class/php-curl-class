@@ -1922,7 +1922,7 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         // Skip Digest Access Authentication test on HHVM.
         // https://github.com/facebook/hhvm/issues/5201
         if (defined('HHVM_VERSION')) {
-            return;
+            $this->markTestSkipped();
         }
 
         $username = 'myusername';
@@ -1999,7 +1999,7 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         $multi_curl->start();
     }
 
-    public function testCookies()
+    public function testSetCookie()
     {
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'setcookie');
@@ -2028,6 +2028,51 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         });
 
         $multi_curl->setCookie('cookie-for-all-after', 'b');
+        $multi_curl->start();
+
+        $this->assertEquals('yum', $get_1->responseCookies['mycookie']);
+        $this->assertEquals('yummy', $get_2->responseCookies['mycookie']);
+    }
+
+    public function testSetCookies()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'setcookie');
+        $multi_curl->setCookies(array(
+            'mycookie' => 'yum',
+            'cookie-for-all-before' => 'a',
+        ));
+
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_1->setCookies(array(
+            'cookie-for-1st-request' => '1',
+        ));
+        $get_1->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertEquals('yum', $instance->responseCookies['mycookie']);
+            PHPUnit_Framework_Assert::assertEquals('a', $instance->responseCookies['cookie-for-all-before']);
+            PHPUnit_Framework_Assert::assertEquals('b', $instance->responseCookies['cookie-for-all-after']);
+            PHPUnit_Framework_Assert::assertEquals('1', $instance->responseCookies['cookie-for-1st-request']);
+        });
+
+        $get_2 = $multi_curl->addGet(Test::TEST_URL);
+        $get_2->setCookies(array(
+            'cookie-for-2nd-request' => '2',
+        ));
+        $get_2->beforeSend(function ($instance) {
+            $instance->setCookies(array(
+                'mycookie' => 'yummy',
+            ));
+        });
+        $get_2->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertEquals('yummy', $instance->responseCookies['mycookie']);
+            PHPUnit_Framework_Assert::assertEquals('a', $instance->responseCookies['cookie-for-all-before']);
+            PHPUnit_Framework_Assert::assertEquals('b', $instance->responseCookies['cookie-for-all-after']);
+            PHPUnit_Framework_Assert::assertEquals('2', $instance->responseCookies['cookie-for-2nd-request']);
+        });
+
+        $multi_curl->setCookies(array(
+            'cookie-for-all-after' => 'b',
+        ));
         $multi_curl->start();
 
         $this->assertEquals('yum', $get_1->responseCookies['mycookie']);
@@ -2382,5 +2427,81 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
         fclose($buffer);
 
         $this->assertNotEmpty($stderr);
+    }
+
+    public function testUnsetHeader()
+    {
+        $request_key = 'X-Request-Id';
+        $request_value = '1';
+        $data = array(
+            'test' => 'server',
+            'key' => 'HTTP_X_REQUEST_ID',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader($request_key, $request_value);
+        $multi_curl->addGet(Test::TEST_URL, $data)->complete(function ($instance) use ($request_value) {
+            PHPUnit_Framework_Assert::assertEquals($request_value, $instance->response);
+        });
+        $multi_curl->start();
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader($request_key, $request_value);
+        $multi_curl->unsetHeader($request_key);
+        $multi_curl->addGet(Test::TEST_URL, $data)->complete(function ($instance) {
+            PHPUnit_Framework_Assert::assertEquals('', $instance->response);
+        });
+        $multi_curl->start();
+    }
+
+    public function testAddCurl()
+    {
+        $curl = new Curl\Curl();
+        $curl->setUrl(Test::TEST_URL);
+        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
+        $curl->setOpt(CURLOPT_HTTPGET, true);
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->addCurl($curl);
+        $multi_curl->start();
+    }
+
+    public function testSequentialId()
+    {
+        $completed = array();
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->complete(function ($instance) use (&$completed) {
+            $completed[] = $instance;
+        });
+
+        for ($i = 0; $i < 100; $i++) {
+            $multi_curl->addPost(Test::TEST_URL, $i);
+        }
+
+        $multi_curl->start();
+
+        foreach ($completed as $instance) {
+            $sequential_id = $instance->getOpt(CURLOPT_POSTFIELDS);
+            $this->assertEquals($sequential_id, $instance->id);
+        }
+    }
+
+    public function testAscendingNumericalOrder()
+    {
+        $counter = 0;
+        $multi_curl = new MultiCurl();
+        $multi_curl->setConcurrency(1);
+        $multi_curl->complete(function ($instance) use (&$counter) {
+            $sequential_id = $instance->getOpt(CURLOPT_POSTFIELDS);
+            PHPUnit_Framework_Assert::assertEquals($counter, $sequential_id);
+            $counter++;
+        });
+
+        for ($i = 0; $i < 100; $i++) {
+            $multi_curl->addPost(Test::TEST_URL, $i);
+        }
+
+        $multi_curl->start();
     }
 }

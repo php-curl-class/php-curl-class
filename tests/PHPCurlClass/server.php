@@ -1,4 +1,7 @@
 <?php
+
+require_once 'ContentRangeServer.php';
+require_once 'RangeHeader.php';
 require_once 'Helper.php';
 
 use \Helper\Test;
@@ -33,7 +36,12 @@ if ($request_method === 'POST') {
     }
 }
 
-$test = isset($_SERVER['HTTP_X_DEBUG_TEST']) ? $_SERVER['HTTP_X_DEBUG_TEST'] : '';
+$test = '';
+if (isset($_SERVER['HTTP_X_DEBUG_TEST'])) {
+    $test = $_SERVER['HTTP_X_DEBUG_TEST'];
+} elseif (isset($_GET['test'])) {
+    $test = $_GET['test'];
+}
 $key = isset($data_values['key']) ? $data_values['key'] : '';
 
 if ($test === 'http_basic_auth') {
@@ -243,6 +251,19 @@ if ($test === 'http_basic_auth') {
     header('Content-Length: ' . filesize($unsafe_file_path));
     header('ETag: ' . md5_file($unsafe_file_path));
     readfile($unsafe_file_path);
+    exit;
+} elseif ($test === 'download_file_size') {
+    $bytes = $_GET['bytes'];
+    $str = str_repeat('.', $bytes);
+    header('Content-Type: application/octet-stream');
+    header('Content-Length: ' . strlen($str));
+    header('ETag: ' . md5($str));
+    echo $str;
+    exit;
+} elseif ($test === 'download_file_range') {
+    $unsafe_file_path = $_GET['file_path'];
+    $server = new ContentRangeServer\ContentRangeServer();
+    $server->serve($unsafe_file_path);
     exit;
 } elseif ($test === 'timeout') {
     $unsafe_seconds = $_GET['seconds'];

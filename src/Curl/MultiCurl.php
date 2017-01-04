@@ -11,6 +11,7 @@ class MultiCurl
     private $activeCurls = array();
     private $isStarted = false;
     private $concurrency = 25;
+    private $nextCurlId = 0;
 
     private $beforeSendFunction = null;
     private $successFunction = null;
@@ -34,7 +35,7 @@ class MultiCurl
     {
         $this->multiCurl = curl_multi_init();
         $this->headers = new CaseInsensitiveArray();
-        $this->setURL($base_url);
+        $this->setUrl($base_url);
     }
 
     /**
@@ -55,7 +56,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
         $curl = new Curl();
-        $curl->setURL($url, $query_parameters);
+        $curl->setUrl($url, $query_parameters);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
         $curl->setOpt(CURLOPT_POSTFIELDS, $curl->buildPostData($data));
         $this->queueHandle($curl);
@@ -74,7 +75,7 @@ class MultiCurl
     public function addDownload($url, $mixed_filename)
     {
         $curl = new Curl();
-        $curl->setURL($url);
+        $curl->setUrl($url);
 
         // Use tmpfile() or php://temp to avoid "Too many open files" error.
         if (is_callable($mixed_filename)) {
@@ -112,7 +113,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
         $curl = new Curl();
-        $curl->setURL($url, $data);
+        $curl->setUrl($url, $data);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $curl->setOpt(CURLOPT_HTTPGET, true);
         $this->queueHandle($curl);
@@ -135,7 +136,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
         $curl = new Curl();
-        $curl->setURL($url, $data);
+        $curl->setUrl($url, $data);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
         $curl->setOpt(CURLOPT_NOBODY, true);
         $this->queueHandle($curl);
@@ -158,8 +159,8 @@ class MultiCurl
             $url = $this->baseUrl;
         }
         $curl = new Curl();
-        $curl->setURL($url, $data);
-        $curl->unsetHeader('Content-Length');
+        $curl->setUrl($url, $data);
+        $curl->removeHeader('Content-Length');
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         $this->queueHandle($curl);
         return $curl;
@@ -181,8 +182,8 @@ class MultiCurl
             $url = $this->baseUrl;
         }
         $curl = new Curl();
-        $curl->setURL($url);
-        $curl->unsetHeader('Content-Length');
+        $curl->setUrl($url);
+        $curl->removeHeader('Content-Length');
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $curl->setOpt(CURLOPT_POSTFIELDS, $data);
         $this->queueHandle($curl);
@@ -212,10 +213,10 @@ class MultiCurl
         $curl = new Curl();
 
         if (is_array($data) && empty($data)) {
-            $curl->unsetHeader('Content-Length');
+            $curl->removeHeader('Content-Length');
         }
 
-        $curl->setURL($url);
+        $curl->setUrl($url);
 
         /*
          * For post-redirect-get requests, the CURLOPT_CUSTOMREQUEST option must not
@@ -247,7 +248,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
         $curl = new Curl();
-        $curl->setURL($url);
+        $curl->setUrl($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
         $put_data = $curl->buildPostData($data);
         if (is_string($put_data)) {
@@ -274,13 +275,29 @@ class MultiCurl
             $url = $this->baseUrl;
         }
         $curl = new Curl();
-        $curl->setURL($url);
+        $curl->setUrl($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'SEARCH');
         $put_data = $curl->buildPostData($data);
         if (is_string($put_data)) {
             $curl->setHeader('Content-Length', strlen($put_data));
         }
         $curl->setOpt(CURLOPT_POSTFIELDS, $put_data);
+        $this->queueHandle($curl);
+        return $curl;
+    }
+
+    /**
+     * Add Curl
+     *
+     * Add a Curl instance to the handle queue.
+     *
+     * @access public
+     * @param  $curl
+     *
+     * @return object
+     */
+    public function addCurl(Curl $curl)
+    {
         $this->queueHandle($curl);
         return $curl;
     }
@@ -397,6 +414,19 @@ class MultiCurl
     }
 
     /**
+     * Set Cookies
+     *
+     * @access public
+     * @param  $cookies
+     */
+    public function setCookies($cookies)
+    {
+        foreach ($cookies as $key => $value) {
+            $this->cookies[$key] = $value;
+        }
+    }
+
+    /**
      * Set Port
      *
      * @access public
@@ -423,12 +453,10 @@ class MultiCurl
      *
      * @access public
      * @param  $string
-     *
-     * @return bool
      */
     public function setCookieString($string)
     {
-        return $this->setOpt(CURLOPT_COOKIE, $string);
+        $this->setOpt(CURLOPT_COOKIE, $string);
     }
 
     /**
@@ -456,6 +484,8 @@ class MultiCurl
     /**
      * Set Header
      *
+     * Add extra header to include in the request.
+     *
      * @access public
      * @param  $key
      * @param  $value
@@ -463,6 +493,21 @@ class MultiCurl
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
+    }
+
+    /**
+     * Set Headers
+     *
+     * Add extra headers to include in the request.
+     *
+     * @access public
+     * @param  $headers
+     */
+    public function setHeaders($headers)
+    {
+        foreach ($headers as $key => $value) {
+            $this->headers[$key] = $value;
+        }
     }
 
     /**
@@ -555,7 +600,7 @@ class MultiCurl
      * @access public
      * @param  $url
      */
-    public function setURL($url)
+    public function setUrl($url)
     {
         $this->baseUrl = $url;
     }
@@ -590,7 +635,7 @@ class MultiCurl
         }
 
         for ($i = 0; $i < $concurrency; $i++) {
-            $this->initHandle(array_pop($this->curls));
+            $this->initHandle(array_shift($this->curls));
         }
 
         do {
@@ -611,7 +656,7 @@ class MultiCurl
 
                             // Start a new request before removing the handle of the completed one.
                             if (count($this->curls) >= 1) {
-                                $this->initHandle(array_pop($this->curls));
+                                $this->initHandle(array_shift($this->curls));
                             }
                             curl_multi_remove_handle($this->multiCurl, $ch->curl);
 
@@ -643,13 +688,28 @@ class MultiCurl
     /**
      * Unset Header
      *
+     * Remove extra header previously set using Curl::setHeader().
+     *
      * @access public
      * @param  $key
      */
     public function unsetHeader($key)
     {
-        $this->setHeader($key, '');
         unset($this->headers[$key]);
+    }
+
+    /**
+     * Remove Header
+     *
+     * Remove an internal header from the request.
+     * Using `curl -H "Host:" ...' is equivalent to $curl->removeHeader('Host');.
+     *
+     * @access public
+     * @param  $key
+     */
+    public function removeHeader($key)
+    {
+        $this->setHeader($key, '');
     }
 
     /**
@@ -688,6 +748,8 @@ class MultiCurl
      */
     private function queueHandle($curl)
     {
+        // Use sequential ids to allow for ordered post processing.
+        $curl->id = $this->nextCurlId++;
         $this->curls[$curl->id] = $curl;
     }
 
@@ -714,15 +776,13 @@ class MultiCurl
             $curl->complete($this->completeFunction);
         }
 
-        foreach ($this->options as $option => $value) {
-            $curl->setOpt($option, $value);
-        }
-        foreach ($this->headers as $key => $value) {
-            $curl->setHeader($key, $value);
-        }
+        $curl->setOpts($this->options);
+        $curl->setHeaders($this->headers);
+
         foreach ($this->cookies as $key => $value) {
             $curl->setCookie($key, $value);
         }
+
         $curl->setJsonDecoder($this->jsonDecoder);
         $curl->setXmlDecoder($this->xmlDecoder);
 
@@ -732,7 +792,6 @@ class MultiCurl
         }
 
         $this->activeCurls[$curl->id] = $curl;
-        $this->responseCookies = array();
         $curl->call($curl->beforeSendFunction);
     }
 }

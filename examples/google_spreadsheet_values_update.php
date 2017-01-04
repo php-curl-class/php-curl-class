@@ -64,7 +64,7 @@ $curl->setHeader('Authorization', 'Bearer ' . $access_token->access_token);
 $curl->put($url, $data);
 
 if ($curl->error) {
-    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage;
+    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
     var_dump($curl);
 } else {
     var_dump($curl->response);

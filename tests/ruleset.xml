@@ -4,6 +4,7 @@
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
         <exclude name="PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace" />
         <exclude name="Squiz.ControlStructures.ForEachLoopDeclaration.SpaceAfterOpen" />
+        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine" />
         <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.UseOneParamPerLine" />
     </rule>
 </ruleset>

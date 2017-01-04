@@ -3,11 +3,13 @@ require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
 
-// curl --request GET "https://httpbin.org/get?key=value"
+// curl --request SEARCH "http://127.0.0.1:8000/" --data "a=1&b=2&c=3"
 
 $curl = new Curl();
-$curl->get('https://httpbin.org/get', array(
-    'key' => 'value',
+$curl->search('http://127.0.0.1:8000/', array(
+    'a' => '1',
+    'b' => '2',
+    'c' => '3',
 ));
 
 if ($curl->error) {
