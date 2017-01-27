@@ -6,7 +6,7 @@ use Curl\ArrayUtil;
 
 class Curl
 {
-    const VERSION = '7.1.0';
+    const VERSION = '7.2.0';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
