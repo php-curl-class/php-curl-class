@@ -7,6 +7,8 @@
 
 PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.
 
+![PHP Curl Class screencast](www/img/screencast.gif)
+
 ---
 
 - [Installation](#installation)
