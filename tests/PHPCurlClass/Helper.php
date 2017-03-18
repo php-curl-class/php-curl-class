@@ -40,7 +40,7 @@ class Test
         } else {
             $this->server('request_method', $request_method);
         }
-        \PHPUnit_Framework_Assert::assertEquals($request_method, $this->curl->responseHeaders['X-REQUEST-METHOD']);
+        \PHPUnit\Framework\Assert::assertEquals($request_method, $this->curl->responseHeaders['X-REQUEST-METHOD']);
     }
 
     public function chain_requests($first, $second)
