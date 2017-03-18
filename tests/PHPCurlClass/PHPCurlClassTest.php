@@ -4,7 +4,7 @@ use \Curl\Curl;
 use \Curl\CaseInsensitiveArray;
 use \Helper\Test;
 
-class CurlTest extends PHPUnit_Framework_TestCase
+class CurlTest extends \PHPUnit\Framework\TestCase
 {
     public function testExtensionsLoaded()
     {
@@ -653,13 +653,13 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl->download(Test::TEST_URL . '?' . http_build_query(array(
             'file_path' => $uploaded_file_path,
         )), function ($instance, $fh) use (&$callback_called) {
-            PHPUnit_Framework_Assert::assertFalse($callback_called);
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertTrue(is_resource($fh));
-            PHPUnit_Framework_Assert::assertEquals('stream', get_resource_type($fh));
-            PHPUnit_Framework_Assert::assertGreaterThan(0, strlen(stream_get_contents($fh)));
-            PHPUnit_Framework_Assert::assertEquals(0, strlen(stream_get_contents($fh)));
-            PHPUnit_Framework_Assert::assertTrue(fclose($fh));
+            \PHPUnit\Framework\Assert::assertFalse($callback_called);
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertTrue(is_resource($fh));
+            \PHPUnit\Framework\Assert::assertEquals('stream', get_resource_type($fh));
+            \PHPUnit\Framework\Assert::assertGreaterThan(0, strlen(stream_get_contents($fh)));
+            \PHPUnit\Framework\Assert::assertEquals(0, strlen(stream_get_contents($fh)));
+            \PHPUnit\Framework\Assert::assertTrue(fclose($fh));
             $callback_called = true;
         });
         $this->assertTrue($callback_called);
@@ -2671,11 +2671,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
             &$error_called,
             &$complete_called
         ) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertFalse($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertFalse($before_send_called);
+            \PHPUnit\Framework\Assert::assertFalse($success_called);
+            \PHPUnit\Framework\Assert::assertFalse($error_called);
+            \PHPUnit\Framework\Assert::assertFalse($complete_called);
             $before_send_called = true;
         });
         $curl->success(function ($instance) use (
@@ -2684,11 +2684,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
             &$error_called,
             &$complete_called
         ) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertTrue($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertTrue($before_send_called);
+            \PHPUnit\Framework\Assert::assertFalse($success_called);
+            \PHPUnit\Framework\Assert::assertFalse($error_called);
+            \PHPUnit\Framework\Assert::assertFalse($complete_called);
             $success_called = true;
         });
         $curl->error(function ($instance) use (
@@ -2705,11 +2705,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
             &$error_called,
             &$complete_called
         ) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertTrue($before_send_called);
-            PHPUnit_Framework_Assert::assertTrue($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertTrue($before_send_called);
+            \PHPUnit\Framework\Assert::assertTrue($success_called);
+            \PHPUnit\Framework\Assert::assertFalse($error_called);
+            \PHPUnit\Framework\Assert::assertFalse($complete_called);
             $complete_called = true;
         });
 
@@ -2738,11 +2738,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
             &$error_called,
             &$complete_called
         ) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertFalse($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertFalse($before_send_called);
+            \PHPUnit\Framework\Assert::assertFalse($success_called);
+            \PHPUnit\Framework\Assert::assertFalse($error_called);
+            \PHPUnit\Framework\Assert::assertFalse($complete_called);
             $before_send_called = true;
         });
         $curl->success(function ($instance) use (
@@ -2759,11 +2759,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
             &$error_called,
             &$complete_called
         ) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertTrue($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertFalse($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertTrue($before_send_called);
+            \PHPUnit\Framework\Assert::assertFalse($success_called);
+            \PHPUnit\Framework\Assert::assertFalse($error_called);
+            \PHPUnit\Framework\Assert::assertFalse($complete_called);
             $error_called = true;
         });
         $curl->complete(function ($instance) use (
@@ -2772,11 +2772,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
             &$error_called,
             &$complete_called
         ) {
-            PHPUnit_Framework_Assert::assertInstanceOf('Curl\Curl', $instance);
-            PHPUnit_Framework_Assert::assertTrue($before_send_called);
-            PHPUnit_Framework_Assert::assertFalse($success_called);
-            PHPUnit_Framework_Assert::assertTrue($error_called);
-            PHPUnit_Framework_Assert::assertFalse($complete_called);
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertTrue($before_send_called);
+            \PHPUnit\Framework\Assert::assertFalse($success_called);
+            \PHPUnit\Framework\Assert::assertTrue($error_called);
+            \PHPUnit\Framework\Assert::assertFalse($complete_called);
             $complete_called = true;
         });
 
@@ -2800,7 +2800,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedException \PHPUnit\Framework\Error\Warning
      */
     public function testRequiredOptionCurlOptReturnTransferEmitsWarning()
     {
