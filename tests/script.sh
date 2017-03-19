@@ -7,6 +7,7 @@ if [[ "${?}" -ne 0 ]]; then
 fi
 
 # Run tests.
+phpunit --version
 phpunit --configuration tests/phpunit.xml
 if [[ "${?}" -ne 0 ]]; then
     ((errors++))
