@@ -264,14 +264,13 @@ class Curl
      */
     private function downloadComplete($fh)
     {
-        if (!$this->error && $this->downloadCompleteFunction) {
-            rewind($fh);
-            $this->call($this->downloadCompleteFunction, $fh);
-            $this->downloadCompleteFunction = null;
-        }
-
         if (is_resource($fh)) {
             fclose($fh);
+        }
+
+        if ($this->downloadCompleteFunction) {
+            $this->call($this->downloadCompleteFunction, $fh);
+            $this->downloadCompleteFunction = null;
         }
 
         // Fix "PHP Notice: Use of undefined constant STDOUT" when reading the
@@ -326,7 +325,11 @@ class Curl
 
             // Move the downloaded temporary file to the destination save path.
             $this->downloadCompleteFunction = function ($fh) use ($download_filename, $filename) {
-                rename($download_filename, $filename);
+                if($this->error) {
+                    unlink($download_filename);
+                } else {
+                    rename($download_filename, $filename);
+                }
             };
         }
 
