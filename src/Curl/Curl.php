@@ -304,7 +304,7 @@ class Curl
     {
         if (is_callable($mixed_filename)) {
             $this->downloadCompleteFunction = $mixed_filename;
-            $fh = tmpfile();
+            $this->fileHandle = tmpfile();
         } else {
             $filename = $mixed_filename;
 
@@ -322,7 +322,7 @@ class Curl
                 $range = $first_byte_position . '-';
                 $this->setOpt(CURLOPT_RANGE, $range);
             }
-            $fh = fopen($download_filename, $mode);
+            $this->fileHandle = fopen($download_filename, $mode);
 
             // Move the downloaded temporary file to the destination save path.
             $this->downloadCompleteFunction = function ($fh) use ($download_filename, $filename) {
@@ -330,9 +330,8 @@ class Curl
             };
         }
 
-        $this->setOpt(CURLOPT_FILE, $fh);
+        $this->setOpt(CURLOPT_FILE, $this->fileHandle);
         $this->get($url);
-        $this->downloadComplete($fh);
 
         return ! $this->error;
     }
