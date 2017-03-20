@@ -2620,7 +2620,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $reflection_method->setAccessible(true);
 
         $curl = new Curl();
-        $reflection_method->invoke($curl, $response);
+        $response_headers = $reflection_method->invoke($curl, $response);
+        $this->assertArrayHasKey('Status-Line', $response_headers);
     }
 
     public function testArrayToStringConversion()

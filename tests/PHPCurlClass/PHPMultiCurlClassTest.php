@@ -2461,9 +2461,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $curl->setOpt(CURLOPT_HTTPGET, true);
 
+        $complete_called = false;
         $multi_curl = new MultiCurl();
-        $multi_curl->addCurl($curl);
+        $multi_curl->addCurl($curl)->complete(function ($instance) use (&$complete_called) {
+            $complete_called = true;
+        });
         $multi_curl->start();
+        $this->assertTrue($complete_called);
     }
 
     public function testSequentialId()
