@@ -3048,6 +3048,42 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    public function testBuildUrlWithoutIndex()
+    {
+        $host = 'http://www.example.com';
+        $data = array(
+            'foo' => array(
+                'bar',
+                'baz',
+            )
+        );
+
+        $expected_url = $host . '?foo=bar&foo=baz';
+        $curl = new Curl();
+
+        $reflector = new ReflectionObject($curl);
+        $method = $reflector->getMethod('buildURL');
+        $method->setAccessible(true);
+
+        $array = array();
+        foreach ($data as $key => $value) {
+            $key = rawurlencode($key);
+            if (is_array($value)) {
+                foreach ($value as $v) {
+                    $v = rawurlencode($v);
+                    $array[] = $key . '=' . $v;
+                }
+            } else {
+                $value = rawurlencode($value);
+                $array[] = $key . '=' . $value;
+            }
+        }
+        $data = implode('&', $array);
+
+        $actual_url = $method->invoke($curl, $host, $data);
+        $this->assertEquals($expected_url, $actual_url);
+    }
+
     public function testUnsetHeader()
     {
         $request_key = 'X-Request-Id';
