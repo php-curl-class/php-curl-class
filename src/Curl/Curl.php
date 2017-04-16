@@ -413,6 +413,22 @@ class Curl
 
         return $this->response;
     }
+    
+    public function getHeader($header = false)
+    {
+    	if($header) {
+    		$result = false;
+    		foreach($this->response_headers as $key => $value) {
+    			if($key == $header)
+    				$result = $value;
+    		}
+    	} else {
+    		foreach($this->response_headers as $key => $value)
+            	$result[$key] = $value;
+    	}
+
+    	return $result;
+    }
 
     /**
      * Get
