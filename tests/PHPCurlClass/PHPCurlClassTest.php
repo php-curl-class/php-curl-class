@@ -3023,6 +3023,63 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($curl->getOpt(CURLOPT_VERBOSE));
     }
 
+    public function testBuildUrlArgs()
+    {
+        $tests = array(
+            array(
+                'args' => array(
+                    'url' => 'https://www.example.com/',
+                    'mixed_data' => null,
+                ),
+                'expected' => 'https://www.example.com/',
+            ),
+            array(
+                'args' => array(
+                    'url' => 'https://www.example.com/',
+                    'mixed_data' => '',
+                ),
+                'expected' => 'https://www.example.com/',
+            ),
+            array(
+                'args' => array(
+                    'url' => 'https://www.example.com/',
+                    'mixed_data' => array(),
+                ),
+                'expected' => 'https://www.example.com/',
+            ),
+            array(
+                'args' => array(
+                    'url' => 'https://www.example.com/',
+                    'mixed_data' => array(
+                        'a' => '1',
+                        'b' => '2',
+                        'c' => '3',
+                    ),
+                ),
+                'expected' => 'https://www.example.com/?a=1&b=2&c=3',
+            ),
+            array(
+                'args' => array(
+                    'url' => 'https://www.example.com/',
+                    'mixed_data' => 'user_ids=user_1,user_2',
+                ),
+                'expected' => 'https://www.example.com/?user_ids=user_1,user_2',
+            ),
+        );
+        foreach ($tests as $test) {
+            $curl_1 = new Curl();
+            $reflector = new ReflectionObject($curl_1);
+            $method = $reflector->getMethod('buildURL');
+            $method->setAccessible(true);
+            $actual_url = $method->invoke($curl_1, $test['args']['url'], $test['args']['mixed_data']);
+            $this->assertEquals($test['expected'], $actual_url);
+
+            $curl_2 = new Curl();
+            $curl_2->setUrl($test['args']['url'], $test['args']['mixed_data']);
+            $this->assertEquals($test['expected'], $curl_2->url);
+        }
+    }
+
     public function testBuildUrlArgSeparator()
     {
         $base_url = 'https://www.example.com/path';
