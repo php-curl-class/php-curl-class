@@ -1114,12 +1114,12 @@ class Curl
      *
      * @access public
      * @param  $url
-     * @param  $data
+     * @param  $mixed_data
      */
-    public function setUrl($url, $data = array())
+    public function setUrl($url, $mixed_data = '')
     {
         $this->baseUrl = $url;
-        $this->url = $this->buildURL($url, $data);
+        $this->url = $this->buildURL($url, $mixed_data);
         $this->setOpt(CURLOPT_URL, $this->url);
     }
 
@@ -1259,13 +1259,21 @@ class Curl
      *
      * @access private
      * @param  $url
-     * @param  $data
+     * @param  $mixed_data
      *
      * @return string
      */
-    private function buildURL($url, $data = array())
+    private function buildURL($url, $mixed_data = '')
     {
-        return $url . (empty($data) ? '' : '?' . http_build_query($data, '', '&'));
+        $query_string = '';
+        if (!empty($mixed_data)) {
+            if (is_string($mixed_data)) {
+                $query_string .= '?' . $mixed_data;
+            } elseif (is_array($mixed_data)) {
+                $query_string .= '?' . http_build_query($mixed_data, '', '&');
+            }
+        }
+        return $url . $query_string;
     }
 
     /**
