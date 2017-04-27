@@ -658,6 +658,7 @@ class MultiCurl
                             $ch->curlErrorCode = $info_array['result'];
                             $ch->exec($ch->curl);
 
+                            $this->activeCurls[$key]->close();
                             unset($this->activeCurls[$key]);
 
                             // Start a new request before removing the handle of the completed one.
