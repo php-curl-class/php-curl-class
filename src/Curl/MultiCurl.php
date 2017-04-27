@@ -639,7 +639,7 @@ class MultiCurl
         }
 
         do {
-            curl_multi_select($this->multiCurl);
+//            curl_multi_select($this->multiCurl);  otherwise the site  will 502 ,i have test and confirm
             curl_multi_exec($this->multiCurl, $active);
 
             while (!($info_array = curl_multi_info_read($this->multiCurl)) === false) {
