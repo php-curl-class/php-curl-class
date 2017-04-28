@@ -1331,12 +1331,12 @@ class Curl
             } elseif (preg_match($this->xmlPattern, $response_headers['Content-Type'])) {
                 $xml_decoder = $this->xmlDecoder;
                 if ($xml_decoder) {
-                    $response = $xml_decoder($response);
+                    $response = call_user_func($xml_decoder, $response);
                 }
             } else {
                 $default_decoder = $this->defaultDecoder;
                 if ($default_decoder) {
-                    $response = $default_decoder($response);
+                    $response = call_user_func($default_decoder, $response);
                 }
             }
         }
