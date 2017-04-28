@@ -3,45 +3,7 @@
 namespace Curl;
 
 use Curl\ArrayUtil;
-
-
-/**
- * Decode JSON
- *
- * @param  $json
- * @param  $assoc
- * @param  $depth
- * @param  $options
- */
-function decodeJson() {
-    $args = func_get_args();
-
-    // Call json_decode() without the $options parameter in PHP
-    // versions less than 5.4.0 as the $options parameter was added in
-    // PHP version 5.4.0.
-    if (version_compare(PHP_VERSION, '5.4.0', '<')) {
-        $args = array_slice($args, 0, 3);
-    }
-
-    $response = call_user_func_array('json_decode', $args);
-    if ($response === null) {
-        $response = $args['0'];
-    }
-    return $response;
-}
-
-/**
- * Decode XML
- *
- * @param  $response
- */
-function decodeXml($response) {
-    $xml_obj = @simplexml_load_string($response);
-    if (!($xml_obj === false)) {
-        $response = $xml_obj;
-    }
-    return $response;
-}
+use Curl\Decoder;
 
 class Curl
 {
@@ -83,10 +45,10 @@ class Curl
     private $headers = array();
     private $options = array();
 
-    private $jsonDecoder = '\Curl\decodeJson';
+    private $jsonDecoder = '\Curl\Decoder::decodeJson';
     private $jsonDecoderArgs = array();
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
-    private $xmlDecoder = '\Curl\decodeXml';
+    private $xmlDecoder = '\Curl\Decoder::decodeXml';
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
     private $defaultDecoder = null;
 
@@ -925,7 +887,7 @@ class Curl
      */
     public function setDefaultJsonDecoder()
     {
-        $this->jsonDecoder = '\Curl\decodeJson';
+        $this->jsonDecoder = '\Curl\Decoder::decodeJson';
         $this->jsonDecoderArgs = func_get_args();
     }
 
@@ -936,7 +898,7 @@ class Curl
      */
     public function setDefaultXmlDecoder()
     {
-        $this->xmlDecoder = '\Curl\decodeXml';
+        $this->xmlDecoder = '\Curl\Decoder::decodeXml';
     }
 
     /**
