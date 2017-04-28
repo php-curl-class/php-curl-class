@@ -3,6 +3,7 @@
 namespace Curl;
 
 use Curl\ArrayUtil;
+use Curl\Decoder;
 
 class Curl
 {
@@ -44,9 +45,10 @@ class Curl
     private $headers = array();
     private $options = array();
 
-    private $jsonDecoder = null;
+    private $jsonDecoder = '\Curl\Decoder::decodeJson';
+    private $jsonDecoderArgs = array();
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
-    private $xmlDecoder = null;
+    private $xmlDecoder = '\Curl\Decoder::decodeXml';
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
     private $defaultDecoder = null;
 
@@ -106,8 +108,6 @@ class Curl
         $this->curl = curl_init();
         $this->id = uniqid('', true);
         $this->setDefaultUserAgent();
-        $this->setDefaultJsonDecoder();
-        $this->setDefaultXmlDecoder();
         $this->setDefaultTimeout();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
         $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
@@ -205,6 +205,7 @@ class Curl
         }
         $this->options = null;
         $this->jsonDecoder = null;
+        $this->jsonDecoderArgs = null;
         $this->xmlDecoder = null;
         $this->defaultDecoder = null;
     }
@@ -886,23 +887,8 @@ class Curl
      */
     public function setDefaultJsonDecoder()
     {
-        $args = func_get_args();
-        $this->jsonDecoder = function ($response) use ($args) {
-            array_unshift($args, $response);
-
-            // Call json_decode() without the $options parameter in PHP
-            // versions less than 5.4.0 as the $options parameter was added in
-            // PHP version 5.4.0.
-            if (version_compare(PHP_VERSION, '5.4.0', '<')) {
-                $args = array_slice($args, 0, 3);
-            }
-
-            $json_obj = call_user_func_array('json_decode', $args);
-            if (!($json_obj === null)) {
-                $response = $json_obj;
-            }
-            return $response;
-        };
+        $this->jsonDecoder = '\Curl\Decoder::decodeJson';
+        $this->jsonDecoderArgs = func_get_args();
     }
 
     /**
@@ -912,13 +898,7 @@ class Curl
      */
     public function setDefaultXmlDecoder()
     {
-        $this->xmlDecoder = function ($response) {
-            $xml_obj = @simplexml_load_string($response);
-            if (!($xml_obj === false)) {
-                $response = $xml_obj;
-            }
-            return $response;
-        };
+        $this->xmlDecoder = '\Curl\Decoder::decodeXml';
     }
 
     /**
@@ -1014,6 +994,7 @@ class Curl
     {
         if (is_callable($function)) {
             $this->jsonDecoder = $function;
+            $this->jsonDecoderArgs = func_get_args();
         }
     }
 
@@ -1342,18 +1323,20 @@ class Curl
         if (isset($response_headers['Content-Type'])) {
             if (preg_match($this->jsonPattern, $response_headers['Content-Type'])) {
                 $json_decoder = $this->jsonDecoder;
-                if (is_callable($json_decoder)) {
-                    $response = $json_decoder($response);
+                if ($this->jsonDecoder) {
+                    $args = $this->jsonDecoderArgs;
+                    array_unshift($args, $response);
+                    $response = call_user_func_array($json_decoder, $args);
                 }
             } elseif (preg_match($this->xmlPattern, $response_headers['Content-Type'])) {
                 $xml_decoder = $this->xmlDecoder;
-                if (is_callable($xml_decoder)) {
-                    $response = $xml_decoder($response);
+                if ($xml_decoder) {
+                    $response = call_user_func($xml_decoder, $response);
                 }
             } else {
-                $decoder = $this->defaultDecoder;
-                if (is_callable($decoder)) {
-                    $response = $decoder($response);
+                $default_decoder = $this->defaultDecoder;
+                if ($default_decoder) {
+                    $response = call_user_func($default_decoder, $response);
                 }
             }
         }
