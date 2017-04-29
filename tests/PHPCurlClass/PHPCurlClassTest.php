@@ -1417,6 +1417,11 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->server('json_response', 'POST', $data);
         $this->assertFalse(is_object($test->curl->response));
         $this->assertTrue(is_array($test->curl->response));
+
+        $test = new Test();
+        $test->curl->setJsonDecoder(false);
+        $test->server('json_response', 'POST', $data);
+        $this->assertTrue(is_string($test->curl->response));
     }
 
     public function testJsonContentTypeDetection()
@@ -2947,21 +2952,69 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testXMLDecoder()
     {
-        $data = array(
-            'key' => 'Content-Type',
-            'value' => 'text/xml',
-        );
-
         $test = new Test();
-        $test->server('xml_with_cdata_response', 'POST', $data);
+        $test->server('xml_with_cdata_response', 'POST');
+        $this->assertTrue(is_object($test->curl->response));
+        $this->assertInstanceOf('SimpleXMLElement', $test->curl->response);
         $this->assertFalse(strpos($test->curl->response->saveXML(), '<![CDATA[') === false);
 
         $test = new Test();
         $test->curl->setXmlDecoder(function ($response) {
             return simplexml_load_string($response, 'SimpleXMLElement', LIBXML_NOCDATA);
         });
-        $test->server('xml_with_cdata_response', 'POST', $data);
+        $test->server('xml_with_cdata_response', 'POST');
+        $this->assertTrue(is_object($test->curl->response));
+        $this->assertInstanceOf('SimpleXMLElement', $test->curl->response);
         $this->assertTrue(strpos($test->curl->response->saveXML(), '<![CDATA[') === false);
+
+        $test = new Test();
+        $test->curl->setXmlDecoder(false);
+        $test->server('xml_with_cdata_response', 'POST');
+        $this->assertTrue(is_string($test->curl->response));
+    }
+
+    public function testDefaultDecoder()
+    {
+        // Default.
+        $test = new Test();
+        $test->server('download_file_size', 'GET');
+        $this->assertTrue(is_string($test->curl->response));
+
+        // Callable.
+        $test = new Test();
+        $test->curl->setDefaultDecoder(function ($response) {
+            return '123';
+        });
+        $test->server('download_file_size', 'GET');
+        $this->assertEquals('123', $test->curl->response);
+
+        // "json".
+        $test = new Test();
+        $test->curl->setDefaultDecoder('json');
+        $test->server('json_response', 'POST', array(
+            'key' => 'Content-Type',
+            'value' => 'application/but-not-json',
+        ));
+        $this->assertInstanceOf('stdClass', $test->curl->response);
+
+        // "xml".
+        $test = new Test();
+        $test->curl->setDefaultDecoder('xml');
+        $test->server('xml_response', 'POST', array(
+            'key' => 'Content-Type',
+            'value' => 'text/but-not-xml',
+        ));
+        $this->assertInstanceOf('SimpleXMLElement', $test->curl->response);
+
+        // False.
+        $test = new Test();
+        $test->curl->setDefaultDecoder('json');
+        $test->curl->setDefaultDecoder(false);
+        $test->server('json_response', 'POST', array(
+            'key' => 'Content-Type',
+            'value' => 'application/but-not-json',
+        ));
+        $this->assertTrue(is_string($test->curl->response));
     }
 
     public function testTotalTime()

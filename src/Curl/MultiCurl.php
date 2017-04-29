@@ -514,12 +514,14 @@ class MultiCurl
      * Set JSON Decoder
      *
      * @access public
-     * @param  $function
+     * @param  $mixed boolean|callable
      */
-    public function setJsonDecoder($function)
+    public function setJsonDecoder($mixed)
     {
-        if (is_callable($function)) {
-            $this->jsonDecoder = $function;
+        if ($mixed === false) {
+            $this->jsonDecoder = false;
+        } elseif (is_callable($mixed)) {
+            $this->jsonDecoder = $mixed;
         }
     }
 
@@ -527,12 +529,14 @@ class MultiCurl
      * Set XML Decoder
      *
      * @access public
-     * @param  $function
+     * @param  $mixed boolean|callable
      */
-    public function setXmlDecoder($function)
+    public function setXmlDecoder($mixed)
     {
-        if (is_callable($function)) {
-            $this->xmlDecoder = $function;
+        if ($mixed === false) {
+            $this->xmlDecoder = false;
+        } elseif (is_callable($mixed)) {
+            $this->xmlDecoder = $mixed;
         }
     }
 

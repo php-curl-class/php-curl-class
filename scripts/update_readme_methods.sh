@@ -40,5 +40,6 @@ script=$(cat <<'EOF'
     $toc = '---' . "\n\n" . $toc . "\n\n" . '---' . "\n\n";
     $data = preg_replace('/---\n\n(?:- .*\n)+?\n---\n\n/', $toc, $data);
     file_put_contents('README.md', $data);
-EOF)
+EOF
+)
 php --run "${script}"
