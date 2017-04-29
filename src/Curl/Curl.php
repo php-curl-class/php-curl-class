@@ -399,10 +399,10 @@ class Curl
         }
         $this->errorMessage = $this->curlError ? $this->curlErrorMessage : $this->httpErrorMessage;
 
-        if (!$this->error) {
-            $this->call($this->successFunction);
-        } else {
+        if ($this->error) {
             $this->call($this->errorFunction);
+        } else {
+            $this->call($this->successFunction);
         }
 
         $this->call($this->completeFunction);
