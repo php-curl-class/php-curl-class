@@ -905,16 +905,18 @@ class Curl
      * Set Default Decoder
      *
      * @access public
-     * @param  $decoder string|callable
+     * @param  $mixed boolean|callable|string
      */
-    public function setDefaultDecoder($decoder = 'json')
+    public function setDefaultDecoder($mixed = 'json')
     {
-        if (is_callable($decoder)) {
-            $this->defaultDecoder = $decoder;
+        if ($mixed === false) {
+            $this->defaultDecoder = false;
+        } elseif (is_callable($mixed)) {
+            $this->defaultDecoder = $mixed;
         } else {
-            if ($decoder === 'json') {
+            if ($mixed === 'json') {
                 $this->defaultDecoder = $this->jsonDecoder;
-            } elseif ($decoder === 'xml') {
+            } elseif ($mixed === 'xml') {
                 $this->defaultDecoder = $this->xmlDecoder;
             }
         }
@@ -988,13 +990,16 @@ class Curl
      * Set JSON Decoder
      *
      * @access public
-     * @param  $function
+     * @param  $mixed boolean|callable
      */
-    public function setJsonDecoder($function)
+    public function setJsonDecoder($mixed)
     {
-        if (is_callable($function)) {
-            $this->jsonDecoder = $function;
-            $this->jsonDecoderArgs = func_get_args();
+        if ($mixed === false) {
+            $this->jsonDecoder = false;
+            $this->jsonDecoderArgs = array();
+        } elseif (is_callable($mixed)) {
+            $this->jsonDecoder = $mixed;
+            $this->jsonDecoderArgs = array();
         }
     }
 
@@ -1002,12 +1007,14 @@ class Curl
      * Set XML Decoder
      *
      * @access public
-     * @param  $function
+     * @param  $mixed boolean|callable
      */
-    public function setXmlDecoder($function)
+    public function setXmlDecoder($mixed)
     {
-        if (is_callable($function)) {
-            $this->xmlDecoder = $function;
+        if ($mixed === false) {
+            $this->xmlDecoder = false;
+        } elseif (is_callable($mixed)) {
+            $this->xmlDecoder = $mixed;
         }
     }
 
@@ -1322,21 +1329,18 @@ class Curl
         $response = $raw_response;
         if (isset($response_headers['Content-Type'])) {
             if (preg_match($this->jsonPattern, $response_headers['Content-Type'])) {
-                $json_decoder = $this->jsonDecoder;
                 if ($this->jsonDecoder) {
                     $args = $this->jsonDecoderArgs;
                     array_unshift($args, $response);
-                    $response = call_user_func_array($json_decoder, $args);
+                    $response = call_user_func_array($this->jsonDecoder, $args);
                 }
             } elseif (preg_match($this->xmlPattern, $response_headers['Content-Type'])) {
-                $xml_decoder = $this->xmlDecoder;
-                if ($xml_decoder) {
-                    $response = call_user_func($xml_decoder, $response);
+                if ($this->xmlDecoder) {
+                    $response = call_user_func($this->xmlDecoder, $response);
                 }
             } else {
-                $default_decoder = $this->defaultDecoder;
-                if ($default_decoder) {
-                    $response = call_user_func($default_decoder, $response);
+                if ($this->defaultDecoder) {
+                    $response = call_user_func($this->defaultDecoder, $response);
                 }
             }
         }

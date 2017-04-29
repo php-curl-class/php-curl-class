@@ -2079,8 +2079,40 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('yummy', $get_2->responseCookies['mycookie']);
     }
 
-    public function testJSONDecoder()
+    public function testJsonDecoder()
     {
+        $data = array(
+            'key' => 'Content-Type',
+            'value' => 'application/json',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'json_response');
+
+        $post_1 = $multi_curl->addPost(Test::TEST_URL, $data);
+        $post_1->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertTrue(is_object($instance->response));
+            \PHPUnit\Framework\Assert::assertFalse(is_array($instance->response));
+        });
+
+        $post_2 = $multi_curl->addPost(Test::TEST_URL, $data);
+        $post_2->setJsonDecoder(function ($response) {
+            return json_decode($response, true);
+        });
+        $post_2->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertFalse(is_object($instance->response));
+            \PHPUnit\Framework\Assert::assertTrue(is_array($instance->response));
+        });
+
+        $post_3 = $multi_curl->addPost(Test::TEST_URL, $data);
+        $post_3->setJsonDecoder(false);
+        $post_3->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertTrue(is_string($instance->response));
+        });
+
+        $multi_curl->start();
+
+
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'json_response');
         $multi_curl->setJsonDecoder(function ($response) {
@@ -2089,7 +2121,6 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
         $get_1 = $multi_curl->addGet(Test::TEST_URL);
         $get_1->complete(function ($instance) {
-            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
             \PHPUnit\Framework\Assert::assertEquals('foo', $instance->response);
         });
 
@@ -2100,17 +2131,65 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             });
         });
         $get_2->complete(function ($instance) {
-            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
             \PHPUnit\Framework\Assert::assertEquals('bar', $instance->response);
+        });
+
+        $get_3 = $multi_curl->addGet(Test::TEST_URL);
+        $get_3->beforeSend(function ($instance) {
+            $instance->setJsonDecoder(false);
+        });
+        $get_3->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertTrue(is_string($instance->response));
         });
 
         $multi_curl->start();
         $this->assertEquals('foo', $get_1->response);
         $this->assertEquals('bar', $get_2->response);
+
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'json_response');
+        $multi_curl->setJsonDecoder(false);
+
+        $get_4 = $multi_curl->addGet(Test::TEST_URL);
+        $get_4->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertTrue(is_string($instance->response));
+        });
+
+        $multi_curl->start();
     }
 
     public function testXMLDecoder()
     {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'xml_with_cdata_response');
+
+        $post_1 = $multi_curl->addPost(Test::TEST_URL);
+        $post_1->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertTrue(is_object($instance->response));
+            \PHPUnit\Framework\Assert::assertInstanceOf(SimpleXMLElement::class, $instance->response);
+            \PHPUnit\Framework\Assert::assertFalse(strpos($instance->response->saveXML(), '<![CDATA[') === false);
+        });
+
+        $post_2 = $multi_curl->addPost(Test::TEST_URL);
+        $post_2->setXmlDecoder(function ($response) {
+            return simplexml_load_string($response, 'SimpleXMLElement', LIBXML_NOCDATA);
+        });
+        $post_2->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertTrue(is_object($instance->response));
+            \PHPUnit\Framework\Assert::assertInstanceOf(SimpleXMLElement::class, $instance->response);
+            \PHPUnit\Framework\Assert::assertTrue(strpos($instance->response->saveXML(), '<![CDATA[') === false);
+        });
+
+        $post_3 = $multi_curl->addPost(Test::TEST_URL);
+        $post_3->setXmlDecoder(false);
+        $post_3->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertTrue(is_string($instance->response));
+        });
+
+        $multi_curl->start();
+
+
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'xml_with_cdata_response');
         $multi_curl->setXmlDecoder(function ($response) {
@@ -2119,7 +2198,6 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
         $get_1 = $multi_curl->addGet(Test::TEST_URL);
         $get_1->complete(function ($instance) {
-            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
             \PHPUnit\Framework\Assert::assertEquals('foo', $instance->response);
         });
 
@@ -2130,13 +2208,32 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             });
         });
         $get_2->complete(function ($instance) {
-            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
             \PHPUnit\Framework\Assert::assertEquals('bar', $instance->response);
+        });
+
+        $get_3 = $multi_curl->addGet(Test::TEST_URL);
+        $get_3->beforeSend(function ($instance) {
+            $instance->setXmlDecoder(false);
+        });
+        $get_3->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertTrue(is_string($instance->response));
         });
 
         $multi_curl->start();
         $this->assertEquals('foo', $get_1->response);
         $this->assertEquals('bar', $get_2->response);
+
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'xml_with_cdata_response');
+        $multi_curl->setXmlDecoder(false);
+
+        $get_4 = $multi_curl->addGet(Test::TEST_URL);
+        $get_4->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertTrue(is_string($instance->response));
+        });
+
+        $multi_curl->start();
     }
 
     public function testDownloadCallback()
