@@ -2167,7 +2167,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $post_1 = $multi_curl->addPost(Test::TEST_URL);
         $post_1->complete(function ($instance) {
             \PHPUnit\Framework\Assert::assertTrue(is_object($instance->response));
-            \PHPUnit\Framework\Assert::assertInstanceOf(SimpleXMLElement::class, $instance->response);
+            \PHPUnit\Framework\Assert::assertInstanceOf('SimpleXMLElement', $instance->response);
             \PHPUnit\Framework\Assert::assertFalse(strpos($instance->response->saveXML(), '<![CDATA[') === false);
         });
 
@@ -2177,7 +2177,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         });
         $post_2->complete(function ($instance) {
             \PHPUnit\Framework\Assert::assertTrue(is_object($instance->response));
-            \PHPUnit\Framework\Assert::assertInstanceOf(SimpleXMLElement::class, $instance->response);
+            \PHPUnit\Framework\Assert::assertInstanceOf('SimpleXMLElement', $instance->response);
             \PHPUnit\Framework\Assert::assertTrue(strpos($instance->response->saveXML(), '<![CDATA[') === false);
         });
 

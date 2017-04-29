@@ -2593,7 +2593,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
                     'value' => $value,
                 ));
 
-                $this->assertInstanceOf(SimpleXMLElement::class, $test->curl->response);
+                $this->assertInstanceOf('SimpleXMLElement', $test->curl->response);
 
                 $doc = new DOMDocument();
                 $doc->formatOutput = true;
@@ -2955,7 +2955,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test = new Test();
         $test->server('xml_with_cdata_response', 'POST');
         $this->assertTrue(is_object($test->curl->response));
-        $this->assertInstanceOf(SimpleXMLElement::class, $test->curl->response);
+        $this->assertInstanceOf('SimpleXMLElement', $test->curl->response);
         $this->assertFalse(strpos($test->curl->response->saveXML(), '<![CDATA[') === false);
 
         $test = new Test();
@@ -2964,7 +2964,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         });
         $test->server('xml_with_cdata_response', 'POST');
         $this->assertTrue(is_object($test->curl->response));
-        $this->assertInstanceOf(SimpleXMLElement::class, $test->curl->response);
+        $this->assertInstanceOf('SimpleXMLElement', $test->curl->response);
         $this->assertTrue(strpos($test->curl->response->saveXML(), '<![CDATA[') === false);
 
         $test = new Test();
@@ -2995,7 +2995,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             'key' => 'Content-Type',
             'value' => 'application/but-not-json',
         ));
-        $this->assertInstanceOf(stdClass::class, $test->curl->response);
+        $this->assertInstanceOf('stdClass', $test->curl->response);
 
         // "xml".
         $test = new Test();
@@ -3004,7 +3004,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             'key' => 'Content-Type',
             'value' => 'text/but-not-xml',
         ));
-        $this->assertInstanceOf(SimpleXMLElement::class, $test->curl->response);
+        $this->assertInstanceOf('SimpleXMLElement', $test->curl->response);
 
         // False.
         $test = new Test();
