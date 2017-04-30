@@ -662,6 +662,7 @@ class MultiCurl
                             $ch->curlErrorCode = $info_array['result'];
                             $ch->exec($ch->curl);
 
+                            // Remove completed instance from active curls.
                             unset($this->activeCurls[$key]);
 
                             // Start a new request before removing the handle of the completed one.
@@ -669,6 +670,9 @@ class MultiCurl
                                 $this->initHandle(array_shift($this->curls));
                             }
                             curl_multi_remove_handle($this->multiCurl, $ch->curl);
+
+                            // Clean up completed instance.
+                            $ch->close();
 
                             break;
                         }
