@@ -1,5 +1,8 @@
 <?php
 
+namespace CurlTest;
+
+use \Curl\Curl;
 use \Curl\MultiCurl;
 use \Helper\Test;
 
@@ -2233,7 +2236,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
     public function testDownloadCallback()
     {
         // Upload a file.
-        $upload_file_path = Helper\get_png();
+        $upload_file_path = \Helper\get_png();
         $upload_test = new Test();
         $upload_test->server('upload_response', 'POST', array(
             'image' => '@' . $upload_file_path,
@@ -2547,7 +2550,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testAddCurl()
     {
-        $curl = new Curl\Curl();
+        $curl = new Curl();
         $curl->setUrl(Test::TEST_URL);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $curl->setOpt(CURLOPT_HTTPGET, true);
