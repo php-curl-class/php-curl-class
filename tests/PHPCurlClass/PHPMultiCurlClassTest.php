@@ -1829,28 +1829,25 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
         $get_1 = $multi_curl->addGet(Test::TEST_URL, $data);
         $get_1->complete(function ($instance) use ($multi_curl_user_agent) {
-            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertEquals($multi_curl_user_agent, $instance->getOpt(CURLOPT_USERAGENT));
+        });
+
+        $get_2 = $multi_curl->addGet(Test::TEST_URL, $data);
+        $get_2->complete(function ($instance) use ($multi_curl_user_agent) {
             \PHPUnit\Framework\Assert::assertEquals($multi_curl_user_agent, $instance->getOpt(CURLOPT_USERAGENT));
             \PHPUnit\Framework\Assert::assertEquals($multi_curl_user_agent, $instance->response);
         });
 
-        $get_2 = $multi_curl->addGet(Test::TEST_URL, $data);
-        $get_2->beforeSend(function ($instance) use ($curl_user_agent) {
+        $get_3 = $multi_curl->addGet(Test::TEST_URL, $data);
+        $get_3->beforeSend(function ($instance) use ($curl_user_agent) {
             $instance->setOpt(CURLOPT_USERAGENT, $curl_user_agent);
         });
-        $get_2->complete(function ($instance) use ($curl_user_agent) {
-            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+        $get_3->complete(function ($instance) use ($curl_user_agent) {
             \PHPUnit\Framework\Assert::assertEquals($curl_user_agent, $instance->getOpt(CURLOPT_USERAGENT));
             \PHPUnit\Framework\Assert::assertEquals($curl_user_agent, $instance->response);
         });
 
         $multi_curl->start();
-
-        $this->assertEquals($multi_curl_user_agent, $multi_curl->getOpt(CURLOPT_USERAGENT));
-        $this->assertEquals($multi_curl_user_agent, $get_1->getOpt(CURLOPT_USERAGENT));
-        $this->assertEquals($multi_curl_user_agent, $get_1->response);
-        $this->assertEquals($curl_user_agent, $get_2->getOpt(CURLOPT_USERAGENT));
-        $this->assertEquals($curl_user_agent, $get_2->response);
     }
 
     public function testSetHeaderAndOverride()
@@ -1890,31 +1887,28 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->setBasicAuthentication($username1, $password1);
 
         $get_1 = $multi_curl->addGet(Test::TEST_URL);
-        $get_1->complete(function ($instance) use ($username1, $password1) {
-            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
-            \PHPUnit\Framework\Assert::assertEquals($username1, $instance->response->username);
-            \PHPUnit\Framework\Assert::assertEquals($password1, $instance->response->password);
+        $get_1->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertEquals(CURLAUTH_BASIC, $instance->getOpt(CURLOPT_HTTPAUTH));
         });
 
         $get_2 = $multi_curl->addGet(Test::TEST_URL);
-        $get_2->beforeSend(function ($instance) use ($username2, $password2) {
+        $get_2->complete(function ($instance) use ($username1, $password1) {
+            \PHPUnit\Framework\Assert::assertEquals($username1, $instance->response->username);
+            \PHPUnit\Framework\Assert::assertEquals($password1, $instance->response->password);
+            \PHPUnit\Framework\Assert::assertEquals(CURLAUTH_BASIC, $instance->getOpt(CURLOPT_HTTPAUTH));
+        });
+
+        $get_3 = $multi_curl->addGet(Test::TEST_URL);
+        $get_3->beforeSend(function ($instance) use ($username2, $password2) {
             $instance->setBasicAuthentication($username2, $password2);
         });
-        $get_2->complete(function ($instance) use ($username2, $password2) {
-            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+        $get_3->complete(function ($instance) use ($username2, $password2) {
             \PHPUnit\Framework\Assert::assertEquals($username2, $instance->response->username);
             \PHPUnit\Framework\Assert::assertEquals($password2, $instance->response->password);
+            \PHPUnit\Framework\Assert::assertEquals(CURLAUTH_BASIC, $instance->getOpt(CURLOPT_HTTPAUTH));
         });
 
         $multi_curl->start();
-
-        $this->assertEquals(CURLAUTH_BASIC, $multi_curl->getOpt(CURLOPT_HTTPAUTH));
-        $this->assertEquals(CURLAUTH_BASIC, $get_1->getOpt(CURLOPT_HTTPAUTH));
-        $this->assertEquals($username1, $get_1->response->username);
-        $this->assertEquals($password1, $get_1->response->password);
-        $this->assertEquals(CURLAUTH_BASIC, $get_2->getOpt(CURLOPT_HTTPAUTH));
-        $this->assertEquals($username2, $get_2->response->username);
-        $this->assertEquals($password2, $get_2->response->password);
     }
 
     public function testDigestHttpAuthSuccess()
@@ -2569,11 +2563,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSequentialId()
     {
-        $completed = array();
-
         $multi_curl = new MultiCurl();
-        $multi_curl->complete(function ($instance) use (&$completed) {
-            $completed[] = $instance;
+        $multi_curl->complete(function ($instance) {
+            $sequential_id = $instance->getOpt(CURLOPT_POSTFIELDS);
+            \PHPUnit\Framework\Assert::assertEquals($sequential_id, $instance->id);
         });
 
         for ($i = 0; $i < 100; $i++) {
@@ -2581,11 +2574,6 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         }
 
         $multi_curl->start();
-
-        foreach ($completed as $instance) {
-            $sequential_id = $instance->getOpt(CURLOPT_POSTFIELDS);
-            $this->assertEquals($sequential_id, $instance->id);
-        }
     }
 
     public function testAscendingNumericalOrder()

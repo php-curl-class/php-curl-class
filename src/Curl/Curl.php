@@ -110,7 +110,14 @@ class Curl
         $this->setDefaultUserAgent();
         $this->setDefaultTimeout();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
-        $this->setOpt(CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
+
+        // Create a placeholder to temporarily store the header callback data.
+        $header_callback_data = new \stdClass();
+        $header_callback_data->rawResponseHeaders = '';
+        $header_callback_data->responseCookies = array();
+        $this->headerCallbackData = $header_callback_data;
+        $this->setOpt(CURLOPT_HEADERFUNCTION, $this->createHeaderCallback($header_callback_data));
+
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
         $this->setUrl($base_url);
@@ -370,6 +377,12 @@ class Curl
         }
         $this->curlError = !($this->curlErrorCode === 0);
 
+        // Transfer the header callback data and release the temporary store to avoid memory leak.
+        $this->rawResponseHeaders = $this->headerCallbackData->rawResponseHeaders;
+        $this->responseCookies = $this->headerCallbackData->responseCookies;
+        $this->headerCallbackData->rawResponseHeaders = null;
+        $this->headerCallbackData->responseCookies = null;
+
         // Include additional error code information in error message when possible.
         if ($this->curlError && function_exists('curl_strerror')) {
             $this->curlErrorMessage =
@@ -491,21 +504,22 @@ class Curl
     }
 
     /**
-     * Header Callback
+     * Create Header Callback
      *
-     * @access public
-     * @param  $ch
-     * @param  $header
+     * @access private
+     * @param  $header_callback_data
      *
-     * @return integer
+     * @return callable
      */
-    public function headerCallback($ch, $header)
+    private function createHeaderCallback($header_callback_data)
     {
-        if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]+)/mi', $header, $cookie) === 1) {
-            $this->responseCookies[$cookie[1]] = trim($cookie[2], " \n\r\t\0\x0B");
-        }
-        $this->rawResponseHeaders .= $header;
-        return strlen($header);
+        return function ($ch, $header) use ($header_callback_data) {
+            if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]+)/mi', $header, $cookie) === 1) {
+                $header_callback_data->responseCookies[$cookie[1]] = trim($cookie[2], " \n\r\t\0\x0B");
+            }
+            $header_callback_data->rawResponseHeaders .= $header;
+            return strlen($header);
+        };
     }
 
     /**
