@@ -488,7 +488,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
     public function testPostRedirectGetReuseObjectIncompatibleEngine()
     {
         if ((version_compare(PHP_VERSION, '5.5.11') > 0) && !defined('HHVM_VERSION')) {
-            $this->markTestSkipped('This test is not applicable to this platform.');
+            $this->markTestSkipped();
         }
 
         try {
@@ -505,7 +505,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
                 false,
                 'Reusing an existing Curl object on incompatible PHP engines shall trigger an error.'
             );
-        } catch (PHPUnit_Framework_Error $e) {
+        } catch (\PHPUnit_Framework_Error $e) {
             $this->assertTrue(true);
         }
     }
