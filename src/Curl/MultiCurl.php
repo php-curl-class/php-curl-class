@@ -72,7 +72,15 @@ class MultiCurl
      *
      * @return object
      */
-    public function addDownload($url, $mixed_filename)
+    /**
+     * Add Download
+     *
+     * @param $url
+     * @param $mixed_filename
+     * @param null $callback_at_error
+     * @return Curl
+     */
+    public function addDownload($url, $mixed_filename, $callback_at_error = null)
     {
         $curl = new Curl();
         $curl->setUrl($url);
@@ -90,12 +98,42 @@ class MultiCurl
             $curl->fileHandle = fopen('php://temp', 'wb');
         }
 
+        if (is_callable($callback_at_error)) {
+            $curl->errorFunction = $callback_at_error;
+        }
+
         $curl->setOpt(CURLOPT_FILE, $curl->fileHandle);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $curl->setOpt(CURLOPT_HTTPGET, true);
         $this->queueHandle($curl);
         return $curl;
     }
+
+    /**
+     * Add download with two callback functions.
+     *
+     * @param $url
+     * @param $callback_success
+     * @param $callback_error
+     * @return bool|Curl
+     */
+    public function addDownloadConditional($url, $callback_success, $callback_error)
+    {
+        $curl = new Curl();
+        $curl->setUrl($url);
+        if (is_callable($callback_success) && is_callable($callback_error) ) {
+            $curl->downloadCompleteFunction = $callback_success;
+            $curl->fileHandle = tmpfile();
+            $curl->errorFunction = $callback_error;
+        } else return false;
+
+        $curl->setOpt(CURLOPT_FILE, $curl->fileHandle);
+        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
+        $curl->setOpt(CURLOPT_HTTPGET, true);
+        $this->queueHandle($curl);
+        return $curl;
+    }
+
 
     /**
      * Add Get
