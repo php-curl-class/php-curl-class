@@ -3124,7 +3124,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         foreach ($tests as $test) {
             $curl_1 = new Curl();
             $reflector = new \ReflectionObject($curl_1);
-            $method = $reflector->getMethod('buildURL');
+            $method = $reflector->getMethod('buildUrl');
             $method->setAccessible(true);
             $actual_url = $method->invoke($curl_1, $test['args']['url'], $test['args']['mixed_data']);
             $this->assertEquals($test['expected'], $actual_url);
@@ -3152,7 +3152,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             $curl = new Curl();
 
             $reflector = new \ReflectionObject($curl);
-            $method = $reflector->getMethod('buildURL');
+            $method = $reflector->getMethod('buildUrl');
             $method->setAccessible(true);
 
             $actual_url = $method->invoke($curl, $base_url, $data);
