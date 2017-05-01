@@ -265,41 +265,6 @@ class Curl
     }
 
     /**
-     * Download Complete
-     *
-     * @access private
-     * @param  $fh
-     */
-    private function downloadComplete($fh)
-    {
-        if (!$this->error && $this->downloadCompleteFunction) {
-            rewind($fh);
-            $this->call($this->downloadCompleteFunction, $fh);
-            $this->downloadCompleteFunction = null;
-        }
-
-        if (is_resource($fh)) {
-            fclose($fh);
-        }
-
-        // Fix "PHP Notice: Use of undefined constant STDOUT" when reading the
-        // PHP script from stdin. Using null causes "Warning: curl_setopt():
-        // supplied argument is not a valid File-Handle resource".
-        if (!defined('STDOUT')) {
-            define('STDOUT', fopen('php://stdout', 'w'));
-        }
-
-        // Reset CURLOPT_FILE with STDOUT to avoid: "curl_exec(): CURLOPT_FILE
-        // resource has gone away, resetting to default".
-        $this->setOpt(CURLOPT_FILE, STDOUT);
-
-        // Reset CURLOPT_RETURNTRANSFER to tell cURL to return subsequent
-        // responses as the return value of curl_exec(). Without this,
-        // curl_exec() will revert to returning boolean values.
-        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
-    }
-
-    /**
      * Download
      *
      * @access public
@@ -504,25 +469,6 @@ class Curl
     }
 
     /**
-     * Create Header Callback
-     *
-     * @access private
-     * @param  $header_callback_data
-     *
-     * @return callable
-     */
-    private function createHeaderCallback($header_callback_data)
-    {
-        return function ($ch, $header) use ($header_callback_data) {
-            if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]+)/mi', $header, $cookie) === 1) {
-                $header_callback_data->responseCookies[$cookie[1]] = trim($cookie[2], " \n\r\t\0\x0B");
-            }
-            $header_callback_data->rawResponseHeaders .= $header;
-            return strlen($header);
-        };
-    }
-
-    /**
      * Options
      *
      * @access public
@@ -720,31 +666,8 @@ class Curl
      */
     public function setCookie($key, $value)
     {
-        $name_chars = array();
-        foreach (str_split($key) as $name_char) {
-            if (isset($this->rfc2616[$name_char])) {
-                $name_chars[] = $name_char;
-            } else {
-                $name_chars[] = rawurlencode($name_char);
-            }
-        }
-
-        $value_chars = array();
-        foreach (str_split($value) as $value_char) {
-            if (isset($this->rfc6265[$value_char])) {
-                $value_chars[] = $value_char;
-            } else {
-                $value_chars[] = rawurlencode($value_char);
-            }
-        }
-
-        $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
-
-        // Avoid using http_build_query() as unnecessary encoding is performed.
-        // http_build_query($this->cookies, '', '; ');
-        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function ($k, $v) {
-            return $k . '=' . $v;
-        }, array_keys($this->cookies), array_values($this->cookies))));
+        $this->setEncodedCookie($key, $value);
+        $this->buildCookies();
     }
 
     /**
@@ -756,32 +679,9 @@ class Curl
     public function setCookies($cookies)
     {
         foreach ($cookies as $key => $value) {
-            $name_chars = array();
-            foreach (str_split($key) as $name_char) {
-                if (isset($this->rfc2616[$name_char])) {
-                    $name_chars[] = $name_char;
-                } else {
-                    $name_chars[] = rawurlencode($name_char);
-                }
-            }
-
-            $value_chars = array();
-            foreach (str_split($value) as $value_char) {
-                if (isset($this->rfc6265[$value_char])) {
-                    $value_chars[] = $value_char;
-                } else {
-                    $value_chars[] = rawurlencode($value_char);
-                }
-            }
-
-            $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
+            $this->setEncodedCookie($key, $value);
         }
-
-        // Avoid using http_build_query() as unnecessary encoding is performed.
-        // http_build_query($this->cookies, '', '; ');
-        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function ($k, $v) {
-            return $k . '=' . $v;
-        }, array_keys($this->cookies), array_values($this->cookies))));
+        $this->buildCookies();
     }
 
     /**
@@ -1126,7 +1026,7 @@ class Curl
     public function setUrl($url, $mixed_data = '')
     {
         $this->baseUrl = $url;
-        $this->url = $this->buildURL($url, $mixed_data);
+        $this->url = $this->buildUrl($url, $mixed_data);
         $this->setOpt(CURLOPT_URL, $this->url);
     }
 
@@ -1262,6 +1162,20 @@ class Curl
     }
 
     /**
+     * Build Cookies
+     *
+     * @access private
+     */
+    private function buildCookies()
+    {
+        // Avoid using http_build_query() as unnecessary encoding is performed.
+        // http_build_query($this->cookies, '', '; ');
+        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function ($k, $v) {
+            return $k . '=' . $v;
+        }, array_keys($this->cookies), array_values($this->cookies))));
+    }
+
+    /**
      * Build Url
      *
      * @access private
@@ -1270,7 +1184,7 @@ class Curl
      *
      * @return string
      */
-    private function buildURL($url, $mixed_data = '')
+    private function buildUrl($url, $mixed_data = '')
     {
         $query_string = '';
         if (!empty($mixed_data)) {
@@ -1281,6 +1195,60 @@ class Curl
             }
         }
         return $url . $query_string;
+    }
+
+    /**
+     * Create Header Callback
+     *
+     * @access private
+     * @param  $header_callback_data
+     *
+     * @return callable
+     */
+    private function createHeaderCallback($header_callback_data)
+    {
+        return function ($ch, $header) use ($header_callback_data) {
+            if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]+)/mi', $header, $cookie) === 1) {
+                $header_callback_data->responseCookies[$cookie[1]] = trim($cookie[2], " \n\r\t\0\x0B");
+            }
+            $header_callback_data->rawResponseHeaders .= $header;
+            return strlen($header);
+        };
+    }
+
+    /**
+     * Download Complete
+     *
+     * @access private
+     * @param  $fh
+     */
+    private function downloadComplete($fh)
+    {
+        if (!$this->error && $this->downloadCompleteFunction) {
+            rewind($fh);
+            $this->call($this->downloadCompleteFunction, $fh);
+            $this->downloadCompleteFunction = null;
+        }
+
+        if (is_resource($fh)) {
+            fclose($fh);
+        }
+
+        // Fix "PHP Notice: Use of undefined constant STDOUT" when reading the
+        // PHP script from stdin. Using null causes "Warning: curl_setopt():
+        // supplied argument is not a valid File-Handle resource".
+        if (!defined('STDOUT')) {
+            define('STDOUT', fopen('php://stdout', 'w'));
+        }
+
+        // Reset CURLOPT_FILE with STDOUT to avoid: "curl_exec(): CURLOPT_FILE
+        // resource has gone away, resetting to default".
+        $this->setOpt(CURLOPT_FILE, STDOUT);
+
+        // Reset CURLOPT_RETURNTRANSFER to tell cURL to return subsequent
+        // responses as the return value of curl_exec(). Without this,
+        // curl_exec() will revert to returning boolean values.
+        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
     }
 
     /**
@@ -1393,5 +1361,35 @@ class Curl
             $response_headers[$key] = $value;
         }
         return $response_headers;
+    }
+
+    /**
+     * Set Encoded Cookie
+     *
+     * @access private
+     * @param  $key
+     * @param  $value
+     */
+    private function setEncodedCookie($key, $value)
+    {
+        $name_chars = array();
+        foreach (str_split($key) as $name_char) {
+            if (isset($this->rfc2616[$name_char])) {
+                $name_chars[] = $name_char;
+            } else {
+                $name_chars[] = rawurlencode($name_char);
+            }
+        }
+
+        $value_chars = array();
+        foreach (str_split($value) as $value_char) {
+            if (isset($this->rfc6265[$value_char])) {
+                $value_chars[] = $value_char;
+            } else {
+                $value_chars[] = rawurlencode($value_char);
+            }
+        }
+
+        $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
     }
 }
