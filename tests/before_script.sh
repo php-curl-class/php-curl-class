@@ -1,26 +1,21 @@
 phpunit_shim() {
     # -class CurlTest extends \PHPUnit\Framework\TestCase
-    # +class CurlTest extends PHPUnit_Framework_TestCase
+    # +class CurlTest extends \PHPUnit_Framework_TestCase
     find='class CurlTest extends \\PHPUnit\\Framework\\TestCase'
-    replace='class CurlTest extends PHPUnit_Framework_TestCase'
-    sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
-
-    # -\PHPUnit\Framework\Assert
-    # +PHPUnit_Framework_Assert
-    find='\\PHPUnit\\Framework\\Assert'
-    replace='PHPUnit_Framework_Assert'
+    replace='class CurlTest extends \\PHPUnit_Framework_TestCase'
     sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
 
     # -\PHPUnit\Framework\Assert
     # +\PHPUnit_Framework_Assert
     find='\\PHPUnit\\Framework\\Assert'
     replace='\\PHPUnit_Framework_Assert'
+    sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
     sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/Helper.php"
 
     # -\PHPUnit\Framework\Error\Warning
-    # +PHPUnit_Framework_Error_Warning
+    # +\PHPUnit_Framework_Error_Warning
     find='\\PHPUnit\\Framework\\Error\\Warning'
-    replace='PHPUnit_Framework_Error_Warning'
+    replace='\\PHPUnit_Framework_Error_Warning'
     sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
 }
 
