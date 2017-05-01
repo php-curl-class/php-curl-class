@@ -7,4 +7,9 @@
         <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine" />
         <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.UseOneParamPerLine" />
     </rule>
+
+    <!-- Disable "No PHP code was found in this file" for symlinks. -->
+    <rule ref="Internal.NoCodeFound">
+        <severity>0</severity>
+    </rule>
 </ruleset>
