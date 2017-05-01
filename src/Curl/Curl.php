@@ -720,31 +720,8 @@ class Curl
      */
     public function setCookie($key, $value)
     {
-        $name_chars = array();
-        foreach (str_split($key) as $name_char) {
-            if (isset($this->rfc2616[$name_char])) {
-                $name_chars[] = $name_char;
-            } else {
-                $name_chars[] = rawurlencode($name_char);
-            }
-        }
-
-        $value_chars = array();
-        foreach (str_split($value) as $value_char) {
-            if (isset($this->rfc6265[$value_char])) {
-                $value_chars[] = $value_char;
-            } else {
-                $value_chars[] = rawurlencode($value_char);
-            }
-        }
-
-        $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
-
-        // Avoid using http_build_query() as unnecessary encoding is performed.
-        // http_build_query($this->cookies, '', '; ');
-        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function ($k, $v) {
-            return $k . '=' . $v;
-        }, array_keys($this->cookies), array_values($this->cookies))));
+        $this->setEncodedCookie($key, $value);
+        $this->buildCookies();
     }
 
     /**
@@ -756,32 +733,9 @@ class Curl
     public function setCookies($cookies)
     {
         foreach ($cookies as $key => $value) {
-            $name_chars = array();
-            foreach (str_split($key) as $name_char) {
-                if (isset($this->rfc2616[$name_char])) {
-                    $name_chars[] = $name_char;
-                } else {
-                    $name_chars[] = rawurlencode($name_char);
-                }
-            }
-
-            $value_chars = array();
-            foreach (str_split($value) as $value_char) {
-                if (isset($this->rfc6265[$value_char])) {
-                    $value_chars[] = $value_char;
-                } else {
-                    $value_chars[] = rawurlencode($value_char);
-                }
-            }
-
-            $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
+            $this->setEncodedCookie($key, $value);
         }
-
-        // Avoid using http_build_query() as unnecessary encoding is performed.
-        // http_build_query($this->cookies, '', '; ');
-        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function ($k, $v) {
-            return $k . '=' . $v;
-        }, array_keys($this->cookies), array_values($this->cookies))));
+        $this->buildCookies();
     }
 
     /**
@@ -1262,6 +1216,20 @@ class Curl
     }
 
     /**
+     * Build Cookies
+     *
+     * @access private
+     */
+    private function buildCookies()
+    {
+        // Avoid using http_build_query() as unnecessary encoding is performed.
+        // http_build_query($this->cookies, '', '; ');
+        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function ($k, $v) {
+            return $k . '=' . $v;
+        }, array_keys($this->cookies), array_values($this->cookies))));
+    }
+
+    /**
      * Build Url
      *
      * @access private
@@ -1393,5 +1361,35 @@ class Curl
             $response_headers[$key] = $value;
         }
         return $response_headers;
+    }
+
+    /**
+     * Set Encoded Cookie
+     *
+     * @access private
+     * @param  $key
+     * @param  $value
+     */
+    private function setEncodedCookie($key, $value)
+    {
+        $name_chars = array();
+        foreach (str_split($key) as $name_char) {
+            if (isset($this->rfc2616[$name_char])) {
+                $name_chars[] = $name_char;
+            } else {
+                $name_chars[] = rawurlencode($name_char);
+            }
+        }
+
+        $value_chars = array();
+        foreach (str_split($value) as $value_char) {
+            if (isset($this->rfc6265[$value_char])) {
+                $value_chars[] = $value_char;
+            } else {
+                $value_chars[] = rawurlencode($value_char);
+            }
+        }
+
+        $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
     }
 }
