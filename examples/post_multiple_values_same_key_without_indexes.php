@@ -33,3 +33,5 @@ $curl->post('https://httpbin.org/post', http_build_query_without_indexes(array(
         'baz',
     ),
 )));
+
+// @codingStandardsIgnoreFile
