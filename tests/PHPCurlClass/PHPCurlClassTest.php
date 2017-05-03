@@ -415,7 +415,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             $this->assertTrue(!empty($content_type));
 
             // Expect received POST data to match POSTed data less the file.
-            $this->assertTrue($test->curl->response['post'] === $post_data_without_file);
+            $this->assertEquals($post_data_without_file, $test->curl->response['post']);
 
             // Expect POSTed files is received as $_FILES.
             $this->assertTrue(isset($test->curl->response['files']['image']['tmp_name']));
@@ -869,11 +869,11 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             // Ensure exceeding download limit aborts the transfer and sets a CURLE_ABORTED_BY_CALLBACK error.
             if ($expect_error) {
                 $this->assertTrue($test->curl->error);
-                $this->assertEquals($test->curl->errorCode, CURLE_ABORTED_BY_CALLBACK);
+                $this->assertEquals(CURLE_ABORTED_BY_CALLBACK, $test->curl->errorCode);
             } else {
                 $str = str_repeat('.', $bytes);
-                $this->assertEquals($test->curl->responseHeaders['etag'], md5($str));
-                $this->assertEquals($test->curl->response, $str);
+                $this->assertEquals(md5($str), $test->curl->responseHeaders['etag']);
+                $this->assertEquals($str, $test->curl->response);
             }
         }
     }
