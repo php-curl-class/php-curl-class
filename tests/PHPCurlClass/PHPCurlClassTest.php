@@ -1286,8 +1286,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testJsonRequest()
     {
-        foreach (
-            array(
+        foreach (array(
                 array(
                     array(
                         'key' => 'value',

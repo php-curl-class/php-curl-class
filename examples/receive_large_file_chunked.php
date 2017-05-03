@@ -18,3 +18,5 @@ $file = fopen($tmpnam, 'wb+');
 file_get_contents_chunked('php://input', 4096, function ($chunk) use (&$file) {
     fwrite($file, $chunk);
 });
+
+// @codingStandardsIgnoreFile

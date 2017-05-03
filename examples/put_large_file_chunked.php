@@ -29,3 +29,5 @@ if ($curl->error) {
 } else {
     echo 'Success' . "\n";
 }
+
+// @codingStandardsIgnoreFile

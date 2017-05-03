@@ -13,7 +13,8 @@ class Decoder
      * @param  $depth
      * @param  $options
      */
-    public static function decodeJson() {
+    public static function decodeJson()
+    {
         $args = func_get_args();
 
         // Call json_decode() without the $options parameter in PHP
@@ -36,7 +37,8 @@ class Decoder
      * @access public
      * @param  $response
      */
-    public static function decodeXml($response) {
+    public static function decodeXml($response)
+    {
         $xml_obj = @simplexml_load_string($response);
         if (!($xml_obj === false)) {
             $response = $xml_obj;
