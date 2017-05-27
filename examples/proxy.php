@@ -5,6 +5,7 @@ use \Curl\Curl;
 
 $curl = new Curl();
 $curl->setOpt(CURLOPT_HTTPPROXYTUNNEL, 1);
+$curl->setOpt(CURLOPT_SSL_VERIFYPEER, 0);
 $curl->setOpt(CURLOPT_PROXY, 'someproxy.com:9999');
 $curl->setOpt(CURLOPT_PROXYUSERPWD, 'username:password');
 $curl->get('https://httpbin.org/get');
