@@ -2900,6 +2900,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             $this->markTestSkipped();
         }
 
+        gc_enable();
         ob_start();
         echo '[';
         for ($i = 0; $i < 10; $i++) {
