@@ -298,7 +298,12 @@ class Curl
             $this->fileHandle = fopen($download_filename, $mode);
 
             // Move the downloaded temporary file to the destination save path.
-            $this->downloadCompleteFunction = function ($fh) use ($download_filename, $filename) {
+            $this->downloadCompleteFunction = function ($instance, $fh) use ($download_filename, $filename) {
+                // Close the open file handle before renaming the file.
+                if (is_resource($fh)) {
+                    fclose($fh);
+                }
+
                 rename($download_filename, $filename);
             };
         }
