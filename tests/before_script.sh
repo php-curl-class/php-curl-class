@@ -66,7 +66,7 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "7.0" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.1" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
-elif [[ "${TRAVIS_PHP_VERSION}" == "hhvm" ]]; then
+elif [[ "${TRAVIS_PHP_VERSION}" == "hhvm" || "${TRAVIS_PHP_VERSION}" == "hhvm-nightly" ]]; then
     sudo add-apt-repository -y ppa:nginx/stable
     sudo apt-get update
     sudo apt-get install -y nginx
