@@ -1,5 +1,8 @@
 set -x
 
+# Use composer's phpunit and phpcs by adding composer bin directory to the path environment variable.
+export PATH="$PWD/vendor/bin:$PATH"
+
 errors=0
 
 # Check syntax in php files. Use `xargs' over `find -exec' as xargs exits with a value of 1 when any command errors.
@@ -115,9 +118,6 @@ if [[ ! -z "${elses}" ]]; then
     echo -e "${elses}" | perl -pe 's/^(.*)$/Found newline before "else" statement in \1/'
     ((errors++))
 fi
-
-# Add composer bin directory to the path environment variable.
-export PATH="$PWD/vendor/bin:$PATH"
 
 # Detect coding standard violations.
 phpcs --version
