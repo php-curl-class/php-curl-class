@@ -1,8 +1,11 @@
+set -x
+
 errors=0
 
 # Check syntax in php files. Use `xargs' over `find -exec' as xargs exits with a value of 1 when any command errors.
 find . -type "f" -iname "*.php" ! -path "*/vendor/*" | xargs -L "1" php -l
 if [[ "${?}" -ne 0 ]]; then
+    echo "Error: php syntax checks failed"
     ((errors++))
 fi
 
@@ -10,6 +13,7 @@ fi
 phpunit --version
 phpunit --configuration "tests/phpunit.xml"
 if [[ "${?}" -ne 0 ]]; then
+    echo "Error: phpunit command failed"
     ((errors++))
 fi
 
@@ -125,6 +129,7 @@ phpcs \
     -s \
     .
 if [[ "${?}" -ne 0 ]]; then
+    echo "Error: found standard violation(s)"
     ((errors++))
 fi
 

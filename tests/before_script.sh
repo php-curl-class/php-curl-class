@@ -1,3 +1,5 @@
+set -x
+
 phpunit_shim() {
     # -class CurlTest extends \PHPUnit\Framework\TestCase
     # +class CurlTest extends \PHPUnit_Framework_TestCase
