@@ -2,8 +2,6 @@ language: php
 
 matrix:
   allow_failures:
-    - php: hhvm
-    - php: hhvm-nightly
     - php: nightly
   include:
     - php: 5.3
@@ -16,7 +14,7 @@ matrix:
       dist: trusty
     - php: hhvm-nightly
       dist: trusty
-    - nightly
+    - php: nightly
 
 before_script:
   - bash tests/before_script.sh
