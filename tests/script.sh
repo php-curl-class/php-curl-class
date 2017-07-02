@@ -1,8 +1,14 @@
+set -x
+
+# Use composer's phpunit and phpcs by adding composer bin directory to the path environment variable.
+export PATH="$PWD/vendor/bin:$PATH"
+
 errors=0
 
 # Check syntax in php files. Use `xargs' over `find -exec' as xargs exits with a value of 1 when any command errors.
 find . -type "f" -iname "*.php" ! -path "*/vendor/*" | xargs -L "1" php -l
 if [[ "${?}" -ne 0 ]]; then
+    echo "Error: php syntax checks failed"
     ((errors++))
 fi
 
@@ -10,6 +16,7 @@ fi
 phpunit --version
 phpunit --configuration "tests/phpunit.xml"
 if [[ "${?}" -ne 0 ]]; then
+    echo "Error: phpunit command failed"
     ((errors++))
 fi
 
@@ -54,7 +61,7 @@ EOF
     php --run "${script}" "${filename}"
 }
 # Skip hhvm "Notice: File could not be loaded: ..."
-if [[ "${TRAVIS_PHP_VERSION}" != "hhvm" ]]; then
+if [[ "${TRAVIS_PHP_VERSION}" != "hhvm" ]] && [[ "${TRAVIS_PHP_VERSION}" != "hhvm-nightly" ]]; then
     export -f "find_invalid_indentation"
     invalid_indentation=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec bash -c 'find_invalid_indentation "{}"' \;)
     if [[ ! -z "${invalid_indentation}" ]]; then
@@ -112,9 +119,6 @@ if [[ ! -z "${elses}" ]]; then
     ((errors++))
 fi
 
-# Add composer bin directory to the path environment variable.
-export PATH="$PWD/vendor/bin:$PATH"
-
 # Detect coding standard violations.
 phpcs --version
 phpcs \
@@ -125,6 +129,7 @@ phpcs \
     -s \
     .
 if [[ "${?}" -ne 0 ]]; then
+    echo "Error: found standard violation(s)"
     ((errors++))
 fi
 
