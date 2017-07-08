@@ -248,7 +248,7 @@ class Curl
      * @param  $query_parameters
      * @param  $data
      *
-     * @return string
+     * @return mixed
      */
     public function delete($url, $query_parameters = array(), $data = array())
     {
@@ -459,7 +459,7 @@ class Curl
      * @param  $url
      * @param  $data
      *
-     * @return string
+     * @return mixed
      */
     public function head($url, $data = array())
     {
@@ -480,7 +480,7 @@ class Curl
      * @param  $url
      * @param  $data
      *
-     * @return string
+     * @return mixed
      */
     public function options($url, $data = array())
     {
@@ -501,7 +501,7 @@ class Curl
      * @param  $url
      * @param  $data
      *
-     * @return string
+     * @return mixed
      */
     public function patch($url, $data = array())
     {
@@ -539,7 +539,7 @@ class Curl
      *         to reset this option. Using these PHP engines, it is therefore impossible to
      *         restore this behavior on an existing php-curl-class Curl object.
      *
-     * @return string
+     * @return mixed
      *
      * [1] https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.2
      * [2] https://github.com/php/php-src/pull/531
@@ -585,7 +585,7 @@ class Curl
      * @param  $url
      * @param  $data
      *
-     * @return string
+     * @return mixed
      */
     public function put($url, $data = array())
     {
@@ -614,7 +614,7 @@ class Curl
      * @param  $url
      * @param  $data
      *
-     * @return string
+     * @return mixed
      */
     public function search($url, $data = array())
     {
