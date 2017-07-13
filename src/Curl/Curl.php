@@ -49,6 +49,7 @@ class Curl
     private $jsonDecoderArgs = array();
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
     private $xmlDecoder = '\Curl\Decoder::decodeXml';
+    private $xmlDecoderArgs = array();
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
     private $defaultDecoder = null;
 
@@ -214,6 +215,7 @@ class Curl
         $this->jsonDecoder = null;
         $this->jsonDecoderArgs = null;
         $this->xmlDecoder = null;
+        $this->xmlDecoderArgs = null;
         $this->defaultDecoder = null;
     }
 
@@ -823,6 +825,7 @@ class Curl
     public function setDefaultXmlDecoder()
     {
         $this->xmlDecoder = '\Curl\Decoder::decodeXml';
+        $this->xmlDecoderArgs = func_get_args();
     }
 
     /**
@@ -915,15 +918,19 @@ class Curl
      *
      * @access public
      * @param  $mixed boolean|callable
+     * @param  $options
      */
-    public function setJsonDecoder($mixed)
+    public function setJsonDecoder()
     {
-        if ($mixed === false) {
+        $args = func_get_args();
+        $decoder = array_unshift($args);
+
+        if ($decoder === false) {
             $this->jsonDecoder = false;
-            $this->jsonDecoderArgs = array();
-        } elseif (is_callable($mixed)) {
-            $this->jsonDecoder = $mixed;
-            $this->jsonDecoderArgs = array();
+            $this->jsonDecoderArgs = $args;
+        } elseif (is_callable($decoder)) {
+            $this->jsonDecoder = $decoder;
+            $this->jsonDecoderArgs = $args;
         }
     }
 
@@ -932,13 +939,19 @@ class Curl
      *
      * @access public
      * @param  $mixed boolean|callable
+     * @param  $options
      */
-    public function setXmlDecoder($mixed)
+    public function setXmlDecoder()
     {
-        if ($mixed === false) {
+        $args = func_get_args();
+        $decoder = array_unshift($args);
+
+        if ($decoder === false) {
             $this->xmlDecoder = false;
-        } elseif (is_callable($mixed)) {
-            $this->xmlDecoder = $mixed;
+            $this->xmlDecoderArgs = $args;
+        } elseif (is_callable($decoder)) {
+            $this->xmlDecoder = $decoder;
+            $this->xmlDecoderArgs = $args;
         }
     }
 
@@ -1328,7 +1341,9 @@ class Curl
                 }
             } elseif (preg_match($this->xmlPattern, $response_headers['Content-Type'])) {
                 if ($this->xmlDecoder) {
-                    $response = call_user_func($this->xmlDecoder, $response);
+                    $args = $this->xmlDecoderArgs;
+                    array_unshift($args, $response);
+                    $response = call_user_func_array($this->xmlDecoder, $args);
                 }
             } else {
                 if ($this->defaultDecoder) {
