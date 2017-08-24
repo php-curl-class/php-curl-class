@@ -1193,10 +1193,11 @@ class Curl
     {
         $query_string = '';
         if (!empty($mixed_data)) {
+            $query_mark = (strpos($url,'?')>0)? '&':'?';
             if (is_string($mixed_data)) {
-                $query_string .= '?' . $mixed_data;
+                $query_string .= $query_mark . $mixed_data;
             } elseif (is_array($mixed_data)) {
-                $query_string .= '?' . http_build_query($mixed_data, '', '&');
+                $query_string .= $query_mark . http_build_query($mixed_data, '', '&');
             }
         }
         return $url . $query_string;

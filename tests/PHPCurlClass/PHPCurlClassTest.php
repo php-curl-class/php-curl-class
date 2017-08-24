@@ -3108,6 +3108,23 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             ),
             array(
                 'args' => array(
+                    'url' => 'https://www.example.com/?a=base',
+                    'mixed_data' => array(
+                        'b' => '2',
+                        'c' => '3',
+                    ),
+                ),
+                'expected' => 'https://www.example.com/?a=base&b=2&c=3',
+            ),
+            array(
+                'args' => array(
+                    'url' => 'https://www.example.com/?a=base',
+                    'mixed_data' => 'b=2&c=3'
+                ),
+                'expected' => 'https://www.example.com/?a=base&b=2&c=3',
+            ),
+            array(
+                'args' => array(
                     'url' => 'https://www.example.com/',
                     'mixed_data' => 'user_ids=user_1,user_2',
                 ),
