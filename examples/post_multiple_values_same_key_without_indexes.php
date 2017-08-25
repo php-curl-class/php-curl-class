@@ -3,7 +3,7 @@
 // Django: MultiValueDict, QueryDict, request.GET.getlist(), request.POST.getlist(), urllib.urlencode, parse.urlencode
 // Java: request.getParameterValues()
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use \Curl\Curl;
 
