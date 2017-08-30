@@ -41,6 +41,11 @@ class Curl
     public $completeFunction = null;
     public $fileHandle = null;
 
+    public $attempts = 0;
+    public $retries = 0;
+    private $maximumNumberOfRetries = 0;
+    private $remainingRetries = 0;
+
     private $cookies = array();
     private $headers = array();
     private $options = array();
@@ -335,6 +340,8 @@ class Curl
      */
     public function exec($ch = null)
     {
+        $this->attempts += 1;
+
         if ($ch === null) {
             $this->responseCookies = array();
             $this->call($this->beforeSendFunction);
@@ -381,6 +388,12 @@ class Curl
             }
         }
         $this->errorMessage = $this->curlError ? $this->curlErrorMessage : $this->httpErrorMessage;
+
+        if ($this->error && $this->remainingRetries >= 1) {
+            $this->remainingRetries -= 1;
+            $this->retries += 1;
+            return $this->exec($ch);
+        }
 
         if ($this->error) {
             $this->call($this->errorFunction);
@@ -1008,6 +1021,20 @@ class Curl
     public function setReferrer($referrer)
     {
         $this->setOpt(CURLOPT_REFERER, $referrer);
+    }
+
+    /**
+     * Set Retry
+     *
+     * Number of retries to attempt. Maximum number of attempts is $maximum_number_of_retries + 1.
+     *
+     * @access public
+     * @param  $maximum_number_of_retries
+     */
+    public function setRetry($maximum_number_of_retries = 0)
+    {
+        $this->maximumNumberOfRetries = $maximum_number_of_retries;
+        $this->remainingRetries = $this->maximumNumberOfRetries;
     }
 
     /**
