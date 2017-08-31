@@ -18,6 +18,8 @@ class MultiCurl
     private $errorFunction = null;
     private $completeFunction = null;
 
+    private $maximumNumberOfRetries = 0;
+
     private $cookies = array();
     private $headers = array();
     private $options = array();
@@ -588,6 +590,19 @@ class MultiCurl
     }
 
     /**
+     * Set Retry
+     *
+     * Number of retries to attempt. Maximum number of attempts is $maximum_number_of_retries + 1.
+     *
+     * @access public
+     * @param  $maximum_number_of_retries
+     */
+    public function setRetry($maximum_number_of_retries = 0)
+    {
+        $this->maximumNumberOfRetries = $maximum_number_of_retries;
+    }
+
+    /**
      * Set Timeout
      *
      * @access public
@@ -661,17 +676,31 @@ class MultiCurl
                             $ch->curlErrorCode = $info_array['result'];
                             $ch->exec($ch->curl);
 
-                            // Remove completed instance from active curls.
-                            unset($this->activeCurls[$key]);
+                            if ($ch->error && $ch->remainingRetries >= 1) {
+                                $ch->remainingRetries -= 1;
 
-                            // Start a new request before removing the handle of the completed one.
-                            if (count($this->curls) >= 1) {
-                                $this->initHandle(array_shift($this->curls));
+                                // Remove completed handle before adding again in order to retry request.
+                                curl_multi_remove_handle($this->multiCurl, $ch->curl);
+
+                                $curlm_error_code = curl_multi_add_handle($this->multiCurl, $ch->curl);
+                                if (!($curlm_error_code === CURLM_OK)) {
+                                    throw new \ErrorException(
+                                        'cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code)
+                                    );
+                                }
+                            } else {
+                                // Remove completed instance from active curls.
+                                unset($this->activeCurls[$key]);
+
+                                // Start a new request before removing the handle of the completed one.
+                                if (count($this->curls) >= 1) {
+                                    $this->initHandle(array_shift($this->curls));
+                                }
+                                curl_multi_remove_handle($this->multiCurl, $ch->curl);
+
+                                // Clean up completed instance.
+                                $ch->close();
                             }
-                            curl_multi_remove_handle($this->multiCurl, $ch->curl);
-
-                            // Clean up completed instance.
-                            $ch->close();
 
                             break;
                         }
@@ -763,6 +792,7 @@ class MultiCurl
     {
         // Use sequential ids to allow for ordered post processing.
         $curl->id = $this->nextCurlId++;
+        $curl->isChildOfMultiCurl = true;
         $this->curls[$curl->id] = $curl;
     }
 
@@ -791,6 +821,7 @@ class MultiCurl
 
         $curl->setOpts($this->options);
         $curl->setHeaders($this->headers);
+        $curl->setRetry($this->maximumNumberOfRetries);
 
         foreach ($this->cookies as $key => $value) {
             $curl->setCookie($key, $value);

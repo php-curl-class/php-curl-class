@@ -3293,6 +3293,13 @@ class CurlTest extends \PHPUnit\Framework\TestCase
                 'expect_attempts' => 3,
                 'expect_retries' => 2,
             ),
+            array(
+                'maximum_number_of_retries' => 3,
+                'failures' => 3,
+                'expect_success' => true,
+                'expect_attempts' => 4,
+                'expect_retries' => 3,
+            ),
         );
         foreach ($tests as $test) {
             $maximum_number_of_retries = $test['maximum_number_of_retries'];

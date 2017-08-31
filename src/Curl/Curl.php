@@ -43,8 +43,9 @@ class Curl
 
     public $attempts = 0;
     public $retries = 0;
+    public $isChildOfMultiCurl = false;
+    public $remainingRetries = 0;
     private $maximumNumberOfRetries = 0;
-    private $remainingRetries = 0;
 
     private $cookies = array();
     private $headers = array();
@@ -390,8 +391,14 @@ class Curl
         $this->errorMessage = $this->curlError ? $this->curlErrorMessage : $this->httpErrorMessage;
 
         if ($this->error && $this->remainingRetries >= 1) {
-            $this->remainingRetries -= 1;
             $this->retries += 1;
+
+            // Allow multicurl to update $remainingRetries and retry.
+            if ($this->isChildOfMultiCurl) {
+                return;
+            }
+
+            $this->remainingRetries -= 1;
             return $this->exec($ch);
         }
 

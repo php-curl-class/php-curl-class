@@ -2590,4 +2590,81 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
         $multi_curl->start();
     }
+
+    public function testRetryMulti()
+    {
+        $tests = array(
+            array(
+                'maximum_number_of_retries' => null,
+                'failures' => 0,
+                'expect_success' => true,
+                'expect_attempts' => 1,
+                'expect_retries' => 0,
+            ),
+            array(
+                'maximum_number_of_retries' => 0,
+                'failures' => 0,
+                'expect_success' => true,
+                'expect_attempts' => 1,
+                'expect_retries' => 0,
+            ),
+            array(
+                'maximum_number_of_retries' => 0,
+                'failures' => 1,
+                'expect_success' => false,
+                'expect_attempts' => 1,
+                'expect_retries' => 0,
+            ),
+            array(
+                'maximum_number_of_retries' => 1,
+                'failures' => 1,
+                'expect_success' => true,
+                'expect_attempts' => 2,
+                'expect_retries' => 1,
+            ),
+            array(
+                'maximum_number_of_retries' => 1,
+                'failures' => 2,
+                'expect_success' => false,
+                'expect_attempts' => 2,
+                'expect_retries' => 1,
+            ),
+            array(
+                'maximum_number_of_retries' => 2,
+                'failures' => 2,
+                'expect_success' => true,
+                'expect_attempts' => 3,
+                'expect_retries' => 2,
+            ),
+            array(
+                'maximum_number_of_retries' => 3,
+                'failures' => 3,
+                'expect_success' => true,
+                'expect_attempts' => 4,
+                'expect_retries' => 3,
+            ),
+        );
+        foreach ($tests as $test) {
+            $maximum_number_of_retries = $test['maximum_number_of_retries'];
+            $failures = $test['failures'];
+            $expect_success = $test['expect_success'];
+            $expect_attempts = $test['expect_attempts'];
+            $expect_retries = $test['expect_retries'];
+
+            $multi_curl = new MultiCurl();
+            $multi_curl->setOpt(CURLOPT_COOKIEJAR, '/dev/null');
+            $multi_curl->setHeader('X-DEBUG-TEST', 'retry');
+
+            if (!($maximum_number_of_retries === null)) {
+                $multi_curl->setRetry($maximum_number_of_retries);
+            }
+
+            $instance = $multi_curl->addGet(Test::TEST_URL, array('failures' => $failures));
+            $multi_curl->start();
+
+            $this->assertEquals($expect_success, !$instance->error);
+            $this->assertEquals($expect_attempts, $instance->attempts);
+            $this->assertEquals($expect_retries, $instance->retries);
+        }
+    }
 }
