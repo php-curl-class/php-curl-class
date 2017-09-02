@@ -47,7 +47,7 @@ $key = isset($data_values['key']) ? $data_values['key'] : '';
 if ($test === 'http_basic_auth') {
     if (!isset($_SERVER['PHP_AUTH_USER'])) {
         header('WWW-Authenticate: Basic realm="My Realm"');
-        header('HTTP/1.0 401 Unauthorized');
+        header('HTTP/1.1 401 Unauthorized');
         echo 'canceled';
         exit;
     }
@@ -329,7 +329,7 @@ if ($test === 'http_basic_auth') {
     if (isset($_SESSION['failures_remaining'])) {
         $failures_remaining = $_SESSION['failures_remaining'];
     } else {
-        $failures_remaining = ((int)$_GET['failures']);
+        $failures_remaining = (int)$_GET['failures'];
         $_SESSION['failures_remaining'] = $failures_remaining;
     }
 
