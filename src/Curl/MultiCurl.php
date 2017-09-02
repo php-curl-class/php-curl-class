@@ -18,7 +18,7 @@ class MultiCurl
     private $errorFunction = null;
     private $completeFunction = null;
 
-    private $maximumNumberOfRetries = 0;
+    private $retry = null;
 
     private $cookies = array();
     private $headers = array();
@@ -592,14 +592,15 @@ class MultiCurl
     /**
      * Set Retry
      *
-     * Number of retries to attempt. Maximum number of attempts is $maximum_number_of_retries + 1.
+     * Number of retries to attempt or decider callable. Maximum number of
+     * attempts is $maximum_number_of_retries + 1.
      *
      * @access public
-     * @param  $maximum_number_of_retries
+     * @param  $mixed
      */
-    public function setRetry($maximum_number_of_retries = 0)
+    public function setRetry($mixed)
     {
-        $this->maximumNumberOfRetries = $maximum_number_of_retries;
+        $this->retry = $mixed;
     }
 
     /**
@@ -676,9 +677,7 @@ class MultiCurl
                             $ch->curlErrorCode = $info_array['result'];
                             $ch->exec($ch->curl);
 
-                            if ($ch->error && $ch->remainingRetries >= 1) {
-                                $ch->remainingRetries -= 1;
-
+                            if ($ch->attemptRetry()) {
                                 // Remove completed handle before adding again in order to retry request.
                                 curl_multi_remove_handle($this->multiCurl, $ch->curl);
 
@@ -689,6 +688,8 @@ class MultiCurl
                                     );
                                 }
                             } else {
+                                $ch->execDone();
+
                                 // Remove completed instance from active curls.
                                 unset($this->activeCurls[$key]);
 
@@ -821,7 +822,7 @@ class MultiCurl
 
         $curl->setOpts($this->options);
         $curl->setHeaders($this->headers);
-        $curl->setRetry($this->maximumNumberOfRetries);
+        $curl->setRetry($this->retry);
 
         foreach ($this->cookies as $key => $value) {
             $curl->setCookie($key, $value);
