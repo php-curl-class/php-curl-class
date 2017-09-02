@@ -3247,4 +3247,155 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             $this->assertArrayHasKey($key, $info);
         }
     }
+
+    public function testRetry()
+    {
+        $tests = array(
+            array(
+                'maximum_number_of_retries' => null,
+                'failures' => 0,
+                'expect_success' => true,
+                'expect_attempts' => 1,
+                'expect_retries' => 0,
+            ),
+            array(
+                'maximum_number_of_retries' => 0,
+                'failures' => 0,
+                'expect_success' => true,
+                'expect_attempts' => 1,
+                'expect_retries' => 0,
+            ),
+            array(
+                'maximum_number_of_retries' => 0,
+                'failures' => 1,
+                'expect_success' => false,
+                'expect_attempts' => 1,
+                'expect_retries' => 0,
+            ),
+            array(
+                'maximum_number_of_retries' => 1,
+                'failures' => 1,
+                'expect_success' => true,
+                'expect_attempts' => 2,
+                'expect_retries' => 1,
+            ),
+            array(
+                'maximum_number_of_retries' => 1,
+                'failures' => 2,
+                'expect_success' => false,
+                'expect_attempts' => 2,
+                'expect_retries' => 1,
+            ),
+            array(
+                'maximum_number_of_retries' => 2,
+                'failures' => 2,
+                'expect_success' => true,
+                'expect_attempts' => 3,
+                'expect_retries' => 2,
+            ),
+            array(
+                'maximum_number_of_retries' => 3,
+                'failures' => 3,
+                'expect_success' => true,
+                'expect_attempts' => 4,
+                'expect_retries' => 3,
+            ),
+        );
+        foreach ($tests as $test) {
+            $maximum_number_of_retries = $test['maximum_number_of_retries'];
+            $failures = $test['failures'];
+            $expect_success = $test['expect_success'];
+            $expect_attempts = $test['expect_attempts'];
+            $expect_retries = $test['expect_retries'];
+
+            $test = new Test();
+            $test->curl->setOpt(CURLOPT_COOKIEJAR, '/dev/null');
+
+            if (!($maximum_number_of_retries === null)) {
+                $test->curl->setRetry($maximum_number_of_retries);
+            }
+
+            $test->server('retry', 'GET', array('failures' => $failures));
+            $this->assertEquals($expect_success, !$test->curl->error);
+            $this->assertEquals($expect_attempts, $test->curl->attempts);
+            $this->assertEquals($expect_retries, $test->curl->retries);
+        }
+    }
+
+    public function testRetryCallable()
+    {
+        $tests = array(
+            array(
+                'maximum_number_of_retries' => null,
+                'failures' => 0,
+                'expect_success' => true,
+                'expect_attempts' => 1,
+                'expect_retries' => 0,
+            ),
+            array(
+                'maximum_number_of_retries' => 0,
+                'failures' => 0,
+                'expect_success' => true,
+                'expect_attempts' => 1,
+                'expect_retries' => 0,
+            ),
+            array(
+                'maximum_number_of_retries' => 0,
+                'failures' => 1,
+                'expect_success' => false,
+                'expect_attempts' => 1,
+                'expect_retries' => 0,
+            ),
+            array(
+                'maximum_number_of_retries' => 1,
+                'failures' => 1,
+                'expect_success' => true,
+                'expect_attempts' => 2,
+                'expect_retries' => 1,
+            ),
+            array(
+                'maximum_number_of_retries' => 1,
+                'failures' => 2,
+                'expect_success' => false,
+                'expect_attempts' => 2,
+                'expect_retries' => 1,
+            ),
+            array(
+                'maximum_number_of_retries' => 2,
+                'failures' => 2,
+                'expect_success' => true,
+                'expect_attempts' => 3,
+                'expect_retries' => 2,
+            ),
+            array(
+                'maximum_number_of_retries' => 3,
+                'failures' => 3,
+                'expect_success' => true,
+                'expect_attempts' => 4,
+                'expect_retries' => 3,
+            ),
+        );
+        foreach ($tests as $test) {
+            $maximum_number_of_retries = $test['maximum_number_of_retries'];
+            $failures = $test['failures'];
+            $expect_success = $test['expect_success'];
+            $expect_attempts = $test['expect_attempts'];
+            $expect_retries = $test['expect_retries'];
+
+            $test = new Test();
+            $test->curl->setOpt(CURLOPT_COOKIEJAR, '/dev/null');
+
+            if (!($maximum_number_of_retries === null)) {
+                $test->curl->setRetry(function ($instance) use ($maximum_number_of_retries) {
+                    $return = $instance->retries < $maximum_number_of_retries;
+                    return $return;
+                });
+            }
+
+            $test->server('retry', 'GET', array('failures' => $failures));
+            $this->assertEquals($expect_success, !$test->curl->error);
+            $this->assertEquals($expect_attempts, $test->curl->attempts);
+            $this->assertEquals($expect_retries, $test->curl->retries);
+        }
+    }
 }

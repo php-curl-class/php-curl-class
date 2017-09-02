@@ -47,7 +47,7 @@ $key = isset($data_values['key']) ? $data_values['key'] : '';
 if ($test === 'http_basic_auth') {
     if (!isset($_SERVER['PHP_AUTH_USER'])) {
         header('WWW-Authenticate: Basic realm="My Realm"');
-        header('HTTP/1.0 401 Unauthorized');
+        header('HTTP/1.1 401 Unauthorized');
         echo 'canceled';
         exit;
     }
@@ -322,6 +322,29 @@ if ($test === 'http_basic_auth') {
         }
     }
 
+    exit;
+} elseif ($test === 'retry') {
+    session_start();
+
+    if (isset($_SESSION['failures_remaining'])) {
+        $failures_remaining = $_SESSION['failures_remaining'];
+    } else {
+        $failures_remaining = (int)$_GET['failures'];
+        $_SESSION['failures_remaining'] = $failures_remaining;
+    }
+
+    if ($failures_remaining >= 1) {
+        $_SESSION['failures_remaining'] -= 1;
+
+        header('HTTP/1.1 503 Service Unavailable');
+        echo 'Service Unavailable';
+        echo ' (remaining failures: ' . $_SESSION['failures_remaining'] . ')';
+        exit;
+    }
+
+    header('HTTP/1.1 202 Accepted');
+    echo '202 Accepted';
+    echo ' (remaining failures: ' . $_SESSION['failures_remaining'] . ')';
     exit;
 }
 
