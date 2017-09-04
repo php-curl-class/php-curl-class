@@ -3,9 +3,11 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use \Curl\Curl;
 
+$max_retries = 3;
+
 $curl = new Curl();
-$curl->setRetry(function ($instance) {
-    return $instance->retries < 3;
+$curl->setRetry(function ($instance) use ($max_retries) {
+    return $instance->retries < $max_retries;
 });
 $curl->get('https://httpbin.org/status/503');
 

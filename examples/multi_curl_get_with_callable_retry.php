@@ -3,9 +3,11 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use \Curl\MultiCurl;
 
+$max_retries = 3;
+
 $multi_curl = new MultiCurl();
-$multi_curl->setRetry(function ($instance) {
-    return $instance->retries < 3;
+$multi_curl->setRetry(function ($instance) use ($max_retries) {
+    return $instance->retries < $max_retries;
 });
 $multi_curl->complete(function ($instance) {
     echo 'call to "' . $instance->url . '" completed.' . "\n";
