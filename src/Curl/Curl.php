@@ -1099,8 +1099,7 @@ class Curl
             if ($this->retryDecider === null) {
                 $attempt_retry = $this->remainingRetries >= 1;
             } else {
-                $func = $this->retryDecider;
-                $attempt_retry = $func($this);
+                $attempt_retry = call_user_func($this->retryDecider, $this);
             }
             if ($attempt_retry) {
                 $this->retries += 1;
