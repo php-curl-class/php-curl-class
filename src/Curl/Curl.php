@@ -1357,7 +1357,7 @@ class Curl
      * @access private
      * @param  $raw_headers
      *
-     * @return array
+     * @return \Curl\CaseInsensitiveArray
      */
     private function parseRequestHeaders($raw_headers)
     {
@@ -1412,7 +1412,7 @@ class Curl
      * @access private
      * @param  $raw_response_headers
      *
-     * @return array
+     * @return \Curl\CaseInsensitiveArray
      */
     private function parseResponseHeaders($raw_response_headers)
     {
