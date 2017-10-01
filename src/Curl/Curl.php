@@ -436,6 +436,7 @@ class Curl
             $url = $this->baseUrl;
         }
         $this->setUrl($url, $data);
+        $this->removeHeader('Content-Length');
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $this->setOpt(CURLOPT_HTTPGET, true);
         return $this->exec();
