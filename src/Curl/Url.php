@@ -34,7 +34,6 @@ class Url
 
         // 2.  While the input buffer is not empty, loop as follows:
         while (!empty($input)) {
-
             // A.  If the input buffer begins with a prefix of "../" or "./",
             //     then remove that prefix from the input buffer; otherwise,
             if (StrUtil::startsWith($input, '../')) {
