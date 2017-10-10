@@ -599,11 +599,10 @@ class Curl
         }
 
         $this->setOpt(CURLOPT_POST, true);
-        
         $post_data = $this->buildPostData($data);
         $this->setOpt(CURLOPT_POSTFIELDS, $post_data);
         $this->setHeader('Content-Length', strlen($post_data));
-        
+
         return $this->exec();
     }
 
