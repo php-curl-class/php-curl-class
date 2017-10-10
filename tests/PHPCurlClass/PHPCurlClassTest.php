@@ -2,8 +2,8 @@
 
 namespace CurlTest;
 
-use \Curl\Curl;
 use \Curl\CaseInsensitiveArray;
+use \Curl\Curl;
 use \Helper\Test;
 
 class CurlTest extends \PHPUnit\Framework\TestCase
@@ -105,43 +105,36 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         // curl -v --get --request GET "http://127.0.0.1:8000/" --data "foo=bar"
         $test = new Test();
         $test->server('server', 'GET', $data);
-        $this->assertEquals(Test::TEST_URL, $test->curl->baseUrl);
         $this->assertEquals(Test::TEST_URL . '?' . http_build_query($data), $test->curl->url);
 
         // curl -v --request POST "http://127.0.0.1:8000/" --data "foo=bar"
         $test = new Test();
         $test->server('server', 'POST', $data);
-        $this->assertEquals(Test::TEST_URL, $test->curl->baseUrl);
         $this->assertEquals(Test::TEST_URL, $test->curl->url);
 
         // curl -v --request PUT "http://127.0.0.1:8000/" --data "foo=bar"
         $test = new Test();
         $test->server('server', 'PUT', $data);
-        $this->assertEquals(Test::TEST_URL, $test->curl->baseUrl);
         $this->assertEquals(Test::TEST_URL, $test->curl->url);
 
         // curl -v --request PATCH "http://127.0.0.1:8000/" --data "foo=bar"
         $test = new Test();
         $test->server('server', 'PATCH', $data);
-        $this->assertEquals(Test::TEST_URL, $test->curl->baseUrl);
         $this->assertEquals(Test::TEST_URL, $test->curl->url);
 
         // curl -v --request DELETE "http://127.0.0.1:8000/?foo=bar"
         $test = new Test();
         $test->server('server', 'DELETE', $data);
-        $this->assertEquals(Test::TEST_URL, $test->curl->baseUrl);
         $this->assertEquals(Test::TEST_URL . '?' . http_build_query($data), $test->curl->url);
 
         // curl -v --get --request HEAD --head "http://127.0.0.1:8000/" --data "foo=bar"
         $test = new Test();
         $test->server('server', 'HEAD', $data);
-        $this->assertEquals(Test::TEST_URL, $test->curl->baseUrl);
         $this->assertEquals(Test::TEST_URL . '?' . http_build_query($data), $test->curl->url);
 
         // curl -v --get --request OPTIONS "http://127.0.0.1:8000/" --data "foo=bar"
         $test = new Test();
         $test->server('server', 'OPTIONS', $data);
-        $this->assertEquals(Test::TEST_URL, $test->curl->baseUrl);
         $this->assertEquals(Test::TEST_URL . '?' . http_build_query($data), $test->curl->url);
     }
 
@@ -152,49 +145,41 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $curl = new Curl(Test::TEST_URL);
         $curl->setHeader('X-DEBUG-TEST', 'delete_with_body');
         $curl->delete($data, array('wibble' => 'wubble'));
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
         $this->assertEquals('{"get":{"key":"value"},"delete":{"wibble":"wubble"}}', $curl->rawResponse);
 
         $curl = new Curl(Test::TEST_URL);
         $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->delete($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
         $this->assertEquals('key=value', $curl->response);
 
         $curl = new Curl(Test::TEST_URL);
         $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->get($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
         $this->assertEquals('key=value', $curl->response);
 
         $curl = new Curl(Test::TEST_URL);
         $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->head($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
         $this->assertEquals('HEAD /?key=value HTTP/1.1', $curl->requestHeaders['Request-Line']);
 
         $curl = new Curl(Test::TEST_URL);
         $curl->setHeader('X-DEBUG-TEST', 'get');
         $curl->options($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
         $this->assertEquals('key=value', $curl->response);
 
         $curl = new Curl(Test::TEST_URL);
         $curl->setHeader('X-DEBUG-TEST', 'request_method');
         $curl->patch($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
         $this->assertEquals('PATCH', $curl->response);
 
         $curl = new Curl(Test::TEST_URL);
         $curl->setHeader('X-DEBUG-TEST', 'post');
         $curl->post($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
         $this->assertEquals('key=value', $curl->response);
 
         $curl = new Curl(Test::TEST_URL);
         $curl->setHeader('X-DEBUG-TEST', 'put');
         $curl->put($data);
-        $this->assertEquals(Test::TEST_URL, $curl->baseUrl);
         $this->assertEquals('key=value', $curl->response);
     }
 
@@ -255,6 +240,12 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
         $test->server('redirect', 'GET');
         $this->assertEquals(Test::TEST_URL . '?redirect', $test->curl->effectiveUrl);
+
+        $test = new Test();
+        $test->server('get', 'GET');
+        $this->assertEquals(Test::TEST_URL, $test->curl->effectiveUrl);
+        $test->server('get', 'GET', array('a' => '1', 'b' => '2'));
+        $this->assertEquals(Test::TEST_URL . '?a=1&b=2', $test->curl->effectiveUrl);
     }
 
     public function testPostRequestMethod()
@@ -3396,6 +3387,98 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals($expect_success, !$test->curl->error);
             $this->assertEquals($expect_attempts, $test->curl->attempts);
             $this->assertEquals($expect_retries, $test->curl->retries);
+        }
+    }
+
+    public function testRelativeUrl()
+    {
+        $curl = new Curl(Test::TEST_URL . 'path/');
+        $this->assertEquals('http://127.0.0.1:8000/path/', (string)$curl->url);
+
+        $curl->get('test', array(
+            'a' => '1',
+            'b' => '2',
+        ));
+        $this->assertEquals('http://127.0.0.1:8000/path/test?a=1&b=2', (string)$curl->url);
+
+        $curl->get('/root', array(
+            'c' => '3',
+            'd' => '4',
+        ));
+        $this->assertEquals('http://127.0.0.1:8000/root?c=3&d=4', (string)$curl->url);
+
+        $tests = array(
+            array(
+                'args' => array(
+                    'http://www.example.com/',
+                    '/foo',
+                ),
+                'expected' => 'http://www.example.com/foo',
+            ),
+            array(
+                'args' => array(
+                    'http://www.example.com/',
+                    '/foo/',
+                ),
+                'expected' => 'http://www.example.com/foo/',
+            ),
+            array(
+                'args' => array(
+                    'http://www.example.com/',
+                    '/dir/page.html',
+                ),
+                'expected' => 'http://www.example.com/dir/page.html',
+            ),
+            array(
+                'args' => array(
+                    'http://www.example.com/dir1/page2.html',
+                    '/dir/page.html',
+                ),
+                'expected' => 'http://www.example.com/dir/page.html',
+            ),
+            array(
+                'args' => array(
+                    'http://www.example.com/dir1/page2.html',
+                    'dir/page.html',
+                ),
+                'expected' => 'http://www.example.com/dir1/dir/page.html',
+            ),
+            array(
+                'args' => array(
+                    'http://www.example.com/dir1/dir3/page.html',
+                    '../dir/page.html',
+                ),
+                'expected' => 'http://www.example.com/dir1/dir/page.html',
+            ),
+        );
+        foreach ($tests as $test) {
+            $curl = new Curl($test['args']['0']);
+            $curl->setUrl($test['args']['1']);
+            $this->assertEquals($test['expected'], $curl->getOpt(CURLOPT_URL));
+
+            $curl = new Curl($test['args']['0']);
+            $curl->setUrl($test['args']['1'], array('a' => '1', 'b' => '2'));
+            $this->assertEquals($test['expected'] . '?a=1&b=2', $curl->getOpt(CURLOPT_URL));
+
+            $curl = new Curl();
+            $curl->setUrl($test['args']['0']);
+            $curl->setUrl($test['args']['1']);
+            $this->assertEquals($test['expected'], $curl->getOpt(CURLOPT_URL));
+
+            $curl = new Curl();
+            $curl->setUrl($test['args']['0'], array('a' => '1', 'b' => '2'));
+            $curl->setUrl($test['args']['1']);
+            $this->assertEquals($test['expected'] . '?a=1&b=2', $curl->getOpt(CURLOPT_URL));
+
+            $curl = new Curl();
+            $curl->setUrl($test['args']['0']);
+            $curl->setUrl($test['args']['1'], array('a' => '1', 'b' => '2'));
+            $this->assertEquals($test['expected'] . '?a=1&b=2', $curl->getOpt(CURLOPT_URL));
+
+            $curl = new Curl();
+            $curl->setUrl($test['args']['0'], array('a' => '1', 'b' => '2'));
+            $curl->setUrl($test['args']['1'], array('c' => '3', 'd' => '4'));
+            $this->assertEquals($test['expected'] . '?c=3&d=4', $curl->getOpt(CURLOPT_URL));
         }
     }
 }
