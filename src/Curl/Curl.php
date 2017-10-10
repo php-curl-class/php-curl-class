@@ -25,7 +25,6 @@ class Curl
     public $httpStatusCode = 0;
     public $httpErrorMessage = null;
 
-    public $baseUrl = null;
     public $url = null;
     public $requestHeaders = null;
     public $responseHeaders = null;
@@ -59,7 +58,7 @@ class Curl
     private $defaultDecoder = null;
 
     public static $RFC2616 = array(
-        // RFC2616: "any CHAR except CTLs or separators".
+        // RFC 2616: "any CHAR except CTLs or separators".
         // CHAR           = <any US-ASCII character (octets 0 - 127)>
         // CTL            = <any US-ASCII control character
         //                  (octets 0 - 31) and DEL (127)>
@@ -76,7 +75,7 @@ class Curl
         'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '|', '~',
     );
     public static $RFC6265 = array(
-        // RFC6265: "US-ASCII characters excluding CTLs, whitespace DQUOTE, comma, semicolon, and backslash".
+        // RFC 6265: "US-ASCII characters excluding CTLs, whitespace DQUOTE, comma, semicolon, and backslash".
         // %x21
         '!',
         // %x23-2B
@@ -261,7 +260,7 @@ class Curl
         if (is_array($url)) {
             $data = $query_parameters;
             $query_parameters = $url;
-            $url = $this->baseUrl;
+            $url = (string)$this->url;
         }
 
         $this->setUrl($url, $query_parameters);
@@ -390,6 +389,10 @@ class Curl
         }
         $this->errorMessage = $this->curlError ? $this->curlErrorMessage : $this->httpErrorMessage;
 
+        // Reset select deferred properties so that they may be recalculated.
+        unset($this->effectiveUrl);
+        unset($this->totalTime);
+
         // Allow multicurl to attempt retry as needed.
         if ($this->isChildOfMultiCurl) {
             return;
@@ -433,7 +436,7 @@ class Curl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = $this->baseUrl;
+            $url = (string)$this->url;
         }
         $this->setUrl($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
@@ -487,7 +490,7 @@ class Curl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = $this->baseUrl;
+            $url = (string)$this->url;
         }
         $this->setUrl($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
@@ -508,7 +511,7 @@ class Curl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = $this->baseUrl;
+            $url = (string)$this->url;
         }
         $this->setUrl($url, $data);
         $this->removeHeader('Content-Length');
@@ -529,7 +532,7 @@ class Curl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = $this->baseUrl;
+            $url = (string)$this->url;
         }
 
         if (is_array($data) && empty($data)) {
@@ -572,7 +575,7 @@ class Curl
         if (is_array($url)) {
             $follow_303_with_post = (bool)$data;
             $data = $url;
-            $url = $this->baseUrl;
+            $url = (string)$this->url;
         }
 
         $this->setUrl($url);
@@ -613,7 +616,7 @@ class Curl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = $this->baseUrl;
+            $url = (string)$this->url;
         }
         $this->setUrl($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -642,7 +645,7 @@ class Curl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = $this->baseUrl;
+            $url = (string)$this->url;
         }
         $this->setUrl($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'SEARCH');
@@ -1071,8 +1074,14 @@ class Curl
      */
     public function setUrl($url, $mixed_data = '')
     {
-        $this->baseUrl = $url;
-        $this->url = $this->buildUrl($url, $mixed_data);
+        $built_url = $this->buildUrl($url, $mixed_data);
+
+        if ($this->url === null) {
+            $this->url = (string)new Url($built_url);
+        } else {
+            $this->url = (string)new Url($this->url, $built_url);
+        }
+
         $this->setOpt(CURLOPT_URL, $this->url);
     }
 
