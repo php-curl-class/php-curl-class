@@ -5,6 +5,7 @@
 ```php
 $curl = new Curl();
 $curl->verbose();
+$curl->get('https://www.example.com/');
 var_dump($curl);
 ```
 
