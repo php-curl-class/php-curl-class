@@ -16,6 +16,7 @@ PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.
 - [Quick Start and Examples](#quick-start-and-examples)
 - [Available Methods](#available-methods)
 - [Security](#security)
+- [Troubleshooting](#troubleshooting)
 - [Run Tests](#run-tests)
 - [Contribute](#contribute)
 
@@ -297,6 +298,10 @@ MultiCurl::verbose($on = true, $output = STDERR)
 ### Security
 
 See [SECURITY](https://github.com/php-curl-class/php-curl-class/blob/master/SECURITY.md) for security considerations.
+
+### Troubleshooting
+
+See [TROUBLESHOOTING](https://github.com/php-curl-class/php-curl-class/blob/master/TROUBLESHOOTING.md) for troubleshooting.
 
 ### Run Tests
 

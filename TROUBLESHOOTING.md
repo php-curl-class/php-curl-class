@@ -7,7 +7,7 @@ $curl = new Curl();
 $curl->verbose();
 ```
 
-### Compare output with and without the library
+### Compare request with and without the library
 
 ```php
 $curl = new Curl();
