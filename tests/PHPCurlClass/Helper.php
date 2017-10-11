@@ -33,20 +33,20 @@ class Test
      * previously forced method might be inherited.
      * Especially, POSTs must be configured to not perform post-redirect-get.
      */
-    private function chainedRequest($request_method)
+    private function chainedRequest($request_method, $data)
     {
         if ($request_method === 'POST') {
-            $this->server('request_method', $request_method, array(), true);
+            $this->server('request_method', $request_method, $data, true);
         } else {
-            $this->server('request_method', $request_method);
+            $this->server('request_method', $request_method, $data);
         }
         \PHPUnit\Framework\Assert::assertEquals($request_method, $this->curl->responseHeaders['X-REQUEST-METHOD']);
     }
 
-    public function chainRequests($first, $second)
+    public function chainRequests($first, $second, $data = array())
     {
-        $this->chainedRequest($first);
-        $this->chainedRequest($second);
+        $this->chainedRequest($first, $data);
+        $this->chainedRequest($second, $data);
     }
 }
 
