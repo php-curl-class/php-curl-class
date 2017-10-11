@@ -393,6 +393,12 @@ class Curl
         unset($this->effectiveUrl);
         unset($this->totalTime);
 
+        // Reset content-length possibly set from a PUT or SEARCH request.
+        $this->unsetHeader('Content-Length');
+
+        // Reset nobody setting possibly set from a HEAD request.
+        $this->setOpt(CURLOPT_NOBODY, false);
+
         // Allow multicurl to attempt retry as needed.
         if ($this->isChildOfMultiCurl) {
             return;
@@ -514,7 +520,6 @@ class Curl
             $url = (string)$this->url;
         }
         $this->setUrl($url, $data);
-        $this->removeHeader('Content-Length');
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
         return $this->exec();
     }

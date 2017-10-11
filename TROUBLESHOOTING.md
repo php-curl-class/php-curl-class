@@ -5,6 +5,7 @@
 ```php
 $curl = new Curl();
 $curl->verbose();
+var_dump($curl);
 ```
 
 ### Compare request with and without the library

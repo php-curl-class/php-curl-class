@@ -2809,6 +2809,16 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('GET', 'DELETE');
         $test->chainRequests('GET', 'HEAD');
         $test->chainRequests('GET', 'OPTIONS');
+        $test->chainRequests('GET', 'GET');
+
+        $test = new Test();
+        $test->chainRequests('GET', 'POST',    array('a' => '1'));
+        $test->chainRequests('GET', 'PUT',     array('b' => '22'));
+        $test->chainRequests('GET', 'PATCH',   array('c' => '333'));
+        $test->chainRequests('GET', 'DELETE',  array('d' => '4444'));
+        $test->chainRequests('GET', 'HEAD',    array('e' => '55555'));
+        $test->chainRequests('GET', 'OPTIONS', array('f' => '666666'));
+        $test->chainRequests('GET', 'GET',     array('g' => '7777777'));
     }
 
     public function testRequestMethodSuccessivePostRequests()
@@ -2820,6 +2830,16 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('POST', 'DELETE');
         $test->chainRequests('POST', 'HEAD');
         $test->chainRequests('POST', 'OPTIONS');
+        $test->chainRequests('POST', 'POST');
+
+        $test = new Test();
+        $test->chainRequests('POST', 'GET',     array('a' => '1'));
+        $test->chainRequests('POST', 'PUT',     array('b' => '22'));
+        $test->chainRequests('POST', 'PATCH',   array('c' => '333'));
+        $test->chainRequests('POST', 'DELETE',  array('d' => '4444'));
+        $test->chainRequests('POST', 'HEAD',    array('e' => '55555'));
+        $test->chainRequests('POST', 'OPTIONS', array('f' => '666666'));
+        $test->chainRequests('POST', 'POST',    array('g' => '7777777'));
     }
 
     public function testRequestMethodSuccessivePutRequests()
@@ -2831,6 +2851,16 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('PUT', 'DELETE');
         $test->chainRequests('PUT', 'HEAD');
         $test->chainRequests('PUT', 'OPTIONS');
+        $test->chainRequests('PUT', 'PUT');
+
+        $test = new Test();
+        $test->chainRequests('PUT', 'GET',     array('a' => '1'));
+        $test->chainRequests('PUT', 'POST',    array('b' => '22'));
+        $test->chainRequests('PUT', 'PATCH',   array('c' => '333'));
+        $test->chainRequests('PUT', 'DELETE',  array('d' => '4444'));
+        $test->chainRequests('PUT', 'HEAD',    array('e' => '55555'));
+        $test->chainRequests('PUT', 'OPTIONS', array('f' => '666666'));
+        $test->chainRequests('PUT', 'PUT',     array('g' => '7777777'));
     }
 
     public function testRequestMethodSuccessivePatchRequests()
@@ -2842,6 +2872,16 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('PATCH', 'DELETE');
         $test->chainRequests('PATCH', 'HEAD');
         $test->chainRequests('PATCH', 'OPTIONS');
+        $test->chainRequests('PATCH', 'PATCH');
+
+        $test = new Test();
+        $test->chainRequests('PATCH', 'GET',     array('a' => '1'));
+        $test->chainRequests('PATCH', 'POST',    array('b' => '22'));
+        $test->chainRequests('PATCH', 'PUT',     array('c' => '333'));
+        $test->chainRequests('PATCH', 'DELETE',  array('d' => '4444'));
+        $test->chainRequests('PATCH', 'HEAD',    array('e' => '55555'));
+        $test->chainRequests('PATCH', 'OPTIONS', array('f' => '666666'));
+        $test->chainRequests('PATCH', 'PATCH',   array('g' => '7777777'));
     }
 
     public function testRequestMethodSuccessiveDeleteRequests()
@@ -2853,6 +2893,16 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('DELETE', 'PATCH');
         $test->chainRequests('DELETE', 'HEAD');
         $test->chainRequests('DELETE', 'OPTIONS');
+        $test->chainRequests('DELETE', 'DELETE');
+
+        $test = new Test();
+        $test->chainRequests('DELETE', 'GET',     array('a' => '1'));
+        $test->chainRequests('DELETE', 'POST',    array('b' => '22'));
+        $test->chainRequests('DELETE', 'PUT',     array('c' => '333'));
+        $test->chainRequests('DELETE', 'PATCH',   array('d' => '4444'));
+        $test->chainRequests('DELETE', 'HEAD',    array('e' => '55555'));
+        $test->chainRequests('DELETE', 'OPTIONS', array('f' => '666666'));
+        $test->chainRequests('DELETE', 'DELETE',  array('g' => '7777777'));
     }
 
     public function testRequestMethodSuccessiveHeadRequests()
@@ -2864,6 +2914,16 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('HEAD', 'PATCH');
         $test->chainRequests('HEAD', 'DELETE');
         $test->chainRequests('HEAD', 'OPTIONS');
+        $test->chainRequests('HEAD', 'HEAD');
+
+        $test = new Test();
+        $test->chainRequests('HEAD', 'GET',     array('a' => '1'));
+        $test->chainRequests('HEAD', 'POST',    array('b' => '22'));
+        $test->chainRequests('HEAD', 'PUT',     array('c' => '333'));
+        $test->chainRequests('HEAD', 'PATCH',   array('d' => '4444'));
+        $test->chainRequests('HEAD', 'DELETE',  array('e' => '55555'));
+        $test->chainRequests('HEAD', 'OPTIONS', array('f' => '666666'));
+        $test->chainRequests('HEAD', 'HEAD',    array('g' => '7777777'));
     }
 
     public function testRequestMethodSuccessiveOptionsRequests()
@@ -2875,6 +2935,16 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('OPTIONS', 'PATCH');
         $test->chainRequests('OPTIONS', 'DELETE');
         $test->chainRequests('OPTIONS', 'HEAD');
+        $test->chainRequests('OPTIONS', 'OPTIONS');
+
+        $test = new Test();
+        $test->chainRequests('OPTIONS', 'GET',     array('a' => '1'));
+        $test->chainRequests('OPTIONS', 'POST',    array('b' => '22'));
+        $test->chainRequests('OPTIONS', 'PUT',     array('c' => '333'));
+        $test->chainRequests('OPTIONS', 'PATCH',   array('d' => '4444'));
+        $test->chainRequests('OPTIONS', 'DELETE',  array('e' => '55555'));
+        $test->chainRequests('OPTIONS', 'HEAD',    array('f' => '666666'));
+        $test->chainRequests('OPTIONS', 'OPTIONS', array('g' => '7777777'));
     }
 
     public function testMemoryLeak()
