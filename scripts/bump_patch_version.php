@@ -13,7 +13,7 @@ foreach (array(
             'const VERSION = \'' . $new_version . '\';',
         ),
     ) as $info) {
-    list($filepath, $find, $replace)  = $info;
+    list($filepath, $find, $replace) = $info;
     $data = preg_replace($find, $replace, file_get_contents($filepath));
     file_put_contents($filepath, $data);
 }
