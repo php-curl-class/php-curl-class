@@ -128,10 +128,10 @@ $curl->delete('https://api.example.com/user/', array(
 ```
 
 ```php
-// Enable gzip compression and download a file.
+// Enable all supported encoding types and download a file.
 $curl = new Curl();
-$curl->setOpt(CURLOPT_ENCODING , 'gzip');
-$curl->download('https://www.example.com/image.png', '/tmp/myimage.png');
+$curl->setOpt(CURLOPT_ENCODING , '');
+$curl->download('https://www.example.com/file.bin', '/tmp/myfile.bin');
 ```
 
 ```php
