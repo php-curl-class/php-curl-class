@@ -746,6 +746,18 @@ class Curl
     }
 
     /**
+     * Get Response Cookies
+     *
+     * @access public
+     *
+     * @return array
+     */
+    public function getResponseCookies()
+    {
+        return $this->responseCookies;
+    }
+
+    /**
      * Set Max Filesize
      *
      * @access public
