@@ -2615,6 +2615,25 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertArrayHasKey('Status-Line', $response_headers);
     }
 
+    public function testMalformedResponseHeaders()
+    {
+        $response =
+            'HTTP/1.0 403 Forbidden' . "\n" .
+            'Cache-Control: no-cache' . "\n" .
+            'Content-Type: text/html' . "\n" .
+            'Strict-Transport-Security: max-age=0' .
+            "\r\n" .
+            "\n";
+
+        $reflector = new \ReflectionClass('\Curl\Curl');
+        $reflection_method = $reflector->getMethod('parseResponseHeaders');
+        $reflection_method->setAccessible(true);
+
+        $curl = new Curl();
+        $response_headers = $reflection_method->invoke($curl, $response);
+        $this->assertTrue($response_headers instanceof CaseInsensitiveArray);
+    }
+
     public function testArrayToStringConversion()
     {
         $test = new Test();
