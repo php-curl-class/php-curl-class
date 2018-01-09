@@ -4,4 +4,7 @@
             <directory suffix=".php">./PHPCurlClass/</directory>
         </testsuite>
     </testsuites>
+    <php>
+        <ini name="error_reporting" value="E_ALL" />
+    </php>
 </phpunit>
