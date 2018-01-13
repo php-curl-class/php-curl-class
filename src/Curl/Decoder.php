@@ -39,10 +39,52 @@ class Decoder
      */
     public static function decodeXml($response)
     {
+        $args = func_get_args();
+        $response = array_shift($args);
+
         $xml_obj = @simplexml_load_string($response);
-        if (!($xml_obj === false)) {
-            $response = $xml_obj;
+        if ($xml_obj !== false) {
+            $response = static::castXmlResponse(array_shift($args), $xml_obj);
         }
+
         return $response;
+    }
+
+    /**
+     * Cast a response data to a native PHP type.
+     *
+     * @access public
+     * @param  string $type
+     * @param  mixed $value
+     * @return mixed
+     */
+    public static function castXmlResponse($type, $value)
+    {
+        switch ($type) {
+            case 'array':
+                return static::object2array($value);
+            default:
+                return $value;
+        }
+    }
+
+    /**
+     * Translate object to array.
+     *
+     * @access public
+     * @param  mixed $var
+     * @return mixed
+     */
+    public static function object2array($var)
+    {
+        if (is_object($var)) {
+            $var = get_object_vars($var);
+        }
+
+        if (is_array($var)) {
+            return array_map(__METHOD__, $var);
+        } else {
+            return $var;
+        }
     }
 }
