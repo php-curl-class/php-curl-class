@@ -669,26 +669,26 @@ class MultiCurl
 
             while (!($info_array = curl_multi_info_read($this->multiCurl)) === false) {
                 if ($info_array['msg'] === CURLMSG_DONE) {
-                    foreach ($this->activeCurls as $key => $ch) {
-                        if ($ch->curl === $info_array['handle']) {
+                    foreach ($this->activeCurls as $key => $curl) {
+                        if ($curl->curl === $info_array['handle']) {
                             // Set the error code for multi handles using the "result" key in the array returned by
                             // curl_multi_info_read(). Using curl_errno() on a multi handle will incorrectly return 0
                             // for errors.
-                            $ch->curlErrorCode = $info_array['result'];
-                            $ch->exec($ch->curl);
+                            $curl->curlErrorCode = $info_array['result'];
+                            $curl->exec($curl->curl);
 
-                            if ($ch->attemptRetry()) {
+                            if ($curl->attemptRetry()) {
                                 // Remove completed handle before adding again in order to retry request.
-                                curl_multi_remove_handle($this->multiCurl, $ch->curl);
+                                curl_multi_remove_handle($this->multiCurl, $curl->curl);
 
-                                $curlm_error_code = curl_multi_add_handle($this->multiCurl, $ch->curl);
+                                $curlm_error_code = curl_multi_add_handle($this->multiCurl, $curl->curl);
                                 if (!($curlm_error_code === CURLM_OK)) {
                                     throw new \ErrorException(
                                         'cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code)
                                     );
                                 }
                             } else {
-                                $ch->execDone();
+                                $curl->execDone();
 
                                 // Remove completed instance from active curls.
                                 unset($this->activeCurls[$key]);
@@ -697,10 +697,10 @@ class MultiCurl
                                 if (count($this->curls) >= 1) {
                                     $this->initHandle(array_shift($this->curls));
                                 }
-                                curl_multi_remove_handle($this->multiCurl, $ch->curl);
+                                curl_multi_remove_handle($this->multiCurl, $curl->curl);
 
                                 // Clean up completed instance.
-                                $ch->close();
+                                $curl->close();
                             }
 
                             break;
