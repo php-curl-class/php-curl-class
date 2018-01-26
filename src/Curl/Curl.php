@@ -33,11 +33,11 @@ class Curl
     public $response = null;
     public $rawResponse = null;
 
-    public $beforeSendFunction = null;
-    public $downloadCompleteFunction = null;
-    public $successFunction = null;
-    public $errorFunction = null;
-    public $completeFunction = null;
+    public $beforeSendCallback = null;
+    public $downloadCompleteCallback = null;
+    public $successCallback = null;
+    public $errorCallback = null;
+    public $completeCallback = null;
     public $fileHandle = null;
 
     public $attempts = 0;
@@ -136,7 +136,7 @@ class Curl
      */
     public function beforeSend($callback)
     {
-        $this->beforeSendFunction = $callback;
+        $this->beforeSendCallback = $callback;
     }
 
     /**
@@ -230,7 +230,7 @@ class Curl
      */
     public function complete($callback)
     {
-        $this->completeFunction = $callback;
+        $this->completeCallback = $callback;
     }
 
     /**
@@ -281,7 +281,7 @@ class Curl
     public function download($url, $mixed_filename)
     {
         if (is_callable($mixed_filename)) {
-            $this->downloadCompleteFunction = $mixed_filename;
+            $this->downloadCompleteCallback = $mixed_filename;
             $this->fileHandle = tmpfile();
         } else {
             $filename = $mixed_filename;
@@ -303,7 +303,7 @@ class Curl
             $this->fileHandle = fopen($download_filename, $mode);
 
             // Move the downloaded temporary file to the destination save path.
-            $this->downloadCompleteFunction = function ($instance, $fh) use ($download_filename, $filename) {
+            $this->downloadCompleteCallback = function ($instance, $fh) use ($download_filename, $filename) {
                 // Close the open file handle before renaming the file.
                 if (is_resource($fh)) {
                     fclose($fh);
@@ -327,7 +327,7 @@ class Curl
      */
     public function error($callback)
     {
-        $this->errorFunction = $callback;
+        $this->errorCallback = $callback;
     }
 
     /**
@@ -344,7 +344,7 @@ class Curl
 
         if ($ch === null) {
             $this->responseCookies = array();
-            $this->call($this->beforeSendFunction);
+            $this->call($this->beforeSendCallback);
             $this->rawResponse = curl_exec($this->curl);
             $this->curlErrorCode = curl_errno($this->curl);
             $this->curlErrorMessage = curl_error($this->curl);
@@ -416,12 +416,12 @@ class Curl
     public function execDone()
     {
         if ($this->error) {
-            $this->call($this->errorFunction);
+            $this->call($this->errorCallback);
         } else {
-            $this->call($this->successFunction);
+            $this->call($this->successCallback);
         }
 
-        $this->call($this->completeFunction);
+        $this->call($this->completeCallback);
 
         // Close open file handles and reset the curl instance.
         if (!($this->fileHandle === null)) {
@@ -1145,7 +1145,7 @@ class Curl
      */
     public function success($callback)
     {
-        $this->successFunction = $callback;
+        $this->successCallback = $callback;
     }
 
     /**
@@ -1321,10 +1321,10 @@ class Curl
      */
     private function downloadComplete($fh)
     {
-        if (!$this->error && $this->downloadCompleteFunction) {
+        if (!$this->error && $this->downloadCompleteCallback) {
             rewind($fh);
-            $this->call($this->downloadCompleteFunction, $fh);
-            $this->downloadCompleteFunction = null;
+            $this->call($this->downloadCompleteCallback, $fh);
+            $this->downloadCompleteCallback = null;
         }
 
         if (is_resource($fh)) {

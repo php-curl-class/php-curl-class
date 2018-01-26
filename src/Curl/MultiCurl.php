@@ -13,10 +13,10 @@ class MultiCurl
     private $concurrency = 25;
     private $nextCurlId = 0;
 
-    private $beforeSendFunction = null;
-    private $successFunction = null;
-    private $errorFunction = null;
-    private $completeFunction = null;
+    private $beforeSendCallback = null;
+    private $successCallback = null;
+    private $errorCallback = null;
+    private $completeCallback = null;
 
     private $retry = null;
 
@@ -82,11 +82,11 @@ class MultiCurl
         // Use tmpfile() or php://temp to avoid "Too many open files" error.
         if (is_callable($mixed_filename)) {
             $callback = $mixed_filename;
-            $curl->downloadCompleteFunction = $callback;
+            $curl->downloadCompleteCallback = $callback;
             $curl->fileHandle = tmpfile();
         } else {
             $filename = $mixed_filename;
-            $curl->downloadCompleteFunction = function ($instance, $fh) use ($filename) {
+            $curl->downloadCompleteCallback = function ($instance, $fh) use ($filename) {
                 file_put_contents($filename, stream_get_contents($fh));
             };
             $curl->fileHandle = fopen('php://temp', 'wb');
@@ -312,7 +312,7 @@ class MultiCurl
      */
     public function beforeSend($callback)
     {
-        $this->beforeSendFunction = $callback;
+        $this->beforeSendCallback = $callback;
     }
 
     /**
@@ -339,7 +339,7 @@ class MultiCurl
      */
     public function complete($callback)
     {
-        $this->completeFunction = $callback;
+        $this->completeCallback = $callback;
     }
 
     /**
@@ -350,7 +350,7 @@ class MultiCurl
      */
     public function error($callback)
     {
-        $this->errorFunction = $callback;
+        $this->errorCallback = $callback;
     }
 
     /**
@@ -725,7 +725,7 @@ class MultiCurl
      */
     public function success($callback)
     {
-        $this->successFunction = $callback;
+        $this->successCallback = $callback;
     }
 
     /**
@@ -807,17 +807,17 @@ class MultiCurl
     private function initHandle($curl)
     {
         // Set callbacks if not already individually set.
-        if ($curl->beforeSendFunction === null) {
-            $curl->beforeSend($this->beforeSendFunction);
+        if ($curl->beforeSendCallback === null) {
+            $curl->beforeSend($this->beforeSendCallback);
         }
-        if ($curl->successFunction === null) {
-            $curl->success($this->successFunction);
+        if ($curl->successCallback === null) {
+            $curl->success($this->successCallback);
         }
-        if ($curl->errorFunction === null) {
-            $curl->error($this->errorFunction);
+        if ($curl->errorCallback === null) {
+            $curl->error($this->errorCallback);
         }
-        if ($curl->completeFunction === null) {
-            $curl->complete($this->completeFunction);
+        if ($curl->completeCallback === null) {
+            $curl->complete($this->completeCallback);
         }
 
         $curl->setOpts($this->options);
@@ -837,6 +837,6 @@ class MultiCurl
         }
 
         $this->activeCurls[$curl->id] = $curl;
-        $curl->call($curl->beforeSendFunction);
+        $curl->call($curl->beforeSendCallback);
     }
 }

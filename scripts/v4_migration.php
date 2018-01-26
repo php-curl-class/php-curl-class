@@ -29,8 +29,8 @@ $migrations = array(
     'response_headers' => 'responseHeaders',
     'raw_response_headers' => 'rawResponseHeaders',
     'raw_response' => 'rawResponse',
-    'before_send_function' => 'beforeSendFunction',
-    'download_complete_function' => 'downloadCompleteFunction',
+    'before_send_function' => 'beforeSendCallback',
+    'download_complete_function' => 'downloadCompleteCallback',
 );
 
 $directory = new RecursiveDirectoryIterator($cwd);
