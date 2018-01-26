@@ -50,10 +50,10 @@ class Curl
     private $headers = array();
     private $options = array();
 
-    private $jsonDecoder = '\Curl\Decoder::decodeJson';
+    public $jsonDecoder = null;
     private $jsonDecoderArgs = array();
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
-    private $xmlDecoder = '\Curl\Decoder::decodeXml';
+    public $xmlDecoder = null;
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
     private $defaultDecoder = null;
 
@@ -341,6 +341,13 @@ class Curl
     public function exec($ch = null)
     {
         $this->attempts += 1;
+
+        if ($this->jsonDecoder === null) {
+            $this->setDefaultJsonDecoder();
+        }
+        if ($this->xmlDecoder === null) {
+            $this->setDefaultXmlDecoder();
+        }
 
         if ($ch === null) {
             $this->responseCookies = array();
@@ -881,9 +888,9 @@ class Curl
             $this->defaultDecoder = $mixed;
         } else {
             if ($mixed === 'json') {
-                $this->defaultDecoder = $this->jsonDecoder;
+                $this->defaultDecoder = '\Curl\Decoder::decodeJson';
             } elseif ($mixed === 'xml') {
-                $this->defaultDecoder = $this->xmlDecoder;
+                $this->defaultDecoder = '\Curl\Decoder::decodeXml';
             }
         }
     }

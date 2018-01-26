@@ -2079,6 +2079,30 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'json_response');
+        $multi_curl->setJsonDecoder(function ($response) {
+            return 'first decoder';
+        });
+
+        $post_1 = $multi_curl->addPost(Test::TEST_URL, $data);
+        $post_1->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertEquals('first decoder', $instance->response);
+        });
+
+        $post_2 = $multi_curl->addPost(Test::TEST_URL, $data);
+        $post_2->setJsonDecoder(function ($response) {
+            return 'second decoder';
+        });
+        $post_2->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertEquals('second decoder', $instance->response);
+        });
+
+        $multi_curl->start();
+        $this->assertEquals('first decoder', $post_1->response);
+        $this->assertEquals('second decoder', $post_2->response);
+
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'json_response');
 
         $post_1 = $multi_curl->addPost(Test::TEST_URL, $data);
         $post_1->complete(function ($instance) {
@@ -2152,6 +2176,30 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testXMLDecoder()
     {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'xml_with_cdata_response');
+        $multi_curl->setXmlDecoder(function ($response) {
+            return 'first decoder';
+        });
+
+        $post_1 = $multi_curl->addPost(Test::TEST_URL);
+        $post_1->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertEquals('first decoder', $instance->response);
+        });
+
+        $post_2 = $multi_curl->addPost(Test::TEST_URL);
+        $post_2->setXmlDecoder(function ($response) {
+            return 'second decoder';
+        });
+        $post_2->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertEquals('second decoder', $instance->response);
+        });
+
+        $multi_curl->start();
+        $this->assertEquals('first decoder', $post_1->response);
+        $this->assertEquals('second decoder', $post_2->response);
+
+
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'xml_with_cdata_response');
 

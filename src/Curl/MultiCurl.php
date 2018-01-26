@@ -820,12 +820,18 @@ class MultiCurl
             $curl->complete($this->completeCallback);
         }
 
+        // Set decoders if not already individually set.
+        if ($curl->jsonDecoder === null) {
+            $curl->setJsonDecoder($this->jsonDecoder);
+        }
+        if ($curl->xmlDecoder === null) {
+            $curl->setXmlDecoder($this->xmlDecoder);
+        }
+
         $curl->setOpts($this->options);
         $curl->setHeaders($this->headers);
         $curl->setRetry($this->retry);
         $curl->setCookies($this->cookies);
-        $curl->setJsonDecoder($this->jsonDecoder);
-        $curl->setXmlDecoder($this->xmlDecoder);
 
         $curlm_error_code = curl_multi_add_handle($this->multiCurl, $curl->curl);
         if (!($curlm_error_code === CURLM_OK)) {
