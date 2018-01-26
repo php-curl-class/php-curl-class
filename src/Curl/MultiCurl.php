@@ -823,11 +823,7 @@ class MultiCurl
         $curl->setOpts($this->options);
         $curl->setHeaders($this->headers);
         $curl->setRetry($this->retry);
-
-        foreach ($this->cookies as $key => $value) {
-            $curl->setCookie($key, $value);
-        }
-
+        $curl->setCookies($this->cookies);
         $curl->setJsonDecoder($this->jsonDecoder);
         $curl->setXmlDecoder($this->xmlDecoder);
 
