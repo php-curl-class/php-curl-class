@@ -2070,6 +2070,71 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('yummy', $get_2->responseCookies['mycookie']);
     }
 
+    public function testJsonRequest()
+    {
+        foreach (array(
+                array(
+                    array(
+                        'key' => 'value',
+                    ),
+                    '{"key":"value"}',
+                ),
+                array(
+                    array(
+                        'key' => 'value',
+                        'strings' => array(
+                            'a',
+                            'b',
+                            'c',
+                        ),
+                    ),
+                    '{"key":"value","strings":["a","b","c"]}',
+                ),
+            ) as $test) {
+            list($data, $expected_response) = $test;
+
+            $multi_curl = new MultiCurl();
+            $multi_curl->setHeader('X-DEBUG-TEST', 'post_json');
+            $multi_curl->complete(function ($instance) use ($expected_response, $data) {
+                \PHPUnit\Framework\Assert::assertEquals($expected_response, $instance->response);
+            });
+            $multi_curl->addPost(Test::TEST_URL, json_encode($data));
+            $multi_curl->start();
+
+            foreach (array(
+                'Content-Type',
+                'content-type',
+                'CONTENT-TYPE') as $key) {
+                foreach (array(
+                    'APPLICATION/JSON',
+                    'APPLICATION/JSON; CHARSET=UTF-8',
+                    'APPLICATION/JSON;CHARSET=UTF-8',
+                    'application/json',
+                    'application/json; charset=utf-8',
+                    'application/json;charset=UTF-8',
+                    ) as $value) {
+                    $multi_curl = new MultiCurl();
+                    $multi_curl->setHeader('X-DEBUG-TEST', 'post_json');
+                    $multi_curl->setHeader($key, $value);
+                    $multi_curl->complete(function ($instance) use ($expected_response, $data) {
+                        \PHPUnit\Framework\Assert::assertEquals($expected_response, $instance->response);
+                    });
+                    $multi_curl->addPost(Test::TEST_URL, json_encode($data));
+                    $multi_curl->start();
+
+                    $multi_curl = new MultiCurl();
+                    $multi_curl->setHeader('X-DEBUG-TEST', 'post_json');
+                    $multi_curl->setHeader($key, $value);
+                    $multi_curl->complete(function ($instance) use ($expected_response, $data) {
+                        \PHPUnit\Framework\Assert::assertEquals($expected_response, $instance->response);
+                    });
+                    $multi_curl->addPost(Test::TEST_URL, $data);
+                    $multi_curl->start();
+                }
+            }
+        }
+    }
+
     public function testJsonDecoder()
     {
         $data = array(
