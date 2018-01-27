@@ -482,6 +482,10 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             $this->markTestSkipped();
         }
 
+        if (getenv('TRAVIS_PHP_VERSION') === 'hhvm-nightly') {
+            $this->markTestSkipped();
+        }
+
         try {
             // Follow 303 redirection with POST
             $test = new Test();

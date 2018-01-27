@@ -95,15 +95,16 @@ EOF
     root="${script_dir}/PHPCurlClass"
     sudo cp -v "${root}/"* "/usr/share/nginx/html/"
 
-    phpunit_shim
-
     # Use an older version of PHPUnit for HHVM builds so that unit tests can be
     # started. HHVM 3.18 (PHP_VERSION=PHP 5.6.99-hhvm) is the last version to
     # run on Trusty yet PHPUnit 6 requires PHP 7.0 or PHP 7.1.
     # Avoids error:
     #   This version of PHPUnit is supported on PHP 7.0 and PHP 7.1.
     #   You are using PHP 5.6.99-hhvm (/usr/bin/hhvm).
-    composer require phpunit/phpunit:5.7.*
+    if [[ "${TRAVIS_PHP_VERSION}" == "hhvm" ]]; then
+        phpunit_shim
+        composer require phpunit/phpunit:5.7.*
+    fi
 elif [[ "${TRAVIS_PHP_VERSION}" == "nightly" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 fi
