@@ -46,14 +46,15 @@ class Curl
     public $remainingRetries = 0;
     public $retryDecider = null;
 
+    public $jsonDecoder = null;
+    public $xmlDecoder = null;
+
     private $cookies = array();
     private $headers = array();
     private $options = array();
 
-    public $jsonDecoder = null;
     private $jsonDecoderArgs = array();
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
-    public $xmlDecoder = null;
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
     private $defaultDecoder = null;
 
