@@ -254,7 +254,7 @@ class Curl
      * @param  $query_parameters
      * @param  $data
      *
-     * @return mixed
+     * @return mixed Returns the value provided by exec.
      */
     public function delete($url, $query_parameters = array(), $data = array())
     {
@@ -401,7 +401,7 @@ class Curl
         unset($this->effectiveUrl);
         unset($this->totalTime);
 
-        // Reset content-length possibly set from a PUT or SEARCH request.
+        // Reset content-length header possibly set from a PUT or SEARCH request.
         $this->unsetHeader('Content-Length');
 
         // Reset nobody setting possibly set from a HEAD request.
@@ -498,7 +498,7 @@ class Curl
      * @param  $url
      * @param  $data
      *
-     * @return mixed
+     * @return mixed Returns the value provided by exec.
      */
     public function head($url, $data = array())
     {
@@ -519,7 +519,7 @@ class Curl
      * @param  $url
      * @param  $data
      *
-     * @return mixed
+     * @return mixed Returns the value provided by exec.
      */
     public function options($url, $data = array())
     {
@@ -539,7 +539,7 @@ class Curl
      * @param  $url
      * @param  $data
      *
-     * @return mixed
+     * @return mixed Returns the value provided by exec.
      */
     public function patch($url, $data = array())
     {
@@ -577,7 +577,7 @@ class Curl
      *         to reset this option. Using these PHP engines, it is therefore impossible to
      *         restore this behavior on an existing php-curl-class Curl object.
      *
-     * @return mixed
+     * @return mixed Returns the value provided by exec.
      *
      * [1] https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.2
      * [2] https://github.com/php/php-src/pull/531
@@ -623,7 +623,7 @@ class Curl
      * @param  $url
      * @param  $data
      *
-     * @return mixed
+     * @return mixed Returns the value provided by exec.
      */
     public function put($url, $data = array())
     {
@@ -652,7 +652,7 @@ class Curl
      * @param  $url
      * @param  $data
      *
-     * @return mixed
+     * @return mixed Returns the value provided by exec.
      */
     public function search($url, $data = array())
     {
@@ -1414,9 +1414,14 @@ class Curl
      * @param  $raw_response
      *
      * @return mixed
-     *   Provided the content-type is determined to be json or xml:
-     *     Returns stdClass object when the default json decoder is used and the content-type is json.
-     *     Returns SimpleXMLElement object when the default xml decoder is used and the content-type is xml.
+     *   If the response content-type is json:
+     *     Returns the json decoder's return value: A stdClass object when the default json decoder is used.
+     *   If the response content-type is xml:
+     *     Returns the xml decoder's return value: A SimpleXMLElement object when the default xml decoder is used.
+     *   If the response content-type is something else:
+     *     Returns the original raw response unless a default decoder has been set.
+     *   If the response content-type cannot be determined:
+     *     Returns the original raw response.
      */
     private function parseResponse($response_headers, $raw_response)
     {
