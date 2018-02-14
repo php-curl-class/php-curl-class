@@ -2,6 +2,7 @@ language: php
 
 matrix:
   allow_failures:
+    - php: hhvm-nightly
     - php: nightly
   include:
     - php: 5.3
