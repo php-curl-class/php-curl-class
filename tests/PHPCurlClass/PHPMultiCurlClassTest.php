@@ -105,7 +105,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($patch_complete_called);
                 $patch_before_send_called = true;
             }
-            if ($request_method === 'POST') {
+            if ($request_method === 'POST' || $instance->getOpt(CURLOPT_POST)) {
                 \PHPUnit\Framework\Assert::assertFalse($post_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_error_called);
@@ -174,7 +174,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($patch_complete_called);
                 $patch_success_called = true;
             }
-            if ($request_method === 'POST') {
+            if ($request_method === 'POST' || $instance->getOpt(CURLOPT_POST)) {
                 \PHPUnit\Framework\Assert::assertTrue($post_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_error_called);
@@ -262,7 +262,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($patch_complete_called);
                 $patch_complete_called = true;
             }
-            if ($request_method === 'POST') {
+            if ($request_method === 'POST' || $instance->getOpt(CURLOPT_POST)) {
                 \PHPUnit\Framework\Assert::assertTrue($post_before_send_called);
                 \PHPUnit\Framework\Assert::assertTrue($post_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_error_called);
@@ -428,7 +428,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($patch_complete_called);
                 $patch_before_send_called = true;
             }
-            if ($request_method === 'POST') {
+            if ($request_method === 'POST' || $instance->getOpt(CURLOPT_POST)) {
                 \PHPUnit\Framework\Assert::assertFalse($post_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_error_called);
@@ -515,7 +515,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($patch_complete_called);
                 $patch_error_called = true;
             }
-            if ($request_method === 'POST') {
+            if ($request_method === 'POST' || $instance->getOpt(CURLOPT_POST)) {
                 \PHPUnit\Framework\Assert::assertTrue($post_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_error_called);
@@ -584,7 +584,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($patch_complete_called);
                 $patch_complete_called = true;
             }
-            if ($request_method === 'POST') {
+            if ($request_method === 'POST' || $instance->getOpt(CURLOPT_POST)) {
                 \PHPUnit\Framework\Assert::assertTrue($post_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_success_called);
                 \PHPUnit\Framework\Assert::assertTrue($post_error_called);
@@ -2591,7 +2591,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
         $multi_curl->setHeader('X-DEBUG-TEST', 'post_redirect_get');
         $multi_curl->addPost(array(), false)->complete(function ($instance) {
-            \PHPUnit\Framework\Assert::assertEquals('Redirected: POST', $instance->response);
+            \PHPUnit\Framework\Assert::assertEquals('Redirected: GET', $instance->response);
         });
         $multi_curl->start();
 
@@ -2600,7 +2600,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
         $multi_curl->setHeader('X-DEBUG-TEST', 'post_redirect_get');
         $multi_curl->addPost(array(), true)->complete(function ($instance) {
-            \PHPUnit\Framework\Assert::assertEquals('Redirected: GET', $instance->response);
+            \PHPUnit\Framework\Assert::assertEquals('Redirected: POST', $instance->response);
         });
         $multi_curl->start();
     }
