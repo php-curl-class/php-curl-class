@@ -52,6 +52,9 @@ class Curl
     protected $headers = array();
     protected $options = array();
 
+    private $inited     = false;
+    private $configured = false;
+
     private $jsonDecoderArgs = array();
     private $jsonPattern     = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
     private $xmlPattern      = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
@@ -103,17 +106,20 @@ class Curl
      * @access public
      *
      * @param string $base_url
+     * @param bool $lazy
      *
      * @throws \ErrorException
      */
-    public function __construct($base_url = null)
+    public function __construct($base_url = null, $lazy = false)
     {
         if (!extension_loaded('curl')) {
             throw new \ErrorException('cURL library is not loaded');
         }
 
-        $this->curl = curl_init();
         $this->id = uniqid('', true);
+        if (!$lazy) {
+            $this->init();
+        }
         $this->setDefaultUserAgent();
         $this->setDefaultTimeout();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
@@ -128,6 +134,37 @@ class Curl
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
         $this->setUrl($base_url);
+    }
+
+    /**
+     * @return bool
+     */
+    public function init()
+    {
+        if (!$this->isInited()) {
+            $this->curl = curl_init();
+            $this->inited = true;
+        }
+
+        if (!$this->isConfigured()) {
+            $success = curl_setopt_array($this->curl, $this->options);
+            $this->configured = $success;
+        }
+
+        return $this->inited && $this->configured;
+    }
+
+    public function isConfigured()
+    {
+        return $this->configured;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInited()
+    {
+        return $this->inited;
     }
 
     /**
@@ -237,6 +274,7 @@ class Curl
         }
 
         if ($ch === null) {
+            $this->init();
             $this->responseCookies = array();
             $this->call($this->beforeSendCallback);
             $this->rawResponse = curl_exec($this->curl);
@@ -334,6 +372,7 @@ class Curl
     {
         if (is_resource($this->curl)) {
             curl_close($this->curl);
+            $this->inited = false;
         }
         $this->options = null;
         $this->jsonDecoder = null;
@@ -1104,10 +1143,17 @@ class Curl
             trigger_error($required_options[$option] . ' is a required option', E_USER_WARNING);
         }
 
-        $success = curl_setopt($this->curl, $option, $value);
-        if ($success) {
+        if ($this->isInited()) {
+            $success = curl_setopt($this->curl, $option, $value);
+            if ($success) {
+                $this->options[$option] = $value;
+            }
+        } else {
             $this->options[$option] = $value;
+            $this->configured = false;
+            $success = true;
         }
+
         return $success;
     }
 

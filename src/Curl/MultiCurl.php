@@ -769,7 +769,7 @@ class MultiCurl
      */
     protected function createCurl()
     {
-        $curl = new Curl();
+        $curl = new Curl($this->baseUrl, true);
         return $curl;
     }
 
@@ -851,6 +851,7 @@ class MultiCurl
         $curl->setRetry($this->retry);
         $curl->setCookies($this->cookies);
 
+        $curl->init();
         $curlm_error_code = curl_multi_add_handle($this->multiCurl, $curl->curl);
         if (!($curlm_error_code === CURLM_OK)) {
             throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
