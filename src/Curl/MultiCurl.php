@@ -696,7 +696,7 @@ class MultiCurl
                                 unset($this->activeCurls[$key]);
 
                                 // Start a new request before removing the handle of the completed one.
-                                if (count($this->curls) >= 1) {
+                                while (count($this->curls) >= 1 && count($this->activeCurls) < $this->concurrency) {
                                     $this->initHandle(array_shift($this->curls));
                                 }
                                 curl_multi_remove_handle($this->multiCurl, $curl->curl);
