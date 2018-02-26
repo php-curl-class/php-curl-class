@@ -13,7 +13,7 @@ count_requests[2]=10000
 
 for i in ${count_times[*]}; do
     /usr/bin/time php run.php ${i} ${count_requests[i]}
+    /usr/bin/time php run.php ${i} ${count_requests[i]} -m -w
     /usr/bin/time php run.php ${i} ${count_requests[i]} -m
-    /usr/bin/time php run.php ${i} ${count_requests[i]} -mnl
 done
 

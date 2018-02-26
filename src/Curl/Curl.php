@@ -2,6 +2,8 @@
 
 namespace Curl;
 
+use Curl\Errors\CurlLockedException;
+
 class Curl
 {
     const VERSION         = '8.0.1';
@@ -54,6 +56,7 @@ class Curl
 
     private $inited     = false;
     private $configured = false;
+    private $locked     = false;
 
     private $jsonDecoderArgs = array();
     private $jsonPattern     = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
@@ -154,6 +157,9 @@ class Curl
         return $this->inited && $this->configured;
     }
 
+    /**
+     * @return bool
+     */
     public function isConfigured()
     {
         return $this->configured;
@@ -165,6 +171,43 @@ class Curl
     public function isInited()
     {
         return $this->inited;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLocked()
+    {
+        return $this->locked;
+    }
+
+    /**
+     * Avoid change any curl options and callbacks
+     * Automatically unlocked after call execDone() function
+     */
+    public function lock()
+    {
+        $this->locked = true;
+    }
+
+    /**
+     * Check lock
+     *
+     * @throws CurlLockedException
+     */
+    protected function checkLock()
+    {
+        if ($this->isLocked()) {
+            throw new CurlLockedException($this);
+        }
+    }
+
+    /**
+     * Unlock
+     */
+    private function unlock()
+    {
+        $this->locked = false;
     }
 
     /**
@@ -183,9 +226,12 @@ class Curl
      * @access public
      *
      * @param  $callback
+     *
+     * @throws CurlLockedException
      */
     public function beforeSend($callback)
     {
+        $this->checkLock();
         $this->beforeSendCallback = $callback;
     }
 
@@ -195,9 +241,12 @@ class Curl
      * @access public
      *
      * @param  $callback
+     *
+     * @throws CurlLockedException
      */
     public function complete($callback)
     {
+        $this->checkLock();
         $this->completeCallback = $callback;
     }
 
@@ -207,9 +256,12 @@ class Curl
      * @access public
      *
      * @param  $callback
+     *
+     * @throws CurlLockedException
      */
     public function success($callback)
     {
+        $this->checkLock();
         $this->successCallback = $callback;
     }
 
@@ -219,9 +271,12 @@ class Curl
      * @access public
      *
      * @param  $callback
+     *
+     * @throws CurlLockedException
      */
     public function error($callback)
     {
+        $this->checkLock();
         $this->errorCallback = $callback;
     }
 
@@ -306,7 +361,7 @@ class Curl
 
         // NOTE: CURLINFO_HEADER_OUT set to true is required for requestHeaders
         // to not be empty (e.g. $curl->setOpt(CURLINFO_HEADER_OUT, true);).
-        if ($this->getOpt(CURLINFO_HEADER_OUT) === true) {
+        if ($this->getOpt(CURLINFO_HEADER_OUT)) {
             $this->requestHeaders = $this->parseRequestHeaders($this->getInfo(CURLINFO_HEADER_OUT));
         }
         $this->responseHeaders = $this->parseResponseHeaders($this->rawResponseHeaders);
@@ -320,6 +375,8 @@ class Curl
         }
         $this->errorMessage = $this->curlError ? $this->curlErrorMessage : $this->httpErrorMessage;
 
+        $this->unlock();
+
         // Reset select deferred properties so that they may be recalculated.
         unset($this->effectiveUrl);
         unset($this->totalTime);
@@ -332,7 +389,7 @@ class Curl
 
         // Allow multicurl to attempt retry as needed.
         if ($this->isChildOfMultiCurl) {
-            return;
+            return null;
         }
 
         if ($this->attemptRetry()) {
@@ -656,12 +713,15 @@ class Curl
      *
      * @param string $url
      * @param string|callable $mixed_filename
+     * @param bool $exec
      *
-     * @return boolean
+     * @return bool|Curl
+     * @throws CurlLockedException
      */
-    public function download($url, $mixed_filename)
+    public function download($url, $mixed_filename, $exec = true)
     {
         if (is_callable($mixed_filename)) {
+            $this->checkLock();
             $this->downloadCompleteCallback = $mixed_filename;
             $this->fileHandle = tmpfile();
         } else {
@@ -695,9 +755,12 @@ class Curl
         }
 
         $this->setOpt(CURLOPT_FILE, $this->fileHandle);
-        $this->get($url);
+        $this->get($url, array(), $exec);
 
-        return !$this->error;
+        if ($exec) {
+            return !$this->error;
+        }
+        return $this;
     }
 
     /**
@@ -1135,6 +1198,7 @@ class Curl
      */
     public function setOpt($option, $value)
     {
+        $this->checkLock();
         $required_options = array(
             CURLOPT_RETURNTRANSFER => 'CURLOPT_RETURNTRANSFER',
         );

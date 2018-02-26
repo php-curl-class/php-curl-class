@@ -35,14 +35,15 @@ class MultiCurl
     protected $jsonDecoder = null;
     protected $xmlDecoder  = null;
 
-    private $isStarted = false;
+    private $started      = false;
+    private $waitForStart = false;
 
     /**
      * Construct
      *
      * @access public
      *
-     * @param $base_url
+     * @param string $base_url
      */
     public function __construct($base_url = null)
     {
@@ -55,6 +56,7 @@ class MultiCurl
      * Destruct
      *
      * @access public
+     * @throws \ErrorException
      */
     public function __destruct()
     {
@@ -67,6 +69,22 @@ class MultiCurl
     public function getActiveCount()
     {
         return $this->active;
+    }
+
+    /**
+     * Don't allow execute response right after adding it
+     */
+    public function waitForStart()
+    {
+        $this->waitForStart = true;
+    }
+
+    /**
+     * Execute response right after adding it
+     */
+    public function dontWaitForStart()
+    {
+        $this->waitForStart = false;
     }
 
     /**
@@ -123,25 +141,46 @@ class MultiCurl
      * @access public
      * @throws \ErrorException
      */
-    final public function start()
+    public function start()
     {
-        if ($this->isStarted) {
+        $this->started = true;
+        if ($this->waitForStart) {
+            $concurrency = $this->concurrency;
+            if ($concurrency > count($this->curls)) {
+                $concurrency = count($this->curls);
+            }
+            for ($i = 0; $i < $concurrency; $i++) {
+                $this->initHandle(array_shift($this->curls));
+            }
+        }
+
+        $this->wait();
+    }
+
+    /**
+     * @throws \ErrorException
+     */
+    public function wait()
+    {
+        if (!$this->started) {
             return;
         }
-        $this->isStarted = true;
-
-        $this->execMultiCurl();
-
-        $this->isStarted = false;
+        do {
+            $this->execMultiCurl();
+        } while ($this->getActiveCount() > 0);
+        $this->started = false;
     }
 
     /**
      * Close
      *
      * @access public
+     * @throws \ErrorException
      */
     public function close()
     {
+        $this->wait();
+
         foreach ($this->curls as $curl) {
             $curl->close();
         }
@@ -195,12 +234,17 @@ class MultiCurl
      * @param $follow_303_with_post
      *     If true, will cause 303 redirections to be followed using POST requests (default: false).
      *     Note: Redirections are only followed if the CURLOPT_FOLLOWLOCATION option is set to true.
+     *           Always true for PHP version < 5.5.11 and HHVM.
      *
+     * @see \Curl\Curl::post
      * @return Curl
      * @throws \ErrorException
      */
     public function addPost($url, $data = array(), $follow_303_with_post = false)
     {
+        if ((version_compare(PHP_VERSION, '5.5.11') < 0) || defined('HHVM_VERSION')) {
+            $follow_303_with_post = true;
+        }
         $method = strtolower(str_replace('add', '', __FUNCTION__));
         return $this->prepareRequest($method, $url, $data, $follow_303_with_post);
     }
@@ -318,10 +362,13 @@ class MultiCurl
      * @param $curl
      *
      * @return Curl
+     * @throws \ErrorException
      */
     public function addCurl(Curl $curl)
     {
         $this->queueHandle($curl);
+        $this->execMultiCurlIfNeed();
+
         return $curl;
     }
 
@@ -686,39 +733,23 @@ class MultiCurl
      */
     protected function execMultiCurl()
     {
-        $concurrency = $this->concurrency;
-        if ($concurrency > count($this->curls)) {
-            $concurrency = count($this->curls);
+        $this->started = true;
+        curl_multi_exec($this->multiCurl, $this->active);
+        curl_multi_select($this->multiCurl);
+
+        $info_array = curl_multi_info_read($this->multiCurl);
+        if ($info_array && $info_array['msg'] === CURLMSG_DONE) {
+            $this->execCurlHandle($info_array['handle'], $info_array['result']);
         }
 
-        for ($i = 0; $i < $concurrency; $i++) {
-            $this->initHandle(array_shift($this->curls));
+        if (!$this->active) {
+            $this->active = count($this->activeCurls);
         }
-
-        do {
-            // Wait for activity on any curl_multi connection when curl_multi_select (libcurl) fails to correctly block.
-            // https://bugs.php.net/bug.php?id=63411
-            if (curl_multi_select($this->multiCurl) === -1) {
-                usleep(100000);
-            }
-
-            curl_multi_exec($this->multiCurl, $this->active);
-
-            while (!($info_array = curl_multi_info_read($this->multiCurl)) === false) {
-                if ($info_array['msg'] === CURLMSG_DONE) {
-                    $this->execCurlHandle($info_array['handle'], $info_array['result']);
-                }
-            }
-
-            if (!$this->active) {
-                $this->active = count($this->activeCurls);
-            }
-        } while ($this->active > 0);
     }
 
     /**
-     * @param $handle
-     * @param $result_multi
+     * @param resource $handle returned by curl_multi_info_read()['handle']
+     * @param int $result_multi returned by curl_multi_info_read()['result']
      *
      * @throws \ErrorException
      */
@@ -794,7 +825,22 @@ class MultiCurl
         $this->queueHandle($curl);
         call_user_func_array(array($curl, $method), $args);
 
+        $this->execMultiCurlIfNeed();
+
         return $curl;
+    }
+
+    /**
+     * @throws \ErrorException
+     */
+    protected function execMultiCurlIfNeed()
+    {
+        if (!$this->waitForStart) {
+            if ($this->concurrency >= $this->active) {
+                $this->initHandle(array_shift($this->curls));
+            }
+            $this->execMultiCurl();
+        }
     }
 
     /**
@@ -852,13 +898,14 @@ class MultiCurl
         $curl->setCookies($this->cookies);
 
         $curl->init();
+        $curl->call($curl->beforeSendCallback);
+        $curl->lock();
         $curlm_error_code = curl_multi_add_handle($this->multiCurl, $curl->curl);
         if (!($curlm_error_code === CURLM_OK)) {
             throw new \ErrorException('cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code));
         }
 
         $this->activeCurls[$curl->id] = $curl;
-        $curl->call($curl->beforeSendCallback);
     }
 
     /**
@@ -872,5 +919,4 @@ class MultiCurl
             $curl->setHeaders($this->headers);
         }
     }
-
 }
