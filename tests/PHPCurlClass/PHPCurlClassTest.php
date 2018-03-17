@@ -1049,6 +1049,9 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('mouthwatering', $test->curl->responseCookies['cookie2']);
     }
 
+    /**
+     * @group long
+     */
     public function testDefaultTimeout()
     {
         $test = new Test();
@@ -1062,6 +1065,10 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($test->curl->httpError);
     }
 
+
+    /**
+     * @group long
+     */
     public function testTimeoutError()
     {
         $test = new Test();
@@ -1076,6 +1083,9 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($test->curl->httpError);
     }
 
+    /**
+     * @group long
+     */
     public function testTimeout()
     {
         $test = new Test();
@@ -1097,8 +1107,9 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->curl->get(Test::ERROR_URL);
         $this->assertTrue($test->curl->error);
         $this->assertTrue($test->curl->curlError);
-        $this->assertEquals(CURLE_OPERATION_TIMEOUTED, $test->curl->errorCode);
-        $this->assertEquals(CURLE_OPERATION_TIMEOUTED, $test->curl->curlErrorCode);
+        $possible_errors = array(CURLE_OPERATION_TIMEOUTED, CURLE_COULDNT_CONNECT);
+        $this->assertContains($test->curl->errorCode, $possible_errors);
+        $this->assertContains($test->curl->curlErrorCode, $possible_errors);
     }
 
     public function testErrorMessage()
@@ -2970,6 +2981,9 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('OPTIONS', 'OPTIONS', array('g' => '7777777'));
     }
 
+    /**
+     * @group long
+     */
     public function testMemoryLeak()
     {
         // Skip memory leak test failing for PHP 7.
