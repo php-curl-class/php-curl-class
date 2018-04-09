@@ -183,12 +183,17 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
+
         $curl = new Curl();
+
+        if (is_array($data) && empty($data)) {
+            $curl->removeHeader('Content-Length');
+        }
+
         $this->queueHandle($curl);
         $curl->setUrl($url);
-        $curl->removeHeader('Content-Length');
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
-        $curl->setOpt(CURLOPT_POSTFIELDS, $data);
+        $curl->setOpt(CURLOPT_POSTFIELDS, $curl->buildPostData($data));
         return $curl;
     }
 
