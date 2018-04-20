@@ -150,6 +150,33 @@ class Url
      */
     private function parseUrl($url)
     {
+        // ALPHA         = A-Z / a-z
+        $alpha = 'A-Za-z';
+
+        // DIGIT         = 0-9
+        $digit = '0-9';
+
+        // unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
+        $unreserved = $alpha . $digit . preg_quote('-._~');
+
+        // sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
+        //               / "*" / "+" / "," / ";" / "="
+        $sub_delims = preg_quote('!$&\'()*+,;=');
+
+        // HEXDIG         =  DIGIT / "A" / "B" / "C" / "D" / "E" / "F"
+        $hexdig = $digit . 'A-F';
+        // "The uppercase hexadecimal digits 'A' through 'F' are equivalent to
+        // the lowercase digits 'a' through 'f', respectively."
+        $hexdig .= 'a-f';
+
+        $pattern = '/(?:[^' . $unreserved . $sub_delims . preg_quote(':@%/?', '/') . ']++|%(?![' . $hexdig . ']{2}))/';
+        $url = preg_replace_callback(
+            $pattern,
+            function ($matches) {
+                return rawurlencode($matches[0]);
+            },
+            $url
+        );
         return parse_url($url);
     }
 
