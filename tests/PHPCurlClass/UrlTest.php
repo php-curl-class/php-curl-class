@@ -108,4 +108,13 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals($test['expected'], $actual_path);
         }
     }
+
+    public function testCyrillicChars()
+    {
+        $path_part = 'Банан-комнатный-саженцы-банана';
+        $original_url = 'https://www.example.com/path/' . $path_part               . '/page.html';
+        $expected_url = 'https://www.example.com/path/' . rawurlencode($path_part) . '/page.html';
+        $url = new Url($original_url);
+        $this->assertEquals($expected_url, $url);
+    }
 }
