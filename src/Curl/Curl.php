@@ -7,7 +7,7 @@ use Curl\Decoder;
 
 class Curl
 {
-    const VERSION = '8.0.2';
+    const VERSION = '8.0.3';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
