@@ -2852,4 +2852,20 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals($expect_retries, $instance->retries);
         }
     }
+
+    public function testPostDataEmptyJson()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'post_json');
+        $multi_curl->setHeader('Content-Type', 'application/json');
+        $multi_curl->addPost(Test::TEST_URL);
+        $post_complete_called = false;
+        $multi_curl->complete(function ($instance) use (&$post_complete_called) {
+            \PHPUnit\Framework\Assert::assertEquals('', $instance->response);
+            \PHPUnit\Framework\Assert::assertEquals('', $instance->getOpt(CURLOPT_POSTFIELDS));
+            $post_complete_called = true;
+        });
+        $multi_curl->start();
+        $this->assertTrue($post_complete_called);
+    }
 }

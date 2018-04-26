@@ -16,14 +16,16 @@ class Test
         $this->curl->setOpt(CURLOPT_SSL_VERIFYHOST, false);
     }
 
-    public function server($test, $request_method, $query_parameters = array(), $data = array())
+    public function server($test, $request_method, $arg1 = null, $arg2 = null)
     {
         $this->curl->setHeader('X-DEBUG-TEST', $test);
         $request_method = strtolower($request_method);
-        if (is_array($data) && empty($data)) {
-            $this->curl->$request_method(self::TEST_URL, $query_parameters);
+        if ($arg1 !== null && $arg2 !== null) {
+            $this->curl->$request_method(self::TEST_URL, $arg1, $arg2);
+        } elseif ($arg1 !== null) {
+            $this->curl->$request_method(self::TEST_URL, $arg1);
         } else {
-            $this->curl->$request_method(self::TEST_URL, $query_parameters, $data);
+            $this->curl->$request_method(self::TEST_URL);
         }
         return $this->curl->response;
     }
