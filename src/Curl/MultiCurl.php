@@ -209,7 +209,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addPost($url, $data = array(), $follow_303_with_post = false)
+    public function addPost($url, $data = '', $follow_303_with_post = false)
     {
         if (is_array($url)) {
             $follow_303_with_post = (bool)$data;

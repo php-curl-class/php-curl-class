@@ -294,6 +294,15 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         )));
     }
 
+    public function testPostDataEmptyJson()
+    {
+        $test = new Test();
+        $test->curl->setHeader('Content-Type', 'application/json');
+        $test->server('post_json', 'POST');
+        $this->assertEquals('', $test->curl->response);
+        $this->assertEquals('', $test->curl->getOpt(CURLOPT_POSTFIELDS));
+    }
+
     public function testPostAssociativeArrayData()
     {
         $data = array(
