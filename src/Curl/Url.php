@@ -160,8 +160,8 @@ class Url
         $unreserved = $alpha . $digit . preg_quote('-._~');
 
         // sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
-        //               / "*" / "+" / "," / ";" / "="
-        $sub_delims = preg_quote('!$&\'()*+,;=');
+        //               / "*" / "+" / "," / ";" / "=" / "#"
+        $sub_delims = preg_quote('!$&\'()*+,;=#');
 
         // HEXDIG         =  DIGIT / "A" / "B" / "C" / "D" / "E" / "F"
         $hexdig = $digit . 'A-F';
