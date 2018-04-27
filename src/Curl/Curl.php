@@ -55,7 +55,7 @@ class Curl
 
     private $jsonDecoderArgs = array();
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
-    private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+)?)xml~i';
+    private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+|soap\+)?)xml~i';
     private $defaultDecoder = null;
 
     public static $RFC2616 = array(
