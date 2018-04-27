@@ -2567,6 +2567,27 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    public function testXmlContentTypeDetection()
+    {
+        $xml_content_types = array(
+            'application/atom+xml',
+            'application/rss+xml',
+            'application/soap+xml',
+            'application/xml',
+            'text/xml',
+        );
+
+        $class = new \ReflectionClass('\Curl\Curl');
+        $property = $class->getProperty('xmlPattern');
+        $property->setAccessible(true);
+        $xml_pattern = $property->getValue(new Curl);
+
+        foreach ($xml_content_types as $xml_content_type) {
+            $message = '"' . $xml_content_type . '" does not match pattern ' . $xml_pattern;
+            $this->assertEquals(1, preg_match($xml_pattern, $xml_content_type), $message);
+        }
+    }
+
     public function testXMLResponse()
     {
         foreach (array(
@@ -2579,6 +2600,9 @@ class CurlTest extends \PHPUnit\Framework\TestCase
                 'application/rss+xml',
                 'application/rss+xml; charset=utf-8',
                 'application/rss+xml;charset=utf-8',
+                'application/soap+xml',
+                'application/soap+xml; charset=utf-8',
+                'application/soap+xml;charset=utf-8',
                 'application/xml',
                 'application/xml; charset=utf-8',
                 'application/xml;charset=utf-8',
