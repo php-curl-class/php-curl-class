@@ -8,56 +8,15 @@ class UrlTest extends \PHPUnit\Framework\TestCase
 {
     public function testUrlPaths()
     {
-        $tests = array(
-            array(
-                'args' => array(
-                    'http://www.example.com/',
-                    '/foo',
-                ),
-                'expected' => 'http://www.example.com/foo',
-            ),
-            array(
-                'args' => array(
-                    'http://www.example.com/',
-                    '/foo/',
-                ),
-                'expected' => 'http://www.example.com/foo/',
-            ),
-            array(
-                'args' => array(
-                    'http://www.example.com/',
-                    '/dir/page.html',
-                ),
-                'expected' => 'http://www.example.com/dir/page.html',
-            ),
-            array(
-                'args' => array(
-                    'http://www.example.com/dir1/page2.html',
-                    '/dir/page.html',
-                ),
-                'expected' => 'http://www.example.com/dir/page.html',
-            ),
-            array(
-                'args' => array(
-                    'http://www.example.com/dir1/page2.html',
-                    'dir/page.html',
-                ),
-                'expected' => 'http://www.example.com/dir1/dir/page.html',
-            ),
-            array(
-                'args' => array(
-                    'http://www.example.com/dir1/dir3/page.html',
-                    '../dir/page.html',
-                ),
-                'expected' => 'http://www.example.com/dir1/dir/page.html',
-            ),
-        );
-        foreach ($tests as $test) {
-            $reflector = new \ReflectionClass('\Curl\Url');
-            $url = $reflector->newInstanceArgs($test['args']);
+        $urls_file = fopen(dirname(__FILE__) . '/urls.csv', 'r');
+        fgetcsv($urls_file); // header
+        while (($test = fgetcsv($urls_file)) !== false) {
+            $url = new Url($test[0], $test[1]);
             $actual_url = (string)$url;
-            $this->assertEquals($test['expected'], $actual_url);
+            $expected_url = $test[2];
+            $this->assertEquals($expected_url, $actual_url, "Joint URLs: '{$test[0]}', '{$test[1]}'");
         }
+        fclose($urls_file);
     }
 
     public function testUrlInstances()
@@ -84,10 +43,10 @@ class UrlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('https://developer.mozilla.org/en-US/docs', $h);
 
         $k = new Url('https://developers.mozilla.com', 'http://www.example.com');
-        $this->assertEquals('http://www.example.com/', $k);
+        $this->assertEquals('http://www.example.com', $k);
 
         $l = new Url($b, 'http://www.example.com');
-        $this->assertEquals('http://www.example.com/', $l);
+        $this->assertEquals('http://www.example.com', $l);
     }
 
     public function testRemoveDotSegments()

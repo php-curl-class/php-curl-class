@@ -92,54 +92,61 @@ class Url
     private function absolutizeUrl()
     {
         $b = $this->parseUrl($this->baseUrl);
-
-        if (!($this->relativeUrl === null)) {
-            $r = $this->parseUrl($this->relativeUrl);
-
-            // Copy relative parts to base url.
-            if (isset($r['scheme'])) {
-                $b['scheme'] = $r['scheme'];
-            }
-            if (isset($r['host'])) {
-                $b['host'] = $r['host'];
-            }
-            if (isset($r['port'])) {
-                $b['port'] = $r['port'];
-            }
-            if (isset($r['user'])) {
-                $b['user'] = $r['user'];
-            }
-            if (isset($r['pass'])) {
-                $b['pass'] = $r['pass'];
-            }
-
-            if (!isset($r['path']) || $r['path'] === '') {
-                $r['path'] = '/';
-            }
-            // Merge relative url with base when relative url's path doesn't start with a slash.
-            if (!(StrUtil::startsWith($r['path'], '/'))) {
-                $base = mb_strrchr($b['path'], '/', true);
-                if ($base === false) {
-                    $base = '';
-                }
-                $r['path'] = $base . '/' . $r['path'];
-            }
-            $b['path'] = $r['path'];
-            $b['path'] = $this->removeDotSegments($b['path']);
-
-            if (isset($r['query'])) {
-                $b['query'] = $r['query'];
-            }
-            if (isset($r['fragment'])) {
-                $b['fragment'] = $r['fragment'];
-            }
-        }
-
         if (!isset($b['path'])) {
             $b['path'] = '/';
         }
-
-        $absolutized_url = $this->unparseUrl($b);
+        if (is_null($this->relativeUrl)) {
+            return $this->unparseUrl($b);
+        }
+        $r = $this->parseUrl($this->relativeUrl);
+        $r['authorized'] = isset($r['scheme']) || isset($r['host']) || isset($r['port'])
+            || isset($r['user']) || isset($r['pass']);
+        $target = array();
+        if (isset($r['scheme'])) {
+            $target['scheme'] = $r['scheme'];
+            $target['host'] = isset($r['host']) ? $r['host'] : null;
+            $target['port'] = isset($r['port']) ? $r['port'] : null;
+            $target['user'] = isset($r['user']) ? $r['user'] : null;
+            $target['pass'] = isset($r['pass']) ? $r['pass'] : null;
+            $target['path'] = isset($r['path']) ? self::removeDotSegments($r['path']) : null;
+            $target['query'] = isset($r['query']) ? $r['query'] : null;
+        } else {
+            $target['scheme'] = isset($b['scheme']) ? $b['scheme'] : null;
+            if ($r['authorized']) {
+                $target['host'] = isset($r['host']) ? $r['host'] : null;
+                $target['port'] = isset($r['port']) ? $r['port'] : null;
+                $target['user'] = isset($r['user']) ? $r['user'] : null;
+                $target['pass'] = isset($r['pass']) ? $r['pass'] : null;
+                $target['path'] = isset($r['path']) ? self::removeDotSegments($r['path']) : null;
+                $target['query'] = isset($r['query']) ? $r['query'] : null;
+            } else {
+                $target['host'] = isset($b['host']) ? $b['host'] : null;
+                $target['port'] = isset($b['port']) ? $b['port'] : null;
+                $target['user'] = isset($b['user']) ? $b['user'] : null;
+                $target['pass'] = isset($b['pass']) ? $b['pass'] : null;
+                if (!isset($r['path']) || $r['path'] === '') {
+                    $target['path'] = $b['path'];
+                    $target['query'] = isset($r['query']) ? $r['query'] : (isset($b['query']) ? $b['query'] : null);
+                } else {
+                    if (StrUtil::startsWith($r['path'], '/')) {
+                        $target['path'] = self::removeDotSegments($r['path']);
+                    } else {
+                        $base = mb_strrchr($b['path'], '/', true);
+                        if ($base === false) {
+                            $base = '';
+                        }
+                        $target['path'] = self::removeDotSegments($base . '/' . $r['path']);
+                    }
+                    $target['query'] = isset($r['query']) ? $r['query'] : null;
+                }
+            }
+        }
+        if ($this->relativeUrl === '') {
+            $target['fragment'] = isset($b['fragment']) ? $b['fragment'] : null;
+        } else {
+            $target['fragment'] = isset($r['fragment']) ? $r['fragment'] : null;
+        }
+        $absolutized_url = $this->unparseUrl($target);
         return $absolutized_url;
     }
 
