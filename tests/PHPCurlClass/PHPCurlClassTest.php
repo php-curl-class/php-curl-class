@@ -12,6 +12,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertTrue(extension_loaded('curl'));
         $this->assertTrue(extension_loaded('gd'));
+        $this->assertTrue(extension_loaded('mbstring'));
     }
 
     public function testArrayAssociative()
