@@ -8,7 +8,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
 {
     public function testUrlPaths()
     {
-        $urls_file = fopen(dirname(__FILE__) . '/urls.csv', 'r');
+        $urls_file = gzopen(dirname(__FILE__) . '/urls.csv.gz', 'r');
         fgetcsv($urls_file); // header
         while (($test = fgetcsv($urls_file)) !== false) {
             $url = new Url($test[0], $test[1]);
