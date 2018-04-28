@@ -54,9 +54,70 @@ first_queries = ['', '?a=1', '?a=647&b=s564']
 second_queries = ['', '?a=sdf', '?a=cvb&b=987']
 fragments = ['', '#foo', '#bar']
 
+additional_tests = [
+    {
+        'args': [
+            'http://www.example.com/',
+            '',
+        ],
+        'expected': 'http://www.example.com/',
+    },
+    {
+        'args': [
+            'http://www.example.com/',
+            'foo',
+        ],
+        'expected': 'http://www.example.com/foo',
+    },
+    {
+        'args': [
+            'http://www.example.com/',
+            '/foo',
+        ],
+        'expected': 'http://www.example.com/foo',
+    },
+    {
+        'args': [
+            'http://www.example.com/',
+            '/foo/',
+        ],
+        'expected': 'http://www.example.com/foo/',
+    },
+    {
+        'args': [
+            'http://www.example.com/',
+            '/dir/page.html',
+        ],
+        'expected': 'http://www.example.com/dir/page.html',
+    },
+    {
+        'args': [
+            'http://www.example.com/dir1/page2.html',
+            '/dir/page.html',
+        ],
+        'expected': 'http://www.example.com/dir/page.html',
+    },
+    {
+        'args': [
+            'http://www.example.com/dir1/page2.html',
+            'dir/page.html',
+        ],
+        'expected': 'http://www.example.com/dir1/dir/page.html',
+    },
+    {
+        'args': [
+            'http://www.example.com/dir1/dir3/page.html',
+            '../dir/page.html',
+        ],
+        'expected': 'http://www.example.com/dir1/dir/page.html',
+    },
+]
+
 with open('urls.csv', 'wt') as f:
     csvwriter = csv.writer(f, quotechar='"', quoting=csv.QUOTE_ALL)
     csvwriter.writerow(['first_url', 'second_url', 'expected'])
+    for test in additional_tests:
+        csvwriter.writerow([test['args'][0], test['args'][1], test['expected']])
     for first_domain, second_domain in product(first_authorities, second_authorities):
         for first_path, second_path in product(first_paths, second_paths):
             for first_query, second_query in product(first_queries, second_queries):
