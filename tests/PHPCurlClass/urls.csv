@@ -1,6 +1,7 @@
 "first_url","second_url","expected"
 "http://www.example.com/","","http://www.example.com/"
 "http://www.example.com/","foo","http://www.example.com/foo"
+"http://www.example.com/","/foo","http://www.example.com/foo"
 "http://www.example.com/","/foo/","http://www.example.com/foo/"
 "http://www.example.com/","/dir/page.html","http://www.example.com/dir/page.html"
 "http://www.example.com/dir1/page2.html","/dir/page.html","http://www.example.com/dir/page.html"
