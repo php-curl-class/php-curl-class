@@ -1,7 +1,7 @@
 set -x
 
-SCRIPT_PATH="$(cd "$(dirname "$0")"; pwd -P)"
-cd "${SCRIPT_PATH}"
+SCRIPT_DIR="$(cd "$(dirname "$0")"; pwd -P)"
+cd "${SCRIPT_DIR}"
 
 php -S 127.0.0.1:8000 -t PHPCurlClass/ &> /dev/null &
 pid="${!}"

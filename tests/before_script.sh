@@ -93,8 +93,8 @@ EOF
     sleep 5
     sudo service nginx start
 
-    script_dir="$(dirname "$(readlink -f "$0")")"
-    root="${script_dir}/PHPCurlClass"
+    SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+    root="${SCRIPT_DIR}/PHPCurlClass"
     sudo cp -v "${root}/"* "/usr/share/nginx/html/"
 
     # Use an older version of PHPUnit for HHVM builds so that unit tests can be
