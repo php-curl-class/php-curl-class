@@ -93,7 +93,7 @@ EOF
     sleep 5
     sudo service nginx start
 
-    SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     root="${SCRIPT_DIR}/PHPCurlClass"
     sudo cp -v "${root}/"* "/usr/share/nginx/html/"
 
