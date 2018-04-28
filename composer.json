@@ -14,7 +14,8 @@
     ],
     "require": {
         "php": ">=5.3",
-        "ext-curl": "*"
+        "ext-curl": "*",
+        "ext-mbstring": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "*",

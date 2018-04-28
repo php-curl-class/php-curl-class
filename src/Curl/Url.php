@@ -56,10 +56,10 @@ class Url
             //     buffer; otherwise,
             } elseif (StrUtil::startsWith($input, '/../')) {
                 $input = substr($input, 3);
-                $output = substr_replace($output, '', mb_strrpos($output, '/'));
+                $output = substr_replace($output, '', \mb_strrpos($output, '/'));
             } elseif ($input === '/..') {
                 $input = '/';
-                $output = substr_replace($output, '', mb_strrpos($output, '/'));
+                $output = substr_replace($output, '', \mb_strrpos($output, '/'));
 
             // D.  if the input buffer consists only of "." or "..", then remove
             //     that from the input buffer; otherwise,
@@ -70,7 +70,7 @@ class Url
             //     the output buffer, including the initial "/" character (if
             //     any) and any subsequent characters up to, but not including,
             //     the next "/" character or the end of the input buffer.
-            } elseif (!(($pos = mb_strpos($input, '/', 1)) === false)) {
+            } elseif (!(($pos = \mb_strpos($input, '/', 1)) === false)) {
                 $output .= substr($input, 0, $pos);
                 $input = substr_replace($input, '', 0, $pos);
             } else {
@@ -131,7 +131,7 @@ class Url
                     if (StrUtil::startsWith($r['path'], '/')) {
                         $target['path'] = self::removeDotSegments($r['path']);
                     } else {
-                        $base = mb_strrchr($b['path'], '/', true);
+                        $base = \mb_strrchr($b['path'], '/', true);
                         if ($base === false) {
                             $base = '';
                         }
