@@ -1,21 +1,23 @@
-from urllib.parse import urljoin, urlparse
 from itertools import product
+from urllib.parse import urljoin
+from urllib.parse import urlparse
 import csv
 import posixpath
 
 
-def resolveComponents(url):
+def remove_dot_segments(url):
     """
-    >>> resolveComponents('http://www.example.com/foo/bar/../../baz/bux/')
-    'http://www.example.com/baz/bux/'
-    >>> resolveComponents('http://www.example.com/some/path/../file.ext')
-    'http://www.example.com/some/file.ext'
+    >>> remove_dot_segments('https://www.example.com/foo/bar/../../baz/bux/')
+    'https://www.example.com/baz/bux/'
+    >>> remove_dot_segments('https://www.example.com/some/path/../file.ext')
+    'https://www.example.com/some/file.ext'
     """
 
     parsed = urlparse(url)
     new_path = posixpath.normpath(parsed.path)
     if parsed.path.endswith('/'):
-        # Compensate for issue1707768
+        # Fix missing trailing slash.
+        # https://bugs.python.org/issue1707768
         new_path += '/'
     if new_path.startswith('//'):
         new_path = new_path[1:]
@@ -23,11 +25,31 @@ def resolveComponents(url):
     return cleaned.geturl()
 
 
-first_authorities = ['http://example.com@user:pass:7152', 'https://example.com']
-second_authorities = ['', 'https://www.example.org', 'http://example.com@user:pass:1111',
-                      'file://example.com', 'file://']
-first_paths = ['', '/', '/foobar/bazz', 'foobar/bazz/']
-second_paths = ['', '/', '/foo/bar', 'foo/bar/', './foo/../bar', 'foo/./.././bar']
+first_authorities = [
+    'http://example.com@user:pass:7152',
+    'https://example.com',
+]
+second_authorities = [
+    '',
+    'https://www.example.org',
+    'http://example.com@user:pass:1111',
+    'file://example.com',
+    'file://',
+]
+first_paths = [
+    '',
+    '/',
+    '/foobar/bazz',
+    'foobar/bazz/',
+]
+second_paths = [
+    '',
+    '/',
+    '/foo/bar',
+    'foo/bar/',
+    './foo/../bar',
+    'foo/./.././bar',
+]
 first_queries = ['', '?a=1', '?a=647&b=s564']
 second_queries = ['', '?a=sdf', '?a=cvb&b=987']
 fragments = ['', '#foo', '#bar']
@@ -35,7 +57,6 @@ fragments = ['', '#foo', '#bar']
 with open('urls.csv', 'wt') as f:
     csvwriter = csv.writer(f, quotechar='"', quoting=csv.QUOTE_ALL)
     csvwriter.writerow(['first_url', 'second_url', 'expected'])
-    counter = 1
     for first_domain, second_domain in product(first_authorities, second_authorities):
         for first_path, second_path in product(first_paths, second_paths):
             for first_query, second_query in product(first_queries, second_queries):
@@ -47,4 +68,5 @@ with open('urls.csv', 'wt') as f:
                         second_path = '/' + second_path
                     second_url = second_domain + second_path + second_query + second_fragment
                     if first_url != second_url:
-                        csvwriter.writerow([first_url, second_url, resolveComponents(urljoin(first_url, second_url))])
+                        expected_url = remove_dot_segments(urljoin(first_url, second_url))
+                        csvwriter.writerow([first_url, second_url, expected_url])
