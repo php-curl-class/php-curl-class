@@ -3580,31 +3580,56 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         foreach ($tests as $test) {
             $curl = new Curl($test['args']['0']);
             $curl->setUrl($test['args']['1']);
-            $this->assertEquals($test['expected'], $curl->getOpt(CURLOPT_URL));
+            $this->assertEquals(
+                $test['expected'],
+                $curl->getOpt(CURLOPT_URL),
+                "Joint URLs: '{$test['args']['0']}', '{$test['args']['1']}'"
+            );
 
             $curl = new Curl($test['args']['0']);
             $curl->setUrl($test['args']['1'], array('a' => '1', 'b' => '2'));
-            $this->assertEquals($test['expected'] . '?a=1&b=2', $curl->getOpt(CURLOPT_URL));
+            $this->assertEquals(
+                $test['expected'] . '?a=1&b=2',
+                $curl->getOpt(CURLOPT_URL),
+                "Joint URL '{$test['args']['0']}' with parameters a=1, b=2"
+            );
 
             $curl = new Curl();
             $curl->setUrl($test['args']['0']);
             $curl->setUrl($test['args']['1']);
-            $this->assertEquals($test['expected'], $curl->getOpt(CURLOPT_URL));
+            $this->assertEquals(
+                $test['expected'],
+                $curl->getOpt(CURLOPT_URL),
+                "Joint URLs: '{$test['args']['0']}', '{$test['args']['1']}'"
+            );
 
             $curl = new Curl();
             $curl->setUrl($test['args']['0'], array('a' => '1', 'b' => '2'));
             $curl->setUrl($test['args']['1']);
-            $this->assertEquals($test['expected'] . '?a=1&b=2', $curl->getOpt(CURLOPT_URL));
+            $this->assertEquals(
+                $test['expected'],
+                $curl->getOpt(CURLOPT_URL),
+                "Joint URL '{$test['args']['0']}' with parameters a=1, b=2 and URL '{$test['args']['1']}'"
+            );
 
             $curl = new Curl();
             $curl->setUrl($test['args']['0']);
             $curl->setUrl($test['args']['1'], array('a' => '1', 'b' => '2'));
-            $this->assertEquals($test['expected'] . '?a=1&b=2', $curl->getOpt(CURLOPT_URL));
+            $this->assertEquals(
+                $test['expected'] . '?a=1&b=2',
+                $curl->getOpt(CURLOPT_URL),
+                "Joint URL '{$test['args']['0']}' and URL '{$test['args']['1']}' with parameters a=1, b=2"
+            );
 
             $curl = new Curl();
             $curl->setUrl($test['args']['0'], array('a' => '1', 'b' => '2'));
             $curl->setUrl($test['args']['1'], array('c' => '3', 'd' => '4'));
-            $this->assertEquals($test['expected'] . '?c=3&d=4', $curl->getOpt(CURLOPT_URL));
+            $this->assertEquals(
+                $test['expected'] . '?c=3&d=4',
+                $curl->getOpt(CURLOPT_URL),
+                "Joint URL '{$test['args']['0']}' with parameters a=1, b=2 " .
+                "and URL '{$test['args']['1']}' with parameters c=3, d=4"
+            );
         }
     }
 }
