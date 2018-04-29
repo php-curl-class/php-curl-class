@@ -7,7 +7,7 @@ use Curl\Curl;
 class Test
 {
     const TEST_URL = 'http://127.0.0.1:8000/';
-    const ERROR_URL = 'https://1.2.3.4/';
+    const ERROR_URL = 'http://1.2.3.4/';
 
     public function __construct()
     {
