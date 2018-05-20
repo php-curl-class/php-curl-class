@@ -1107,8 +1107,14 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($test->curl->error);
         $this->assertTrue($test->curl->curlError);
         $possible_errors = array(CURLE_SEND_ERROR, CURLE_OPERATION_TIMEOUTED);
-        $this->assertTrue(in_array($test->curl->errorCode, $possible_errors, true));
-        $this->assertTrue(in_array($test->curl->curlErrorCode, $possible_errors, true));
+        $this->assertTrue(
+            in_array($test->curl->errorCode, $possible_errors, true),
+            'errorCode: ' . $test->curl->errorCode
+        );
+        $this->assertTrue(
+            in_array($test->curl->curlErrorCode, $possible_errors, true),
+            'curlErrorCode: ' . $test->curl->curlErrorCode
+        );
     }
 
     public function testErrorMessage()
