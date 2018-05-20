@@ -601,7 +601,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             \PHPUnit\Framework\Assert::assertTrue($instance->error);
             \PHPUnit\Framework\Assert::assertTrue($instance->curlError);
             \PHPUnit\Framework\Assert::assertFalse($instance->httpError);
-            $possible_errors = array(CURLE_SEND_ERROR, CURLE_OPERATION_TIMEOUTED);
+            $possible_errors = array(CURLE_SEND_ERROR, CURLE_OPERATION_TIMEOUTED, CURLE_COULDNT_CONNECT);
             \PHPUnit\Framework\Assert::assertTrue(
                 in_array($instance->errorCode, $possible_errors, true),
                 'errorCode: ' . $instance->errorCode
