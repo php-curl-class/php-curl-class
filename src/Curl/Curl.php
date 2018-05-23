@@ -122,7 +122,7 @@ class Curl
         $header_callback_data->rawResponseHeaders = '';
         $header_callback_data->responseCookies = array();
         $this->headerCallbackData = $header_callback_data;
-        $this->setOpt(CURLOPT_HEADERFUNCTION, $this->createHeaderCallback($header_callback_data));
+        $this->setOpt(CURLOPT_HEADERFUNCTION, createHeaderCallback($header_callback_data));
 
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
@@ -1303,25 +1303,6 @@ class Curl
     }
 
     /**
-     * Create Header Callback
-     *
-     * @access private
-     * @param  $header_callback_data
-     *
-     * @return callable
-     */
-    private function createHeaderCallback($header_callback_data)
-    {
-        return function ($ch, $header) use ($header_callback_data) {
-            if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]+)/mi', $header, $cookie) === 1) {
-                $header_callback_data->responseCookies[$cookie[1]] = trim($cookie[2], " \n\r\t\0\x0B");
-            }
-            $header_callback_data->rawResponseHeaders .= $header;
-            return strlen($header);
-        };
-    }
-
-    /**
      * Download Complete
      *
      * @access private
@@ -1504,4 +1485,25 @@ class Curl
 
         $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
     }
+}
+
+/**
+ * Create Header Callback
+ *
+ * Gather headers and parse cookies as response headers are received. Keep this function separate from the class so that
+ * unset($curl) automatically calls __destruct() as expected. Otherwise, manually calling $curl->close() will be
+ * necessary to prevent a memory leak.
+ *
+ * @param  $header_callback_data
+ *
+ * @return callable
+ */
+function createHeaderCallback($header_callback_data) {
+    return function ($ch, $header) use ($header_callback_data) {
+        if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]+)/mi', $header, $cookie) === 1) {
+            $header_callback_data->responseCookies[$cookie[1]] = trim($cookie[2], " \n\r\t\0\x0B");
+        }
+        $header_callback_data->rawResponseHeaders .= $header;
+        return strlen($header);
+    };
 }
