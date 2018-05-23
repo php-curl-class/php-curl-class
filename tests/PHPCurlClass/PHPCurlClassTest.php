@@ -3026,7 +3026,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             }
             echo '{"before":' . memory_get_usage() . ',';
             $curl = new Curl();
-            $curl->close();
+            unset($curl);
             echo '"after":' . memory_get_usage() . '}';
             sleep(1);
         }
