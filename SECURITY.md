@@ -21,14 +21,18 @@ echo $curl->response;
 Safer:
 
 ```php
-function is_website_url($url, $allowed_schemes = array('http', 'https')) {
-    $validate_url = !(filter_var($url, FILTER_VALIDATE_URL) === false);
-    $scheme = parse_url($url, PHP_URL_SCHEME);
-    return $validate_url && in_array($scheme, $allowed_schemes, true);
+function is_allowed_url($url, $allowed_url_schemes = array('http', 'https')) {
+    $valid_url = filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED) !== false;
+    if ($valid_url) {
+        $scheme = parse_url($url, PHP_URL_SCHEME);
+        return in_array($scheme, $allowed_url_schemes, true);
+    }
+    $valid_ip = filter_var($url, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false;
+    return $valid_ip;
 }
 
 $url = $_GET['url'];
-if (!is_website_url($url)) {
+if (!is_allowed_url($url)) {
     die('Unsafe url detected.');
 }
 ```
