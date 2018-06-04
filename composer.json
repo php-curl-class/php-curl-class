@@ -15,6 +15,7 @@
     "require": {
         "php": ">=5.3",
         "ext-curl": "*",
+        "ext-gd": "*",
         "ext-mbstring": "*"
     },
     "require-dev": {
