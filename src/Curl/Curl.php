@@ -112,21 +112,7 @@ class Curl
         }
 
         $this->curl = curl_init();
-        $this->id = uniqid('', true);
-        $this->setDefaultUserAgent();
-        $this->setDefaultTimeout();
-        $this->setOpt(CURLINFO_HEADER_OUT, true);
-
-        // Create a placeholder to temporarily store the header callback data.
-        $header_callback_data = new \stdClass();
-        $header_callback_data->rawResponseHeaders = '';
-        $header_callback_data->responseCookies = array();
-        $this->headerCallbackData = $header_callback_data;
-        $this->setOpt(CURLOPT_HEADERFUNCTION, createHeaderCallback($header_callback_data));
-
-        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
-        $this->headers = new CaseInsensitiveArray();
-        $this->setUrl($base_url);
+        $this->initialize($base_url);
     }
 
     /**
@@ -1207,6 +1193,22 @@ class Curl
     }
 
     /**
+     * Reset
+     *
+     * @access public
+     */
+    public function reset()
+    {
+        if (function_exists('curl_reset') && is_resource($this->curl)) {
+            curl_reset($this->curl);
+        } else {
+            $this->curl = curl_init();
+        }
+
+        $this->initialize();
+    }
+
+    /**
      * Destruct
      *
      * @access public
@@ -1484,6 +1486,31 @@ class Curl
         }
 
         $this->cookies[implode('', $name_chars)] = implode('', $value_chars);
+    }
+
+    /**
+     * Initialize
+     *
+     * @access private
+     * @param  $base_url
+     */
+    private function initialize($base_url = null)
+    {
+        $this->id = uniqid('', true);
+        $this->setDefaultUserAgent();
+        $this->setDefaultTimeout();
+        $this->setOpt(CURLINFO_HEADER_OUT, true);
+
+        // Create a placeholder to temporarily store the header callback data.
+        $header_callback_data = new \stdClass();
+        $header_callback_data->rawResponseHeaders = '';
+        $header_callback_data->responseCookies = array();
+        $this->headerCallbackData = $header_callback_data;
+        $this->setOpt(CURLOPT_HEADERFUNCTION, createHeaderCallback($header_callback_data));
+
+        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
+        $this->headers = new CaseInsensitiveArray();
+        $this->setUrl($base_url);
     }
 }
 
