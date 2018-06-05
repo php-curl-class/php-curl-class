@@ -18,6 +18,7 @@
         "ext-mbstring": "*"
     },
     "require-dev": {
+        "ext-gd": "*",
         "phpunit/phpunit": "*",
         "squizlabs/php_codesniffer": "*"
     },

@@ -3639,4 +3639,20 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             );
         }
     }
+
+    public function testReset()
+    {
+        $test = new Test();
+
+        $original_user_agent = $test->server('server', 'GET', array('key' => 'HTTP_USER_AGENT'));
+        $this->assertNotEquals('New agent', $original_user_agent);
+
+        $test->curl->setUserAgent('New agent');
+        $user_agent = $test->server('server', 'GET', array('key' => 'HTTP_USER_AGENT'));
+        $this->assertEquals('New agent', $user_agent);
+
+        $test->curl->reset();
+        $user_agent = $test->server('server', 'GET', array('key' => 'HTTP_USER_AGENT'));
+        $this->assertEquals($original_user_agent, $user_agent);
+    }
 }
