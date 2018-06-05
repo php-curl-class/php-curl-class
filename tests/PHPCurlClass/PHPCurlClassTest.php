@@ -3642,12 +3642,10 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testReset()
     {
-        $php_version = preg_replace('/([\.\+\?\*\(\)\[\]\^\$\/])/', '\\\\\1', 'PHP/' . PHP_VERSION);
-
         $test = new Test();
 
-        $user_agent = $test->server('server', 'GET', array('key' => 'HTTP_USER_AGENT'));
-        $this->assertRegExp('/' . $php_version . '/', $user_agent);
+        $original_user_agent = $test->server('server', 'GET', array('key' => 'HTTP_USER_AGENT'));
+        $this->assertNotEquals('New agent', $original_user_agent);
 
         $test->curl->setUserAgent('New agent');
         $user_agent = $test->server('server', 'GET', array('key' => 'HTTP_USER_AGENT'));
@@ -3655,6 +3653,6 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
         $test->curl->reset();
         $user_agent = $test->server('server', 'GET', array('key' => 'HTTP_USER_AGENT'));
-        $this->assertRegExp('/' . $php_version . '/', $user_agent);
+        $this->assertEquals($original_user_agent, $user_agent);
     }
 }

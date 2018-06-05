@@ -1493,7 +1493,6 @@ class Curl
      *
      * @access private
      * @param  $base_url
-     * @throws \ErrorException
      */
     private function initialize($base_url = null)
     {
