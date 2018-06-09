@@ -351,8 +351,8 @@ class Curl
         // Transfer the header callback data and release the temporary store to avoid memory leak.
         $this->rawResponseHeaders = $this->headerCallbackData->rawResponseHeaders;
         $this->responseCookies = $this->headerCallbackData->responseCookies;
-        $this->headerCallbackData->rawResponseHeaders = null;
-        $this->headerCallbackData->responseCookies = null;
+        $this->headerCallbackData->rawResponseHeaders = '';
+        $this->headerCallbackData->responseCookies = array();
 
         // Include additional error code information in error message when possible.
         if ($this->curlError && function_exists('curl_strerror')) {
