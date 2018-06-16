@@ -1,6 +1,15 @@
 from itertools import product
-from urllib.parse import urljoin
-from urllib.parse import urlparse
+
+try:
+    from urllib.parse import urljoin
+except ImportError:
+    from urlparse import urljoin
+
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
+
 import csv
 import posixpath
 
