@@ -2595,7 +2595,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function testXMLResponse()
+    public function testXmlResponse()
     {
         foreach (array(
             'Content-Type',
@@ -3069,7 +3069,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertNotEmpty($stderr);
     }
 
-    public function testXMLDecoder()
+    public function testXmlDecoder()
     {
         $test = new Test();
         $test->server('xml_with_cdata_response', 'POST');
