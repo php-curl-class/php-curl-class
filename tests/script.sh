@@ -1,7 +1,7 @@
 set -x
 
 # Use composer's phpunit and phpcs by adding composer bin directory to the path environment variable.
-export PATH="$PWD/vendor/bin:$PATH"
+export PATH="${PWD}/vendor/bin:${PATH}"
 
 errors=0
 
