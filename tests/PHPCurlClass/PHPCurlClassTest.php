@@ -2574,6 +2574,31 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    public function testXmlDecoderOptions()
+    {
+        // Implicit default xml decoder should return object.
+        $test = new Test();
+        $test->server('xml_with_cdata_response', 'GET');
+        $this->assertTrue(is_object($test->curl->response));
+        $this->assertFalse(strpos($test->curl->response->saveXML(), '<![CDATA[') === false);
+
+        // Explicit default xml decoder should return object.
+        $test = new Test();
+        $test->curl->setDefaultXmlDecoder();
+        $test->server('xml_with_cdata_response', 'GET');
+        $this->assertTrue(is_object($test->curl->response));
+        $this->assertFalse(strpos($test->curl->response->saveXML(), '<![CDATA[') === false);
+
+        // Explicit default xml decoder with options should return value using options as specified.
+        $class_name = 'SimpleXMLElement';
+        $options = LIBXML_NOCDATA;
+        $test = new Test();
+        $test->curl->setDefaultXmlDecoder($class_name, $options);
+        $test->server('xml_with_cdata_response', 'GET');
+        $this->assertTrue(is_object($test->curl->response));
+        $this->assertTrue(strpos($test->curl->response->saveXML(), '<![CDATA[') === false);
+    }
+
     public function testXmlContentTypeDetection()
     {
         $xml_content_types = array(

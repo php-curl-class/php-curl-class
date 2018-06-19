@@ -55,6 +55,7 @@ class Curl
 
     private $jsonDecoderArgs = array();
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
+    private $xmlDecoderArgs = array();
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+|soap\+)?)xml~i';
     private $defaultDecoder = null;
 
@@ -206,6 +207,7 @@ class Curl
         $this->jsonDecoder = null;
         $this->jsonDecoderArgs = null;
         $this->xmlDecoder = null;
+        $this->xmlDecoderArgs = null;
         $this->defaultDecoder = null;
     }
 
@@ -855,10 +857,15 @@ class Curl
      * Set Default XML Decoder
      *
      * @access public
+     * @param  $class_name
+     * @param  $options
+     * @param  $ns
+     * @param  $is_prefix
      */
     public function setDefaultXmlDecoder()
     {
         $this->xmlDecoder = '\Curl\Decoder::decodeXml';
+        $this->xmlDecoderArgs = func_get_args();
     }
 
     /**
@@ -973,8 +980,10 @@ class Curl
     {
         if ($mixed === false) {
             $this->xmlDecoder = false;
+            $this->xmlDecoderArgs = array();
         } elseif (is_callable($mixed)) {
             $this->xmlDecoder = $mixed;
+            $this->xmlDecoderArgs = array();
         }
     }
 
@@ -1418,7 +1427,9 @@ class Curl
                 }
             } elseif (preg_match($this->xmlPattern, $response_headers['Content-Type'])) {
                 if ($this->xmlDecoder) {
-                    $response = call_user_func($this->xmlDecoder, $response);
+                    $args = $this->xmlDecoderArgs;
+                    array_unshift($args, $response);
+                    $response = call_user_func_array($this->xmlDecoder, $args);
                 }
             } else {
                 if ($this->defaultDecoder) {

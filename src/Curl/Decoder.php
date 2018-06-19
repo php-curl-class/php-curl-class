@@ -35,11 +35,16 @@ class Decoder
      * Decode XML
      *
      * @access public
-     * @param  $response
+     * @param  $data
+     * @param  $class_name
+     * @param  $options
+     * @param  $ns
+     * @param  $is_prefix
      */
-    public static function decodeXml($response)
+    public static function decodeXml()
     {
-        $xml_obj = @simplexml_load_string($response);
+        $args = func_get_args();
+        $xml_obj = @call_user_func_array('simplexml_load_string', $args);
         if (!($xml_obj === false)) {
             $response = $xml_obj;
         }
