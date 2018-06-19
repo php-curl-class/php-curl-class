@@ -1406,13 +1406,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testJsonDecoder()
     {
-        $data = array(
-            'key' => 'Content-Type',
-            'value' => 'application/json',
-        );
-
         $test = new Test();
-        $test->server('json_response', 'POST', $data);
+        $test->server('json_response', 'GET');
         $this->assertTrue(is_object($test->curl->response));
         $this->assertFalse(is_array($test->curl->response));
 
@@ -1420,13 +1415,13 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->curl->setJsonDecoder(function ($response) {
             return json_decode($response, true);
         });
-        $test->server('json_response', 'POST', $data);
+        $test->server('json_response', 'GET');
         $this->assertFalse(is_object($test->curl->response));
         $this->assertTrue(is_array($test->curl->response));
 
         $test = new Test();
         $test->curl->setJsonDecoder(false);
-        $test->server('json_response', 'POST', $data);
+        $test->server('json_response', 'GET');
         $this->assertTrue(is_string($test->curl->response));
     }
 
