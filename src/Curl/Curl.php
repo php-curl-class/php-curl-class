@@ -961,10 +961,7 @@ class Curl
      */
     public function setJsonDecoder($mixed)
     {
-        if ($mixed === false) {
-            $this->jsonDecoder = false;
-            $this->jsonDecoderArgs = array();
-        } elseif (is_callable($mixed)) {
+        if ($mixed === false || is_callable($mixed)) {
             $this->jsonDecoder = $mixed;
             $this->jsonDecoderArgs = array();
         }
@@ -978,10 +975,7 @@ class Curl
      */
     public function setXmlDecoder($mixed)
     {
-        if ($mixed === false) {
-            $this->xmlDecoder = false;
-            $this->xmlDecoderArgs = array();
-        } elseif (is_callable($mixed)) {
+        if ($mixed === false || is_callable($mixed)) {
             $this->xmlDecoder = $mixed;
             $this->xmlDecoderArgs = array();
         }
