@@ -84,3 +84,11 @@ $curl->get('https://www.example.com/image.png');
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // DANGER!
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // DANGER!
 ```
+
+### Prevent XML External Entity injection
+
+* Set the following when using the default PHP XML parser to prevent XML external entity injection.
+
+```php
+libxml_disable_entity_loader(true);
+```
