@@ -2,7 +2,7 @@
 
 namespace Curl;
 
-class StrUtil
+class StringUtil
 {
     /**
      * Return true when $haystack starts with $needle.

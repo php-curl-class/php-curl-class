@@ -2,7 +2,7 @@
 
 namespace Curl;
 
-use Curl\StrUtil;
+use Curl\StringUtil;
 
 class Url
 {
@@ -36,15 +36,15 @@ class Url
         while (!empty($input)) {
             // A.  If the input buffer begins with a prefix of "../" or "./",
             //     then remove that prefix from the input buffer; otherwise,
-            if (StrUtil::startsWith($input, '../')) {
+            if (StringUtil::startsWith($input, '../')) {
                 $input = substr($input, 3);
-            } elseif (StrUtil::startsWith($input, './')) {
+            } elseif (StringUtil::startsWith($input, './')) {
                 $input = substr($input, 2);
 
             // B.  if the input buffer begins with a prefix of "/./" or "/.",
             //     where "." is a complete path segment, then replace that
             //     prefix with "/" in the input buffer; otherwise,
-            } elseif (StrUtil::startsWith($input, '/./')) {
+            } elseif (StringUtil::startsWith($input, '/./')) {
                 $input = substr($input, 2);
             } elseif ($input === '/.') {
                 $input = '/';
@@ -54,7 +54,7 @@ class Url
             //     prefix with "/" in the input buffer and remove the last
             //     segment and its preceding "/" (if any) from the output
             //     buffer; otherwise,
-            } elseif (StrUtil::startsWith($input, '/../')) {
+            } elseif (StringUtil::startsWith($input, '/../')) {
                 $input = substr($input, 3);
                 $output = substr_replace($output, '', \mb_strrpos($output, '/'));
             } elseif ($input === '/..') {
@@ -128,7 +128,7 @@ class Url
                     $target['path'] = $b['path'];
                     $target['query'] = isset($r['query']) ? $r['query'] : (isset($b['query']) ? $b['query'] : null);
                 } else {
-                    if (StrUtil::startsWith($r['path'], '/')) {
+                    if (StringUtil::startsWith($r['path'], '/')) {
                         $target['path'] = self::removeDotSegments($r['path']);
                     } else {
                         $base = \mb_strrchr($b['path'], '/', true);
