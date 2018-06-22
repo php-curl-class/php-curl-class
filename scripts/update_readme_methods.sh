@@ -1,3 +1,6 @@
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "${SCRIPT_DIR}/.."
+
 before=$(head -n $(
     grep --context="0" --line-number --max-count="1" "### Available Methods" "README.md" |
     perl -pe 's/^(\d+):.*/\1/') "README.md")
