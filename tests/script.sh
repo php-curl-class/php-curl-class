@@ -63,7 +63,7 @@ EOF
 # Skip hhvm "Notice: File could not be loaded: ..."
 if [[ "${TRAVIS_PHP_VERSION}" != "hhvm" ]] && [[ "${TRAVIS_PHP_VERSION}" != "hhvm-nightly" ]]; then
     export -f "find_invalid_indentation"
-    invalid_indentation=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec bash -c 'find_invalid_indentation "{}"' \;)
+    invalid_indentation=$(find . -type "f" -iname "*.php" ! -path "*/tests/*" ! -path "*/vendor/*" -exec bash -c 'find_invalid_indentation "{}"' \;)
     if [[ ! -z "${invalid_indentation}" ]]; then
         echo "${invalid_indentation}"
         ((errors++))
