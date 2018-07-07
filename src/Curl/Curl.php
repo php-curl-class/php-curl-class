@@ -42,7 +42,7 @@ class Curl
 
     public $attempts = 0;
     public $retries = 0;
-    public $isChildOfMultiCurl = false;
+    public $childOfMultiCurl = false;
     public $remainingRetries = 0;
     public $retryDecider = null;
 
@@ -396,7 +396,7 @@ class Curl
         $this->setOpt(CURLOPT_NOBODY, false);
 
         // Allow multicurl to attempt retry as needed.
-        if ($this->isChildOfMultiCurl) {
+        if ($this->childOfMultiCurl) {
             return;
         }
 
