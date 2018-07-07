@@ -396,7 +396,7 @@ class Curl
         $this->setOpt(CURLOPT_NOBODY, false);
 
         // Allow multicurl to attempt retry as needed.
-        if ($this->childOfMultiCurl) {
+        if ($this->isChildOfMultiCurl()) {
             return;
         }
 
@@ -739,18 +739,6 @@ class Curl
     public function getResponseCookie($key)
     {
         return isset($this->responseCookies[$key]) ? $this->responseCookies[$key] : null;
-    }
-
-    /**
-     * Get Response Cookies
-     *
-     * @access public
-     *
-     * @return array
-     */
-    public function getResponseCookies()
-    {
-        return $this->responseCookies;
     }
 
     /**
@@ -1209,6 +1197,161 @@ class Curl
         }
 
         $this->initialize();
+    }
+
+    public function getCurl()
+    {
+        return $this->curl;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function isError()
+    {
+        return $this->error;
+    }
+
+    public function getErrorCode()
+    {
+        return $this->errorCode;
+    }
+
+    public function getErrorMessage()
+    {
+        return $this->errorMessage;
+    }
+
+    public function isCurlError()
+    {
+        return $this->curlError;
+    }
+
+    public function getCurlErrorCode()
+    {
+        return $this->curlErrorCode;
+    }
+
+    public function getCurlErrorMessage()
+    {
+        return $this->curlErrorMessage;
+    }
+
+    public function isHttpError()
+    {
+        return $this->httpError;
+    }
+
+    public function getHttpStatusCode()
+    {
+        return $this->httpStatusCode;
+    }
+
+    public function getHttpErrorMessage()
+    {
+        return $this->httpErrorMessage;
+    }
+
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    public function getRequestHeaders()
+    {
+        return $this->requestHeaders;
+    }
+
+    public function getResponseHeaders()
+    {
+        return $this->responseHeaders;
+    }
+
+    public function getRawResponseHeaders()
+    {
+        return $this->rawResponseHeaders;
+    }
+
+    public function getResponseCookies()
+    {
+        return $this->responseCookies;
+    }
+
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    public function getRawResponse()
+    {
+        return $this->rawResponse;
+    }
+
+    public function getBeforeSendCallback()
+    {
+        return $this->beforeSendCallback;
+    }
+
+    public function getDownloadCompleteCallback()
+    {
+        return $this->downloadCompleteCallback;
+    }
+
+    public function getSuccessCallback()
+    {
+        return $this->successCallback;
+    }
+
+    public function getErrorCallback()
+    {
+        return $this->errorCallback;
+    }
+
+    public function getCompleteCallback()
+    {
+        return $this->completeCallback;
+    }
+
+    public function getFileHandle()
+    {
+        return $this->fileHandle;
+    }
+
+    public function getAttempts()
+    {
+        return $this->attempts;
+    }
+
+    public function getRetries()
+    {
+        return $this->retries;
+    }
+
+    public function isChildOfMultiCurl()
+    {
+        return $this->childOfMultiCurl;
+    }
+
+    public function getRemainingRetries()
+    {
+        return $this->remainingRetries;
+    }
+
+    public function getRetryDecider()
+    {
+        return $this->retryDecider;
+    }
+
+    public function getJsonDecoder()
+    {
+        return $this->jsonDecoder;
+    }
+
+    public function getXmlDecoder()
+    {
+        return $this->xmlDecoder;
     }
 
     /**
