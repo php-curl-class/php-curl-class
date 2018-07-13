@@ -812,7 +812,7 @@ class MultiCurl
     {
         // Use sequential ids to allow for ordered post processing.
         $curl->id = $this->nextCurlId++;
-        $curl->isChildOfMultiCurl = true;
+        $curl->childOfMultiCurl = true;
         $this->curls[$curl->id] = $curl;
 
         $curl->setHeaders($this->headers);

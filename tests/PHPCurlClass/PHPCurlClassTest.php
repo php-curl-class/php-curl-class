@@ -3676,4 +3676,16 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $user_agent = $test->server('server', 'GET', array('key' => 'HTTP_USER_AGENT'));
         $this->assertEquals($original_user_agent, $user_agent);
     }
+
+    public function testMock()
+    {
+        $curl = $this->getMockBuilder('Curl\Curl')
+                     ->getMock();
+
+        $curl->expects($this->once())
+             ->method('getRawResponse')
+             ->will($this->returnValue('[]'));
+
+        $this->assertEquals('[]', $curl->getRawResponse());
+    }
 }
