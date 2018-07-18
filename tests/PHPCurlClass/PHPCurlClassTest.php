@@ -3688,4 +3688,17 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals('[]', $curl->getRawResponse());
     }
+
+    public function testProxySettings()
+    {
+        $curl = new Curl();
+        $curl->setProxy('proxy.example.com', '1080', 'username', 'password');
+
+        $this->assertEquals('proxy.example.com', $curl->getOpt(CURLOPT_PROXY));
+        $this->assertEquals('1080', $curl->getOpt(CURLOPT_PROXYPORT));
+        $this->assertEquals('username:password', $curl->getOpt(CURLOPT_PROXYUSERPWD));
+
+        $curl->unsetProxy();
+        $this->assertNull($curl->getOpt(CURLOPT_PROXY));
+    }
 }
