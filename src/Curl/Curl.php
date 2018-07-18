@@ -1071,7 +1071,7 @@ class Curl
      * @access public
      * @param  $tunnel boolean
      */
-    public function setProxyTunnel($tunnel)
+    public function setProxyTunnel($tunnel = true)
     {
         $this->setOpt(CURLOPT_HTTPPROXYTUNNEL, $tunnel);
     }
