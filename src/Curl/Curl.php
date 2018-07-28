@@ -145,7 +145,12 @@ class Curl
                 preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
                 $data = json_encode($data);
                 if (!(json_last_error() === JSON_ERROR_NONE)) {
-                    throw new \ErrorException('json_encode error: ' . json_last_error_msg());
+                    if (function_exists('json_last_error_msg')) {
+                        $error_message = 'json_encode error: ' . json_last_error_msg();
+                    } else {
+                        $error_message = 'json_encode error';
+                    }
+                    throw new \ErrorException($error_message);
                 }
             } else {
                 // Manually build a single-dimensional array from a multi-dimensional array as using curl_setopt($ch,
