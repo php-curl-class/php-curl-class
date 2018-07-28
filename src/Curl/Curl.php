@@ -134,6 +134,7 @@ class Curl
      * @param  $data
      *
      * @return array|string
+     * @throws \ErrorException
      */
     public function buildPostData($data)
     {
@@ -142,9 +143,14 @@ class Curl
             // Return JSON-encoded string when the request's content-type is JSON.
             if (isset($this->headers['Content-Type']) &&
                 preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
-                $json_str = json_encode($data);
-                if (!($json_str === false)) {
-                    $data = $json_str;
+                $data = json_encode($data);
+                if (!(json_last_error() === JSON_ERROR_NONE)) {
+                    if (function_exists('json_last_error_msg')) {
+                        $error_message = 'json_encode error: ' . json_last_error_msg();
+                    } else {
+                        $error_message = 'json_encode error';
+                    }
+                    throw new \ErrorException($error_message);
                 }
             } else {
                 // Manually build a single-dimensional array from a multi-dimensional array as using curl_setopt($ch,

@@ -1381,6 +1381,20 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    /**
+     * @expectedException \ErrorException
+     */
+    public function testJsonEncode()
+    {
+        $data = array(
+            'malformed' => pack('H*', 'c32e'),
+        );
+
+        $test = new Test();
+        $test->curl->setHeader('Content-Type', 'application/json');
+        $test->server('post_json', 'POST', $data);
+    }
+
     public function testJsonDecoderOptions()
     {
         // Implicit default json decoder should return object.
