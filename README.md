@@ -349,7 +349,12 @@ To run tests:
     $ composer update
     $ ./tests/run.sh
 
+To run all container tests:
+
+    $ ./tests/test_all.sh
+
 ### Contribute
+
 1. Check for open issues or open a new issue to start a discussion around a bug or feature.
 1. Fork the repository on GitHub to start making your changes.
 1. Write one or more tests for the new feature or that expose the bug.
