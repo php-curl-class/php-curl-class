@@ -27,13 +27,29 @@ php -r "var_dump(curl_version());"
 composer self-update
 composer install --prefer-source --no-interaction
 
+# Use docker-specific settings.
+if [ -f "/.dockerenv" ]; then
+    # Skip using sudo.
+    superuser=""
+    # Use unix socket.
+    fastcgi_pass="unix:/var/run/php5-fpm.sock"
+else
+    # Use sudo.
+    superuser="sudo"
+    # Use ip socket.
+    fastcgi_pass="127.0.0.1:9000"
+fi
+
 if [[ "${TRAVIS_PHP_VERSION}" == "5.3" ]]; then
-    sudo add-apt-repository -y ppa:nginx/development
-    sudo apt-get update
-    sudo apt-get install -y nginx
-    sudo apt-get install -y php5-fpm
+    if ! [ -x "$(command -v add-apt-repository)" ]; then
+        $superuser apt-get install -y python-software-properties
+    fi
+    $superuser add-apt-repository -y ppa:nginx/development
+    $superuser apt-get update
+    $superuser apt-get install -y nginx
+    $superuser apt-get install -y php5-fpm
     root="$(pwd)/tests/PHPCurlClass"
-    sudo tee /etc/nginx/sites-enabled/default <<EOF
+    $superuser tee /etc/nginx/sites-enabled/default <<EOF
 server {
     listen 8000 default_server;
     root ${root};
@@ -44,14 +60,15 @@ server {
     }
     location ~ \.php$ {
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_pass ${fastcgi_pass};
         fastcgi_index index.php;
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
     }
 }
 EOF
-    sudo /etc/init.d/nginx restart
+    $superuser /etc/init.d/php5-fpm start
+    $superuser /etc/init.d/nginx restart
     phpunit_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
