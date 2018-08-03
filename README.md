@@ -349,8 +349,10 @@ To run tests:
     $ composer update
     $ ./tests/run.sh
 
-To run all container tests:
+To test all PHP versions in containers:
 
+    $ git clone https://github.com/php-curl-class/php-curl-class.git
+    $ cd php-curl-class/
     $ ./tests/test_all.sh
 
 ### Contribute
