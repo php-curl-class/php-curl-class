@@ -4,8 +4,9 @@
     "homepage": "https://github.com/php-curl-class/php-curl-class",
     "license": "Unlicense",
     "keywords": [
-        "php", "curl", "class", "api", "client", "framework", "http client",
-        "http", "json", "requests", "rest", "restful", "web service", "xml"
+        "php", "curl", "class", "api", "api-client", "client", "curl",
+        "framework", "http", "http-client", "http-proxy", "json", "proxy",
+        "requests", "rest", "restful", "web service", "xml"
     ],
     "authors": [
         {
