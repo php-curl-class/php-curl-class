@@ -81,6 +81,21 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    public function testJsonEncodingJsonSerializableObject()
+    {
+        if (version_compare('5.4', PHP_VERSION, '>')) {
+            self::markTestSkipped('No JsonEncoding of Objects before PHP 5.4');
+        }
+        $jsonSerializable = $this->getMockBuilder('JsonSerializable')->getMock();
+        $jsonSerializable->expects(self::once())
+            ->method('jsonSerialize')
+            ->with()
+            ->willReturn(array('An' => 'example'));
+        $curl = new Curl();
+        $curl->setHeader('Content-Type', 'application/json');
+        self::assertJsonStringEqualsJsonString('{"An":"example"}', $curl->buildPostData($jsonSerializable));
+    }
+
     public function testUserAgent()
     {
         $php_version = preg_replace('/([\.\+\?\*\(\)\[\]\^\$\/])/', '\\\\\1', 'PHP/' . PHP_VERSION);

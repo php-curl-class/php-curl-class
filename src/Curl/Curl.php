@@ -139,32 +139,34 @@ class Curl
     public function buildPostData($data)
     {
         $binary_data = false;
-        if (is_array($data)) {
+        if (isset($this->headers['Content-Type']) &&
+            preg_match($this->jsonPattern, $this->headers['Content-Type']) &&
+            (
+                is_array($data) ||
+                (is_object($data) && interface_exists('JsonSerializable', false) && $data instanceof \JsonSerializable)
+            )
+        ) {
             // Return JSON-encoded string when the request's content-type is JSON.
-            if (isset($this->headers['Content-Type']) &&
-                preg_match($this->jsonPattern, $this->headers['Content-Type'])) {
-                $data = \Curl\json_encode($data);
-            } else {
-                // Manually build a single-dimensional array from a multi-dimensional array as using curl_setopt($ch,
-                // CURLOPT_POSTFIELDS, $data) doesn't correctly handle multi-dimensional arrays when files are
-                // referenced.
-                if (ArrayUtil::is_array_multidim($data)) {
-                    $data = ArrayUtil::array_flatten_multidim($data);
-                }
-
-                // Modify array values to ensure any referenced files are properly handled depending on the support of
-                // the @filename API or CURLFile usage. This also fixes the warning "curl_setopt(): The usage of the
-                // @filename API for file uploading is deprecated. Please use the CURLFile class instead". Ignore
-                // non-file values prefixed with the @ character.
-                foreach ($data as $key => $value) {
-                    if (is_string($value) && strpos($value, '@') === 0 && is_file(substr($value, 1))) {
-                        $binary_data = true;
-                        if (class_exists('CURLFile')) {
-                            $data[$key] = new \CURLFile(substr($value, 1));
-                        }
-                    } elseif ($value instanceof \CURLFile) {
-                        $binary_data = true;
+            $data = \Curl\json_encode($data);
+        } elseif (is_array($data)) {
+            // Manually build a single-dimensional array from a multi-dimensional array as using curl_setopt($ch,
+            // CURLOPT_POSTFIELDS, $data) doesn't correctly handle multi-dimensional arrays when files are
+            // referenced.
+            if (ArrayUtil::is_array_multidim($data)) {
+                $data = ArrayUtil::array_flatten_multidim($data);
+            }
+            // Modify array values to ensure any referenced files are properly handled depending on the support of
+            // the @filename API or CURLFile usage. This also fixes the warning "curl_setopt(): The usage of the
+            // @filename API for file uploading is deprecated. Please use the CURLFile class instead". Ignore
+            // non-file values prefixed with the @ character.
+            foreach ($data as $key => $value) {
+                if (is_string($value) && strpos($value, '@') === 0 && is_file(substr($value, 1))) {
+                    $binary_data = true;
+                    if (class_exists('CURLFile')) {
+                        $data[$key] = new \CURLFile(substr($value, 1));
                     }
+                } elseif ($value instanceof \CURLFile) {
+                    $binary_data = true;
                 }
             }
         }
