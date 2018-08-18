@@ -5,6 +5,7 @@ namespace CurlTest;
 use \Curl\CaseInsensitiveArray;
 use \Curl\Curl;
 use \Helper\Test;
+use \Helper\User;
 
 class CurlTest extends \PHPUnit\Framework\TestCase
 {
@@ -3714,5 +3715,21 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
         $curl->unsetProxy();
         $this->assertNull($curl->getOpt(CURLOPT_PROXY));
+    }
+
+    public function testJsonSerializable()
+    {
+        if (!interface_exists('JsonSerializable')) {
+            $this->markTestSkipped();
+        }
+
+        $expected_response = '{"name":"Alice","email":"alice@example.com"}';
+
+        $user = new \Helper\User('Alice', 'alice@example.com');
+        $this->assertEquals($expected_response, json_encode($user));
+
+        $test = new Test();
+        $test->curl->setHeader('Content-Type', 'application/json');
+        $this->assertEquals($expected_response, $test->server('post_json', 'POST', $user));
     }
 }
