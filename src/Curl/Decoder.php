@@ -44,9 +44,9 @@ class Decoder
     public static function decodeXml()
     {
         $args = func_get_args();
-        $xml_obj = @call_user_func_array('simplexml_load_string', $args);
-        if (!($xml_obj === false)) {
-            $response = $xml_obj;
+        $response = @call_user_func_array('simplexml_load_string', $args);
+        if ($response === false) {
+            $response = $args['0'];
         }
         return $response;
     }
