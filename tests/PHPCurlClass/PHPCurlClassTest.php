@@ -552,6 +552,28 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('image/png', $test->curl->response);
     }
 
+    public function testMultipartFormDataContentType()
+    {
+        // Use a PUT request instead of a POST request so the request
+        // multipart/form-data is not automatically parsed and can be tested
+        // against.
+        $test = new Test();
+        $test->curl->setHeader('Content-Type', 'multipart/form-data');
+        $test->server('put', 'PUT', array(
+            'foo' => 'bar',
+        ));
+
+        $this->assertEquals('100-continue', $test->curl->requestHeaders['Expect']);
+        $this->assertStringStartsWith('multipart/form-data; boundary=', $test->curl->requestHeaders['Content-Type']);
+
+        $expected_contains = "\r\n" .
+            'Content-Disposition: form-data; name="foo"' . "\r\n" .
+            "\r\n" .
+            'bar' . "\r\n" .
+            '';
+        $this->assertContains($expected_contains, $test->curl->response);
+    }
+
     public function testPatchRequestMethod()
     {
         $test = new Test();
