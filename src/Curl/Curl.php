@@ -176,7 +176,12 @@ class Curl
             }
         }
 
-        if (!$binary_data && (is_array($data) || is_object($data))) {
+        if (!$binary_data &&
+            (is_array($data) || is_object($data)) &&
+            (
+                !isset($this->headers['Content-Type']) ||
+                !preg_match('/^multipart\/form-data/', $this->headers['Content-Type'])
+            )) {
             $data = http_build_query($data, '', '&');
         }
 
