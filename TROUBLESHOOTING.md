@@ -1,5 +1,14 @@
 # Troubleshooting
 
+### Ensure you have the latest version installed
+
+```bash
+$ cd php-curl-class/
+$ composer update
+$ composer info
+```
+Compare your version with latest release listed on the [releases page](https://github.com/php-curl-class/php-curl-class/releases).
+
 ### Turn on error reporting
 
 ```php
