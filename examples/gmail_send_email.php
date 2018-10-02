@@ -33,6 +33,7 @@ if (isset($_GET['code'])) {
 
     $_SESSION['access_token'] = $curl->response->access_token;
     header('Location: ?');
+    exit;
 } elseif (!empty($_SESSION['access_token'])) {
     // Use the access token to send an email.
     $curl = new Curl();
