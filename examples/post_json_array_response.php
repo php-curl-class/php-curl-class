@@ -18,4 +18,4 @@ $curl = new Curl();
 $curl->setDefaultJsonDecoder($assoc = true);
 $curl->setHeader('Content-Type', 'application/json');
 $curl->post('https://httpbin.org/post', $data);
-var_dump($curl->response['json']);
+var_dump($curl->response);
