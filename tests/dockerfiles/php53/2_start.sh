@@ -6,10 +6,10 @@ cd "${SCRIPT_DIR}/../../.."
 project_dir="${PWD}"
 
 docker start "php53" ||
-  docker run \
-    --detach \
-    --interactive \
-    --mount "type=bind,src=${project_dir},dst=/data,readonly=true" \
-    --name="php53" \
-    --tty \
-    "php-curl-class/php53"
+    docker run \
+        --detach \
+        --interactive \
+        --mount "type=bind,src=${project_dir},dst=/data,readonly=true" \
+        --name="php53" \
+        --tty \
+        "php-curl-class/php53"
