@@ -810,6 +810,18 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse(file_exists($filename));
     }
 
+    public function testDownloadErrorDeleteTemporaryFile()
+    {
+        $destination = \Helper\get_tmp_file_path();
+
+        $test = new Test();
+        $test->curl->setHeader('X-DEBUG-TEST', '404');
+        $test->curl->download(Test::TEST_URL, $destination);
+
+        $this->assertFalse(file_exists($test->curl->getDownloadFileName()));
+        $this->assertFalse(file_exists($destination));
+    }
+
     public function testMaxFilesize()
     {
         $tests = array(
