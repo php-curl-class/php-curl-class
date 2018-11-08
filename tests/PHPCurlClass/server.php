@@ -346,6 +346,10 @@ if ($test === 'http_basic_auth') {
     echo '202 Accepted';
     echo ' (remaining failures: ' . $_SESSION['failures_remaining'] . ')';
     exit;
+} elseif ($test === '404') {
+    header('HTTP/1.1 404 Not Found');
+    echo '404 Not Found';
+    exit;
 }
 
 header('Content-Type: text/plain');

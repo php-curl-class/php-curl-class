@@ -39,6 +39,7 @@ class Curl
     public $errorCallback = null;
     public $completeCallback = null;
     public $fileHandle = null;
+    private $downloadFileName = null;
 
     public $attempts = 0;
     public $retries = 0;
@@ -281,6 +282,7 @@ class Curl
     {
         if (is_callable($mixed_filename)) {
             $this->downloadCompleteCallback = $mixed_filename;
+            $this->downloadFileName = null;
             $this->fileHandle = tmpfile();
         } else {
             $filename = $mixed_filename;
@@ -299,6 +301,7 @@ class Curl
                 $range = $first_byte_position . '-';
                 $this->setOpt(CURLOPT_RANGE, $range);
             }
+            $this->downloadFileName = $download_filename;
             $this->fileHandle = fopen($download_filename, $mode);
 
             // Move the downloaded temporary file to the destination save path.
@@ -1382,6 +1385,11 @@ class Curl
         return $this->downloadCompleteCallback;
     }
 
+    public function getDownloadFileName()
+    {
+        return $this->downloadFileName;
+    }
+
     public function getSuccessCallback()
     {
         return $this->successCallback;
@@ -1541,7 +1549,9 @@ class Curl
      */
     private function downloadComplete($fh)
     {
-        if (!$this->error && $this->downloadCompleteCallback) {
+        if ($this->error && is_file($this->downloadFileName)) {
+            @unlink($this->downloadFileName);
+        } elseif (!$this->error && $this->downloadCompleteCallback) {
             rewind($fh);
             $this->call($this->downloadCompleteCallback, $fh);
             $this->downloadCompleteCallback = null;
