@@ -265,7 +265,9 @@ class Curl
 
         $this->setUrl($url, $query_parameters);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
-        $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
+        if (!empty($data)) {
+            $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
+        }
         return $this->exec();
     }
 
