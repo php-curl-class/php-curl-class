@@ -622,6 +622,22 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('{"get":{"foo":"bar"},"delete":{"wibble":"wubble"}}', $test->curl->rawResponse);
     }
 
+    public function testDeleteContentLengthSetWithBody()
+    {
+        $request_body = 'a=1&b=2&c=3';
+        $test = new Test();
+        $test->server('request_method', 'DELETE', array(), $request_body);
+        $this->assertEquals(strlen($request_body), $test->curl->requestHeaders['content-length']);
+    }
+
+    public function testDeleteContentLengthUnsetWithoutBody()
+    {
+        $request_body = array();
+        $test = new Test();
+        $test->server('request_method', 'DELETE', array(), $request_body);
+        $this->assertFalse(isset($test->curl->requestHeaders['content-length']));
+    }
+
     public function testHeadRequestMethod()
     {
         $test = new Test();
