@@ -20,6 +20,8 @@ matrix:
       dist: trusty
     - php: 7.2
       dist: trusty
+    - php: 7.3
+      dist: trusty
     - php: hhvm
       dist: trusty
     - php: hhvm-nightly
