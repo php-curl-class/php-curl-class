@@ -92,3 +92,17 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // DANGER!
 ```php
 libxml_disable_entity_loader(true);
 ```
+
+### Prevent PHP execution of library files
+
+PHP files in this library are not intended to be accessible by users browsing websites. Prevent direct access to library files by moving the library folder at least one level higher than the web root directory. Alternatively, configure the server to disable php file execution for all library files.
+
+#### For WordPress plugin developers
+
+WordPress plugin developers that wish to incorporate the PHP Curl Class library into their plugin, should take special care to include only the "core" library files.
+
+Do one of the following:
+
+Option 1. Download an official release from the [releases page](https://github.com/php-curl-class/php-curl-class/releases) and incorporate the files contained in the compressed file into the plugin. The releases include only the necessary php files for the library to function.
+
+Option 2. Manually copy only the [src/](https://github.com/php-curl-class/php-curl-class/tree/master/src) directory into your plugin. Be sure not to copy any other php files as they may be executable by users visiting the php files directly.
