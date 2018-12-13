@@ -1,6 +1,6 @@
 # Troubleshooting
 
-### Ensure you have the latest version installed
+### Ensure you have the latest version of the library installed
 
 ```bash
 $ cd php-curl-class/
@@ -50,7 +50,7 @@ $http_status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $request_headers = curl_getinfo($ch, CURLINFO_HEADER_OUT);
 ```
 
-### Ensure you have the latest composer version installed
+### Ensure you have the latest version of composer installed
 
 ```bash
 $ composer self-update
