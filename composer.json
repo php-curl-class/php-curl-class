@@ -15,13 +15,15 @@
     ],
     "require": {
         "php": ">=5.3",
-        "ext-curl": "*",
-        "ext-mbstring": "*"
+        "ext-curl": "*"
     },
     "require-dev": {
         "ext-gd": "*",
         "phpunit/phpunit": "*",
         "squizlabs/php_codesniffer": "*"
+    },
+    "suggest": {
+        "ext-mbstring": "*"
     },
     "autoload": {
         "psr-4": {
