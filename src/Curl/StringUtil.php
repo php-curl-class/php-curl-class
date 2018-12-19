@@ -15,6 +15,6 @@ class StringUtil
      */
     public static function startsWith($haystack, $needle)
     {
-        return \mb_substr($haystack, 0, \mb_strlen($needle)) === $needle;
+        return (function_exists("\mb_substr") ? (\mb_substr($haystack, 0, \mb_strlen($needle)) === $needle) : (\substr($haystack, 0, \strlen($needle)) === $needle));
     }
 }
