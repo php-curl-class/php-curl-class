@@ -40,6 +40,9 @@ else
     fastcgi_pass="127.0.0.1:9000"
 fi
 
+# Let test server know we should allow testing.
+export PHP_CURL_CLASS_TEST_MODE_ENABLED="yes"
+
 if [[ "${TRAVIS_PHP_VERSION}" == "5.3" ]]; then
     if ! [ -x "$(command -v add-apt-repository)" ]; then
         $superuser apt-get install -y python-software-properties
