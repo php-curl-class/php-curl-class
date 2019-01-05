@@ -550,6 +550,79 @@ class MultiCurl
     }
 
     /**
+     * Set Proxy
+     *
+     * Set an HTTP proxy to tunnel requests through.
+     *
+     * @access public
+     * @param  $proxy - The HTTP proxy to tunnel requests through. May include port number.
+     * @param  $port - The port number of the proxy to connect to. This port number can also be set in $proxy.
+     * @param  $username - The username to use for the connection to the proxy.
+     * @param  $password - The password to use for the connection to the proxy.
+     */
+    public function setProxy($proxy, $port = null, $username = null, $password = null)
+    {
+        $this->setOpt(CURLOPT_PROXY, $proxy);
+        if ($port !== null) {
+            $this->setOpt(CURLOPT_PROXYPORT, $port);
+        }
+        if ($username !== null && $password !== null) {
+            $this->setOpt(CURLOPT_PROXYUSERPWD, $username . ':' . $password);
+        }
+    }
+
+    /**
+     * Set Proxy Auth
+     *
+     * Set the HTTP authentication method(s) to use for the proxy connection.
+     *
+     * @access public
+     * @param  $auth
+     */
+    public function setProxyAuth($auth)
+    {
+        $this-setOpt(CURLOPT_PROXYAUTH, $auth);
+    }
+
+    /**
+     * Set Proxy Type
+     *
+     * Set the proxy protocol type.
+     *
+     * @access public
+     * @param  $type
+     */
+    public function setProxyType($type)
+    {
+        $this->setOpt(CURLOPT_PROXYTYPE, $type);
+    }
+
+    /**
+     * Set Proxy Tunnel
+     *
+     * Set the proxy to tunnel through HTTP proxy.
+     *
+     * @access public
+     * @param  $tunnel boolean
+     */
+    public function setProxyTunnel($tunnel = true)
+    {
+        $this->setOpt(CURLOPT_HTTPPROXYTUNNEL, $tunnel);
+    }
+
+    /**
+     * Unset Proxy
+     *
+     * Disable use of the proxy.
+     *
+     * @access public
+     */
+    public function unsetProxy()
+    {
+        $this->setOpt(CURLOPT_PROXY, null);
+    }
+
+    /**
      * Set Opt
      *
      * @access public
