@@ -2876,4 +2876,17 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->start();
         $this->assertTrue($post_complete_called);
     }
+
+    public function testProxySettings()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setProxy('proxy.example.com', '1080', 'username', 'password');
+
+        $this->assertEquals('proxy.example.com', $multi_curl->getOpt(CURLOPT_PROXY));
+        $this->assertEquals('1080', $multi_curl->getOpt(CURLOPT_PROXYPORT));
+        $this->assertEquals('username:password', $multi_curl->getOpt(CURLOPT_PROXYUSERPWD));
+
+        $multi_curl->unsetProxy();
+        $this->assertNull($multi_curl->getOpt(CURLOPT_PROXY));
+    }
 }
