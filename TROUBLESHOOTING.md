@@ -48,6 +48,11 @@ $curl_error_code = curl_errno($ch);
 $curl_error_message = curl_error($ch);
 $http_status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $request_headers = curl_getinfo($ch, CURLINFO_HEADER_OUT);
+var_dump($http_status_code);
+var_dump($curl_error_code);
+var_dump($curl_error_message);
+var_dump($request_headers);
+var_dump($raw_response);
 ```
 
 ### Ensure you have the latest version of composer installed
