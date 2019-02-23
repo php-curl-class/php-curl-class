@@ -1475,6 +1475,31 @@ class Curl
     }
 
     /**
+     * @param string $name
+     * @param mixed $value
+     */
+    public function __set($name, $value)
+    {
+        $method = 'set' . ucfirst($name);
+        if (method_exists($this, $method)) {
+            $this->$method($value);
+        }
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        $method = 'get' . ucfirst($name);
+        if (method_exists($this, $method)) {
+            return !is_null($this->$method());
+        }
+        return false;
+    }
+
+    /**
      * Get Effective Url
      *
      * @access private
