@@ -143,7 +143,7 @@ echo $curl->responseHeaders['CoNTeNT-TyPE'] . "\n"; // image/png
 ```
 
 ```php
-// Clean up.
+// Manual clean up.
 $curl->close();
 ```
 
