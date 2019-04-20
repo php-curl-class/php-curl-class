@@ -14,4 +14,5 @@ bash "tests/before_script.sh" &&
 bash "tests/script.sh"
 END
 )
+set -x
 docker exec --interactive --tty "php56" sh -c "${command}"
