@@ -3767,6 +3767,36 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($curl->getOpt(CURLOPT_PROXY));
     }
 
+    public function testSetProxyAuth()
+    {
+        $auth = CURLAUTH_BASIC;
+
+        $curl = new Curl();
+        $this->assertNull($curl->getOpt(CURLOPT_PROXYAUTH));
+        $curl->setProxyAuth($auth);
+        $this->assertEquals($auth, $curl->getOpt(CURLOPT_PROXYAUTH));
+    }
+
+    public function testSetProxyType()
+    {
+        $type =  CURLPROXY_SOCKS5;
+
+        $curl = new Curl();
+        $this->assertNull($curl->getOpt(CURLOPT_PROXYTYPE));
+        $curl->setProxyType($type);
+        $this->assertEquals($type, $curl->getOpt(CURLOPT_PROXYTYPE));
+    }
+
+    public function testSetProxyTunnel()
+    {
+        $tunnel = true;
+
+        $curl = new Curl();
+        $this->assertNull($curl->getOpt(CURLOPT_HTTPPROXYTUNNEL));
+        $curl->setProxyTunnel($tunnel);
+        $this->assertEquals($tunnel, $curl->getOpt(CURLOPT_HTTPPROXYTUNNEL));
+    }
+
     public function testJsonSerializable()
     {
         if (!interface_exists('JsonSerializable')) {
