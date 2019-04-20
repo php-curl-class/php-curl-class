@@ -1070,7 +1070,7 @@ class Curl
      */
     public function setProxyAuth($auth)
     {
-        $this-setOpt(CURLOPT_PROXYAUTH, $auth);
+        $this->setOpt(CURLOPT_PROXYAUTH, $auth);
     }
 
     /**
