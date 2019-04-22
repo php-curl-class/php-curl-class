@@ -12,6 +12,9 @@ if [[ "${?}" -ne 0 ]]; then
     ((errors++))
 fi
 
+# Let test server know we should allow testing.
+export PHP_CURL_CLASS_TEST_MODE_ENABLED="yes"
+
 # Run tests.
 phpunit --version
 phpunit --configuration "tests/phpunit.xml"
