@@ -1,7 +1,7 @@
 # Run tests inside container.
 command=$(cat <<-END
 mkdir --parents "/tmp/php-curl-class" &&
-rsync --delete --exclude=".git" --exclude="vendor" --links --recursive "/data/" "/tmp/php-curl-class/" &&
+rsync --delete --exclude=".git" --exclude="vendor" --exclude="composer.lock" --links --recursive "/data/" "/tmp/php-curl-class/" &&
 cd "/tmp/php-curl-class" &&
 export TRAVIS_PHP_VERSION="5.6" &&
 (
