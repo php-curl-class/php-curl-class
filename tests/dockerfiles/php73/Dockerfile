@@ -1,7 +1,4 @@
-# TODO: Change to php:7.3-cli when available.
-#   -FROM php:7.3-rc-cli
-#   +FROM php:7.3-cli
-FROM php:7.3-rc-cli
+FROM php:7.3-cli
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get --assume-yes --quiet update
