@@ -17,7 +17,7 @@ export PHP_CURL_CLASS_TEST_MODE_ENABLED="yes"
 
 # Run tests.
 phpunit --version
-phpunit --configuration "tests/phpunit.xml"
+phpunit --configuration "tests/phpunit.xml" --debug --verbose
 if [[ "${?}" -ne 0 ]]; then
     echo "Error: phpunit command failed"
     ((errors++))
