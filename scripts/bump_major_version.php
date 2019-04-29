@@ -17,3 +17,6 @@ foreach (array(
     $data = preg_replace($find, $replace, file_get_contents($filepath));
     file_put_contents($filepath, $data);
 }
+
+$rightwards_arrow = json_decode('"\u2192"');
+echo 'Bump version: ' . $current_version . ' ' . $rightwards_arrow . ' ' . $new_version . "\n";
