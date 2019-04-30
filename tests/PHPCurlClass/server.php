@@ -1,6 +1,9 @@
 <?php
 // Prevent direct access unless testing.
-getenv('PHP_CURL_CLASS_TEST_MODE_ENABLED') === 'yes' || exit;
+if (getenv('PHP_CURL_CLASS_TEST_MODE_ENABLED') !== 'yes' &&
+    $_SERVER['PHP_CURL_CLASS_TEST_MODE_ENABLED'] !== 'yes') {
+    exit;
+}
 
 require_once 'ContentRangeServer.php';
 require_once 'RangeHeader.php';
