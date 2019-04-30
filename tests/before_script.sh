@@ -67,6 +67,7 @@ server {
         fastcgi_index index.php;
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        fastcgi_param "PHP_CURL_CLASS_TEST_MODE_ENABLED" "yes";
     }
 }
 EOF
