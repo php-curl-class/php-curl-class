@@ -672,8 +672,13 @@ class MultiCurl
     /**
      * Set Retry
      *
-     * Number of retries to attempt or decider callable. Maximum number of
-     * attempts is $maximum_number_of_retries + 1.
+     * Number of retries to attempt or decider callable.
+     *
+     * When using a number of retries to attempt, the maximum number of attempts
+     * for the request is $maximum_number_of_retries + 1.
+     *
+     * When using a callable decider, the request will be retried until the
+     * function returns a value which evaluates to false.
      *
      * @access public
      * @param  $mixed
