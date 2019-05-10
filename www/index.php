@@ -183,6 +183,11 @@ class="pl-pds"></span></span></span><br />
             https://github.com/php-curl-class/php-curl-class
         </a>
     </li>
+    <li>
+        <a href="https://packagist.org/packages/php-curl-class/php-curl-class">
+            https://packagist.org/packages/php-curl-class/php-curl-class
+        </a>
+    </li>
 </ul>
 
 
