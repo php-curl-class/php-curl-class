@@ -6,7 +6,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
 {
 
     /**
-     * @var mixed[] Data storage with lower-case keys
+     * @var mixed[] Data storage with lowercase keys.
      * @see offsetSet()
      * @see offsetExists()
      * @see offsetUnset()
@@ -19,7 +19,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     private $data = array();
 
     /**
-     * @var string[] Case-Sensitive keys.
+     * @var string[] Case-sensitive keys.
      * @see offsetSet()
      * @see offsetUnset()
      * @see key()
@@ -29,11 +29,11 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Construct
      *
-     * Allow creating either an empty Array, or convert an existing Array to a
-     * Case-Insensitive Array.  (Caution: Data may be lost when converting Case-
-     * Sensitive Arrays to Case-Insensitive Arrays)
+     * Allow creating an empty array or converting an existing array to a
+     * case-insensitive array. Caution: Data may be lost when converting
+     * case-sensitive arrays to case-insensitive arrays.
      *
-     * @param mixed[] $initial (optional) Existing Array to convert.
+     * @param mixed[] $initial (optional) Existing array to convert.
      *
      * @return CaseInsensitiveArray
      *
@@ -51,11 +51,11 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Offset Set
      *
-     * Set data at a specified Offset.  Converts the offset to lower-case, and
-     * stores the Case-Sensitive Offset and the Data at the lower-case indexes
-     * in $this->keys and @this->data.
+     * Set data at a specified offset. Converts the offset to lowercase, and
+     * stores the case-sensitive offset and the data at the lowercase indexes in
+     * $this->keys and @this->data.
      *
-     * @see https://secure.php.net/manual/en/arrayaccess.offseteset.php
+     * @see https://secure.php.net/manual/en/arrayaccess.offsetset.php
      *
      * @param string $offset The offset to store the data at (case-insensitive).
      * @param mixed $value The data to store at the specified offset.
@@ -78,8 +78,8 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Offset Exists
      *
-     * Checks if the Offset exists in data storage.  The index is looked up with
-     * the lower-case version of the provided offset.
+     * Checks if the offset exists in data storage. The index is looked up with
+     * the lowercase version of the provided offset.
      *
      * @see https://secure.php.net/manual/en/arrayaccess.offsetexists.php
      *
@@ -98,7 +98,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * Offset Unset
      *
      * Unsets the specified offset. Converts the provided offset to lowercase,
-     * and unsets the Case-Sensitive Key, as well as the stored data.
+     * and unsets the case-sensitive key, as well as the stored data.
      *
      * @see https://secure.php.net/manual/en/arrayaccess.offsetunset.php
      *
@@ -119,7 +119,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * Offset Get
      *
      * Return the stored data at the provided offset. The offset is converted to
-     * lowercase and the lookup is done on the Data store directly.
+     * lowercase and the lookup is done on the data store directly.
      *
      * @see https://secure.php.net/manual/en/arrayaccess.offsetget.php
      *
@@ -142,7 +142,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @param void
      *
-     * @return int The number of elements stored in the Array.
+     * @return int The number of elements stored in the array.
      *
      * @access public
      */
@@ -190,7 +190,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @param void
      *
-     * @return mixed Case-Sensitive key at current position.
+     * @return mixed Case-sensitive key at current position.
      *
      * @access public
      */
