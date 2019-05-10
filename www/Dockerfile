@@ -1,20 +1,12 @@
 # Use phusion/baseimage with a specific version as base image.
-# See https://github.com/phusion/baseimage-docker/blob/master/Changelog.md for a list of version numbers.
-# FROM phusion/baseimage:<VERSION>
-FROM phusion/baseimage:0.9.19
+# Pick a version from the releases page:
+# https://github.com/phusion/baseimage-docker/releases
+FROM phusion/baseimage:0.11
 
 # Use baseimage-docker's init system.
 CMD ["/sbin/my_init"]
 
 # BEGIN Build instructions =============================================================================================
-
-# Enable SSH.
-RUN rm -f /etc/service/sshd/down
-
-# Regenerate SSH host keys. baseimage-docker does not contain any, so you
-# have to do that yourself. You may also comment out this instruction; the
-# init system will auto-generate one during boot.
-RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
 
 # Install nginx mainline.
 # "We recommend that in general you deploy the NGINX mainline branch at all times." - nginx.com
@@ -41,7 +33,7 @@ server {\n\
 \n\
     location ~ \.php$ {\n\
         include snippets/fastcgi-php.conf;\n\
-        fastcgi_pass unix:/run/php/php7.0-fpm.sock;\n\
+        fastcgi_pass unix:/run/php/php7.3-fpm.sock;\n\
     }\n\
 }'\
 > /etc/nginx/sites-enabled/default
@@ -49,8 +41,9 @@ server {\n\
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 
 # Install PHP.
+RUN add-apt-repository ppa:ondrej/php
 # Avoid "debconf: unable to initialize frontend: Dialog" by using DEBIAN_FRONTEND=noninteractive before install command.
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-fpm
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.3-fpm
 RUN echo "php version: $(php -v)"
 
 # Add nginx daemon.
@@ -60,7 +53,7 @@ RUN chmod +x /etc/service/nginx/run
 
 # Add php-fpm daemon.
 RUN mkdir /etc/service/php-fpm
-RUN echo '#!/usr/bin/env bash\nservice php7.0-fpm start' > /etc/service/php-fpm/run
+RUN echo '#!/usr/bin/env bash\nservice php7.3-fpm start' > /etc/service/php-fpm/run
 RUN chmod +x /etc/service/php-fpm/run
 
 # Add homepage.
