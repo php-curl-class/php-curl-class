@@ -312,7 +312,7 @@ if ($test === 'http_basic_auth') {
     exit;
 } elseif ($test === 'post_redirect_get') {
     if (isset($_GET['redirect'])) {
-        echo "Redirected: $request_method";
+        echo 'Redirected: ' . $request_method;
     } else {
         if ($request_method === 'POST') {
             if (function_exists('http_response_code')) {
@@ -323,7 +323,7 @@ if ($test === 'http_basic_auth') {
 
             header('Location: ?redirect');
         } else {
-            echo "Request method is $request_method, but POST was expected";
+            echo 'Request method is ' . $request_method . ', but POST was expected';
         }
     }
 
