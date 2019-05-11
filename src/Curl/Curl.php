@@ -305,7 +305,7 @@ class Curl
 
             $mode = 'wb';
             // Attempt to resume download only when a temporary download file exists and is not empty.
-            if (file_exists($download_filename) && $filesize = filesize($download_filename)) {
+            if (is_file($download_filename) && $filesize = filesize($download_filename)) {
                 $mode = 'ab';
                 $first_byte_position = $filesize;
                 $range = $first_byte_position . '-';
