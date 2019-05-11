@@ -95,7 +95,7 @@ class Url
         if (!isset($b['path'])) {
             $b['path'] = '/';
         }
-        if (is_null($this->relativeUrl)) {
+        if ($this->relativeUrl === null) {
             return $this->unparseUrl($b);
         }
         $r = $this->parseUrl($this->relativeUrl);

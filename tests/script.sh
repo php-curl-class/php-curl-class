@@ -122,6 +122,13 @@ if [[ ! -z "${elses}" ]]; then
     ((errors++))
 fi
 
+# Prohibit use of "is_null" and suggest using the strict comparison operator.
+is_null=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --line-number -H -e "is_null" {} \;)
+if [[ ! -z "${is_null}" ]]; then
+    echo -e "${is_null}" | perl -pe 's/^(.*)$/is_null found in \1. Replace with strict comparison (e.g. "\$x === null")./'
+    ((errors++))
+fi
+
 # Detect coding standard violations.
 phpcs --version
 phpcs \
