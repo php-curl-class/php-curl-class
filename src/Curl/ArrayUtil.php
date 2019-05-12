@@ -77,4 +77,17 @@ class ArrayUtil
         }
         return $return;
     }
+
+    /**
+     * Array Random
+     *
+     * @access public
+     * @param  $array
+     *
+     * @return mixed
+     */
+    public static function array_random($array)
+    {
+        return $array[mt_rand(0, count($array) - 1)];
+    }
 }

@@ -2919,4 +2919,85 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->setProxyTunnel($tunnel);
         $this->assertEquals($tunnel, $multi_curl->getOpt(CURLOPT_HTTPPROXYTUNNEL));
     }
+
+    public function testSetProxiesRandomProxy()
+    {
+        $proxies = array(
+            'example.com:80',
+            'example.com:443',
+            'example.com:1080',
+            'example.com:3128',
+            'example.com:8080',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setProxies($proxies);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+
+        // Make MultiCurl::curls accessible and MultiCurl::initHandle()
+        // callable.
+        $reflector = new \ReflectionClass('\Curl\MultiCurl');
+        $property = $reflector->getProperty('curls');
+        $property->setAccessible(true);
+        $multi_curl_curls = $property->getValue($multi_curl);
+        $multi_curl_initHandle = $reflector->getMethod('initHandle');
+        $multi_curl_initHandle->setAccessible(true);
+
+        // Ensure we have the requests queued.
+        $this->assertCount(3, $multi_curl_curls);
+
+        // Invoke MultiCurl::initHandle() so that proxies are set.
+        foreach ($multi_curl_curls as $curl) {
+            $multi_curl_initHandle->invoke($multi_curl, $curl);
+        }
+
+        // Ensure each request is set to one of the proxies.
+        foreach ($multi_curl_curls as $curl) {
+            $this->assertContains($curl->getOpt(CURLOPT_PROXY), $proxies);
+        }
+    }
+
+    public function testSetProxiesAlreadySet()
+    {
+        $proxies = array(
+            'example.com:80',
+            'example.com:443',
+            'example.com:1080',
+            'example.com:3128',
+            'example.com:8080',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setProxies($proxies);
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_2 = $multi_curl->addGet(Test::TEST_URL);
+        $get_2->setProxy('example.com:9999');
+        $get_3 = $multi_curl->addGet(Test::TEST_URL);
+
+        // Make MultiCurl::curls accessible and MultiCurl::initHandle()
+        // callable.
+        $reflector = new \ReflectionClass('\Curl\MultiCurl');
+        $property = $reflector->getProperty('curls');
+        $property->setAccessible(true);
+        $multi_curl_curls = $property->getValue($multi_curl);
+        $multi_curl_initHandle = $reflector->getMethod('initHandle');
+        $multi_curl_initHandle->setAccessible(true);
+
+        // Ensure we have the requests queued.
+        $this->assertCount(3, $multi_curl_curls);
+
+        // Invoke MultiCurl::initHandle() so that proxies are set.
+        foreach ($multi_curl_curls as $curl) {
+            $multi_curl_initHandle->invoke($multi_curl, $curl);
+        }
+
+        // Ensure requests are set to one of the random proxies.
+        $this->assertContains($get_1->getOpt(CURLOPT_PROXY), $proxies);
+        $this->assertContains($get_3->getOpt(CURLOPT_PROXY), $proxies);
+
+        // Ensure request with specific proxy is not set to one of the random proxies.
+        $this->assertNotContains($get_2->getOpt(CURLOPT_PROXY), $proxies);
+    }
 }
