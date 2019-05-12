@@ -3779,7 +3779,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetProxyType()
     {
-        $type =  CURLPROXY_SOCKS5;
+        $type = CURLPROXY_SOCKS5;
 
         $curl = new Curl();
         $this->assertNull($curl->getOpt(CURLOPT_PROXYTYPE));

@@ -2889,4 +2889,34 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->unsetProxy();
         $this->assertNull($multi_curl->getOpt(CURLOPT_PROXY));
     }
+
+    public function testSetProxyAuth()
+    {
+        $auth = CURLAUTH_BASIC;
+
+        $multi_curl = new MultiCurl();
+        $this->assertNull($multi_curl->getOpt(CURLOPT_PROXYAUTH));
+        $multi_curl->setProxyAuth($auth);
+        $this->assertEquals($auth, $multi_curl->getOpt(CURLOPT_PROXYAUTH));
+    }
+
+    public function testSetProxyType()
+    {
+        $type = CURLPROXY_SOCKS5;
+
+        $multi_curl = new MultiCurl();
+        $this->assertNull($multi_curl->getOpt(CURLOPT_PROXYTYPE));
+        $multi_curl->setProxyType($type);
+        $this->assertEquals($type, $multi_curl->getOpt(CURLOPT_PROXYTYPE));
+    }
+
+    public function testSetProxyTunnel()
+    {
+        $tunnel = true;
+
+        $multi_curl = new MultiCurl();
+        $this->assertNull($multi_curl->getOpt(CURLOPT_HTTPPROXYTUNNEL));
+        $multi_curl->setProxyTunnel($tunnel);
+        $this->assertEquals($tunnel, $multi_curl->getOpt(CURLOPT_HTTPPROXYTUNNEL));
+    }
 }
