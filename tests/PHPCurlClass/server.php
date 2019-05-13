@@ -110,7 +110,7 @@ if ($test === 'http_basic_auth') {
         $A1 . ':' . $data['nonce'] . ':' . $data['nc'] . ':' . $data['cnonce'] . ':' . $data['qop'] . ':' . $A2
     );
 
-    if (!($data['response'] === $valid_response)) {
+    if ($data['response'] !== $valid_response) {
         header('HTTP/1.1 401 Unauthorized');
         echo 'invalid';
         exit;

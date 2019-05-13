@@ -915,7 +915,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             $expect_error = $test['expect_error'];
 
             $test = new Test();
-            if (!($max_filesize === false)) {
+            if ($max_filesize !== false) {
                 $test->curl->setMaxFilesize($max_filesize);
             }
             $test->server('download_file_size', 'GET', array(
@@ -1095,7 +1095,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->server('cookiejar', 'GET');
         $test->curl->close();
 
-        $this->assertTrue(!(strpos(file_get_contents($cookie_jar), "\t" . 'mycookie' . "\t" . 'yum') === false));
+        $this->assertTrue(strpos(file_get_contents($cookie_jar), "\t" . 'mycookie' . "\t" . 'yum') !== false);
         unlink($cookie_jar);
         $this->assertFalse(file_exists($cookie_jar));
     }
@@ -3521,7 +3521,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             $test = new Test();
             $test->curl->setOpt(CURLOPT_COOKIEJAR, '/dev/null');
 
-            if (!($maximum_number_of_retries === null)) {
+            if ($maximum_number_of_retries !== null) {
                 $test->curl->setRetry($maximum_number_of_retries);
             }
 
@@ -3595,7 +3595,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             $test = new Test();
             $test->curl->setOpt(CURLOPT_COOKIEJAR, '/dev/null');
 
-            if (!($maximum_number_of_retries === null)) {
+            if ($maximum_number_of_retries !== null) {
                 $test->curl->setRetry(function ($instance) use ($maximum_number_of_retries) {
                     $return = $instance->retries < $maximum_number_of_retries;
                     return $return;

@@ -48,7 +48,7 @@ find_invalid_indentation() {
         $line_number += 1;
         $leading_space_count = strspn($line, ' ');
         $remainder = $leading_space_count % 4;
-        if (!($remainder === 0)) {
+        if ($remainder !== 0) {
             // Allow doc comments.
             if (substr(ltrim($line), 0, 1) === '*') {
                 continue;

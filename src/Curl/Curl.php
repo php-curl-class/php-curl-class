@@ -371,7 +371,7 @@ class Curl
             $this->rawResponse = curl_multi_getcontent($ch);
             $this->curlErrorMessage = curl_error($ch);
         }
-        $this->curlError = !($this->curlErrorCode === 0);
+        $this->curlError = $this->curlErrorCode !== 0;
 
         // Transfer the header callback data and release the temporary store to avoid memory leak.
         $this->rawResponseHeaders = $this->headerCallbackData->rawResponseHeaders;
@@ -443,7 +443,7 @@ class Curl
         $this->call($this->completeCallback);
 
         // Close open file handles and reset the curl instance.
-        if (!($this->fileHandle === null)) {
+        if ($this->fileHandle !== null) {
             $this->downloadComplete($this->fileHandle);
         }
     }
@@ -1007,7 +1007,7 @@ class Curl
             CURLOPT_RETURNTRANSFER => 'CURLOPT_RETURNTRANSFER',
         );
 
-        if (in_array($option, array_keys($required_options), true) && !($value === true)) {
+        if (in_array($option, array_keys($required_options), true) && $value !== true) {
             trigger_error($required_options[$option] . ' is a required option', E_USER_WARNING);
         }
 

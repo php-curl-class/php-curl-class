@@ -110,7 +110,7 @@ function upload_file_to_server($upload_file_path) {
     $uploaded_file_path = $upload_test->curl->response->file_path;
 
     // Ensure files are not the same path.
-    assert(!($upload_file_path === $uploaded_file_path));
+    assert($upload_file_path !== $uploaded_file_path);
 
     // Ensure file uploaded successfully.
     assert(md5_file($upload_file_path) === $upload_test->curl->responseHeaders['ETag']);

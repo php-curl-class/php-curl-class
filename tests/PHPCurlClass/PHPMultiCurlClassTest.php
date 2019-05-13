@@ -2565,7 +2565,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->complete(function ($instance) use (&$multi_curl, &$urls, &$urls_called) {
             $urls_called[] = $instance->url;
             $next_url = array_pop($urls);
-            if (!($next_url === null)) {
+            if ($next_url !== null) {
                 $multi_curl->addGet($next_url);
             }
         });
@@ -2768,7 +2768,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             $multi_curl->setOpt(CURLOPT_COOKIEJAR, '/dev/null');
             $multi_curl->setHeader('X-DEBUG-TEST', 'retry');
 
-            if (!($maximum_number_of_retries === null)) {
+            if ($maximum_number_of_retries !== null) {
                 $multi_curl->setRetry($maximum_number_of_retries);
             }
 
@@ -2845,7 +2845,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             $multi_curl->setOpt(CURLOPT_COOKIEJAR, '/dev/null');
             $multi_curl->setHeader('X-DEBUG-TEST', 'retry');
 
-            if (!($maximum_number_of_retries === null)) {
+            if ($maximum_number_of_retries !== null) {
                 $multi_curl->setRetry(function ($instance) use ($maximum_number_of_retries) {
                     $return = $instance->retries < $maximum_number_of_retries;
                     return $return;

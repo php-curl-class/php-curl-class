@@ -29,7 +29,7 @@ class Encoder
         }
 
         $value = call_user_func_array('json_encode', $args);
-        if (!(json_last_error() === JSON_ERROR_NONE)) {
+        if (json_last_error() !== JSON_ERROR_NONE) {
             if (function_exists('json_last_error_msg')) {
                 $error_message = 'json_encode error: ' . json_last_error_msg();
             } else {

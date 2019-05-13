@@ -25,7 +25,7 @@ class RangeHeader
 
         // "If the last-byte-pos value is present, it MUST be greater than or equal to the first-byte-pos in that
         // byte-range-spec, or the byte- range-spec is syntactically invalid."
-        if (!($this->last_byte === null) && !($this->last_byte >= $this->first_byte)) {
+        if ($this->last_byte !== null && !($this->last_byte >= $this->first_byte)) {
             $this->is_valid = false;
         }
     }
