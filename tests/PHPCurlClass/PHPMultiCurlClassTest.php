@@ -2932,9 +2932,9 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
         $multi_curl = new MultiCurl();
         $multi_curl->setProxies($proxies);
-        $multi_curl->addGet(Test::TEST_URL);
-        $multi_curl->addGet(Test::TEST_URL);
-        $multi_curl->addGet(Test::TEST_URL);
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_2 = $multi_curl->addGet(Test::TEST_URL);
+        $get_3 = $multi_curl->addGet(Test::TEST_URL);
 
         // Make MultiCurl::curls accessible and MultiCurl::initHandle()
         // callable.
@@ -2953,10 +2953,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             $multi_curl_initHandle->invoke($multi_curl, $curl);
         }
 
-        // Ensure each request is set to one of the proxies.
-        foreach ($multi_curl_curls as $curl) {
-            $this->assertContains($curl->getOpt(CURLOPT_PROXY), $proxies);
-        }
+        // Ensure requests are set to one of the random proxies.
+        $this->assertContains($get_1->getOpt(CURLOPT_PROXY), $proxies);
+        $this->assertContains($get_2->getOpt(CURLOPT_PROXY), $proxies);
+        $this->assertContains($get_3->getOpt(CURLOPT_PROXY), $proxies);
     }
 
     public function testSetProxiesAlreadySet()
