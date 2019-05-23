@@ -133,6 +133,9 @@ if ($test === 'http_basic_auth') {
 } elseif ($test === 'patch') {
     echo $http_raw_post_data;
     exit;
+} elseif ($test === 'search') {
+    echo $http_raw_post_data;
+    exit;
 } elseif ($test === 'post_multidimensional' || $test === 'post_multidimensional_with_file') {
     header('Content-Type: application/json');
     echo json_encode(array(

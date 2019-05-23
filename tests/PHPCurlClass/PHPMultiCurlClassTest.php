@@ -50,6 +50,11 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $put_error_called = false;
         $put_complete_called = false;
 
+        $search_before_send_called = false;
+        $search_success_called = false;
+        $search_error_called = false;
+        $search_complete_called = false;
+
         $multi_curl = new MultiCurl();
         $multi_curl->beforeSend(function ($instance) use (
             &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
@@ -60,7 +65,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
             &$patch_before_send_called, &$patch_success_called, &$patch_error_called, &$patch_complete_called,
             &$post_before_send_called, &$post_success_called, &$post_error_called, &$post_complete_called,
-            &$put_before_send_called, &$put_success_called, &$put_error_called, &$put_complete_called
+            &$put_before_send_called, &$put_success_called, &$put_error_called, &$put_complete_called,
+            &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
         ) {
             \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
             $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
@@ -119,6 +125,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($put_complete_called);
                 $put_before_send_called = true;
             }
+            if ($request_method === 'SEARCH') {
+                \PHPUnit\Framework\Assert::assertFalse($search_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
+                $search_before_send_called = true;
+            }
         });
         $multi_curl->success(function ($instance) use (
             &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
@@ -129,7 +142,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
             &$patch_before_send_called, &$patch_success_called, &$patch_error_called, &$patch_complete_called,
             &$post_before_send_called, &$post_success_called, &$post_error_called, &$post_complete_called,
-            &$put_before_send_called, &$put_success_called, &$put_error_called, &$put_complete_called
+            &$put_before_send_called, &$put_success_called, &$put_error_called, &$put_complete_called,
+            &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
         ) {
             \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
             $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
@@ -188,6 +202,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($put_complete_called);
                 $put_success_called = true;
             }
+            if ($request_method === 'SEARCH') {
+                \PHPUnit\Framework\Assert::assertTrue($search_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
+                $search_success_called = true;
+            }
         });
         $multi_curl->error(function ($instance) use (
             &$delete_error_called,
@@ -197,7 +218,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             &$options_error_called,
             &$patch_error_called,
             &$post_error_called,
-            &$put_error_called
+            &$put_error_called,
+            &$search_error_called
         ) {
             $delete_error_called = true;
             $download_error_called = true;
@@ -207,6 +229,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             $patch_error_called = true;
             $post_error_called = true;
             $put_error_called = true;
+            $search_error_called = true;
         });
         $multi_curl->complete(function ($instance) use (
             &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
@@ -217,7 +240,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
             &$patch_before_send_called, &$patch_success_called, &$patch_error_called, &$patch_complete_called,
             &$post_before_send_called, &$post_success_called, &$post_error_called, &$post_complete_called,
-            &$put_before_send_called, &$put_success_called, &$put_error_called, &$put_complete_called
+            &$put_before_send_called, &$put_success_called, &$put_error_called, &$put_complete_called,
+            &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
         ) {
             \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
             $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
@@ -276,6 +300,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($put_complete_called);
                 $put_complete_called = true;
             }
+            if ($request_method === 'SEARCH') {
+                \PHPUnit\Framework\Assert::assertTrue($search_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($search_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
+                $search_complete_called = true;
+            }
         });
 
         $multi_curl->addDelete(Test::TEST_URL);
@@ -287,6 +318,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addPatch(Test::TEST_URL);
         $multi_curl->addPost(Test::TEST_URL);
         $multi_curl->addPut(Test::TEST_URL);
+        $multi_curl->addSearch(Test::TEST_URL);
         $multi_curl->start();
 
         $this->assertTrue($delete_before_send_called);
@@ -329,6 +361,11 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($put_success_called);
         $this->assertFalse($put_error_called);
         $this->assertTrue($put_complete_called);
+
+        $this->assertTrue($search_before_send_called);
+        $this->assertTrue($search_success_called);
+        $this->assertFalse($search_error_called);
+        $this->assertTrue($search_complete_called);
     }
 
     public function testMultiCurlCallbackError()
@@ -373,6 +410,11 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $put_error_called = false;
         $put_complete_called = false;
 
+        $search_before_send_called = false;
+        $search_success_called = false;
+        $search_error_called = false;
+        $search_complete_called = false;
+
         $multi_curl = new MultiCurl();
         $multi_curl->beforeSend(function ($instance) use (
             &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
@@ -383,7 +425,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
             &$patch_before_send_called, &$patch_success_called, &$patch_error_called, &$patch_complete_called,
             &$post_before_send_called, &$post_success_called, &$post_error_called, &$post_complete_called,
-            &$put_before_send_called, &$put_success_called, &$put_error_called, &$put_complete_called
+            &$put_before_send_called, &$put_success_called, &$put_error_called, &$put_complete_called,
+            &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
         ) {
             \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
             $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
@@ -442,6 +485,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($put_complete_called);
                 $put_before_send_called = true;
             }
+            if ($request_method === 'SEARCH') {
+                \PHPUnit\Framework\Assert::assertFalse($search_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
+                $search_before_send_called = true;
+            }
         });
         $multi_curl->success(function ($instance) use (
             &$delete_success_called,
@@ -451,7 +501,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             &$options_success_called,
             &$patch_success_called,
             &$post_success_called,
-            &$put_success_called
+            &$put_success_called,
+            &$search_success_called
         ) {
             $delete_success_called = true;
             $get_success_called = true;
@@ -460,6 +511,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             $patch_success_called = true;
             $post_success_called = true;
             $put_success_called = true;
+            $search_success_called = true;
         });
         $multi_curl->error(function ($instance) use (
             &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
@@ -470,7 +522,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
             &$patch_before_send_called, &$patch_success_called, &$patch_error_called, &$patch_complete_called,
             &$post_before_send_called, &$post_success_called, &$post_error_called, &$post_complete_called,
-            &$put_before_send_called, &$put_success_called, &$put_error_called, &$put_complete_called
+            &$put_before_send_called, &$put_success_called, &$put_error_called, &$put_complete_called,
+            &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
         ) {
             \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
             $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
@@ -529,6 +582,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($put_complete_called);
                 $put_error_called = true;
             }
+            if ($request_method === 'SEARCH') {
+                \PHPUnit\Framework\Assert::assertTrue($search_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
+                $search_error_called = true;
+            }
         });
         $multi_curl->complete(function ($instance) use (
             &$delete_before_send_called, &$delete_success_called, &$delete_error_called, &$delete_complete_called,
@@ -539,7 +599,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             &$options_before_send_called, &$options_success_called, &$options_error_called, &$options_complete_called,
             &$patch_before_send_called, &$patch_success_called, &$patch_error_called, &$patch_complete_called,
             &$post_before_send_called, &$post_success_called, &$post_error_called, &$post_complete_called,
-            &$put_before_send_called, &$put_success_called, &$put_error_called, &$put_complete_called
+            &$put_before_send_called, &$put_success_called, &$put_error_called, &$put_complete_called,
+            &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
         ) {
             \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
             $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
@@ -598,6 +659,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($put_complete_called);
                 $put_complete_called = true;
             }
+            if ($request_method === 'SEARCH') {
+                \PHPUnit\Framework\Assert::assertTrue($search_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_success_called);
+                \PHPUnit\Framework\Assert::assertTrue($search_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
+                $search_complete_called = true;
+            }
             \PHPUnit\Framework\Assert::assertTrue($instance->error);
             \PHPUnit\Framework\Assert::assertTrue($instance->curlError);
             \PHPUnit\Framework\Assert::assertFalse($instance->httpError);
@@ -622,6 +690,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addPatch(Test::ERROR_URL);
         $multi_curl->addPost(Test::ERROR_URL);
         $multi_curl->addPut(Test::ERROR_URL);
+        $multi_curl->addSearch(Test::ERROR_URL);
         $multi_curl->start();
 
         $this->assertTrue($delete_before_send_called);
@@ -664,6 +733,11 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($put_success_called);
         $this->assertTrue($put_error_called);
         $this->assertTrue($put_complete_called);
+
+        $this->assertTrue($search_before_send_called);
+        $this->assertFalse($search_success_called);
+        $this->assertTrue($search_error_called);
+        $this->assertTrue($search_complete_called);
     }
 
     public function testCurlCallback()
@@ -1002,6 +1076,47 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             $put_complete_called = true;
         });
 
+        $search_before_send_called = false;
+        $search_success_called = false;
+        $search_error_called = false;
+        $search_complete_called = false;
+        $search = $multi_curl->addSearch(Test::TEST_URL);
+        $search->beforeSend(function ($instance) use (
+            &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
+        ) {
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertFalse($search_before_send_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_success_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_error_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
+            $search_before_send_called = true;
+        });
+        $search->success(function ($instance) use (
+            &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
+        ) {
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertTrue($search_before_send_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_success_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_error_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
+            $search_success_called = true;
+        });
+        $search->error(function ($instance) use (
+            &$search_error_called
+        ) {
+            $search_error_called = true;
+        });
+        $search->complete(function ($instance) use (
+            &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
+        ) {
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertTrue($search_before_send_called);
+            \PHPUnit\Framework\Assert::assertTrue($search_success_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_error_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
+            $search_complete_called = true;
+        });
+
         $multi_curl->start();
 
         $this->assertTrue($delete_before_send_called);
@@ -1044,6 +1159,11 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($put_success_called);
         $this->assertFalse($put_error_called);
         $this->assertTrue($put_complete_called);
+
+        $this->assertTrue($search_before_send_called);
+        $this->assertTrue($search_success_called);
+        $this->assertFalse($search_error_called);
+        $this->assertTrue($search_complete_called);
     }
 
     public function testCurlCallbackError()
@@ -1382,6 +1502,47 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             $put_complete_called = true;
         });
 
+        $search_before_send_called = false;
+        $search_success_called = false;
+        $search_error_called = false;
+        $search_complete_called = false;
+        $search = $multi_curl->addSearch(Test::ERROR_URL);
+        $search->beforeSend(function ($instance) use (
+            &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
+        ) {
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertFalse($search_before_send_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_success_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_error_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
+            $search_before_send_called = true;
+        });
+        $search->success(function ($instance) use (
+            &$search_success_called
+        ) {
+            $search_success_called = true;
+        });
+        $search->error(function ($instance) use (
+            &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
+        ) {
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertTrue($search_before_send_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_success_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_error_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
+            $search_error_called = true;
+        });
+        $search->complete(function ($instance) use (
+            &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
+        ) {
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertTrue($search_before_send_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_success_called);
+            \PHPUnit\Framework\Assert::assertTrue($search_error_called);
+            \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
+            $search_complete_called = true;
+        });
+
         $multi_curl->start();
 
         $this->assertTrue($delete_before_send_called);
@@ -1424,6 +1585,11 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($put_success_called);
         $this->assertTrue($put_error_called);
         $this->assertTrue($put_complete_called);
+
+        $this->assertTrue($search_before_send_called);
+        $this->assertFalse($search_success_called);
+        $this->assertTrue($search_error_called);
+        $this->assertTrue($search_complete_called);
     }
 
     public function testCurlCallbackOverride()
@@ -1587,6 +1753,24 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             $put_complete_called = true;
         });
 
+        $search_before_send_called = false;
+        $search_success_called = false;
+        $search_error_called = false;
+        $search_complete_called = false;
+        $search = $multi_curl->addsearch(Test::TEST_URL);
+        $search->beforeSend(function ($instance) use (&$search_before_send_called) {
+            $search_before_send_called = true;
+        });
+        $search->success(function ($instance) use (&$search_success_called) {
+            $search_success_called = true;
+        });
+        $search->error(function ($instance) use (&$search_error_called) {
+            $search_error_called = true;
+        });
+        $search->complete(function ($instance) use (&$search_complete_called) {
+            $search_complete_called = true;
+        });
+
         $multi_curl->start();
 
         $this->assertTrue($delete_before_send_called);
@@ -1629,6 +1813,11 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($put_success_called);
         $this->assertFalse($put_error_called);
         $this->assertTrue($put_complete_called);
+
+        $this->assertTrue($search_before_send_called);
+        $this->assertTrue($search_success_called);
+        $this->assertFalse($search_error_called);
+        $this->assertTrue($search_complete_called);
     }
 
     public function testCurlCallbackAddedAfter()
@@ -1826,6 +2015,30 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($put_success_called);
         $this->assertFalse($put_error_called);
         $this->assertTrue($put_complete_called);
+
+        $search_before_send_called = false;
+        $search_success_called = false;
+        $search_error_called = false;
+        $search_complete_called = false;
+        $multi_curl = new MultiCurl();
+        $multi_curl->addSearch(Test::TEST_URL);
+        $multi_curl->beforeSend(function ($instance) use (&$search_before_send_called) {
+            $search_before_send_called = true;
+        });
+        $multi_curl->success(function ($instance) use (&$search_success_called) {
+            $search_success_called = true;
+        });
+        $multi_curl->error(function ($instance) use (&$search_error_called) {
+            $search_error_called = true;
+        });
+        $multi_curl->complete(function ($instance) use (&$search_complete_called) {
+            $search_complete_called = true;
+        });
+        $multi_curl->start();
+        $this->assertTrue($search_before_send_called);
+        $this->assertTrue($search_success_called);
+        $this->assertFalse($search_error_called);
+        $this->assertTrue($search_complete_called);
     }
 
     public function testSetOptAndSetOptOverride()
@@ -2469,6 +2682,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             \PHPUnit\Framework\Assert::assertEquals('key=value', $instance->response);
         });
         $multi_curl->start();
+
+        $multi_curl = new MultiCurl(Test::TEST_URL);
+        $multi_curl->setHeader('X-DEBUG-TEST', 'search');
+        $multi_curl->addSearch($data)->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertEquals('key=value', $instance->response);
+        });
+        $multi_curl->start();
     }
 
     public function testSetUrl()
@@ -2543,6 +2763,16 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addPut($data)->complete(function ($instance) {
             \PHPUnit\Framework\Assert::assertEquals(
                 'PUT / HTTP/1.1',
+                $instance->requestHeaders['Request-Line']
+            );
+            \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->effectiveUrl);
+        });
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setUrl(Test::TEST_URL);
+        $multi_curl->addSearch($data)->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertEquals(
+                'SEARCH / HTTP/1.1',
                 $instance->requestHeaders['Request-Line']
             );
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->effectiveUrl);

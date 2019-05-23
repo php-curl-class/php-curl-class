@@ -124,6 +124,11 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->server('server', 'PATCH', $data);
         $this->assertEquals(Test::TEST_URL, $test->curl->url);
 
+        // curl -v --request SEARCH "http://127.0.0.1:8000/" --data "foo=bar"
+        $test = new Test();
+        $test->server('server', 'SEARCH', $data);
+        $this->assertEquals(Test::TEST_URL, $test->curl->url);
+
         // curl -v --request DELETE "http://127.0.0.1:8000/?foo=bar"
         $test = new Test();
         $test->server('server', 'DELETE', $data);
@@ -183,6 +188,11 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $curl->setHeader('X-DEBUG-TEST', 'put');
         $curl->put($data);
         $this->assertEquals('key=value', $curl->response);
+
+        $curl = new Curl(Test::TEST_URL);
+        $curl->setHeader('X-DEBUG-TEST', 'search');
+        $curl->search($data);
+        $this->assertEquals('key=value', $curl->response);
     }
 
     public function testSetUrl()
@@ -229,6 +239,12 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $curl->setUrl(Test::TEST_URL);
         $curl->put($data);
         $this->assertEquals('PUT / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
+
+        $curl = new Curl();
+        $curl->setUrl(Test::TEST_URL);
+        $curl->search($data);
+        $this->assertEquals('SEARCH / HTTP/1.1', $curl->requestHeaders['Request-Line']);
         $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
     }
 
@@ -995,6 +1011,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             'POST' => 'OK',
             'PUT' => 'OK',
             'PATCH' => 'OK',
+            'SEARCH' => 'OK',
             'DELETE' => 'OK',
             'HEAD' => '',
             'OPTIONS' => 'OK',
@@ -1266,6 +1283,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse(substr($test->server('request_uri', 'PUT'), -1) === '?');
         $test = new Test();
         $this->assertFalse(substr($test->server('request_uri', 'PATCH'), -1) === '?');
+        $test = new Test();
+        $this->assertFalse(substr($test->server('request_uri', 'SEARCH'), -1) === '?');
         $test = new Test();
         $this->assertFalse(substr($test->server('request_uri', 'DELETE'), -1) === '?');
     }
@@ -3025,6 +3044,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('GET', 'DELETE');
         $test->chainRequests('GET', 'HEAD');
         $test->chainRequests('GET', 'OPTIONS');
+        $test->chainRequests('GET', 'SEARCH');
         $test->chainRequests('GET', 'GET');
 
         $test = new Test();
@@ -3034,7 +3054,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('GET', 'DELETE',  array('d' => '4444'));
         $test->chainRequests('GET', 'HEAD',    array('e' => '55555'));
         $test->chainRequests('GET', 'OPTIONS', array('f' => '666666'));
-        $test->chainRequests('GET', 'GET',     array('g' => '7777777'));
+        $test->chainRequests('GET', 'SEARCH',  array('h' => '7777777'));
+        $test->chainRequests('GET', 'GET',     array('g' => '88888888'));
     }
 
     public function testRequestMethodSuccessivePostRequests()
@@ -3046,6 +3067,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('POST', 'DELETE');
         $test->chainRequests('POST', 'HEAD');
         $test->chainRequests('POST', 'OPTIONS');
+        $test->chainRequests('POST', 'SEARCH');
         $test->chainRequests('POST', 'POST');
 
         $test = new Test();
@@ -3055,7 +3077,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('POST', 'DELETE',  array('d' => '4444'));
         $test->chainRequests('POST', 'HEAD',    array('e' => '55555'));
         $test->chainRequests('POST', 'OPTIONS', array('f' => '666666'));
-        $test->chainRequests('POST', 'POST',    array('g' => '7777777'));
+        $test->chainRequests('POST', 'SEARCH',  array('g' => '7777777'));
+        $test->chainRequests('POST', 'POST',    array('g' => '88888888'));
     }
 
     public function testRequestMethodSuccessivePutRequests()
@@ -3067,6 +3090,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('PUT', 'DELETE');
         $test->chainRequests('PUT', 'HEAD');
         $test->chainRequests('PUT', 'OPTIONS');
+        $test->chainRequests('PUT', 'SEARCH');
         $test->chainRequests('PUT', 'PUT');
 
         $test = new Test();
@@ -3076,7 +3100,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('PUT', 'DELETE',  array('d' => '4444'));
         $test->chainRequests('PUT', 'HEAD',    array('e' => '55555'));
         $test->chainRequests('PUT', 'OPTIONS', array('f' => '666666'));
-        $test->chainRequests('PUT', 'PUT',     array('g' => '7777777'));
+        $test->chainRequests('PUT', 'SEARCH',  array('f' => '7777777'));
+        $test->chainRequests('PUT', 'PUT',     array('g' => '88888888'));
     }
 
     public function testRequestMethodSuccessivePatchRequests()
@@ -3088,6 +3113,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('PATCH', 'DELETE');
         $test->chainRequests('PATCH', 'HEAD');
         $test->chainRequests('PATCH', 'OPTIONS');
+        $test->chainRequests('PATCH', 'SEARCH');
         $test->chainRequests('PATCH', 'PATCH');
 
         $test = new Test();
@@ -3097,7 +3123,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('PATCH', 'DELETE',  array('d' => '4444'));
         $test->chainRequests('PATCH', 'HEAD',    array('e' => '55555'));
         $test->chainRequests('PATCH', 'OPTIONS', array('f' => '666666'));
-        $test->chainRequests('PATCH', 'PATCH',   array('g' => '7777777'));
+        $test->chainRequests('PATCH', 'SEARCH',  array('f' => '7777777'));
+        $test->chainRequests('PATCH', 'PATCH',   array('g' => '88888888'));
     }
 
     public function testRequestMethodSuccessiveDeleteRequests()
@@ -3109,6 +3136,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('DELETE', 'PATCH');
         $test->chainRequests('DELETE', 'HEAD');
         $test->chainRequests('DELETE', 'OPTIONS');
+        $test->chainRequests('DELETE', 'SEARCH');
         $test->chainRequests('DELETE', 'DELETE');
 
         $test = new Test();
@@ -3118,7 +3146,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('DELETE', 'PATCH',   array('d' => '4444'));
         $test->chainRequests('DELETE', 'HEAD',    array('e' => '55555'));
         $test->chainRequests('DELETE', 'OPTIONS', array('f' => '666666'));
-        $test->chainRequests('DELETE', 'DELETE',  array('g' => '7777777'));
+        $test->chainRequests('DELETE', 'SEARCH',  array('f' => '7777777'));
+        $test->chainRequests('DELETE', 'DELETE',  array('g' => '88888888'));
     }
 
     public function testRequestMethodSuccessiveHeadRequests()
@@ -3130,6 +3159,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('HEAD', 'PATCH');
         $test->chainRequests('HEAD', 'DELETE');
         $test->chainRequests('HEAD', 'OPTIONS');
+        $test->chainRequests('HEAD', 'SEARCH');
         $test->chainRequests('HEAD', 'HEAD');
 
         $test = new Test();
@@ -3139,7 +3169,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('HEAD', 'PATCH',   array('d' => '4444'));
         $test->chainRequests('HEAD', 'DELETE',  array('e' => '55555'));
         $test->chainRequests('HEAD', 'OPTIONS', array('f' => '666666'));
-        $test->chainRequests('HEAD', 'HEAD',    array('g' => '7777777'));
+        $test->chainRequests('HEAD', 'SEARCH',  array('g' => '7777777'));
+        $test->chainRequests('HEAD', 'HEAD',    array('g' => '88888888'));
     }
 
     public function testRequestMethodSuccessiveOptionsRequests()
@@ -3150,6 +3181,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('OPTIONS', 'PUT');
         $test->chainRequests('OPTIONS', 'PATCH');
         $test->chainRequests('OPTIONS', 'DELETE');
+        $test->chainRequests('OPTIONS', 'SEARCH');
         $test->chainRequests('OPTIONS', 'HEAD');
         $test->chainRequests('OPTIONS', 'OPTIONS');
 
@@ -3159,8 +3191,32 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->chainRequests('OPTIONS', 'PUT',     array('c' => '333'));
         $test->chainRequests('OPTIONS', 'PATCH',   array('d' => '4444'));
         $test->chainRequests('OPTIONS', 'DELETE',  array('e' => '55555'));
-        $test->chainRequests('OPTIONS', 'HEAD',    array('f' => '666666'));
-        $test->chainRequests('OPTIONS', 'OPTIONS', array('g' => '7777777'));
+        $test->chainRequests('OPTIONS', 'SEARCH',  array('g' => '666666'));
+        $test->chainRequests('OPTIONS', 'HEAD',    array('f' => '7777777'));
+        $test->chainRequests('OPTIONS', 'OPTIONS', array('g' => '88888888'));
+    }
+
+    public function testRequestMethodSuccessiveSearchRequests()
+    {
+        $test = new Test();
+        $test->chainRequests('SEARCH', 'GET');
+        $test->chainRequests('SEARCH', 'POST');
+        $test->chainRequests('SEARCH', 'PUT');
+        $test->chainRequests('SEARCH', 'PATCH');
+        $test->chainRequests('SEARCH', 'DELETE');
+        $test->chainRequests('SEARCH', 'HEAD');
+        $test->chainRequests('SEARCH', 'OPTIONS');
+        $test->chainRequests('SEARCH', 'SEARCH');
+
+        $test = new Test();
+        $test->chainRequests('SEARCH', 'GET',     array('a' => '1'));
+        $test->chainRequests('SEARCH', 'POST',    array('b' => '22'));
+        $test->chainRequests('SEARCH', 'PUT',     array('c' => '333'));
+        $test->chainRequests('SEARCH', 'PATCH',   array('d' => '4444'));
+        $test->chainRequests('SEARCH', 'DELETE',  array('e' => '55555'));
+        $test->chainRequests('SEARCH', 'HEAD',    array('f' => '666666'));
+        $test->chainRequests('SEARCH', 'OPTIONS', array('g' => '7777777'));
+        $test->chainRequests('SEARCH', 'SEARCH',  array('g' => '88888888'));
     }
 
     public function testMemoryLeak()
