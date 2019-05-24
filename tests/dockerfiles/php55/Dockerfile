@@ -1,5 +1,14 @@
-FROM php:5.5-cli
+FROM php:5.5-fpm
 ENV DEBIAN_FRONTEND noninteractive
+
+# Fix error:
+#     "E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?".
+RUN printf "%s\n" \
+    "deb http://archive.debian.org/debian/ jessie main"     \
+    "deb-src http://archive.debian.org/debian/ jessie main" \
+    "deb http://security.debian.org jessie/updates main"    \
+    "deb-src http://security.debian.org jessie/updates main"  \
+    > /etc/apt/sources.list
 
 RUN apt-get --assume-yes --quiet update
 

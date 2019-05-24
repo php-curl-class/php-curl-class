@@ -1,4 +1,4 @@
-FROM php:5.6-cli
+FROM php:5.6-fpm
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get --assume-yes --quiet update

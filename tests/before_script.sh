@@ -1,3 +1,35 @@
+install_nginx() {
+    $superuser apt-get install -y nginx
+}
+
+use_php_fpm() {
+    root="$(pwd)/tests/PHPCurlClass"
+    $superuser tee /etc/nginx/sites-enabled/default <<EOF
+server {
+    listen 8000 default_server;
+    root ${root};
+    index index.php;
+    server_name localhost;
+    location / {
+        rewrite ^ /index.php last;
+    }
+    location ~ \.php$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        fastcgi_param "PHP_CURL_CLASS_TEST_MODE_ENABLED" "yes";
+    }
+}
+EOF
+    $superuser php-fpm --daemonize
+}
+
+reload_nginx() {
+    $superuser /etc/init.d/nginx restart
+}
+
 phpunit_shim() {
     # -class CurlTest extends \PHPUnit\Framework\TestCase
     # +class CurlTest extends \PHPUnit_Framework_TestCase
@@ -50,7 +82,7 @@ if [[ "${TRAVIS_PHP_VERSION}" == "5.3" ]]; then
     fi
     $superuser add-apt-repository -y ppa:nginx/development
     $superuser apt-get update
-    $superuser apt-get install -y nginx
+    install_nginx
     $superuser apt-get install -y php5-fpm
     root="$(pwd)/tests/PHPCurlClass"
     $superuser tee /etc/nginx/sites-enabled/default <<EOF
@@ -73,16 +105,22 @@ server {
 }
 EOF
     $superuser /etc/init.d/php5-fpm start
-    $superuser /etc/init.d/nginx restart
+    reload_nginx
     phpunit_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
-    php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
+    install_nginx
+    use_php_fpm
+    reload_nginx
     phpunit_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "5.5" ]]; then
-    php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
+    install_nginx
+    use_php_fpm
+    reload_nginx
     phpunit_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "5.6" ]]; then
-    php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
+    install_nginx
+    use_php_fpm
+    reload_nginx
     phpunit_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.0" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
