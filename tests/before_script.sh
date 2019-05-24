@@ -46,6 +46,7 @@ export PHP_CURL_CLASS_TEST_MODE_ENABLED="yes"
 if [[ "${TRAVIS_PHP_VERSION}" == "5.3" ]]; then
     if ! [ -x "$(command -v add-apt-repository)" ]; then
         $superuser apt-get install -y python-software-properties
+        $superuser apt-get install -y software-properties-common
     fi
     $superuser add-apt-repository -y ppa:nginx/development
     $superuser apt-get update
