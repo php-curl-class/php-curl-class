@@ -3457,6 +3457,18 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('', $curl->response);
     }
 
+    public function testRemoveHeader()
+    {
+        $curl = new Curl();
+        $curl->get(Test::TEST_URL);
+        $this->assertEquals('127.0.0.1:8000', $curl->requestHeaders['host']);
+
+        $curl = new Curl();
+        $curl->removeHeader('HOST');
+        $curl->get(Test::TEST_URL);
+        $this->assertEquals('', $curl->requestHeaders['host']);
+    }
+
     public function testGetInfo()
     {
         $test = new Test();
