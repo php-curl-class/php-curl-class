@@ -18,7 +18,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testArrayAssociative()
     {
-        $this->assertTrue(\Curl\ArrayUtil::is_array_assoc(array(
+        $this->assertTrue(\Curl\ArrayUtil::isArrayAssoc(array(
             'foo' => 'wibble',
             'bar' => 'wubble',
             'baz' => 'wobble',
@@ -27,7 +27,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testArrayIndexed()
     {
-        $this->assertFalse(\Curl\ArrayUtil::is_array_assoc(array(
+        $this->assertFalse(\Curl\ArrayUtil::isArrayAssoc(array(
             'wibble',
             'wubble',
             'wobble',
@@ -3455,6 +3455,18 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $curl->unsetHeader($request_key);
         $curl->get(Test::TEST_URL, $data);
         $this->assertEquals('', $curl->response);
+    }
+
+    public function testRemoveHeader()
+    {
+        $curl = new Curl();
+        $curl->get(Test::TEST_URL);
+        $this->assertEquals('127.0.0.1:8000', $curl->requestHeaders['host']);
+
+        $curl = new Curl();
+        $curl->removeHeader('HOST');
+        $curl->get(Test::TEST_URL);
+        $this->assertEquals('', $curl->requestHeaders['host']);
     }
 
     public function testGetInfo()

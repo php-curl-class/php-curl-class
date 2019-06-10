@@ -157,8 +157,8 @@ class Curl
             // Manually build a single-dimensional array from a multi-dimensional array as using curl_setopt($ch,
             // CURLOPT_POSTFIELDS, $data) doesn't correctly handle multi-dimensional arrays when files are
             // referenced.
-            if (ArrayUtil::is_array_multidim($data)) {
-                $data = ArrayUtil::array_flatten_multidim($data);
+            if (ArrayUtil::isArrayMultidim($data)) {
+                $data = ArrayUtil::arrayFlattenMultidim($data);
             }
 
             // Modify array values to ensure any referenced files are properly handled depending on the support of
