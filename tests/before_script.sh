@@ -53,6 +53,7 @@ server {
 }
 EOF
     $superuser php5-fpm --daemonize
+    $superuser service php5-fpm reload
 }
 
 reload_nginx() {
