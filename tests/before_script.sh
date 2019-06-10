@@ -45,6 +45,7 @@ server {
         rewrite ^ /index.php last;
     }
     location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
         fastcgi_pass ${fastcgi_pass};
         fastcgi_index index.php;
