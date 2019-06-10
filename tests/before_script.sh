@@ -60,7 +60,11 @@ EOF
 }
 
 reload_nginx() {
-    $superuser /etc/init.d/nginx restart
+    $superuser service nginx status
+    $superuser service nginx stop
+    $superuser service nginx status
+    $superuser service nginx start
+    $superuser service nginx status
 }
 
 phpunit_shim() {
@@ -114,3 +118,7 @@ if [[ "${TRAVIS_PHP_VERSION}" == "5.5" ]]; then
     reload_nginx
     phpunit_shim
 fi
+
+cat /var/log/php5-fpm.log
+cat /var/log/nginx/error.log
+cat /var/log/nginx/access.log
