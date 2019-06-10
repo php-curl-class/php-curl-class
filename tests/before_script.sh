@@ -119,6 +119,6 @@ if [[ "${TRAVIS_PHP_VERSION}" == "5.5" ]]; then
     phpunit_shim
 fi
 
-cat /var/log/php5-fpm.log
-cat /var/log/nginx/error.log
-cat /var/log/nginx/access.log
+sudo cat /var/log/php5-fpm.log
+sudo cat /var/log/nginx/error.log
+sudo cat /var/log/nginx/access.log
