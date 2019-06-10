@@ -52,7 +52,7 @@ server {
     }
 }
 EOF
-    $superuser php-fpm --daemonize
+    $superuser php5-fpm --daemonize
 }
 
 reload_nginx() {
