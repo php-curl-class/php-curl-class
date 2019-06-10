@@ -952,7 +952,7 @@ class MultiCurl
         // Use a random proxy for the curl instance when proxies have been set
         // and the curl instance doesn't already have a proxy set.
         if (is_array($this->proxies) && $curl->getOpt(CURLOPT_PROXY) === null) {
-            $random_proxy = ArrayUtil::array_random($this->proxies);
+            $random_proxy = ArrayUtil::arrayRandom($this->proxies);
             $curl->setProxy($random_proxy);
         }
 
