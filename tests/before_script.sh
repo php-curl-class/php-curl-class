@@ -12,7 +12,15 @@ apt_get_update() {
 }
 
 install_nginx() {
-    $superuser apt-get install -y nginx
+    # Do a basic check to verify that the bypass is only run on Travis CI instances.
+    if [[ -z "${TRAVIS}" ]]; then
+        $superuser apt-get install -y nginx
+    else
+        # Use --allow-unauthenticated flag to fix these messages:
+        #   - "WARNING: The following packages cannot be authenticated! [...]"
+        #   - "E: There were unauthenticated packages and -y was used without --allow-unauthenticated"
+        $superuser apt-get install -y nginx --allow-unauthenticated
+    fi
 }
 
 use_php_fpm() {
