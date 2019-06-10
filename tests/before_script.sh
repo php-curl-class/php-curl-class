@@ -105,10 +105,10 @@ fi
 export PHP_CURL_CLASS_TEST_MODE_ENABLED="yes"
 
 if [[ "${TRAVIS_PHP_VERSION}" == "5.5" ]]; then
-    #fix_apt_sources
-    #apt_get_update
-    #install_nginx
-    #install_php_fpm
+    fix_apt_sources
+    apt_get_update
+    install_nginx
+    install_php_fpm
     fastcgi_pass="unix:/var/run/php5-fpm.sock"
     use_php_fpm
     reload_nginx
