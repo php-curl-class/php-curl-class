@@ -23,6 +23,14 @@ install_nginx() {
     fi
 }
 
+install_php_fpm() {
+    # Install php5-fpm on Travis CI instances. Avoid installing on Docker containers because they are built using fpm
+    # images (e.g. "FROM php:5.4-fpm").
+    if [[ ! -z "${TRAVIS}" ]]; then
+        $superuser apt-get install -y php5-fpm
+    fi
+}
+
 use_php_fpm() {
     root="$(pwd)/tests/PHPCurlClass"
     $superuser tee /etc/nginx/sites-enabled/default <<EOF
@@ -102,9 +110,9 @@ if [[ "${TRAVIS_PHP_VERSION}" == "5.3" ]]; then
         $superuser apt-get install -y software-properties-common
     fi
     $superuser add-apt-repository -y ppa:nginx/development
-    $superuser apt-get update
+    apt_get_update
     install_nginx
-    $superuser apt-get install -y php5-fpm
+    install_php_fpm
     root="$(pwd)/tests/PHPCurlClass"
     $superuser tee /etc/nginx/sites-enabled/default <<EOF
 server {
@@ -132,6 +140,7 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
     fix_apt_sources
     apt_get_update
     install_nginx
+    install_php_fpm
     use_php_fpm
     reload_nginx
     phpunit_shim
@@ -139,6 +148,7 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "5.5" ]]; then
     fix_apt_sources
     apt_get_update
     install_nginx
+    install_php_fpm
     use_php_fpm
     reload_nginx
     phpunit_shim
@@ -146,6 +156,7 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "5.6" ]]; then
     fix_apt_sources
     apt_get_update
     install_nginx
+    install_php_fpm
     use_php_fpm
     reload_nginx
     phpunit_shim
