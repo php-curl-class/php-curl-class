@@ -53,6 +53,9 @@ server {
 }
 EOF
     $superuser service php5-fpm reload
+
+    ls "/etc/php5/fpm/pool.d/"
+    cat "/etc/php5/fpm/pool.d/www.conf"
 }
 
 reload_nginx() {
