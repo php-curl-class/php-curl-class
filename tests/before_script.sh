@@ -33,6 +33,7 @@ install_php_fpm() {
 
 use_php_fpm() {
     root="$(pwd)/tests/PHPCurlClass/"
+    $superuser cat /etc/nginx/sites-enabled/default
 
     $superuser tee /etc/nginx/sites-enabled/default <<EOF
 server {
