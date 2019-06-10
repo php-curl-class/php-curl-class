@@ -120,7 +120,3 @@ if [[ "${TRAVIS_PHP_VERSION}" == "5.5" ]]; then
     reload_nginx
     phpunit_shim
 fi
-
-sudo cat /var/log/php5-fpm.log
-sudo cat /var/log/nginx/error.log
-sudo cat /var/log/nginx/access.log
