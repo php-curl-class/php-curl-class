@@ -1,3 +1,16 @@
+fix_apt_sources() {
+    printf "%s\n" \
+        "deb http://archive.debian.org/debian/ jessie main"     \
+        "deb-src http://archive.debian.org/debian/ jessie main" \
+        "deb http://security.debian.org jessie/updates main"    \
+        "deb-src http://security.debian.org jessie/updates main"  \
+        > /etc/apt/sources.list
+}
+
+apt_get_update() {
+    $superuser apt-get update
+}
+
 install_nginx() {
     $superuser apt-get install -y nginx
 }
@@ -108,16 +121,22 @@ EOF
     reload_nginx
     phpunit_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
+    fix_apt_sources
+    apt_get_update
     install_nginx
     use_php_fpm
     reload_nginx
     phpunit_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "5.5" ]]; then
+    fix_apt_sources
+    apt_get_update
     install_nginx
     use_php_fpm
     reload_nginx
     phpunit_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "5.6" ]]; then
+    fix_apt_sources
+    apt_get_update
     install_nginx
     use_php_fpm
     reload_nginx
