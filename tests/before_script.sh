@@ -44,7 +44,7 @@ server {
     }
     location ~ \.php$ {
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_pass ${fastcgi_pass};
         fastcgi_index index.php;
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
@@ -52,7 +52,6 @@ server {
     }
 }
 EOF
-    $superuser php5-fpm --daemonize
     $superuser service php5-fpm reload
 }
 
@@ -93,13 +92,9 @@ composer install --prefer-source --no-interaction
 if [ -f "/.dockerenv" ]; then
     # Skip using sudo.
     superuser=""
-    # Use unix socket.
-    fastcgi_pass="unix:/var/run/php5-fpm.sock"
 else
     # Use sudo.
     superuser="sudo"
-    # Use ip socket.
-    fastcgi_pass="127.0.0.1:9000"
 fi
 
 # Let test server know we should allow testing.
@@ -114,27 +109,8 @@ if [[ "${TRAVIS_PHP_VERSION}" == "5.3" ]]; then
     apt_get_update
     install_nginx
     install_php_fpm
-    root="$(pwd)/tests/PHPCurlClass"
-    $superuser tee /etc/nginx/sites-enabled/default <<EOF
-server {
-    listen 8000 default_server;
-    root ${root};
-    index index.php;
-    server_name localhost;
-    location / {
-        rewrite ^ /index.php last;
-    }
-    location ~ \.php$ {
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass ${fastcgi_pass};
-        fastcgi_index index.php;
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-        fastcgi_param "PHP_CURL_CLASS_TEST_MODE_ENABLED" "yes";
-    }
-}
-EOF
-    $superuser /etc/init.d/php5-fpm start
+    fastcgi_pass="127.0.0.1:9000"
+    use_php_fpm
     reload_nginx
     phpunit_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
@@ -142,6 +118,7 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
     apt_get_update
     install_nginx
     install_php_fpm
+    fastcgi_pass="unix:/var/run/php5-fpm.sock"
     use_php_fpm
     reload_nginx
     phpunit_shim
@@ -150,6 +127,7 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "5.5" ]]; then
     apt_get_update
     install_nginx
     install_php_fpm
+    fastcgi_pass="unix:/var/run/php5-fpm.sock"
     use_php_fpm
     reload_nginx
     phpunit_shim
@@ -158,6 +136,7 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "5.6" ]]; then
     apt_get_update
     install_nginx
     install_php_fpm
+    fastcgi_pass="unix:/var/run/php5-fpm.sock"
     use_php_fpm
     reload_nginx
     phpunit_shim
