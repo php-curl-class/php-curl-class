@@ -25,9 +25,9 @@ install_nginx() {
 
 install_php_fpm() {
     # Install php5-fpm on Travis CI instances. Avoid installing on Docker containers because they are built using fpm
-    # images (e.g. "FROM php:5.4-fpm").
+    # images (e.g. "FROM php:5.4-fpm"). Do a basic check to verify that the bypass is only run on Travis CI instances.
     if [[ ! -z "${TRAVIS}" ]]; then
-        $superuser apt-get install -y php5-fpm
+        $superuser apt-get install -y php5-fpm --allow-unauthenticated
     fi
 }
 
