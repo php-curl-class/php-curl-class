@@ -31,6 +31,8 @@ install_php_fpm() {
     #if [[ ! -z "${TRAVIS}" ]]; then
         $superuser apt-get install -y php5-fpm --allow-unauthenticated
     #fi
+
+    curl -v -i 127.0.0.1
 }
 
 use_php_fpm() {
@@ -133,6 +135,7 @@ if [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
 
     groups www-data
     $superuser usermod --append --groups=sudo www-data
+    $superuser usermod --append --groups=travis www-data
     groups www-data
 
     ls -l /home/
