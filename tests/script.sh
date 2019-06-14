@@ -145,7 +145,7 @@ fi
 
 sudo cat /var/log/php5-fpm.log
 sudo cat /var/log/nginx/error.log
-sudo cat /var/log/nginx/access.log
+# sudo cat /var/log/nginx/access.log
 
 ps aux | head
 ps aux | grep "php"

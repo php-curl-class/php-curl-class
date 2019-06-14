@@ -132,7 +132,7 @@ if [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
     groups
 
     groups www-data
-    usermod --append --groups=sudo www-data
+    $superuser usermod --append --groups=sudo www-data
     groups www-data
 
     fastcgi_pass="unix:/var/run/php5-fpm.sock"
