@@ -21,6 +21,8 @@ install_nginx() {
         #   - "E: There were unauthenticated packages and -y was used without --allow-unauthenticated"
         $superuser apt-get install -y nginx --allow-unauthenticated
     fi
+
+    service nginx status
 }
 
 install_php_fpm() {
@@ -46,12 +48,8 @@ server {
     }
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass ${fastcgi_pass};
-        fastcgi_index index.php;
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
         fastcgi_param "PHP_CURL_CLASS_TEST_MODE_ENABLED" "yes";
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
     }
 }
 EOF
@@ -60,6 +58,8 @@ EOF
     $superuser service php5-fpm stop
     $superuser service php5-fpm start
     $superuser service php5-fpm status
+
+    $superuser cat /etc/nginx/snippets/fastcgi-php.conf
 }
 
 reload_nginx() {
@@ -67,6 +67,16 @@ reload_nginx() {
     $superuser service nginx stop
     $superuser service nginx status
     $superuser service nginx start
+    $superuser service nginx status
+    sleep 5
+    $superuser service nginx status
+    sleep 4
+    $superuser service nginx start
+    sleep 3
+    $superuser service nginx status
+    sleep 2
+    $superuser service nginx start
+    sleep 1
     $superuser service nginx status
 }
 
@@ -111,7 +121,7 @@ fi
 # Let test server know we should allow testing.
 export PHP_CURL_CLASS_TEST_MODE_ENABLED="yes"
 
-if [[ "${TRAVIS_PHP_VERSION}" == "5.5" ]]; then
+if [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
     fix_apt_sources
     apt_get_update
     install_nginx
