@@ -131,3 +131,5 @@ if [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
     reload_nginx
     phpunit_shim
 fi
+
+curl -v -i 127.0.0.1:8000
