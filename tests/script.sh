@@ -150,5 +150,7 @@ sudo cat /var/log/nginx/access.log
 ps aux | grep "php"
 
 grep "listen = " /etc/php5/fpm/pool.d/www.conf
+grep "group" /etc/php5/fpm/pool.d/www.conf
+grep "user" /etc/php5/fpm/pool.d/www.conf
 
 exit "${errors}"
