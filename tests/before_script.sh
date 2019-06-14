@@ -126,6 +126,15 @@ if [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
     apt_get_update
     install_nginx
     install_php_fpm
+
+    whoami
+    users
+    groups
+
+    groups www-data
+    usermod --append --groups=sudo www-data
+    groups www-data
+
     fastcgi_pass="unix:/var/run/php5-fpm.sock"
     use_php_fpm
     reload_nginx
