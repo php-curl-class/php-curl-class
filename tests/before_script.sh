@@ -135,6 +135,15 @@ if [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
     $superuser usermod --append --groups=sudo www-data
     groups www-data
 
+    ls -l /home/
+    ls -l /home/travis/
+    ls -l /home/travis/build/
+    ls -l /home/travis/build/php-curl-class/
+    ls -l /home/travis/build/php-curl-class/php-curl-class/
+    ls -l /home/travis/build/php-curl-class/php-curl-class/tests/
+    ls -l /home/travis/build/php-curl-class/php-curl-class/tests/PHPCurlClass/
+    ls -l /home/travis/build/php-curl-class/php-curl-class/tests/PHPCurlClass/index.php
+
     fastcgi_pass="unix:/var/run/php5-fpm.sock"
     use_php_fpm
     reload_nginx
