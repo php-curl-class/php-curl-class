@@ -1757,6 +1757,9 @@ class Curl
         $this->setDefaultTimeout();
         $this->setOpt(CURLINFO_HEADER_OUT, true);
 
+        // Disable verbose mode explicitly to prevent console output.
+        $this->verbose(false);
+
         // Create a placeholder to temporarily store the header callback data.
         $header_callback_data = new \stdClass();
         $header_callback_data->rawResponseHeaders = '';
