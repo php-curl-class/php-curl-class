@@ -1,7 +1,7 @@
 <?php
 // Prevent direct access unless testing.
 if (getenv('PHP_CURL_CLASS_TEST_MODE_ENABLED') !== 'yes' &&
-    $_SERVER['PHP_CURL_CLASS_TEST_MODE_ENABLED'] !== 'yes') {
+    @$_SERVER['PHP_CURL_CLASS_TEST_MODE_ENABLED'] !== 'yes') {
     exit;
 }
 
