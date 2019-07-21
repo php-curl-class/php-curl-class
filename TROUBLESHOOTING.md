@@ -9,6 +9,14 @@ $ composer info
 ```
 Compare your version with latest release listed on the [releases page](https://github.com/php-curl-class/php-curl-class/releases).
 
+### Ensure php is using the latest version of curl
+
+```bash
+$ php -r 'var_dump(curl_version());'
+```
+
+Compare your version of curl with latest release listed on [curl's releases page](https://github.com/curl/curl/releases).
+
 ### Turn on error reporting
 
 ```php
