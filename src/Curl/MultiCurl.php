@@ -85,15 +85,33 @@ class MultiCurl
 
         // Use tmpfile() or php://temp to avoid "Too many open files" error.
         if (is_callable($mixed_filename)) {
-            $callback = $mixed_filename;
-            $curl->downloadCompleteCallback = $callback;
+            $curl->downloadCompleteCallback = $mixed_filename;
+            $curl->downloadFileName = null;
             $curl->fileHandle = tmpfile();
         } else {
             $filename = $mixed_filename;
-            $curl->downloadCompleteCallback = function ($instance, $fh) use ($filename) {
-                file_put_contents($filename, stream_get_contents($fh));
-            };
+
+            // Use a temporary file when downloading. Not using a temporary file can cause an error when an existing
+            // file has already fully completed downloading and a new download is started with the same destination save
+            // path. The download request will include header "Range: bytes=$filesize-" which is syntactically valid,
+            // but unsatisfiable.
+            $download_filename = $filename . '.pccdownload';
+
+            $mode = 'wb';
+            // Attempt to resume download only when a temporary download file exists and is not empty.
+            if (is_file($download_filename) && $filesize = filesize($download_filename)) {
+                $mode = 'ab';
+                $first_byte_position = $filesize;
+                $range = $first_byte_position . '-';
+                $curl->setOpt(CURLOPT_RANGE, $range);
+            }
+            $curl->downloadFileName = $download_filename;
             $curl->fileHandle = fopen('php://temp', 'wb');
+
+            // Move the downloaded temporary file to the destination save path.
+            $curl->downloadCompleteCallback = function ($instance, $fh) use ($download_filename) {
+                file_put_contents($download_filename, stream_get_contents($fh));
+            };
         }
 
         $curl->setOpt(CURLOPT_FILE, $curl->fileHandle);

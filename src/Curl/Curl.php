@@ -39,7 +39,7 @@ class Curl
     public $errorCallback = null;
     public $completeCallback = null;
     public $fileHandle = null;
-    private $downloadFileName = null;
+    public $downloadFileName = null;
 
     public $attempts = 0;
     public $retries = 0;
