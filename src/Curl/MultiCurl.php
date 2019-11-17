@@ -96,22 +96,30 @@ class MultiCurl
             // path. The download request will include header "Range: bytes=$filesize-" which is syntactically valid,
             // but unsatisfiable.
             $download_filename = $filename . '.pccdownload';
+            $this->downloadFileName = $download_filename;
 
-            $mode = 'wb';
             // Attempt to resume download only when a temporary download file exists and is not empty.
             if (is_file($download_filename) && $filesize = filesize($download_filename)) {
-                $mode = 'ab';
                 $first_byte_position = $filesize;
                 $range = $first_byte_position . '-';
                 $curl->setOpt(CURLOPT_RANGE, $range);
-            }
-            $curl->downloadFileName = $download_filename;
-            $curl->fileHandle = fopen('php://temp', 'wb');
+                $curl->fileHandle = fopen($download_filename, 'ab');
 
-            // Move the downloaded temporary file to the destination save path.
-            $curl->downloadCompleteCallback = function ($instance, $fh) use ($download_filename) {
-                file_put_contents($download_filename, stream_get_contents($fh));
-            };
+                // Move the downloaded temporary file to the destination save path.
+                $curl->downloadCompleteCallback = function ($instance, $fh) use ($download_filename, $filename) {
+                    // Close the open file handle before renaming the file.
+                    if (is_resource($fh)) {
+                        fclose($fh);
+                    }
+
+                    rename($download_filename, $filename);
+                };
+            } else {
+                $curl->fileHandle = fopen('php://temp', 'wb');
+                $curl->downloadCompleteCallback = function ($instance, $fh) use ($filename) {
+                    file_put_contents($filename, stream_get_contents($fh));
+                };
+            }
         }
 
         $curl->setOpt(CURLOPT_FILE, $curl->fileHandle);

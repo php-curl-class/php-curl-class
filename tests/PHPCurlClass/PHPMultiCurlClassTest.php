@@ -2561,6 +2561,166 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->start();
     }
 
+    public function testDownload()
+    {
+        // Create and upload a file.
+        $upload_file_path = \Helper\get_png();
+        $uploaded_file_path = \Helper\upload_file_to_server($upload_file_path);
+
+        // Download the file.
+        $downloaded_file_path = tempnam('/tmp', 'php-curl-class.');
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'download_response');
+        $multi_curl->addDownload(Test::TEST_URL . '?' . http_build_query(array(
+            'file_path' => $uploaded_file_path,
+        )), $downloaded_file_path);
+        $multi_curl->complete(function ($instance) use ($upload_file_path) {
+            \PHPUnit\Framework\Assert::assertFalse($instance->error);
+            \PHPUnit\Framework\Assert::assertEquals(md5_file($upload_file_path), $instance->responseHeaders['ETag']);
+        });
+        $multi_curl->start();
+        $this->assertNotEquals($uploaded_file_path, $downloaded_file_path);
+
+        $this->assertEquals(filesize($upload_file_path), filesize($downloaded_file_path));
+        $this->assertEquals(md5_file($upload_file_path), md5_file($downloaded_file_path));
+
+        // Remove server file.
+        \Helper\remove_file_from_server($uploaded_file_path);
+
+        unlink($upload_file_path);
+        unlink($downloaded_file_path);
+        $this->assertFalse(file_exists($upload_file_path));
+        $this->assertFalse(file_exists($downloaded_file_path));
+    }
+
+    public function testDownloadRange()
+    {
+        // Create and upload a file.
+        $filename = \Helper\get_png();
+        $uploaded_file_path = \Helper\upload_file_to_server($filename);
+
+        $filesize = filesize($filename);
+
+        foreach (array(
+                false,
+                0,
+                1,
+                2,
+                3,
+                5,
+                10,
+                25,
+                50,
+                $filesize - 3,
+                $filesize - 2,
+                $filesize - 1,
+
+                // A partial temporary file having the exact same file size as the complete source file should only
+                // occur under certain circumstances (almost never). When the download successfully completed, the
+                // temporary file should have been moved to the download destination save path. However, it is possible
+                // that a larger file download was interrupted after which the source file was updated and now has the
+                // exact same file size as the partial temporary. When resuming the download, the range is now
+                // unsatisfiable as the first byte position exceeds the available range. The entire file should be
+                // downloaded again.
+                $filesize - 0,
+
+                // A partial temporary file having a larger file size than the complete source file should only occur
+                // under certain circumstances. This is possible when a download was interrupted after which the source
+                // file was updated with a smaller file. When resuming the download, the range is now unsatisfiable as
+                // the first byte position exceeds the the available range. The entire file should be downloaded again.
+                $filesize + 1,
+                $filesize + 2,
+                $filesize + 3,
+
+            ) as $length) {
+            $source = Test::TEST_URL;
+            $destination = \Helper\get_tmp_file_path();
+
+            // Start with no file.
+            if ($length === false) {
+                $this->assertFalse(file_exists($destination));
+
+            // Start with $length bytes of file.
+            } else {
+                // Simulate resuming partially downloaded temporary file.
+                $partial_filename = $destination . '.pccdownload';
+
+                if ($length === 0) {
+                    $partial_content = '';
+                } else {
+                    $file = fopen($filename, 'rb');
+                    $partial_content = fread($file, $length);
+                    fclose($file);
+                }
+
+                // Partial content size should be $length bytes large for testing resume download behavior.
+                if ($length <= $filesize) {
+                    $this->assertEquals($length, strlen($partial_content));
+
+                // Partial content should not be larger than the original file size.
+                } else {
+                    $this->assertEquals($filesize, strlen($partial_content));
+                }
+
+                file_put_contents($partial_filename, $partial_content);
+                $this->assertEquals(strlen($partial_content), strlen(file_get_contents($partial_filename)));
+            }
+
+            // Download (the remaining bytes of) the file.
+            $multi_curl = new MultiCurl();
+            $multi_curl->setHeader('X-DEBUG-TEST', 'download_file_range');
+            $multi_curl->addDownload($source . '?' . http_build_query(array(
+                'file_path' => $uploaded_file_path,
+            )), $destination);
+
+            clearstatcache();
+
+            $instance_error = false;
+            $multi_curl->complete(function ($instance) use ($filesize, $length, $destination, &$instance_error) {
+                $expected_bytes_downloaded = $filesize - min($length, $filesize);
+                $bytes_downloaded = $instance->responseHeaders['content-length'];
+                if ($length === false || $length === 0) {
+                    $expected_http_status_code = 200; // 200 OK
+                    \PHPUnit\Framework\Assert::assertEquals($expected_bytes_downloaded, $bytes_downloaded);
+                } elseif ($length >= $filesize) {
+                    $expected_http_status_code = 416; // 416 Requested Range Not Satisfiable
+                } else {
+                    $expected_http_status_code = 206; // 206 Partial Content
+                    \PHPUnit\Framework\Assert::assertEquals($expected_bytes_downloaded, $bytes_downloaded);
+                }
+                \PHPUnit\Framework\Assert::assertEquals($expected_http_status_code, $instance->httpStatusCode);
+                $instance_error = $instance->error;
+            });
+            $multi_curl->start();
+
+            if (!$instance_error) {
+                $this->assertEquals($filesize, filesize($destination));
+                unlink($destination);
+                $this->assertFalse(file_exists($destination));
+            }
+        }
+
+        // Remove server file.
+        \Helper\remove_file_from_server($uploaded_file_path);
+
+        unlink($filename);
+        $this->assertFalse(file_exists($filename));
+    }
+
+    public function testDownloadErrorDeleteTemporaryFile()
+    {
+        $destination = \Helper\get_tmp_file_path();
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', '404');
+        $multi_curl->addDownload(Test::TEST_URL, $destination);
+        $multi_curl->complete(function ($instance) use ($destination) {
+            \PHPUnit\Framework\Assert::assertFalse(file_exists($instance->getDownloadFileName()));
+            \PHPUnit\Framework\Assert::assertFalse(file_exists($destination));
+        });
+        $multi_curl->start();
+    }
+
     public function testDownloadCallback()
     {
         // Upload a file.

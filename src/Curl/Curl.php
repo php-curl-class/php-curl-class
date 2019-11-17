@@ -290,6 +290,7 @@ class Curl
      */
     public function download($url, $mixed_filename)
     {
+        // Use tmpfile() or php://temp to avoid "Too many open files" error.
         if (is_callable($mixed_filename)) {
             $this->downloadCompleteCallback = $mixed_filename;
             $this->downloadFileName = null;
@@ -302,17 +303,17 @@ class Curl
             // path. The download request will include header "Range: bytes=$filesize-" which is syntactically valid,
             // but unsatisfiable.
             $download_filename = $filename . '.pccdownload';
+            $this->downloadFileName = $download_filename;
 
-            $mode = 'wb';
             // Attempt to resume download only when a temporary download file exists and is not empty.
             if (is_file($download_filename) && $filesize = filesize($download_filename)) {
-                $mode = 'ab';
                 $first_byte_position = $filesize;
                 $range = $first_byte_position . '-';
                 $this->setOpt(CURLOPT_RANGE, $range);
+                $this->fileHandle = fopen($download_filename, 'ab');
+            } else {
+                $this->fileHandle = fopen($download_filename, 'wb');
             }
-            $this->downloadFileName = $download_filename;
-            $this->fileHandle = fopen($download_filename, $mode);
 
             // Move the downloaded temporary file to the destination save path.
             $this->downloadCompleteCallback = function ($instance, $fh) use ($download_filename, $filename) {
