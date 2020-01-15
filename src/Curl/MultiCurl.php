@@ -703,6 +703,17 @@ class MultiCurl
     }
 
     /**
+     * Set Range
+     *
+     * @access public
+     * @param  $range
+     */
+    public function setRange($range)
+    {
+        $this->setOpt(CURLOPT_RANGE, $range);
+    }
+
+    /**
      * Set Referer
      *
      * @access public

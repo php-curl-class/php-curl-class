@@ -3889,4 +3889,13 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $curl->setFile(STDOUT);
         $this->assertEquals($file, $curl->getOpt(CURLOPT_FILE));
     }
+
+    public function testSetRange()
+    {
+        $range = '1000-';
+
+        $curl = new Curl();
+        $curl->setRange($range);
+        $this->assertEquals($range, $curl->getOpt(CURLOPT_RANGE));
+    }
 }
