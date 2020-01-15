@@ -3886,7 +3886,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $file = STDOUT;
 
         $curl = new Curl();
-        $curl->setFile(STDOUT);
+        $curl->setFile($file);
         $this->assertEquals($file, $curl->getOpt(CURLOPT_FILE));
     }
 
