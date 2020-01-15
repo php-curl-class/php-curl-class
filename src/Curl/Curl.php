@@ -309,7 +309,7 @@ class Curl
             if (is_file($download_filename) && $filesize = filesize($download_filename)) {
                 $first_byte_position = $filesize;
                 $range = $first_byte_position . '-';
-                $this->setOpt(CURLOPT_RANGE, $range);
+                $this->setRange($range);
                 $this->fileHandle = fopen($download_filename, 'ab');
             } else {
                 $this->fileHandle = fopen($download_filename, 'wb');
