@@ -3390,4 +3390,14 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         // Ensure request with specific proxy is not set to one of the random proxies.
         $this->assertNotContains($get_2->getOpt(CURLOPT_PROXY), $proxies);
     }
+
+    public function testSetFile()
+    {
+        $file = STDOUT;
+
+        $multi_curl = new MultiCurl();
+        $this->assertNull($multi_curl->getOpt(CURLOPT_FILE));
+        $multi_curl->setFile(STDOUT);
+        $this->assertEquals($file, $multi_curl->getOpt(CURLOPT_FILE));
+    }
 }

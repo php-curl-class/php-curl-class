@@ -3880,4 +3880,13 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->curl->setHeader('Content-Type', 'application/json');
         $this->assertEquals($expected_response, $test->server('post_json', 'POST', $user));
     }
+
+    public function testSetFile()
+    {
+        $file = STDOUT;
+
+        $curl = new Curl();
+        $curl->setFile(STDOUT);
+        $this->assertEquals($file, $curl->getOpt(CURLOPT_FILE));
+    }
 }

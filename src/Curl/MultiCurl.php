@@ -518,6 +518,17 @@ class MultiCurl
     }
 
     /**
+     * Set File
+     *
+     * @access public
+     * @param  $file
+     */
+    public function setFile($file)
+    {
+        $this->setOpt(CURLOPT_FILE, $file);
+    }
+
+    /**
      * Set Header
      *
      * Add extra header to include in the request.
