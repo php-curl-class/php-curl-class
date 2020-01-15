@@ -326,7 +326,7 @@ class Curl
             };
         }
 
-        $this->setOpt(CURLOPT_FILE, $this->fileHandle);
+        $this->setFile($this->fileHandle);
         $this->get($url);
 
         return ! $this->error;
@@ -1608,7 +1608,7 @@ class Curl
 
         // Reset CURLOPT_FILE with STDOUT to avoid: "curl_exec(): CURLOPT_FILE
         // resource has gone away, resetting to default".
-        $this->setOpt(CURLOPT_FILE, STDOUT);
+        $this->setFile(STDOUT);
 
         // Reset CURLOPT_RETURNTRANSFER to tell cURL to return subsequent
         // responses as the return value of curl_exec(). Without this,

@@ -122,7 +122,7 @@ class MultiCurl
             }
         }
 
-        $curl->setOpt(CURLOPT_FILE, $curl->fileHandle);
+        $curl->setFile($curl->fileHandle);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $curl->setOpt(CURLOPT_HTTPGET, true);
         return $curl;
