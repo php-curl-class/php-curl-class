@@ -102,7 +102,7 @@ class MultiCurl
             if (is_file($download_filename) && $filesize = filesize($download_filename)) {
                 $first_byte_position = $filesize;
                 $range = $first_byte_position . '-';
-                $curl->setOpt(CURLOPT_RANGE, $range);
+                $curl->setRange($range);
                 $curl->fileHandle = fopen($download_filename, 'ab');
 
                 // Move the downloaded temporary file to the destination save path.
@@ -122,7 +122,7 @@ class MultiCurl
             }
         }
 
-        $curl->setOpt(CURLOPT_FILE, $curl->fileHandle);
+        $curl->setFile($curl->fileHandle);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
         $curl->setOpt(CURLOPT_HTTPGET, true);
         return $curl;
@@ -700,6 +700,17 @@ class MultiCurl
         foreach ($options as $option => $value) {
             $this->setOpt($option, $value);
         }
+    }
+
+    /**
+     * Set Range
+     *
+     * @access public
+     * @param  $range
+     */
+    public function setRange($range)
+    {
+        $this->setOpt(CURLOPT_RANGE, $range);
     }
 
     /**

@@ -3397,7 +3397,17 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
         $multi_curl = new MultiCurl();
         $this->assertNull($multi_curl->getOpt(CURLOPT_FILE));
-        $multi_curl->setFile(STDOUT);
+        $multi_curl->setFile($file);
         $this->assertEquals($file, $multi_curl->getOpt(CURLOPT_FILE));
+    }
+
+    public function testSetRange()
+    {
+        $range = '1000-';
+
+        $multi_curl = new MultiCurl();
+        $this->assertNull($multi_curl->getOpt(CURLOPT_RANGE));
+        $multi_curl->setRange($range);
+        $this->assertEquals($range, $multi_curl->getOpt(CURLOPT_RANGE));
     }
 }
