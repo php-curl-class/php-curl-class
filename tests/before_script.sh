@@ -51,6 +51,11 @@ phpunit_shim() {
     sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
 }
 
+phpunit_v7_5_shim() {
+    # Fix "Call to undefined method CurlTest\CurlTest::expectWarning()".
+    sed -i'' -e"/->expectWarning(/d" "$(pwd)/tests/PHPCurlClass/PHPCurlClassTest.php"
+}
+
 set -x
 echo "TRAVIS_PHP_VERSION: ${TRAVIS_PHP_VERSION}"
 php -r "var_dump(phpversion());"
@@ -125,6 +130,7 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "5.6" ]]; then
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.0" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.1" ]]; then
+    phpunit_v7_5_shim
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.2" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
