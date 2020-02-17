@@ -51,9 +51,26 @@ phpunit_shim() {
     sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
 }
 
-phpunit_v7_5_shim() {
+remove_expectWarning() {
     # Fix "Call to undefined method CurlTest\CurlTest::expectWarning()".
-    sed -i'' -e"/->expectWarning(/d" "$(pwd)/tests/PHPCurlClass/PHPCurlClassTest.php"
+    sed -i'' -e"/->expectWarning(/d" "$(pwd)/tests/PHPCurlClass/PHP"*
+}
+
+replace_assertStringContainsString() {
+    # -->assertStringContainsString(
+    # +->assertContains(
+    find='->assertStringContainsString('
+    replace='->assertContains('
+    sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
+}
+
+phpunit_v6_5_shim() {
+    remove_expectWarning
+    replace_assertStringContainsString
+}
+
+phpunit_v7_5_shim() {
+    remove_expectWarning
 }
 
 set -x
@@ -128,6 +145,7 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "5.6" ]]; then
     reload_nginx
     phpunit_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.0" ]]; then
+    phpunit_v6_5_shim
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.1" ]]; then
     phpunit_v7_5_shim
