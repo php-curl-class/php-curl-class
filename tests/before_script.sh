@@ -30,6 +30,10 @@ reload_nginx() {
     $superuser /etc/init.d/nginx restart
 }
 
+php_v5_3_shim() {
+    remove_double_colon_class_name_resolution
+}
+
 phpunit_shim() {
     # -class CurlTest extends \PHPUnit\Framework\TestCase
     # +class CurlTest extends \PHPUnit_Framework_TestCase
@@ -49,6 +53,10 @@ phpunit_shim() {
     find='\\PHPUnit\\Framework\\Error\\Warning'
     replace='\\PHPUnit_Framework_Error_Warning'
     sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
+}
+
+remove_double_colon_class_name_resolution() {
+    sed -i'' -e"/::class/d" "$(pwd)/tests/PHPCurlClass/PHP"*
 }
 
 remove_expectWarning() {
@@ -129,6 +137,7 @@ EOF
     $superuser /etc/init.d/php5-fpm start
     reload_nginx
     phpunit_shim
+    php_v5_3_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
     install_nginx
     use_php_fpm
