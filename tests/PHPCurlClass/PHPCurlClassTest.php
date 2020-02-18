@@ -587,7 +587,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             "\r\n" .
             'bar' . "\r\n" .
             '';
-        $this->assertContains($expected_contains, $test->curl->response);
+        $this->assertStringContainsString($expected_contains, $test->curl->response);
     }
 
     public function testPatchRequestMethod()
@@ -1456,6 +1456,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
      */
     public function testJsonEncode()
     {
+        $this->expectException(\ErrorException::class);
+
         $data = array(
             'malformed' => pack('H*', 'c32e'),
         );
@@ -3031,6 +3033,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
      */
     public function testRequiredOptionCurlOptReturnTransferEmitsWarning()
     {
+        $this->expectWarning(\PHPUnit\Framework\Error\Warning::class);
+
         $curl = new Curl();
         $curl->setOpt(CURLOPT_RETURNTRANSFER, false);
     }

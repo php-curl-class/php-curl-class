@@ -30,6 +30,10 @@ reload_nginx() {
     $superuser /etc/init.d/nginx restart
 }
 
+php_v5_3_shim() {
+    remove_double_colon_class_name_resolution
+}
+
 phpunit_shim() {
     # -class CurlTest extends \PHPUnit\Framework\TestCase
     # +class CurlTest extends \PHPUnit_Framework_TestCase
@@ -49,6 +53,36 @@ phpunit_shim() {
     find='\\PHPUnit\\Framework\\Error\\Warning'
     replace='\\PHPUnit_Framework_Error_Warning'
     sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
+}
+
+remove_double_colon_class_name_resolution() {
+    sed -i'' -e"/::class/d" "$(pwd)/tests/PHPCurlClass/PHP"*
+}
+
+remove_expectWarning() {
+    # Fix "Call to undefined method CurlTest\CurlTest::expectWarning()".
+    sed -i'' -e"/->expectWarning(/d" "$(pwd)/tests/PHPCurlClass/PHP"*
+}
+
+replace_assertStringContainsString() {
+    # -->assertStringContainsString(
+    # +->assertContains(
+    find='->assertStringContainsString('
+    replace='->assertContains('
+    sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
+}
+
+phpunit_v4_8_shim() {
+    replace_assertStringContainsString
+}
+
+phpunit_v6_5_shim() {
+    remove_expectWarning
+    replace_assertStringContainsString
+}
+
+phpunit_v7_5_shim() {
+    remove_expectWarning
 }
 
 set -x
@@ -107,6 +141,8 @@ EOF
     $superuser /etc/init.d/php5-fpm start
     reload_nginx
     phpunit_shim
+    phpunit_v4_8_shim
+    php_v5_3_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
     install_nginx
     use_php_fpm
@@ -123,8 +159,10 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "5.6" ]]; then
     reload_nginx
     phpunit_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.0" ]]; then
+    phpunit_v6_5_shim
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.1" ]]; then
+    phpunit_v7_5_shim
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.2" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
