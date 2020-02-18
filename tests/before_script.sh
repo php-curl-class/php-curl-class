@@ -72,6 +72,10 @@ replace_assertStringContainsString() {
     sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
 }
 
+phpunit_v4_8_shim() {
+    replace_assertStringContainsString
+}
+
 phpunit_v6_5_shim() {
     remove_expectWarning
     replace_assertStringContainsString
@@ -137,6 +141,7 @@ EOF
     $superuser /etc/init.d/php5-fpm start
     reload_nginx
     phpunit_shim
+    phpunit_v4_8_shim
     php_v5_3_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
     install_nginx
