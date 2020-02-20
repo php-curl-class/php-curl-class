@@ -168,6 +168,8 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "7.2" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.3" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
+elif [[ "${TRAVIS_PHP_VERSION}" == "7.4" ]]; then
+    php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 elif [[ "${TRAVIS_PHP_VERSION}" == "hhvm" || "${TRAVIS_PHP_VERSION}" == "hhvm-nightly" ]]; then
     curl "https://nginx.org/keys/nginx_signing.key" | sudo apt-key add -
     echo "deb https://nginx.org/packages/mainline/ubuntu/ trusty nginx" | sudo tee -a /etc/apt/sources.list
