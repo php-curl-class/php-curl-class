@@ -788,6 +788,20 @@ class MultiCurl
     }
 
     /**
+     * Set Interface
+     * 
+     * The name of the outgoing network interface to use.
+     * This can be an interface name, an IP address or a host name. 
+     *
+     * @access public
+     * @param  $interface
+     */
+    public function setInterface($interface)
+    {
+        $this->setOpt(CURLOPT_INTERFACE, $interface);
+    }
+
+    /**
      * Start
      *
      * @access public
