@@ -1224,9 +1224,9 @@ class Curl
 
     /**
      * Set Interface
-     * 
+     *
      * The name of the outgoing network interface to use.
-     * This can be an interface name, an IP address or a host name. 
+     * This can be an interface name, an IP address or a host name.
      *
      * @access public
      * @param  $interface
