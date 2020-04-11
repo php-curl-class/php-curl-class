@@ -60,7 +60,7 @@ class MultiCurl
             $query_parameters = $url;
             $url = $this->baseUrl;
         }
-        $curl = new Curl();
+        $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
         $curl->setUrl($url, $query_parameters);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
@@ -79,7 +79,7 @@ class MultiCurl
      */
     public function addDownload($url, $mixed_filename)
     {
-        $curl = new Curl();
+        $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
         $curl->setUrl($url);
 
@@ -143,7 +143,7 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $curl = new Curl();
+        $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
         $curl->setUrl($url, $data);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
@@ -166,7 +166,7 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $curl = new Curl();
+        $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
         $curl->setUrl($url, $data);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
@@ -189,7 +189,7 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $curl = new Curl();
+        $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
         $curl->setUrl($url, $data);
         $curl->removeHeader('Content-Length');
@@ -213,7 +213,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
 
-        $curl = new Curl();
+        $curl = new Curl($this->baseUrl);
 
         if (is_array($data) && empty($data)) {
             $curl->removeHeader('Content-Length');
@@ -246,7 +246,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
 
-        $curl = new Curl();
+        $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
 
         if (is_array($data) && empty($data)) {
@@ -283,7 +283,7 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $curl = new Curl();
+        $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
         $curl->setUrl($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -310,7 +310,7 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
-        $curl = new Curl();
+        $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
         $curl->setUrl($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'SEARCH');
