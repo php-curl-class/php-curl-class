@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use \Curl\Curl;
+use Curl\Curl;
 
 $my_xml_decoder = function ($response) {
     $xml_obj = @simplexml_load_string($response);

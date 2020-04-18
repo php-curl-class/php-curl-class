@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use \Curl\Curl;
+use Curl\Curl;
 
 $curl = new Curl();
 $curl->setUrl('https://httpbin.org/get');

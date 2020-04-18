@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use \Curl\Curl;
+use Curl\Curl;
 
 const GRATIPAY_USERNAME = 'XXXXXXXXXX';
 const GRATIPAY_API_KEY = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';

@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use \Curl\MultiCurl;
+use Curl\MultiCurl;
 
 $max_retries = 3;
 

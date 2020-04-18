@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use \Curl\Curl;
+use Curl\Curl;
 
 $callback = function ($instance, $tmpfile) {
     $save_to_path = '/tmp/' . basename($instance->url);

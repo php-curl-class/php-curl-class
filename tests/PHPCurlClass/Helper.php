@@ -2,7 +2,7 @@
 
 namespace Helper;
 
-use \Curl\Curl;
+use Curl\Curl;
 
 class Test
 {

@@ -4,7 +4,7 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use \Curl\Curl;
+use Curl\Curl;
 
 function read_file($ch, $fd, $length) {
     $data = fread($fd, $length);

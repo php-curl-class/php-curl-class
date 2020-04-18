@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use \Curl\Curl;
+use Curl\Curl;
 
 $myfile = curl_file_create('cats.jpg', 'image/jpeg', 'test_name');
 

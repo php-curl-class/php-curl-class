@@ -3,7 +3,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 // Note: The server needs to send a content-length header for progress to work.
 
-use \Curl\Curl;
+use Curl\Curl;
 
 $curl = new Curl();
 $curl->progress(function ($client, $download_size, $downloaded, $upload_size, $uploaded) {

@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use \Curl\MultiCurl;
+use Curl\MultiCurl;
 
 // If needed, start a SOCKS 5 proxy tunnel:
 //   $ ssh -D 8080 -C -N -v user@example.com

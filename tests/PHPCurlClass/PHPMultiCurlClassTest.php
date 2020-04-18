@@ -2,9 +2,9 @@
 
 namespace CurlTest;
 
-use \Curl\Curl;
-use \Curl\MultiCurl;
-use \Helper\Test;
+use Curl\Curl;
+use Curl\MultiCurl;
+use Helper\Test;
 
 class MultiCurlTest extends \PHPUnit\Framework\TestCase
 {

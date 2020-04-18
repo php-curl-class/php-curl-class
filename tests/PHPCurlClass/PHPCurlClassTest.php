@@ -2,10 +2,10 @@
 
 namespace CurlTest;
 
-use \Curl\CaseInsensitiveArray;
-use \Curl\Curl;
-use \Helper\Test;
-use \Helper\User;
+use Curl\CaseInsensitiveArray;
+use Curl\Curl;
+use Helper\Test;
+use Helper\User;
 
 class CurlTest extends \PHPUnit\Framework\TestCase
 {

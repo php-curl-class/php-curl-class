@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use \Curl\Curl;
+use Curl\Curl;
 
 // curl --request DELETE "https://httpbin.org/delete?key=value" --data "a=1&b=2&c=3"
 

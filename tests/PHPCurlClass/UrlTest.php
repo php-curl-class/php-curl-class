@@ -2,7 +2,7 @@
 
 namespace CurlTest;
 
-use \Curl\Url;
+use Curl\Url;
 
 class UrlTest extends \PHPUnit\Framework\TestCase
 {

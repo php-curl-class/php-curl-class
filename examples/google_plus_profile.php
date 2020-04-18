@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use \Curl\Curl;
+use Curl\Curl;
 
 const CLIENT_ID = 'XXXXXXXXXXXX.apps.googleusercontent.com';
 const CLIENT_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXX';

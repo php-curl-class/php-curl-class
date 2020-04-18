@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use \Curl\Curl;
+use Curl\Curl;
 
 $data = '<?xml version="1.0" encoding="UTF-8"?>
 <rss>

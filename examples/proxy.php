@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use \Curl\Curl;
+use Curl\Curl;
 
 $curl = new Curl();
 $curl->setProxy('someproxy.com', '9999', 'username', 'password');

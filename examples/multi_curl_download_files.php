@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use \Curl\MultiCurl;
+use Curl\MultiCurl;
 
 $multi_curl = new MultiCurl();
 $multi_curl->addDownload('https://secure.php.net/images/logos/php-med-trans.png', '/tmp/php-med-trans.png');

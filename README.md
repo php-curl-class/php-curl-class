@@ -43,7 +43,7 @@ More examples are available under [/examples](https://github.com/php-curl-class/
 ```php
 require __DIR__ . '/vendor/autoload.php';
 
-use \Curl\Curl;
+use Curl\Curl;
 
 $curl = new Curl();
 $curl->get('https://www.example.com/');
@@ -156,7 +156,7 @@ curl_close($curl->curl);
 ```php
 require __DIR__ . '/vendor/autoload.php';
 
-use \Curl\MultiCurl;
+use Curl\MultiCurl;
 
 // Requests in parallel with callback functions.
 $multi_curl = new MultiCurl();

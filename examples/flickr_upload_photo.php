@@ -2,8 +2,8 @@
 require __DIR__ . '/../vendor/autoload.php';
 require 'flickr.class.php';
 
-use \Curl\Curl;
-use \Flickr\Flickr;
+use Curl\Curl;
+use Flickr\Flickr;
 
 $flickr = new Flickr();
 $flickr->authenticate();

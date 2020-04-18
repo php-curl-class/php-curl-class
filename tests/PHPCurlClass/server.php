@@ -9,7 +9,7 @@ require_once 'ContentRangeServer.php';
 require_once 'RangeHeader.php';
 require_once 'Helper.php';
 
-use \Helper\Test;
+use Helper\Test;
 
 $http_raw_post_data = file_get_contents('php://input');
 $_PUT = array();
