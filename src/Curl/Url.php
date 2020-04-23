@@ -157,6 +157,68 @@ class Url
      */
     private function parseUrl($url)
     {
+        // RFC 3986 - Parsing a URI Reference with a Regular Expression.
+        //       ^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?
+        //        12            3  4          5       6  7        8 9
+        //
+        // "http://www.ics.uci.edu/pub/ietf/uri/#Related"
+        // $1 = http: (scheme)
+        // $2 = http (scheme)
+        // $3 = //www.ics.uci.edu (ignore)
+        // $4 = www.ics.uci.edu (authority)
+        // $5 = /pub/ietf/uri/ (path)
+        // $6 = <undefined> (ignore)
+        // $7 = <undefined> (query)
+        // $8 = #Related (ignore)
+        // $9 = Related (fragment)
+        preg_match('/^(([^:\/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/', $url, $output_array);
+
+        $parts = array();
+        if (isset($output_array['1']) && $output_array['1'] !== '') {
+            $parts['scheme'] = $output_array['1'];
+        }
+        if (isset($output_array['2']) && $output_array['2'] !== '') {
+            $parts['scheme'] = $output_array['2'];
+        }
+        if (isset($output_array['4']) && $output_array['4'] !== '') {
+            // authority   = [ userinfo "@" ] host [ ":" port ]
+            $parts['host'] = $output_array['4'];
+            if (strpos($parts['host'], ':') !== false) {
+                $host_parts = explode(':', $output_array['4']);
+                $parts['port'] = array_pop($host_parts);
+                $parts['host'] = implode(':', $host_parts);
+                if (strpos($parts['host'], '@') !== false) {
+                    $host_parts = explode('@', $parts['host']);
+                    $parts['host'] = array_pop($host_parts);
+                    $parts['user'] = implode('@', $host_parts);
+                    if (strpos($parts['user'], ':') !== false) {
+                        $user_parts = explode(':', $parts['user'], 2);
+                        $parts['user'] = array_shift($user_parts);
+                        $parts['pass'] = implode(':', $user_parts);
+                    }
+                }
+            }
+        }
+        if (isset($output_array['5']) && $output_array['5'] !== '') {
+            $parts['path'] = $this->percentEncodeChars($output_array['5']);
+        }
+        if (isset($output_array['7']) && $output_array['7'] !== '') {
+            $parts['query'] = $output_array['7'];
+        }
+        if (isset($output_array['9']) && $output_array['9'] !== '') {
+            $parts['fragment'] = $output_array['9'];
+        }
+        return $parts;
+    }
+
+    /**
+     * Percent-encode characters.
+     *
+     * Percent-encode characters to represent a data octet in a component when
+     * that octet's corresponding character is outside the allowed set.
+     */
+    private function percentEncodeChars($chars)
+    {
         // ALPHA         = A-Z / a-z
         $alpha = 'A-Za-z';
 
@@ -177,14 +239,14 @@ class Url
         $hexdig .= 'a-f';
 
         $pattern = '/(?:[^' . $unreserved . $sub_delims . preg_quote(':@%/?', '/') . ']++|%(?![' . $hexdig . ']{2}))/';
-        $url = preg_replace_callback(
+        $percent_encoded_chars = preg_replace_callback(
             $pattern,
             function ($matches) {
                 return rawurlencode($matches[0]);
             },
-            $url
+            $chars
         );
-        return parse_url($url);
+        return $percent_encoded_chars;
     }
 
     /**
