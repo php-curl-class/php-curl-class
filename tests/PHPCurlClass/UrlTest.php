@@ -76,4 +76,73 @@ class UrlTest extends \PHPUnit\Framework\TestCase
         $url = new Url($original_url);
         $this->assertEquals($expected_url, $url);
     }
+
+    public function testParseUrlSyntaxComponents()
+    {
+        // RFC 3986 - Syntax Components.
+        //   The following are two example URIs and their component parts:
+        //
+        //         foo://example.com:8042/over/there?name=ferret#nose
+        //         \_/   \______________/\_________/ \_________/ \__/
+        //          |           |            |            |        |
+        //       scheme     authority       path        query   fragment
+        $input_url = 'foo://example.com:8042/over/there?name=ferret#nose';
+        $expected_parts = array(
+            'scheme' => 'foo',
+            'host' => 'example.com',
+            'port' => '8042',
+            'path' => '/over/there',
+            'query' => 'name=ferret',
+            'fragment' => 'nose',
+        );
+
+        $this->assertEquals($expected_parts, parse_url($input_url));
+
+        $reflector = new \ReflectionClass('Curl\Url');
+        $reflection_method = $reflector->getMethod('parseUrl');
+        $reflection_method->setAccessible(true);
+
+        $url = new Url(null);
+        $result = $reflection_method->invoke($url, $input_url);
+        $this->assertEquals($expected_parts, $result);
+    }
+
+    public function testParseUrlExample()
+    {
+        $input_url = 'http://username:password@hostname:9090/path?arg=value#anchor';
+        $expected_parts = array(
+            'scheme' => 'http',
+            'host' => 'hostname',
+            'port' => '9090',
+            'user' => 'username',
+            'pass' => 'password',
+            'path' => '/path',
+            'query' => 'arg=value',
+            'fragment' => 'anchor',
+        );
+
+        $this->assertEquals($expected_parts, parse_url($input_url));
+
+        $reflector = new \ReflectionClass('Curl\Url');
+        $reflection_method = $reflector->getMethod('parseUrl');
+        $reflection_method->setAccessible(true);
+
+        $url = new Url(null);
+        $result = $reflection_method->invoke($url, $input_url);
+        $this->assertEquals($expected_parts, $result);
+    }
+
+    public function testIpv6NoPort()
+    {
+        $expected_url = 'http://[::1]/test';
+        $actual_url = new Url($expected_url);
+        $this->assertEquals($expected_url, $actual_url);
+    }
+
+    public function testIpv6Port()
+    {
+        $expected_url = 'http://[::1]:80/test';
+        $actual_url = new Url($expected_url);
+        $this->assertEquals($expected_url, $actual_url);
+    }
 }
