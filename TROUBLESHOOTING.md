@@ -23,6 +23,27 @@ Compare your version of curl with latest release listed on [curl's releases page
 error_reporting(E_ALL);
 ```
 
+### Print some information that may hint at the cause of failure
+
+```php
+error_reporting(E_ALL);
+$curl = new Curl();
+$curl->get('https://www.example.com/');
+echo 'error: ' . $curl->error . "\n";
+echo 'errorCode: ' . $curl->errorCode . "\n";
+echo 'errorMessage: ' . $curl->errorMessage . "\n";
+echo 'curlError: ' . $curlError . "\n";
+echo 'curlErrorCode: ' . $curlErrorCode . "\n";
+echo 'curlErrorMessage: ' . $curlErrorMessage . "\n";
+echo 'httpError: ' . $httpError . "\n";
+echo 'httpStatusCode: ' . $httpStatusCode . "\n";
+echo 'httpErrorMessage: ' . $httpErrorMessage . "\n";
+echo 'requestHeaders:' . "\n";
+var_dump($curl->requestHeaders);
+echo 'responseHeaders:' . "\n";
+var_dump($curl->responseHeaders);
+```
+
 ### Turn on verbose mode
 
 ```php
