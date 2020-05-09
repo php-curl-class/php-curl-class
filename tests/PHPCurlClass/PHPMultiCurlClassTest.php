@@ -3410,4 +3410,15 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->setRange($range);
         $this->assertEquals($range, $multi_curl->getOpt(CURLOPT_RANGE));
     }
+
+    public function testDisableTimeout()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->disableTimeout();
+        $get = $multi_curl->addGet(Test::TEST_URL);
+        $get->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertNull($instance->getOpt(CURLOPT_TIMEOUT));
+        });
+        $multi_curl->start();
+    }
 }

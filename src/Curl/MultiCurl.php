@@ -766,6 +766,16 @@ class MultiCurl
     }
 
     /**
+     * Disable Timeout
+     *
+     * @access public
+     */
+    public function disableTimeout()
+    {
+        $this->setTimeout(null);
+    }
+
+    /**
      * Set Url
      *
      * @access public
