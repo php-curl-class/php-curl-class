@@ -3902,4 +3902,12 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $curl->setRange($range);
         $this->assertEquals($range, $curl->getOpt(CURLOPT_RANGE));
     }
+
+    public function testDisableTimeout()
+    {
+        $curl = new Curl();
+        $this->assertEquals(Curl::DEFAULT_TIMEOUT, $curl->getOpt(CURLOPT_TIMEOUT));
+        $curl->disableTimeout();
+        $this->assertNull($curl->getOpt(CURLOPT_TIMEOUT));
+    }
 }
