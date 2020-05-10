@@ -274,8 +274,11 @@ if ($test === 'http_basic_auth') {
     $server->serve($unsafe_file_path);
     exit;
 } elseif ($test === 'timeout') {
+    header('Content-Type: application/json');
     $unsafe_seconds = $_GET['seconds'];
     $start = time();
+    echo '{' . "\n";
+    echo '  "loading": "';
     while (true) {
         echo '.';
         ob_flush();
@@ -286,6 +289,9 @@ if ($test === 'http_basic_auth') {
             break;
         }
     }
+    echo '",' . "\n";
+    echo '  "elapsed_seconds": "' . $elapsed . '"' . "\n";
+    echo '}' . "\n";
     exit;
 } elseif ($test === 'error_message') {
     if (function_exists('http_response_code')) {
