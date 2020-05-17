@@ -4552,7 +4552,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertLessThanOrEqual(241, $request_stats['29']['start_diff']);
 
         // Assert R30 starts around 360. Allow for some drift.
-        $this->assertGreaterThanOrEqual(359, $request_stats['30']['start_diff']);//
+        $this->assertGreaterThanOrEqual(359, $request_stats['30']['start_diff']);
         $this->assertLessThanOrEqual(361, $request_stats['30']['start_diff']);
     }
 }
