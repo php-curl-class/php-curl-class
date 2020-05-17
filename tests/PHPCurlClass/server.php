@@ -1,4 +1,6 @@
 <?php
+$server_start = microtime(true);
+
 // Prevent direct access unless testing.
 if (getenv('PHP_CURL_CLASS_TEST_MODE_ENABLED') !== 'yes' &&
     @$_SERVER['PHP_CURL_CLASS_TEST_MODE_ENABLED'] !== 'yes') {
@@ -291,8 +293,12 @@ if ($test === 'http_basic_auth') {
             break;
         }
     }
+
     echo '",' . "\n";
-    echo '  "elapsed_seconds": "' . $elapsed . '"' . "\n";
+    echo '  "elapsed_seconds": "' . $elapsed . '",' . "\n";
+    echo '  "server_port": "' . ((int)$_SERVER['SERVER_PORT']) . '",' . "\n";
+    echo '  "server_start": "' . $server_start . '",' . "\n";
+    echo '  "server_stop": "' . microtime(true) . '"' . "\n";
     echo '}' . "\n";
     exit;
 } elseif ($test === 'error_message') {
