@@ -1,4 +1,6 @@
 <?php
+$server_start = microtime(true);
+
 // Prevent direct access unless testing.
 if (getenv('PHP_CURL_CLASS_TEST_MODE_ENABLED') !== 'yes' &&
     @$_SERVER['PHP_CURL_CLASS_TEST_MODE_ENABLED'] !== 'yes') {
@@ -274,18 +276,30 @@ if ($test === 'http_basic_auth') {
     $server->serve($unsafe_file_path);
     exit;
 } elseif ($test === 'timeout') {
-    $unsafe_seconds = $_GET['seconds'];
-    $start = time();
+    // Use --no-buffer to view loading indicator (e.g.
+    // curl --header "X-DEBUG-TEST: timeout" --include --no-buffer 127.0.0.1:8000/?seconds=3).
+    header('Content-Type: application/json');
+    $unsafe_seconds = (int)$_GET['seconds'];
+    $start = microtime(true);
+    echo '{' . "\n";
+    echo '  "loading": "';
     while (true) {
         echo '.';
         ob_flush();
         flush();
         sleep(1);
-        $elapsed = time() - $start;
+        $elapsed = microtime(true) - $start;
         if ($elapsed >= $unsafe_seconds) {
             break;
         }
     }
+
+    echo '",' . "\n";
+    echo '  "elapsed_seconds": "' . $elapsed . '",' . "\n";
+    echo '  "server_port": "' . ((int)$_SERVER['SERVER_PORT']) . '",' . "\n";
+    echo '  "server_start": "' . $server_start . '",' . "\n";
+    echo '  "server_stop": "' . microtime(true) . '"' . "\n";
+    echo '}' . "\n";
     exit;
 } elseif ($test === 'error_message') {
     if (function_exists('http_response_code')) {

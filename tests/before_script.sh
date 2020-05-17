@@ -85,6 +85,14 @@ phpunit_v7_5_shim() {
     remove_expectWarning
 }
 
+start_php_servers() {
+    for i in $(seq 0 6); do
+        port=8000
+        (( port += $i ))
+        php -S "127.0.0.1:${port}" -t tests/PHPCurlClass/ &
+    done
+}
+
 set -x
 echo "TRAVIS_PHP_VERSION: ${TRAVIS_PHP_VERSION}"
 php -r "var_dump(phpversion());"
@@ -160,16 +168,16 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "5.6" ]]; then
     phpunit_shim
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.0" ]]; then
     phpunit_v6_5_shim
-    php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
+    start_php_servers
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.1" ]]; then
     phpunit_v7_5_shim
-    php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
+    start_php_servers
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.2" ]]; then
-    php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
+    start_php_servers
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.3" ]]; then
-    php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
+    start_php_servers
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.4" ]]; then
-    php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
+    start_php_servers
 elif [[ "${TRAVIS_PHP_VERSION}" == "hhvm" || "${TRAVIS_PHP_VERSION}" == "hhvm-nightly" ]]; then
     curl "https://nginx.org/keys/nginx_signing.key" | sudo apt-key add -
     echo "deb https://nginx.org/packages/mainline/ubuntu/ trusty nginx" | sudo tee -a /etc/apt/sources.list
@@ -210,5 +218,5 @@ EOF
         composer require phpunit/phpunit:5.7.*
     fi
 elif [[ "${TRAVIS_PHP_VERSION}" == "nightly" ]]; then
-    php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
+    start_php_servers
 fi

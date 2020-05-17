@@ -3421,4 +3421,1138 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         });
         $multi_curl->start();
     }
+
+    public function testSetRateLimitUnits()
+    {
+        foreach (array(
+                array(
+                    'rate_limit' => '1/s',
+                    'expected' => array(
+                        'rate_limit' => '1/1s',
+                        'max_requests' => '1',
+                        'interval' => '1',
+                        'unit' => 's',
+                        'interval_seconds' => '1',
+                    ),
+                ),
+                array(
+                    'rate_limit' => '1/1s',
+                    'expected' => array(
+                        'rate_limit' => '1/1s',
+                        'max_requests' => '1',
+                        'interval' => '1',
+                        'unit' => 's',
+                        'interval_seconds' => '1',
+                    ),
+                ),
+                array(
+                    'rate_limit' => '10/60s',
+                    'expected' => array(
+                        'rate_limit' => '10/60s',
+                        'max_requests' => '10',
+                        'interval' => '60',
+                        'unit' => 's',
+                        'interval_seconds' => '60',
+                    ),
+                ),
+                array(
+                    'rate_limit' => '1/m',
+                    'expected' => array(
+                        'rate_limit' => '1/1m',
+                        'max_requests' => '1',
+                        'interval' => '1',
+                        'unit' => 'm',
+                        'interval_seconds' => '60',
+                    ),
+                ),
+                array(
+                    'rate_limit' => '1/1m',
+                    'expected' => array(
+                        'rate_limit' => '1/1m',
+                        'max_requests' => '1',
+                        'interval' => '1',
+                        'unit' => 'm',
+                        'interval_seconds' => '60',
+                    ),
+                ),
+                array(
+                    'rate_limit' => '5000/60m',
+                    'expected' => array(
+                        'rate_limit' => '5000/60m',
+                        'max_requests' => '5000',
+                        'interval' => '60',
+                        'unit' => 'm',
+                        'interval_seconds' => '3600',
+                    ),
+                ),
+                array(
+                    'rate_limit' => '1/h',
+                    'expected' => array(
+                        'rate_limit' => '1/1h',
+                        'max_requests' => '1',
+                        'interval' => '1',
+                        'unit' => 'h',
+                        'interval_seconds' => '3600',
+                    ),
+                ),
+                array(
+                    'rate_limit' => '1/1h',
+                    'expected' => array(
+                        'rate_limit' => '1/1h',
+                        'max_requests' => '1',
+                        'interval' => '1',
+                        'unit' => 'h',
+                        'interval_seconds' => '3600',
+                    ),
+                ),
+                array(
+                    'rate_limit' => '5000/1h',
+                    'expected' => array(
+                        'rate_limit' => '5000/1h',
+                        'max_requests' => '5000',
+                        'interval' => '1',
+                        'unit' => 'h',
+                        'interval_seconds' => '3600',
+                    ),
+                ),
+                array(
+                    'rate_limit' => '100000/24h',
+                    'expected' => array(
+                        'rate_limit' => '100000/24h',
+                        'max_requests' => '100000',
+                        'interval' => '24',
+                        'unit' => 'h',
+                        'interval_seconds' => '86400',
+                    ),
+                ),
+            ) as $test) {
+            $multi_curl = new MultiCurl();
+            $multi_curl->setRateLimit($test['rate_limit']);
+
+            $this->assertEquals(
+                $test['expected']['rate_limit'],
+                \Helper\get_multi_curl_property_value($multi_curl, 'rateLimit')
+            );
+            $this->assertEquals(
+                $test['expected']['max_requests'],
+                \Helper\get_multi_curl_property_value($multi_curl, 'maxRequests')
+            );
+            $this->assertEquals(
+                $test['expected']['interval'],
+                \Helper\get_multi_curl_property_value($multi_curl, 'interval')
+            );
+            $this->assertEquals(
+                $test['expected']['unit'],
+                \Helper\get_multi_curl_property_value($multi_curl, 'unit')
+            );
+            $this->assertEquals(
+                $test['expected']['interval_seconds'],
+                \Helper\get_multi_curl_property_value($multi_curl, 'intervalSeconds')
+            );
+        }
+    }
+
+    public function testSetRateLimitPerSecond1()
+    {
+        //  R0--|
+        //  R1--|
+        //      W---------------|
+        //                      R2--|
+        //                      R3--|
+        //                          W---------------|
+        //                                          R4--|
+        //  0   1   2   3   4   5   6   7   8   9   10  11  12
+
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
+        $multi_curl->setRateLimit('2/5s');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=1');
+        $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=1');
+        $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=1');
+        $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=1');
+        $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=1');
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // Assert R0 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['0']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['0']['start_diff']);
+        // Assert R0 ends around 1.
+        $this->assertGreaterThanOrEqual(0.8, $request_stats['0']['stop_diff']);
+        $this->assertLessThanOrEqual(1.5, $request_stats['0']['stop_diff']);
+
+        // Assert R1 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['1']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['1']['start_diff']);
+        // Assert R1 ends around 1.
+        $this->assertGreaterThanOrEqual(0.8, $request_stats['1']['stop_diff']);
+        $this->assertLessThanOrEqual(1.5, $request_stats['1']['stop_diff']);
+
+        // Assert R2 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['2']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['2']['start_diff']);
+        // Assert R2 ends around 6.
+        $this->assertGreaterThanOrEqual(5.8, $request_stats['2']['stop_diff']);
+        $this->assertLessThanOrEqual(6.5, $request_stats['2']['stop_diff']);
+
+        // Assert R3 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['3']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['3']['start_diff']);
+        // Assert R3 ends around 6.
+        $this->assertGreaterThanOrEqual(5.8, $request_stats['3']['stop_diff']);
+        $this->assertLessThanOrEqual(6.5, $request_stats['3']['stop_diff']);
+
+        // Assert R4 starts around 10 and not before.
+        $this->assertGreaterThanOrEqual(10, $request_stats['4']['start_diff']);
+        $this->assertLessThanOrEqual(10.5, $request_stats['4']['start_diff']);
+        // Assert R4 ends around 11.
+        $this->assertGreaterThanOrEqual(10.8, $request_stats['4']['stop_diff']);
+        $this->assertLessThanOrEqual(11.5, $request_stats['4']['stop_diff']);
+    }
+
+    public function testSetRateLimitPerSecond2()
+    {
+        //  R0--|
+        //  R1------|
+        //          W-----------|
+        //                      R2--|
+        //                      R3------|
+        //                              W-----------|
+        //                                          R4--|
+        //  0   1   2   3   4   5   6   7   8   9   10  11  12
+
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
+        $multi_curl->setRateLimit('2/5s');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=1');
+        $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=2');
+        $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=1');
+        $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=2');
+        $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=1');
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // Assert R0 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['0']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['0']['start_diff']);
+        // Assert R0 ends around 1.
+        $this->assertGreaterThanOrEqual(0.8, $request_stats['0']['stop_diff']);
+        $this->assertLessThanOrEqual(1.5, $request_stats['0']['stop_diff']);
+
+        // Assert R1 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['1']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['1']['start_diff']);
+        // Assert R1 ends around 2.
+        $this->assertGreaterThanOrEqual(1.8, $request_stats['1']['stop_diff']);
+        $this->assertLessThanOrEqual(2.5, $request_stats['1']['stop_diff']);
+
+        // Assert R2 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['2']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['2']['start_diff']);
+        // Assert R2 ends around 6.
+        $this->assertGreaterThanOrEqual(5.8, $request_stats['2']['stop_diff']);
+        $this->assertLessThanOrEqual(6.5, $request_stats['2']['stop_diff']);
+
+        // Assert R3 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['3']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['3']['start_diff']);
+        // Assert R3 ends around 7.
+        $this->assertGreaterThanOrEqual(6.8, $request_stats['3']['stop_diff']);
+        $this->assertLessThanOrEqual(7.5, $request_stats['3']['stop_diff']);
+
+        // Assert R4 starts around 10 and not before.
+        $this->assertGreaterThanOrEqual(10, $request_stats['4']['start_diff']);
+        $this->assertLessThanOrEqual(10.5, $request_stats['4']['start_diff']);
+        // Assert R4 ends around 11.
+        $this->assertGreaterThanOrEqual(10.8, $request_stats['4']['stop_diff']);
+        $this->assertLessThanOrEqual(11.5, $request_stats['4']['stop_diff']);
+    }
+
+    public function testSetRateLimitPerSecond3()
+    {
+        //  R0------|
+        //  R1------------------|
+        //                      R2------|
+        //                      R3------------------|
+        //                                          R4--|
+        //  0   1   2   3   4   5   6   7   8   9   10  11  12
+
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
+        $multi_curl->setRateLimit('2/5s');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=2');
+        $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=5');
+        $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=2');
+        $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=5');
+        $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=1');
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // Assert R0 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['0']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['0']['start_diff']);
+        // Assert R0 ends around 2.
+        $this->assertGreaterThanOrEqual(1.8, $request_stats['0']['stop_diff']);
+        $this->assertLessThanOrEqual(2.5, $request_stats['0']['stop_diff']);
+
+        // Assert R1 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['1']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['1']['start_diff']);
+        // Assert R1 ends around 5.
+        $this->assertGreaterThanOrEqual(4.8, $request_stats['1']['stop_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['1']['stop_diff']);
+
+        // Assert R2 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['2']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['2']['start_diff']);
+        // Assert R2 ends around 7.
+        $this->assertGreaterThanOrEqual(6.8, $request_stats['2']['stop_diff']);
+        $this->assertLessThanOrEqual(7.5, $request_stats['2']['stop_diff']);
+
+        // Assert R3 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['3']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['3']['start_diff']);
+        // Assert R3 ends around 10.
+        $this->assertGreaterThanOrEqual(9.8, $request_stats['3']['stop_diff']);
+        $this->assertLessThanOrEqual(10.5, $request_stats['3']['stop_diff']);
+
+        // Assert R4 starts around 10 and not before.
+        $this->assertGreaterThanOrEqual(10, $request_stats['4']['start_diff']);
+        $this->assertLessThanOrEqual(10.5, $request_stats['4']['start_diff']);
+        // Assert R4 ends around 11.
+        $this->assertGreaterThanOrEqual(10.8, $request_stats['4']['stop_diff']);
+        $this->assertLessThanOrEqual(11.5, $request_stats['4']['stop_diff']);
+    }
+
+    public function testSetRateLimitPerSecond4()
+    {
+        //  R0------|
+        //  R1----------------------------------|
+        //                      R2----------|
+        //                      R3----------------------|
+        //                                          R4--|
+        //  0   1   2   3   4   5   6   7   8   9   10  11  12
+
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
+        $multi_curl->setRateLimit('2/5s');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=2');
+        $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=9');
+        $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=3');
+        $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=6');
+        $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=1');
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // Assert R0 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['0']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['0']['start_diff']);
+        // Assert R0 ends around 2.
+        $this->assertGreaterThanOrEqual(1.8, $request_stats['0']['stop_diff']);
+        $this->assertLessThanOrEqual(2.5, $request_stats['0']['stop_diff']);
+
+        // Assert R1 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['1']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['1']['start_diff']);
+        // Assert R1 ends around 9.
+        $this->assertGreaterThanOrEqual(8.8, $request_stats['1']['stop_diff']);
+        $this->assertLessThanOrEqual(9.5, $request_stats['1']['stop_diff']);
+
+        // Assert R2 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['2']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['2']['start_diff']);
+        // Assert R2 ends around 8.
+        $this->assertGreaterThanOrEqual(7.8, $request_stats['2']['stop_diff']);
+        $this->assertLessThanOrEqual(8.5 + 1, $request_stats['2']['stop_diff']);
+
+        // Assert R3 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['3']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['3']['start_diff']);
+        // Assert R3 ends around 11.
+        $this->assertGreaterThanOrEqual(10.8, $request_stats['3']['stop_diff']);
+        $this->assertLessThanOrEqual(11.5 + 1, $request_stats['3']['stop_diff']);
+
+        // Assert R4 starts around 10 and not before.
+        $this->assertGreaterThanOrEqual(10, $request_stats['4']['start_diff']);
+        $this->assertLessThanOrEqual(10.5, $request_stats['4']['start_diff']);
+        // Assert R4 ends around 11.
+        $this->assertGreaterThanOrEqual(10.8, $request_stats['4']['stop_diff']);
+        $this->assertLessThanOrEqual(11.5 + 1, $request_stats['4']['stop_diff']);
+    }
+
+    public function testSetRateLimitPerSecond5()
+    {
+        //  R0--------------------------|
+        //  R1--------------------------|
+        //                      R2------|
+        //                      R3------|
+        //                              W-----------|
+        //                                          R4------|
+        //  0   1   2   3   4   5   6   7   8   9   10  11  12
+
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
+        $multi_curl->setRateLimit('2/5s');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=7');
+        $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=7');
+        $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=2');
+        $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=2');
+        $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=2');
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // Assert R0 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['0']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['0']['start_diff']);
+        // Assert R0 ends around 7.
+        $this->assertGreaterThanOrEqual(6.8, $request_stats['0']['stop_diff']);
+        $this->assertLessThanOrEqual(7.5, $request_stats['0']['stop_diff']);
+
+        // Assert R1 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['1']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['1']['start_diff']);
+        // Assert R1 ends around 7.
+        $this->assertGreaterThanOrEqual(6.8, $request_stats['1']['stop_diff']);
+        $this->assertLessThanOrEqual(7.5, $request_stats['1']['stop_diff']);
+
+        // Assert R2 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['2']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['2']['start_diff']);
+        // Assert R2 ends around 7.
+        $this->assertGreaterThanOrEqual(6.8, $request_stats['2']['stop_diff']);
+        $this->assertLessThanOrEqual(7.5 + 1, $request_stats['2']['stop_diff']);
+
+        // Assert R3 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['3']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['3']['start_diff']);
+        // Assert R3 ends around 7.
+        $this->assertGreaterThanOrEqual(6.8, $request_stats['3']['stop_diff']);
+        $this->assertLessThanOrEqual(7.5 + 1, $request_stats['3']['stop_diff']);
+
+        // Assert R4 starts around 10 and not before.
+        $this->assertGreaterThanOrEqual(10, $request_stats['4']['start_diff']);
+        $this->assertLessThanOrEqual(10.5, $request_stats['4']['start_diff']);
+        // Assert R4 ends around 12.
+        $this->assertGreaterThanOrEqual(11.8, $request_stats['4']['stop_diff']);
+        $this->assertLessThanOrEqual(12.5, $request_stats['4']['stop_diff']);
+    }
+
+    public function testSetRateLimitPerSecond6()
+    {
+        //  R0--------------------------|
+        //  R1--------------------------|
+        //                      R2--------------|
+        //                      R3------|
+        //                                      W---|
+        //                                          R4------|
+        //  0   1   2   3   4   5   6   7   8   9   10  11  12
+
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
+        $multi_curl->setRateLimit('2/5s');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=7');
+        $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=7');
+        $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=4');
+        $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=2');
+        $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=2');
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // Assert R0 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['0']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['0']['start_diff']);
+        // Assert R0 ends around 7.
+        $this->assertGreaterThanOrEqual(6.8, $request_stats['0']['stop_diff']);
+        $this->assertLessThanOrEqual(7.5, $request_stats['0']['stop_diff']);
+
+        // Assert R1 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['1']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['1']['start_diff']);
+        // Assert R1 ends around 7.
+        $this->assertGreaterThanOrEqual(6.8, $request_stats['1']['stop_diff']);
+        $this->assertLessThanOrEqual(7.5, $request_stats['1']['stop_diff']);
+
+        // Assert R2 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['2']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['2']['start_diff']);
+        // Assert R2 ends around 9.
+        $this->assertGreaterThanOrEqual(8.8, $request_stats['2']['stop_diff']);
+        $this->assertLessThanOrEqual(9.5 + 1, $request_stats['2']['stop_diff']);
+
+        // Assert R3 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['3']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['3']['start_diff']);
+        // Assert R3 ends around 7.
+        $this->assertGreaterThanOrEqual(6.8, $request_stats['3']['stop_diff']);
+        $this->assertLessThanOrEqual(7.5 + 1, $request_stats['3']['stop_diff']);
+
+        // Assert R4 starts around 10 and not before.
+        $this->assertGreaterThanOrEqual(10, $request_stats['4']['start_diff']);
+        $this->assertLessThanOrEqual(10.5, $request_stats['4']['start_diff']);
+        // Assert R4 ends around 12.
+        $this->assertGreaterThanOrEqual(11.8, $request_stats['4']['stop_diff']);
+        $this->assertLessThanOrEqual(12.5, $request_stats['4']['stop_diff']);
+    }
+
+    public function testSetRateLimitPerSecond7()
+    {
+        //  R0------|
+        //  R1----------------------------------------------|
+        //                      R2----------------------|
+        //                      R3----------------------|
+        //                                          R4------|
+        //                                          R5------|
+        //  0   1   2   3   4   5   6   7   8   9   10  11  12
+
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
+        $multi_curl->setRateLimit('2/5s');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=2');
+        $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=12');
+        $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=6');
+        $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=6');
+        $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=2');
+        $multi_curl->addGet(Test::getTestUrl('8006') . '?seconds=2');
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // Assert R0 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['0']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['0']['start_diff']);
+        // Assert R0 ends around 2.
+        $this->assertGreaterThanOrEqual(1.8, $request_stats['0']['stop_diff']);
+        $this->assertLessThanOrEqual(2.5, $request_stats['0']['stop_diff']);
+
+        // Assert R1 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['1']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['1']['start_diff']);
+        // Assert R1 ends around 12.
+        $this->assertGreaterThanOrEqual(11.8, $request_stats['1']['stop_diff']);
+        $this->assertLessThanOrEqual(12.5, $request_stats['1']['stop_diff']);
+
+        // Assert R2 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['2']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['2']['start_diff']);
+        // Assert R2 ends around 11.
+        $this->assertGreaterThanOrEqual(10.8, $request_stats['2']['stop_diff']);
+        $this->assertLessThanOrEqual(11.5 + 1, $request_stats['2']['stop_diff']);
+
+        // Assert R3 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['3']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['3']['start_diff']);
+        // Assert R3 ends around 11.
+        $this->assertGreaterThanOrEqual(10.8, $request_stats['3']['stop_diff']);
+        $this->assertLessThanOrEqual(11.5 + 1, $request_stats['3']['stop_diff']);
+
+        // Assert R4 starts around 10 and not before.
+        $this->assertGreaterThanOrEqual(10, $request_stats['4']['start_diff']);
+        $this->assertLessThanOrEqual(10.5, $request_stats['4']['start_diff']);
+        // Assert R4 ends around 12.
+        $this->assertGreaterThanOrEqual(11.8, $request_stats['4']['stop_diff']);
+        $this->assertLessThanOrEqual(12.5 + 1, $request_stats['4']['stop_diff']);
+
+        // Assert R5 starts around 10 and not before.
+        $this->assertGreaterThanOrEqual(10, $request_stats['5']['start_diff']);
+        $this->assertLessThanOrEqual(10.5, $request_stats['5']['start_diff']);
+        // Assert R5 ends around 12.
+        $this->assertGreaterThanOrEqual(11.8, $request_stats['5']['stop_diff']);
+        $this->assertLessThanOrEqual(12.5 + 1, $request_stats['5']['stop_diff']);
+    }
+
+    public function testSetRateLimitPerSecond8()
+    {
+        //  R0------------------------------|
+        //  R1----------------------------------------------|
+        //                      R2--------------------------|
+        //                      R3--------------|
+        //                                          R4--|
+        //                                          R5------|
+        //  0   1   2   3   4   5   6   7   8   9   10  11  12
+
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
+        $multi_curl->setRateLimit('2/5s');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=8');
+        $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=12');
+        $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=7');
+        $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=4');
+        $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=1');
+        $multi_curl->addGet(Test::getTestUrl('8006') . '?seconds=2');
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // Assert R0 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['0']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['0']['start_diff']);
+        // Assert R0 ends around 8.
+        $this->assertGreaterThanOrEqual(7.8, $request_stats['0']['stop_diff']);
+        $this->assertLessThanOrEqual(8.5, $request_stats['0']['stop_diff']);
+
+        // Assert R1 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['1']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['1']['start_diff']);
+        // Assert R1 ends around 12.
+        $this->assertGreaterThanOrEqual(11.8, $request_stats['1']['stop_diff']);
+        $this->assertLessThanOrEqual(12.5, $request_stats['1']['stop_diff']);
+
+        // Assert R2 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['2']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['2']['start_diff']);
+        // Assert R2 ends around 12.
+        $this->assertGreaterThanOrEqual(11.8, $request_stats['2']['stop_diff']);
+        $this->assertLessThanOrEqual(12.5 + 1, $request_stats['2']['stop_diff']);
+
+        // Assert R3 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['3']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['3']['start_diff']);
+        // Assert R3 ends around 9.
+        $this->assertGreaterThanOrEqual(8.8, $request_stats['3']['stop_diff']);
+        $this->assertLessThanOrEqual(9.5 + 1, $request_stats['3']['stop_diff']);
+
+        // Assert R4 starts around 10 and not before.
+        $this->assertGreaterThanOrEqual(10, $request_stats['4']['start_diff']);
+        $this->assertLessThanOrEqual(10.5, $request_stats['4']['start_diff']);
+        // Assert R4 ends around 11.
+        $this->assertGreaterThanOrEqual(10.8, $request_stats['4']['stop_diff']);
+        $this->assertLessThanOrEqual(11.5, $request_stats['4']['stop_diff']);
+
+        // Assert R5 starts around 10 and not before.
+        $this->assertGreaterThanOrEqual(10, $request_stats['5']['start_diff']);
+        $this->assertLessThanOrEqual(10.5, $request_stats['5']['start_diff']);
+        // Assert R5 ends around 12.
+        $this->assertGreaterThanOrEqual(11.8, $request_stats['5']['stop_diff']);
+        $this->assertLessThanOrEqual(12.5, $request_stats['5']['stop_diff']);
+    }
+
+    public function testSetRateLimitPerSecond9()
+    {
+        //  R0----------------------------------------------|
+        //  R1----------------------------------------------|
+        //                      R2--------------------------|
+        //                      R3--------------------------|
+        //                                          R4------|
+        //                                          R5------|
+        //  0   1   2   3   4   5   6   7   8   9   10  11  12
+
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
+        $multi_curl->setRateLimit('2/5s');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=12');
+        $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=12');
+        $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=7');
+        $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=7');
+        $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=2');
+        $multi_curl->addGet(Test::getTestUrl('8006') . '?seconds=2');
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // Assert R0 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['0']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['0']['start_diff']);
+        // Assert R0 ends around 12.
+        $this->assertGreaterThanOrEqual(11.8, $request_stats['0']['stop_diff']);
+        $this->assertLessThanOrEqual(12.5, $request_stats['0']['stop_diff']);
+
+        // Assert R1 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['1']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['1']['start_diff']);
+        // Assert R1 ends around 12.
+        $this->assertGreaterThanOrEqual(11.8, $request_stats['1']['stop_diff']);
+        $this->assertLessThanOrEqual(12.5, $request_stats['1']['stop_diff']);
+
+        // Assert R2 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['2']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['2']['start_diff']);
+        // Assert R2 ends around 12.
+        $this->assertGreaterThanOrEqual(11.8, $request_stats['2']['stop_diff']);
+        $this->assertLessThanOrEqual(12.5 + 1, $request_stats['2']['stop_diff']);
+
+        // Assert R3 starts around 5 and not before.
+        $this->assertGreaterThanOrEqual(5, $request_stats['3']['start_diff']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['3']['start_diff']);
+        // Assert R3 ends around 12.
+        $this->assertGreaterThanOrEqual(11.8, $request_stats['3']['stop_diff']);
+        $this->assertLessThanOrEqual(12.5 + 1, $request_stats['3']['stop_diff']);
+
+        // Assert R4 starts around 10 and not before.
+        $this->assertGreaterThanOrEqual(10, $request_stats['4']['start_diff']);
+        $this->assertLessThanOrEqual(10.5, $request_stats['4']['start_diff']);
+        // Assert R4 ends around 12.
+        $this->assertGreaterThanOrEqual(11.8, $request_stats['4']['stop_diff']);
+        $this->assertLessThanOrEqual(12.5 + 1, $request_stats['4']['stop_diff']);
+
+        // Assert R5 starts around 10 and not before.
+        $this->assertGreaterThanOrEqual(10, $request_stats['5']['start_diff']);
+        $this->assertLessThanOrEqual(10.5, $request_stats['5']['start_diff']);
+        // Assert R5 ends around 12.
+        $this->assertGreaterThanOrEqual(11.8, $request_stats['5']['stop_diff']);
+        $this->assertLessThanOrEqual(12.5 + 1, $request_stats['5']['stop_diff']);
+    }
+
+    public function testSetRateLimitPerSecondOnePerSecond()
+    {
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setRateLimit('1/1s');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        $multi_curl->addGet(Test::getTestUrl('8001'));
+        $multi_curl->addGet(Test::getTestUrl('8002'));
+        $multi_curl->addGet(Test::getTestUrl('8003'));
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // Assert R0 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['0']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['0']['start_diff']);
+
+        // Assert R1 starts around 1 and not before.
+        $this->assertGreaterThanOrEqual(1, $request_stats['1']['start_diff']);
+        $this->assertLessThanOrEqual(1.5, $request_stats['1']['start_diff']);
+
+        // Assert R2 starts around 2 and not before.
+        $this->assertGreaterThanOrEqual(2, $request_stats['2']['start_diff']);
+        $this->assertLessThanOrEqual(2.5, $request_stats['2']['start_diff']);
+    }
+
+    public function testSetRateLimitTenPerThirtySecond()
+    {
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
+        $multi_curl->setRateLimit('5/30s');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=15');
+        $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=25');
+        $multi_curl->addGet(Test::getTestUrl('8006') . '?seconds=35');
+        $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=45');
+        $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=20');
+        $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=10');
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // Assert R5 starts around 30 and not before.
+        $this->assertGreaterThanOrEqual(30, $request_stats['5']['start_diff']);
+        $this->assertLessThanOrEqual(30.5, $request_stats['5']['start_diff']);
+    }
+
+    public function testSetRateLimitOnePerOneMinute()
+    {
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
+        $multi_curl->setRateLimit('1/1m');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=30');
+        $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=70');
+        $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=10');
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // Assert R1 starts around 60 and not before.
+        $this->assertGreaterThanOrEqual(60, $request_stats['1']['start_diff']);
+        $this->assertLessThanOrEqual(60.5, $request_stats['1']['start_diff']);
+        // Assert R2 starts around 120 and not before.
+        $this->assertGreaterThanOrEqual(120, $request_stats['2']['start_diff']);
+        $this->assertLessThanOrEqual(120.5, $request_stats['2']['start_diff']);
+    }
+
+    public function testSetRateLimitThreePerOneMinute()
+    {
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
+        $multi_curl->setRateLimit('3/1m');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=20');
+        $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=65');
+        $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=45');
+        $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=10');
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // Assert R3 starts around 60 and not before.
+        $this->assertGreaterThanOrEqual(60, $request_stats['3']['start_diff']);
+        $this->assertLessThanOrEqual(60.5, $request_stats['3']['start_diff']);
+    }
+
+    public function testSetRateLimitThreePerSixtyFiveSeconds()
+    {
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
+        $multi_curl->setRateLimit('3/65s');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=5');
+        $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=5');
+        $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=5');
+        $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=5');
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // Assert R3 starts around 65 and not before.
+        $this->assertGreaterThanOrEqual(65, $request_stats['3']['start_diff']);
+        $this->assertLessThanOrEqual(65.5, $request_stats['3']['start_diff']);
+    }
+
+    public function testSetRateLimitTenPerTwoMinutes()
+    {
+        $request_stats = array(
+            'start' => '',
+            'stop' => '',
+        );
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
+        $multi_curl->setRateLimit('10/2m');
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id]['start'] = microtime(true);
+        });
+        $multi_curl->complete(function ($instance) use (&$request_stats) {
+            $request_stats[$instance->id]['stop'] = microtime(true);
+        });
+
+        for ($i = 0; $i <= 30; $i++) {
+            $multi_curl->addGet(Test::TEST_URL . '?seconds=1');
+        }
+
+        $request_stats['start'] = microtime(true);
+        $multi_curl->start();
+        $request_stats['stop'] = microtime(true);
+
+        foreach ($request_stats as $key => &$value) {
+            if (is_int($key)) {
+                $value['start_diff'] = $value['start'] - $request_stats['start'];
+                $value['stop_diff'] = $value['stop'] - $request_stats['start'];
+            }
+        }
+
+        // 0-9 starts >= 0.
+        // 10-19 starts >= 120.
+        // 20-29 starts >= 240.
+        // 30-39 starts >= 360.
+
+        // Assert R0 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['0']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['0']['start_diff']);
+        // Assert R9 starts around 0 and not before.
+        $this->assertGreaterThanOrEqual(0, $request_stats['9']['start_diff']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['9']['start_diff']);
+
+        // Assert R10 starts around 120 and not before.
+        $this->assertGreaterThanOrEqual(120, $request_stats['10']['start_diff']);
+        $this->assertLessThanOrEqual(120.5, $request_stats['10']['start_diff']);
+        // Assert R19 starts around 120 and not before.
+        $this->assertGreaterThanOrEqual(120, $request_stats['19']['start_diff']);
+        $this->assertLessThanOrEqual(120.5, $request_stats['19']['start_diff']);
+
+        // Assert R20 starts around 240. Allow for some drift.
+        $this->assertGreaterThanOrEqual(239, $request_stats['20']['start_diff']);
+        $this->assertLessThanOrEqual(241, $request_stats['20']['start_diff']);
+        // Assert R29 starts around 240. Allow for some drift.
+        $this->assertGreaterThanOrEqual(239, $request_stats['29']['start_diff']);
+        $this->assertLessThanOrEqual(241, $request_stats['29']['start_diff']);
+
+        // Assert R30 starts around 360. Allow for some drift.
+        $this->assertGreaterThanOrEqual(359, $request_stats['30']['start_diff']);//
+        $this->assertLessThanOrEqual(361, $request_stats['30']['start_diff']);
+    }
 }
