@@ -3456,6 +3456,16 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                     ),
                 ),
                 array(
+                    'rate_limit' => '10/60S',
+                    'expected' => array(
+                        'rate_limit' => '10/60s',
+                        'max_requests' => '10',
+                        'interval' => '60',
+                        'unit' => 's',
+                        'interval_seconds' => '60',
+                    ),
+                ),
+                array(
                     'rate_limit' => '1/m',
                     'expected' => array(
                         'rate_limit' => '1/1m',
@@ -3477,6 +3487,16 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 ),
                 array(
                     'rate_limit' => '5000/60m',
+                    'expected' => array(
+                        'rate_limit' => '5000/60m',
+                        'max_requests' => '5000',
+                        'interval' => '60',
+                        'unit' => 'm',
+                        'interval_seconds' => '3600',
+                    ),
+                ),
+                array(
+                    'rate_limit' => '5000/60M',
                     'expected' => array(
                         'rate_limit' => '5000/60m',
                         'max_requests' => '5000',
@@ -3517,6 +3537,16 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 ),
                 array(
                     'rate_limit' => '100000/24h',
+                    'expected' => array(
+                        'rate_limit' => '100000/24h',
+                        'max_requests' => '100000',
+                        'interval' => '24',
+                        'unit' => 'h',
+                        'interval_seconds' => '86400',
+                    ),
+                ),
+                array(
+                    'rate_limit' => '100000/24H',
                     'expected' => array(
                         'rate_limit' => '100000/24h',
                         'max_requests' => '100000',
