@@ -1144,7 +1144,6 @@ class MultiCurl
     private function waitUntilRequestQuotaAvailable()
     {
         $sleep_until = $this->currentStartTime + $this->intervalSeconds;
-        $sleep_until_relative = $sleep_until - $this->currentStartTime;
         $sleep_seconds = $sleep_until - microtime(true);
 
         // Avoid using time_sleep_until() as it appears to be less precise and not sleep long enough.
