@@ -2,11 +2,29 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}"
 
 find . -type d -mindepth 2 -path "*/dockerfiles/*" | sort --reverse | while read directory; do
-    echo "Running ${directory}" &&
-      pushd "${directory}" &&
-      bash "1_build.sh" &&
-      bash "2_start.sh" &&
-      bash "3_test.sh" &&
-      bash "4_stop.sh" &&
-      popd
+    printf '=%.0s' {1..80}
+    echo -e "\nRunning ${directory}"
+    pushd "${directory}"
+
+    bash "1_build.sh"
+    if [[ $? -ne 0 ]]; then
+        exit 1
+    fi
+
+    bash "2_start.sh"
+    if [[ $? -ne 0 ]]; then
+        exit 1
+    fi
+
+    bash "3_test.sh"
+    if [[ $? -ne 0 ]]; then
+        exit 1
+    fi
+
+    bash "4_stop.sh"
+    if [[ $? -ne 0 ]]; then
+        exit 1
+    fi
+
+    popd
 done
