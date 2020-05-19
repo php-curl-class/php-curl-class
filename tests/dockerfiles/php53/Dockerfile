@@ -44,7 +44,7 @@ RUN mkdir --parents "/tmp/openssl/" && \
 
 RUN mkdir --parents "/usr/src/php/" && \
     curl --silent --show-error --output "php.tar.xz" \
-        "https://secure.php.net/distributions/php-5.3.29.tar.xz" && \
+        "https://www.php.net/distributions/php-5.3.29.tar.xz" && \
     tar --extract --file "php.tar.xz" --directory "/usr/src/php/" --strip-components="1" && \
     rm "php.tar.xz"* && \
     cd "/usr/src/php/" && \
