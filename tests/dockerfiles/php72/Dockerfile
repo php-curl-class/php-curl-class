@@ -5,6 +5,7 @@ RUN apt-get --assume-yes --quiet update
 
 RUN apt-get --assume-yes --quiet install git && \
     apt-get --assume-yes --quiet install libpng-dev && \
+    apt-get --assume-yes --quiet install rsync && \
     apt-get --assume-yes --quiet install zip
 
 RUN curl --silent --show-error "https://getcomposer.org/installer" | php && \
