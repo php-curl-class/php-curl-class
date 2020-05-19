@@ -15,4 +15,4 @@ bash "tests/script.sh"
 END
 )
 set -x
-docker exec --interactive --tty "php70" sh -c "${command}"
+docker exec --tty "php70" sh -c "${command}"
