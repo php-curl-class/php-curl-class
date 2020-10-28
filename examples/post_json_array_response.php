@@ -5,7 +5,7 @@ use Curl\Curl;
 
 // curl \
 //     -X POST \
-//     -H 'Content-Type:application/json' \
+//     -H 'Content-Type: application/json' \
 //     -d '{"id":"1","content":"Hello world!","date":"2015-06-30 19:42:21"}' \
 //     "https://httpbin.org/post"
 
