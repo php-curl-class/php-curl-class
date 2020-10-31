@@ -3910,4 +3910,132 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $curl->disableTimeout();
         $this->assertNull($curl->getOpt(CURLOPT_TIMEOUT));
     }
+
+    public function testSetHeadersAssociativeArray()
+    {
+        $curl = new Curl();
+        $curl->setHeaders(array(
+            ' Key1 ' => ' Value1 ',
+            ' Key2 ' => ' Value2',
+            ' Key3 ' => 'Value3 ',
+            ' Key4 ' => 'Value4',
+            ' Key5' => ' Value5 ',
+            ' Key6' => ' Value6',
+            ' Key7' => 'Value7 ',
+            ' Key8' => 'Value8',
+            'Key9 ' => ' Value9 ',
+            'Key10 ' => ' Value10',
+            'Key11 ' => 'Value11 ',
+            'Key12 ' => 'Value12',
+            'Key13' => ' Value13 ',
+            'Key14' => ' Value14',
+            'Key15' => 'Value15 ',
+            'Key16' => 'Value16',
+        ));
+
+        $this->assertEquals(array(
+            'Key1: Value1',
+            'Key2: Value2',
+            'Key3: Value3',
+            'Key4: Value4',
+            'Key5: Value5',
+            'Key6: Value6',
+            'Key7: Value7',
+            'Key8: Value8',
+            'Key9: Value9',
+            'Key10: Value10',
+            'Key11: Value11',
+            'Key12: Value12',
+            'Key13: Value13',
+            'Key14: Value14',
+            'Key15: Value15',
+            'Key16: Value16',
+        ), $curl->getOpt(CURLOPT_HTTPHEADER));
+
+        $reflector = new \ReflectionClass('\Curl\Curl');
+        $property = $reflector->getProperty('headers');
+        $property->setAccessible(true);
+        $headers = $property->getValue($curl);
+
+        $this->assertEquals('Value1', $headers['Key1']);
+        $this->assertEquals('Value2', $headers['Key2']);
+        $this->assertEquals('Value3', $headers['Key3']);
+        $this->assertEquals('Value4', $headers['Key4']);
+        $this->assertEquals('Value5', $headers['Key5']);
+        $this->assertEquals('Value6', $headers['Key6']);
+        $this->assertEquals('Value7', $headers['Key7']);
+        $this->assertEquals('Value8', $headers['Key8']);
+        $this->assertEquals('Value9', $headers['Key9']);
+        $this->assertEquals('Value10', $headers['Key10']);
+        $this->assertEquals('Value11', $headers['Key11']);
+        $this->assertEquals('Value12', $headers['Key12']);
+        $this->assertEquals('Value13', $headers['Key13']);
+        $this->assertEquals('Value14', $headers['Key14']);
+        $this->assertEquals('Value15', $headers['Key15']);
+        $this->assertEquals('Value16', $headers['Key16']);
+    }
+
+    public function testSetHeadersIndexedArray()
+    {
+        $curl = new Curl();
+        $curl->setHeaders(array(
+            ' Key1 : Value1 ',
+            ' Key2 : Value2',
+            ' Key3 :Value3 ',
+            ' Key4 :Value4',
+            ' Key5: Value5 ',
+            ' Key6: Value6',
+            ' Key7:Value7 ',
+            ' Key8:Value8',
+            'Key9 : Value9 ',
+            'Key10 : Value10',
+            'Key11 :Value11 ',
+            'Key12 :Value12',
+            'Key13: Value13 ',
+            'Key14: Value14',
+            'Key15:Value15 ',
+            'Key16:Value16',
+        ));
+
+        $this->assertEquals(array(
+            'Key1: Value1',
+            'Key2: Value2',
+            'Key3: Value3',
+            'Key4: Value4',
+            'Key5: Value5',
+            'Key6: Value6',
+            'Key7: Value7',
+            'Key8: Value8',
+            'Key9: Value9',
+            'Key10: Value10',
+            'Key11: Value11',
+            'Key12: Value12',
+            'Key13: Value13',
+            'Key14: Value14',
+            'Key15: Value15',
+            'Key16: Value16',
+        ), $curl->getOpt(CURLOPT_HTTPHEADER));
+
+        $reflector = new \ReflectionClass('\Curl\Curl');
+        $property = $reflector->getProperty('headers');
+        $property->setAccessible(true);
+        $headers = $property->getValue($curl);
+
+        $this->assertEquals('Value1', $headers['Key1']);
+        $this->assertEquals('Value2', $headers['Key2']);
+        $this->assertEquals('Value3', $headers['Key3']);
+        $this->assertEquals('Value4', $headers['Key4']);
+        $this->assertEquals('Value5', $headers['Key5']);
+        $this->assertEquals('Value6', $headers['Key6']);
+        $this->assertEquals('Value7', $headers['Key7']);
+        $this->assertEquals('Value8', $headers['Key8']);
+        $this->assertEquals('Value9', $headers['Key9']);
+        $this->assertEquals('Value10', $headers['Key10']);
+        $this->assertEquals('Value11', $headers['Key11']);
+        $this->assertEquals('Value12', $headers['Key12']);
+        $this->assertEquals('Value13', $headers['Key13']);
+        $this->assertEquals('Value14', $headers['Key14']);
+        $this->assertEquals('Value15', $headers['Key15']);
+        $this->assertEquals('Value16', $headers['Key16']);
+    }
 }
