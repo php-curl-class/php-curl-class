@@ -728,6 +728,7 @@ class MultiCurl
      *
      * @access public
      * @param  $rate_limit string (e.g. "60/1m").
+     * @throws \UnexpectedValueException
      */
     public function setRateLimit($rate_limit)
     {
@@ -876,6 +877,7 @@ class MultiCurl
      * Start
      *
      * @access public
+     * @throws \ErrorException
      */
     public function start()
     {
