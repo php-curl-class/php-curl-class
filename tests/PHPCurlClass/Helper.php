@@ -138,6 +138,14 @@ function remove_file_from_server($uploaded_file_path) {
     assert(file_exists($uploaded_file_path) === false);
 }
 
+function get_curl_property_value($instance, $property_name)
+{
+    $reflector = new \ReflectionClass('\Curl\Curl');
+    $property = $reflector->getProperty($property_name);
+    $property->setAccessible(true);
+    return $property->getValue($instance);
+}
+
 function get_multi_curl_property_value($instance, $property_name)
 {
     $reflector = new \ReflectionClass('\Curl\MultiCurl');

@@ -4609,11 +4609,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         ));
         $multi_curl->addGet(Test::TEST_URL);
 
-        $reflector = new \ReflectionClass('\Curl\MultiCurl');
-        $property = $reflector->getProperty('curls');
-        $property->setAccessible(true);
-        $curls = $property->getValue($multi_curl);
-
+        $curls = \Helper\get_multi_curl_property_value($multi_curl, 'curls');
         foreach ($curls as $curl) {
             $this->assertEquals(array(
                 'Key1: Value1',
@@ -4634,11 +4630,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 'Key16: Value16',
             ), $curl->getOpt(CURLOPT_HTTPHEADER));
 
-            $reflector = new \ReflectionClass('\Curl\Curl');
-            $property = $reflector->getProperty('headers');
-            $property->setAccessible(true);
-            $headers = $property->getValue($curl);
-
+            $headers = \Helper\get_curl_property_value($curl, 'headers');
             $this->assertEquals('Value1', $headers['Key1']);
             $this->assertEquals('Value2', $headers['Key2']);
             $this->assertEquals('Value3', $headers['Key3']);
@@ -4681,11 +4673,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         ));
         $multi_curl->addGet(Test::TEST_URL);
 
-        $reflector = new \ReflectionClass('\Curl\MultiCurl');
-        $property = $reflector->getProperty('curls');
-        $property->setAccessible(true);
-        $curls = $property->getValue($multi_curl);
-
+        $curls = \Helper\get_multi_curl_property_value($multi_curl, 'curls');
         foreach ($curls as $curl) {
             $this->assertEquals(array(
                 'Key1: Value1',
@@ -4706,11 +4694,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 'Key16: Value16',
             ), $curl->getOpt(CURLOPT_HTTPHEADER));
 
-            $reflector = new \ReflectionClass('\Curl\Curl');
-            $property = $reflector->getProperty('headers');
-            $property->setAccessible(true);
-            $headers = $property->getValue($curl);
-
+            $headers = \Helper\get_curl_property_value($curl, 'headers');
             $this->assertEquals('Value1', $headers['Key1']);
             $this->assertEquals('Value2', $headers['Key2']);
             $this->assertEquals('Value3', $headers['Key3']);

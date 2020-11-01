@@ -1198,11 +1198,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $curl = new Curl();
         $curl->setHeader('Content-Type', $content_type);
 
-        $reflector = new \ReflectionClass('\Curl\Curl');
-        $property = $reflector->getProperty('headers');
-        $property->setAccessible(true);
-        $headers = $property->getValue($curl);
-
+        $headers = \Helper\get_curl_property_value($curl, 'headers');
         $this->assertEquals($content_type, $headers['Content-Type']);
         $this->assertEquals($content_type, $headers['content-type']);
         $this->assertEquals($content_type, $headers['CONTENT-TYPE']);
@@ -1568,10 +1564,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             'text/x-json',
         );
 
-        $class = new \ReflectionClass('\Curl\Curl');
-        $property = $class->getProperty('jsonPattern');
-        $property->setAccessible(true);
-        $json_pattern = $property->getValue(new Curl);
+        $curl = new Curl();
+        $json_pattern = \Helper\get_curl_property_value($curl, 'jsonPattern');
 
         foreach ($json_content_types as $json_content_type) {
             $message = '"' . $json_content_type . '" does not match pattern ' . $json_pattern;
@@ -2713,10 +2707,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             'text/xml',
         );
 
-        $class = new \ReflectionClass('\Curl\Curl');
-        $property = $class->getProperty('xmlPattern');
-        $property->setAccessible(true);
-        $xml_pattern = $property->getValue(new Curl);
+        $curl = new Curl();
+        $xml_pattern = \Helper\get_curl_property_value($curl, 'xmlPattern');
 
         foreach ($xml_content_types as $xml_content_type) {
             $message = '"' . $xml_content_type . '" does not match pattern ' . $xml_pattern;
@@ -3952,11 +3944,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             'Key16: Value16',
         ), $curl->getOpt(CURLOPT_HTTPHEADER));
 
-        $reflector = new \ReflectionClass('\Curl\Curl');
-        $property = $reflector->getProperty('headers');
-        $property->setAccessible(true);
-        $headers = $property->getValue($curl);
-
+        $headers = \Helper\get_curl_property_value($curl, 'headers');
         $this->assertEquals('Value1', $headers['Key1']);
         $this->assertEquals('Value2', $headers['Key2']);
         $this->assertEquals('Value3', $headers['Key3']);
@@ -4016,11 +4004,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             'Key16: Value16',
         ), $curl->getOpt(CURLOPT_HTTPHEADER));
 
-        $reflector = new \ReflectionClass('\Curl\Curl');
-        $property = $reflector->getProperty('headers');
-        $property->setAccessible(true);
-        $headers = $property->getValue($curl);
-
+        $headers = \Helper\get_curl_property_value($curl, 'headers');
         $this->assertEquals('Value1', $headers['Key1']);
         $this->assertEquals('Value2', $headers['Key2']);
         $this->assertEquals('Value3', $headers['Key3']);
