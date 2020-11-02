@@ -7,7 +7,7 @@ use Curl\Decoder;
 
 class Curl
 {
-    const VERSION = '8.8.0';
+    const VERSION = '8.9.0';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
@@ -965,14 +965,26 @@ class Curl
      */
     public function setHeaders($headers)
     {
-        foreach ($headers as $key => $value) {
-            $this->headers[$key] = $value;
+        if (ArrayUtil::isArrayAssoc($headers)) {
+            foreach ($headers as $key => $value) {
+                $key = trim($key);
+                $value = trim($value);
+                $this->headers[$key] = $value;
+            }
+        } else {
+            foreach ($headers as $header) {
+                list($key, $value) = explode(':', $header, 2);
+                $key = trim($key);
+                $value = trim($value);
+                $this->headers[$key] = $value;
+            }
         }
 
         $headers = array();
         foreach ($this->headers as $key => $value) {
             $headers[] = $key . ': ' . $value;
         }
+
         $this->setOpt(CURLOPT_HTTPHEADER, $headers);
     }
 

@@ -563,9 +563,21 @@ class MultiCurl
      */
     public function setHeaders($headers)
     {
-        foreach ($headers as $key => $value) {
-            $this->headers[$key] = $value;
+        if (ArrayUtil::isArrayAssoc($headers)) {
+            foreach ($headers as $key => $value) {
+                $key = trim($key);
+                $value = trim($value);
+                $this->headers[$key] = $value;
+            }
+        } else {
+            foreach ($headers as $header) {
+                list($key, $value) = explode(':', $header, 2);
+                $key = trim($key);
+                $value = trim($value);
+                $this->headers[$key] = $value;
+            }
         }
+
         $this->updateHeaders();
     }
 
@@ -728,6 +740,7 @@ class MultiCurl
      *
      * @access public
      * @param  $rate_limit string (e.g. "60/1m").
+     * @throws \UnexpectedValueException
      */
     public function setRateLimit($rate_limit)
     {
@@ -876,6 +889,7 @@ class MultiCurl
      * Start
      *
      * @access public
+     * @throws \ErrorException
      */
     public function start()
     {

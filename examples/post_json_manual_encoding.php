@@ -5,7 +5,8 @@ use Curl\Curl;
 
 // curl \
 //     -X POST \
-//     -d "{"id":"1","content":"Hello world!","date":"2015-06-30 19:42:21"}" \
+//     -H 'Content-Type: application/json' \
+//     -d '{"id":"1","content":"Hello world!","date":"2015-06-30 19:42:21"}' \
 //     "https://httpbin.org/post"
 
 $data = json_encode(array(

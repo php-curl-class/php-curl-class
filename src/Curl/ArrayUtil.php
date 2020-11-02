@@ -2,6 +2,8 @@
 
 namespace Curl;
 
+use Curl\CaseInsensitiveArray;
+
 class ArrayUtil
 {
     /**
@@ -14,7 +16,10 @@ class ArrayUtil
      */
     public static function isArrayAssoc($array)
     {
-        return (bool)count(array_filter(array_keys($array), 'is_string'));
+        return (
+            $array instanceof CaseInsensitiveArray ||
+            (bool)count(array_filter(array_keys($array), 'is_string'))
+        );
     }
 
     /**
