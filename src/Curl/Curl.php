@@ -333,6 +333,106 @@ class Curl
     }
 
     /**
+     * Fast download
+     *
+     * @access public
+     * @param  $url
+     * @param  $filename
+     * @param  $connections
+     *
+     * @return boolean
+     */
+    public function fastDownload($url, $filename, $connections = 4) {
+        // First we need to retrive the 'Content-Length' header.
+        // Use GET because not all hosts support HEAD requests.
+        $this->setOpts([
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_NOBODY        => true,
+            CURLOPT_HEADER        => true,
+            CURLOPT_ENCODING      => '',
+        ]);
+        $this->setUrl($url);
+        $this->exec();
+
+        $content_length = isset($this->responseHeaders['Content-Length']) ? $this->responseHeaders['Content-Length'] : null;
+
+        // If content length header is missing, use the normal download.
+        if (!$content_length) {
+            $this->download($url, $filename);
+            return;
+        }
+
+        // Try to divide chunk_size equally.
+        $chunkSize = ceil($content_length / $connections);
+
+        // First bytes.
+        $offset = 0;
+        $nextChunk = $chunkSize;
+
+        // We need this later.
+        $fileParts = [];
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setConcurrency($connections);
+
+        $multi_curl->error(function ($instance) {
+            return false;
+        });
+
+        for ($i = 1; $i <= $connections; $i++) {
+            // If last chunk then no need to supply it.
+            // Range starts with 0, so subtract 1.
+            $nextChunk = $i == $connections ? '' : $nextChunk - 1;
+
+            // Create part file.
+            $fpath = "$filename.part$i";
+            if (is_file($fpath)) {
+                unlink($fpath);
+            }
+            $fp = fopen($fpath, 'w');
+
+            // Track all fileparts names; we need this later.
+            $fileParts[] = $fpath;
+
+            $curl = new Curl();
+            $curl->setOpt(CURLOPT_ENCODING, '');
+            $curl->setRange("$offset-$nextChunk");
+            $curl->setFile($fp);
+            $curl->disableTimeout(); // otherwise download may fail.
+            $curl->setUrl($url);
+
+            $curl->complete(function() use ($fp) {
+                fclose($fp);
+            });
+
+            $multi_curl->addCurl($curl);
+
+            if ($i != $connections) {
+                $offset = $nextChunk + 1; // Add 1 to match offset.
+                $nextChunk = $nextChunk + $chunkSize;
+            }
+        }
+
+        // let the magic begin.
+        $multi_curl->start();
+
+        // Concatenate chunks to single.
+        if (is_file($filename)) {
+            unlink($filename);
+        }
+        $mainfp = fopen($filename, 'w');
+        foreach ($fileParts as $part) {
+            $fp = fopen($part, 'r');
+            stream_copy_to_stream($fp, $mainfp);
+            fclose($fp);
+            unlink($part);
+        }
+        fclose($mainfp);
+
+        return true;
+    }
+
+    /**
      * Error
      *
      * @access public
