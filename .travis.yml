@@ -27,6 +27,8 @@ matrix:
       dist: trusty
     - php: 7.4
       dist: xenial
+    - php: 8.0
+      dist: xenial
     - php: hhvm
       dist: trusty
     - php: hhvm-nightly
