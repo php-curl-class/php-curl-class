@@ -3,7 +3,7 @@
 require dirname(__FILE__) . '/../src/Curl/Curl.php';
 
 $current_version = Curl\Curl::VERSION;
-list($major, $_, $_) = explode('.', $current_version);
+list($major, $_, $__) = explode('.', $current_version);
 $new_version = implode('.', array((string)((int)$major += 1), '0', '0'));
 
 foreach (array(
