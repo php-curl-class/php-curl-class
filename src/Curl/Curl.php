@@ -10,7 +10,7 @@ class Curl
     const VERSION = '8.9.0';
     const DEFAULT_TIMEOUT = 30;
 
-    public $curl;
+    public $curl = null;
     public $id = null;
 
     public $error = false;
@@ -211,8 +211,9 @@ class Curl
      */
     public function close()
     {
-        if (is_resource($this->curl)) {
+        if ($this->curl !== null) {
             curl_close($this->curl);
+            $this->curl = null;
         }
         $this->options = null;
         $this->jsonDecoder = null;
@@ -1457,7 +1458,7 @@ class Curl
      */
     public function reset()
     {
-        if (function_exists('curl_reset') && is_resource($this->curl)) {
+        if (function_exists('curl_reset') && $this->curl !== null) {
             curl_reset($this->curl);
         } else {
             $this->curl = curl_init();

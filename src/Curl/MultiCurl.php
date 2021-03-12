@@ -7,7 +7,7 @@ use Curl\ArrayUtil;
 class MultiCurl
 {
     public $baseUrl = null;
-    public $multiCurl;
+    public $multiCurl = null;
 
     private $curls = array();
     private $activeCurls = array();
@@ -370,8 +370,9 @@ class MultiCurl
             $curl->close();
         }
 
-        if (is_resource($this->multiCurl)) {
+        if ($this->multiCurl !== null) {
             curl_multi_close($this->multiCurl);
+            $this->multiCurl = null;
         }
     }
 
