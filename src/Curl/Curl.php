@@ -335,14 +335,14 @@ class Curl
     /**
      * Fast download
      *
-     * @access public
+     * @access private
      * @param  $url
      * @param  $filename
      * @param  $connections
      *
      * @return boolean
      */
-    public function fastDownload($url, $filename, $connections = 4) {
+    public function _fastDownload($url, $filename, $connections = 4) {
         // First we need to retrive the 'Content-Length' header.
         // Use GET because not all hosts support HEAD requests.
         $this->setOpts([
