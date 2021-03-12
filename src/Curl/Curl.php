@@ -354,12 +354,12 @@ class Curl
         $this->setUrl($url);
         $this->exec();
 
-        $content_length = isset($this->responseHeaders['Content-Length']) ? $this->responseHeaders['Content-Length'] : null;
+        $content_length = isset($this->responseHeaders['Content-Length']) ?
+            $this->responseHeaders['Content-Length'] : null;
 
         // If content length header is missing, use the normal download.
         if (!$content_length) {
-            $this->download($url, $filename);
-            return;
+            return $this->download($url, $filename);
         }
 
         // Try to divide chunk_size equally.
@@ -370,7 +370,7 @@ class Curl
         $nextChunk = $chunkSize;
 
         // We need this later.
-        $fileParts = [];
+        $file_parts = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setConcurrency($connections);
@@ -392,7 +392,7 @@ class Curl
             $fp = fopen($fpath, 'w');
 
             // Track all fileparts names; we need this later.
-            $fileParts[] = $fpath;
+            $file_parts[] = $fpath;
 
             $curl = new Curl();
             $curl->setOpt(CURLOPT_ENCODING, '');
@@ -401,7 +401,7 @@ class Curl
             $curl->disableTimeout(); // otherwise download may fail.
             $curl->setUrl($url);
 
-            $curl->complete(function() use ($fp) {
+            $curl->complete(function () use ($fp) {
                 fclose($fp);
             });
 
@@ -421,7 +421,7 @@ class Curl
             unlink($filename);
         }
         $mainfp = fopen($filename, 'w');
-        foreach ($fileParts as $part) {
+        foreach ($file_parts as $part) {
             $fp = fopen($part, 'r');
             stream_copy_to_stream($fp, $mainfp);
             fclose($fp);
