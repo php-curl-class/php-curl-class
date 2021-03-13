@@ -1131,13 +1131,14 @@ class MultiCurl
         if ($this->rateLimitEnabled) {
             // Determine if the limit of requests per interval has been reached.
             if ($this->currentRequestCount >= $this->maxRequests) {
-                $elapsed_seconds = microtime(true) - $this->currentStartTime;
+                $micro_time = microtime(true);
+                $elapsed_seconds = $micro_time - $this->currentStartTime;
                 if ($elapsed_seconds <= $this->intervalSeconds) {
                     $this->rateLimitReached = true;
                     return false;
                 } elseif ($this->rateLimitReached) {
                     $this->rateLimitReached = false;
-                    $this->currentStartTime = microtime(true);
+                    $this->currentStartTime = $micro_time;
                     $this->currentRequestCount = 0;
                 }
             }
