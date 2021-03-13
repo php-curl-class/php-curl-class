@@ -382,7 +382,7 @@ class Curl
         for ($i = 1; $i <= $connections; $i++) {
             // If last chunk then no need to supply it.
             // Range starts with 0, so subtract 1.
-            $nextChunk = $i == $connections ? '' : $nextChunk - 1;
+            $nextChunk = $i === $connections ? '' : $nextChunk - 1;
 
             // Create part file.
             $fpath = "$filename.part$i";
