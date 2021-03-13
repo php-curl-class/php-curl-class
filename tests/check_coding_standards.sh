@@ -19,6 +19,10 @@ fi
 find_invalid_indentation() {
     filename="${1}"
     script=$(cat <<'EOF'
+    $file_name_color   = '35'; // 35 = Magenta.
+    $separator_color   = '36'; // 36 = Cyan.
+    $line_number_color = '32'; // 32 = Green.
+
     $filename = $argv['1'];
     $lines = explode("\n", file_get_contents($filename));
     $line_number = 0;
@@ -35,7 +39,10 @@ find_invalid_indentation() {
             }
             $add_count = 4 - $remainder;
             $remove_count = $remainder;
-            echo 'Invalid indentation found in ' . $filename . ':' . $line_number .
+            echo 'Invalid indentation found in ' .
+                "\033[" . $file_name_color   . 'm' . $filename    . "\033[0m" .
+                "\033[" . $separator_color   . 'm' . ':'          . "\033[0m" .
+                "\033[" . $line_number_color . 'm' . $line_number . "\033[0m" .
                 ' (' . $leading_space_count . ':+' . $add_count . '/-' . $remove_count . ')' . "\n";
         }
     }
