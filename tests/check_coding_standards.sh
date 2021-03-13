@@ -27,8 +27,10 @@ find_invalid_indentation() {
         $leading_space_count = strspn($line, ' ');
         $remainder = $leading_space_count % 4;
         if ($remainder !== 0) {
+            $trimmed_line = ltrim($line);
+
             // Allow doc comments.
-            if (substr(ltrim($line), 0, 1) === '*') {
+            if (substr($trimmed_line, 0, 1) === '*') {
                 continue;
             }
             $add_count = 4 - $remainder;
