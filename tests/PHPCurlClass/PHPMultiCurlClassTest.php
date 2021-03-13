@@ -4362,7 +4362,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertLessThanOrEqual(2.5, $request_stats['2']['start_diff']);
     }
 
-    public function testSetRateLimitTenPerThirtySecond()
+    public function testSetRateLimitFivePerThirtySecond()
     {
         $request_stats = array(
             'start' => '',
