@@ -37,6 +37,12 @@ find_invalid_indentation() {
             if (substr($trimmed_line, 0, 1) === '*') {
                 continue;
             }
+
+            // Allow method chaining.
+            if (substr($trimmed_line, 0, 2) === '->') {
+                continue;
+            }
+
             $add_count = 4 - $remainder;
             $remove_count = $remainder;
             echo 'Invalid indentation found in ' .
