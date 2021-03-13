@@ -153,3 +153,17 @@ function get_multi_curl_property_value($instance, $property_name)
     $property->setAccessible(true);
     return $property->getValue($instance);
 }
+
+function get_request_stats($start, $stop, $request_stats)
+{
+    foreach ($request_stats as $key => &$value) {
+        $value['relative_start'] = sprintf('%.6f', round($value['start'] - $start, 6));
+        $value['relative_stop'] = sprintf('%.6f', round($value['stop'] - $start, 6));
+        $value['duration'] = (string)round($value['stop'] - $value['start'], 6);
+
+        unset($value['start']);
+        unset($value['stop']);
+    }
+
+    return $request_stats;
+}
