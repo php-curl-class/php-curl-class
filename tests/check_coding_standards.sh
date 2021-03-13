@@ -122,9 +122,16 @@ if [[ ! -z "${is_null}" ]]; then
     ((errors++))
 fi
 
+# Determine which phpcs to use.
+if [[ -f "../vendor/bin/phpcs" ]]; then
+    phpcs_to_use="../vendor/bin/phpcs"
+else
+    phpcs_to_use="phpcs"
+fi
+
 # Detect coding standard violations.
-phpcs --version
-phpcs \
+"${phpcs_to_use}" --version
+"${phpcs_to_use}" \
     --extensions="php" \
     --ignore="*/vendor/*" \
     --standard="ruleset.xml" \
