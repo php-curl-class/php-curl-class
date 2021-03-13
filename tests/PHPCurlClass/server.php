@@ -285,7 +285,6 @@ if ($test === 'http_basic_auth') {
     echo '  "loading": "';
     while (true) {
         echo '.';
-        ob_flush();
         flush();
         sleep(1);
         $elapsed = microtime(true) - $start;
