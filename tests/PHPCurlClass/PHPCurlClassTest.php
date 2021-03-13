@@ -3020,6 +3020,18 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse(is_resource($curl->curl));
     }
 
+    public function testCookieJarAfterClose()
+    {
+        $cookie_jar = tempnam('/tmp', 'php-curl-class.');
+
+        $curl = new Curl();
+        $curl->setCookieJar($cookie_jar);
+        $curl->get(Test::TEST_URL);
+        $curl->close();
+        $cookies = file_get_contents($cookie_jar);
+        $this->assertNotEmpty($cookies);
+    }
+
     /**
      * @expectedException \PHPUnit\Framework\Error\Warning
      */
