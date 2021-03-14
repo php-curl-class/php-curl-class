@@ -11,6 +11,7 @@ jobs:
     strategy:
       matrix:
         php: ['8.0']
+    name: PHP ${{ matrix.php }}
 
     steps:
       - name: set up php
