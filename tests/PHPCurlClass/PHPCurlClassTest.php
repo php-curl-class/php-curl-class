@@ -3300,6 +3300,12 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             $this->markTestSkipped();
         }
 
+        // Skip this test on 8.0 and later:
+        //   "ValueError: curl_setopt(): cURL option must not contain any null bytes"
+        if (version_compare(PHP_VERSION, '8.0.0', '>=')) {
+            $this->markTestSkipped();
+        }
+
         $option = CURLOPT_ENCODING;
         $value = 'gzip';
         $null = chr(0);
