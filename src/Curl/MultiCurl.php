@@ -1165,7 +1165,15 @@ class MultiCurl
         // Avoid using time_sleep_until() as it appears to be less precise and not sleep long enough.
         usleep($sleep_seconds * 1000000);
 
+        // Ensure that enough time has passed as usleep() may not have waited long enough.
         $this->currentStartTime = microtime(true);
+        if ($this->currentStartTime < $sleep_until) {
+            do {
+                usleep(1000000 / 4);
+                $this->currentStartTime = microtime(true);
+            } while ($this->currentStartTime < $sleep_until);
+        }
+
         $this->currentRequestCount = 0;
     }
 }
