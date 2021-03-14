@@ -14,8 +14,8 @@ source "check_syntax.sh"
 export PHP_CURL_CLASS_TEST_MODE_ENABLED="yes"
 
 # Determine which phpunit to use.
-if [[ -f "vendor/bin/phpunit" ]]; then
-    phpunit_to_use="vendor/bin/phpunit"
+if [[ -f "../vendor/bin/phpunit" ]]; then
+    phpunit_to_use="../vendor/bin/phpunit"
 else
     phpunit_to_use="phpunit"
 fi
