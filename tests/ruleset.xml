@@ -5,6 +5,9 @@
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
         <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine" />
         <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.UseOneParamPerLine" />
+
+        <!-- TODO: Remove the following exclusion when Curl::_fastDownload() is renamed to Curl::fastDownload(). -->
+        <exclude name="PSR2.Methods.MethodDeclaration.Underscore" />
     </rule>
 
     <!-- Disable "No PHP code was found in this file" for symlinks. -->
