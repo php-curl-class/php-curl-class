@@ -1,0 +1,17 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.0']
+    steps:
+      - run: |
+          bash tests/before_script.sh
+          bash tests/script.sh
