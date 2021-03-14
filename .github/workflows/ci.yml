@@ -11,7 +11,16 @@ jobs:
     strategy:
       matrix:
         php: ['8.0']
+
     steps:
+      - name: set up php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+
+      - name: checkout
+        uses: actions/checkout@v2
+
       - run: |
           bash tests/before_script.sh
           bash tests/script.sh
