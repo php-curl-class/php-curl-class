@@ -29,3 +29,8 @@ View only the source log and code changes between releases:
 
     $ git log 7.4.0...8.0.0 "src/"
     $ git diff 7.4.0...8.0.0 "src/"
+
+View only the source log and code changes between a release and the current checked-out commit:
+
+    $ git log 8.0.0...head "src/"
+    $ git diff 8.0.0...head "src/"
