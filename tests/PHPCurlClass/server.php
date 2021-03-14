@@ -283,11 +283,19 @@ if ($test === 'http_basic_auth') {
     $start = microtime(true);
     echo '{' . "\n";
     echo '  "loading": "';
+
+    $dots_printed = 0;
     while (true) {
-        echo '.';
-        flush();
-        sleep(1);
+        usleep(1000000 / 100);
+
         $elapsed = microtime(true) - $start;
+        $dots_to_print = floor($elapsed) - $dots_printed;
+
+        if ($dots_to_print) {
+            echo str_repeat('.', $dots_to_print);
+            $dots_printed += $dots_to_print;
+        }
+
         if ($elapsed >= $unsafe_seconds) {
             break;
         }
