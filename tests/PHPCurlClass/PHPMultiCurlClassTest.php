@@ -2977,9 +2977,9 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl = new MultiCurl();
         $multi_curl->addGet(Test::TEST_URL);
         $multi_curl->start();
-        $this->assertTrue(is_resource($multi_curl->multiCurl));
+        $this->assertNotNull($multi_curl->multiCurl);
         $multi_curl->close();
-        $this->assertFalse(is_resource($multi_curl->multiCurl));
+        $this->assertNull($multi_curl->multiCurl);
     }
 
     public function testCookieJarAfterClose()
