@@ -579,7 +579,11 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             'foo' => 'bar',
         ));
 
-        $this->assertEquals('100-continue', $test->curl->requestHeaders['Expect']);
+        // Check the "expect" header value only when it is provided in the request.
+        if (isset($test->curl->requestHeaders['Expect'])) {
+            $this->assertEquals('100-continue', $test->curl->requestHeaders['Expect']);
+        }
+
         $this->assertStringStartsWith('multipart/form-data; boundary=', $test->curl->requestHeaders['Content-Type']);
 
         $expected_contains = "\r\n" .
@@ -1327,7 +1331,12 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->server('server', 'POST', array(
             'image' => '@' . $file_path,
         ));
-        $this->assertEquals('100-continue', $test->curl->requestHeaders['Expect']);
+
+        // Check the "expect" header value only when it is provided in the request.
+        if (isset($test->curl->requestHeaders['Expect'])) {
+            $this->assertEquals('100-continue', $test->curl->requestHeaders['Expect']);
+        }
+
         preg_match('/^multipart\/form-data; boundary=/', $test->curl->requestHeaders['Content-Type'], $content_type);
         $this->assertTrue(!empty($content_type));
 
@@ -1347,7 +1356,12 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->server('server', 'POST', array(
             'image' => new \CURLFile($file_path),
         ));
-        $this->assertEquals('100-continue', $test->curl->requestHeaders['Expect']);
+
+        // Check the "expect" header value only when it is provided in the request.
+        if (isset($test->curl->requestHeaders['Expect'])) {
+            $this->assertEquals('100-continue', $test->curl->requestHeaders['Expect']);
+        }
+
         preg_match('/^multipart\/form-data; boundary=/', $test->curl->requestHeaders['Content-Type'], $content_type);
         $this->assertTrue(!empty($content_type));
 
