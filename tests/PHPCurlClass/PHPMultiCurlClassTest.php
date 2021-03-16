@@ -3840,39 +3840,39 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
 
         // Assert R0 starts around 0 and not before.
-        $this->assertGreaterThanOrEqual(0, $request_stats['0']['relative_start']);
-        $this->assertLessThanOrEqual(0.5, $request_stats['0']['relative_start']);
+        $this->assertGreaterThanOrEqual(0, $request_stats['0']['relative_start'], $request_stats['message']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['0']['relative_start'], $request_stats['message']);
         // Assert R0 ends around 2.
-        $this->assertGreaterThanOrEqual(1.8, $request_stats['0']['relative_stop']);
-        $this->assertLessThanOrEqual(2.5, $request_stats['0']['relative_stop']);
+        $this->assertGreaterThanOrEqual(1.8, $request_stats['0']['relative_stop'], $request_stats['message']);
+        $this->assertLessThanOrEqual(2.5, $request_stats['0']['relative_stop'], $request_stats['message']);
 
         // Assert R1 starts around 0 and not before.
-        $this->assertGreaterThanOrEqual(0, $request_stats['1']['relative_start']);
-        $this->assertLessThanOrEqual(0.5, $request_stats['1']['relative_start']);
+        $this->assertGreaterThanOrEqual(0, $request_stats['1']['relative_start'], $request_stats['message']);
+        $this->assertLessThanOrEqual(0.5, $request_stats['1']['relative_start'], $request_stats['message']);
         // Assert R1 ends around 9.
-        $this->assertGreaterThanOrEqual(8.8, $request_stats['1']['relative_stop']);
-        $this->assertLessThanOrEqual(9.5, $request_stats['1']['relative_stop']);
+        $this->assertGreaterThanOrEqual(8.8, $request_stats['1']['relative_stop'], $request_stats['message']);
+        $this->assertLessThanOrEqual(9.5, $request_stats['1']['relative_stop'], $request_stats['message']);
 
         // Assert R2 starts around 5 and not before.
-        $this->assertGreaterThanOrEqual(5, $request_stats['2']['relative_start']);
-        $this->assertLessThanOrEqual(5.5, $request_stats['2']['relative_start']);
+        $this->assertGreaterThanOrEqual(5, $request_stats['2']['relative_start'], $request_stats['message']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['2']['relative_start'], $request_stats['message']);
         // Assert R2 ends around 8.
-        $this->assertGreaterThanOrEqual(7.8, $request_stats['2']['relative_stop']);
-        $this->assertLessThanOrEqual(8.5 + 1, $request_stats['2']['relative_stop']);
+        $this->assertGreaterThanOrEqual(7.8, $request_stats['2']['relative_stop'], $request_stats['message']);
+        $this->assertLessThanOrEqual(8.5 + 1, $request_stats['2']['relative_stop'], $request_stats['message']);
 
         // Assert R3 starts around 5 and not before.
-        $this->assertGreaterThanOrEqual(5, $request_stats['3']['relative_start']);
-        $this->assertLessThanOrEqual(5.5, $request_stats['3']['relative_start']);
+        $this->assertGreaterThanOrEqual(5, $request_stats['3']['relative_start'], $request_stats['message']);
+        $this->assertLessThanOrEqual(5.5, $request_stats['3']['relative_start'], $request_stats['message']);
         // Assert R3 ends around 11.
-        $this->assertGreaterThanOrEqual(10.8, $request_stats['3']['relative_stop']);
-        $this->assertLessThanOrEqual(11.5 + 1, $request_stats['3']['relative_stop']);
+        $this->assertGreaterThanOrEqual(10.8, $request_stats['3']['relative_stop'], $request_stats['message']);
+        $this->assertLessThanOrEqual(11.5 + 1, $request_stats['3']['relative_stop'], $request_stats['message']);
 
         // Assert R4 starts around 10 and not before.
-        $this->assertGreaterThanOrEqual(10, $request_stats['4']['relative_start']);
-        $this->assertLessThanOrEqual(10.5, $request_stats['4']['relative_start']);
+        $this->assertGreaterThanOrEqual(10, $request_stats['4']['relative_start'], $request_stats['message']);
+        $this->assertLessThanOrEqual(10.5, $request_stats['4']['relative_start'], $request_stats['message']);
         // Assert R4 ends around 11.
-        $this->assertGreaterThanOrEqual(10.8, $request_stats['4']['relative_stop']);
-        $this->assertLessThanOrEqual(11.5 + 1, $request_stats['4']['relative_stop']);
+        $this->assertGreaterThanOrEqual(10.8, $request_stats['4']['relative_stop'], $request_stats['message']);
+        $this->assertLessThanOrEqual(11.5 + 1, $request_stats['4']['relative_stop'], $request_stats['message']);
     }
 
     public function testSetRateLimitPerSecond5()
