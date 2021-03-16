@@ -1161,6 +1161,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
     public function testTimeout()
     {
         $test = new Test();
+        $test->curl->verbose();
         $test->curl->setTimeout(10);
         $test->server('timeout', 'GET', array(
             'seconds' => '5',
@@ -1172,6 +1173,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             'http error message: ' . $test->curl->httpErrorMessage . "\n" .
             'error code: ' . $test->curl->errorCode . "\n" .
             'curl error code: ' . $test->curl->curlErrorCode . "\n" .
+            'raw response: ' . $this->rawResponse . "\n" .
             '';
 
         $this->assertFalse($test->curl->error, $message);
