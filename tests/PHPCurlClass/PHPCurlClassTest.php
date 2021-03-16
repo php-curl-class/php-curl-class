@@ -1173,7 +1173,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             'http error message: ' . $test->curl->httpErrorMessage . "\n" .
             'error code: ' . $test->curl->errorCode . "\n" .
             'curl error code: ' . $test->curl->curlErrorCode . "\n" .
-            'raw response: ' . $this->rawResponse . "\n" .
+            'raw response: ' . $test->curl->rawResponse . "\n" .
             '';
 
         $this->assertFalse($test->curl->error, $message);
