@@ -1133,7 +1133,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testDefaultTimeout()
     {
-        $test = new Test();
+        $test = new Test('8001');
         $test->server('timeout', 'GET', array(
             'seconds' => '31',
         ));
@@ -1146,7 +1146,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testTimeoutError()
     {
-        $test = new Test();
+        $test = new Test('8002');
         $test->curl->setTimeout(5);
         $test->server('timeout', 'GET', array(
             'seconds' => '10',
@@ -1160,7 +1160,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testTimeout()
     {
-        $test = new Test();
+        $test = new Test('8003');
         $test->curl->verbose();
         $test->curl->setTimeout(10);
         $test->server('timeout_legacy', 'GET', array(
@@ -1185,7 +1185,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testError()
     {
-        $test = new Test();
+        $test = new Test('8004');
         $test->curl->get(Test::ERROR_URL);
         $this->assertTrue($test->curl->error);
         $this->assertTrue($test->curl->curlError);

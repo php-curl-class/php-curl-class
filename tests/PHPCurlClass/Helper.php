@@ -9,8 +9,11 @@ class Test
     const TEST_URL = 'http://127.0.0.1:8000/';
     const ERROR_URL = 'http://1.2.3.4/';
 
-    public function __construct()
+    private $testUrl;
+
+    public function __construct($port = null)
     {
+        $this->testUrl = $port === null ? self::TEST_URL : $this->getTestUrl($port);
         $this->curl = new Curl();
         $this->curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
         $this->curl->setOpt(CURLOPT_SSL_VERIFYHOST, false);
@@ -21,11 +24,11 @@ class Test
         $this->curl->setHeader('X-DEBUG-TEST', $test);
         $request_method = strtolower($request_method);
         if ($arg1 !== null && $arg2 !== null) {
-            $this->curl->$request_method(self::TEST_URL, $arg1, $arg2);
+            $this->curl->$request_method($this->testUrl, $arg1, $arg2);
         } elseif ($arg1 !== null) {
-            $this->curl->$request_method(self::TEST_URL, $arg1);
+            $this->curl->$request_method($this->testUrl, $arg1);
         } else {
-            $this->curl->$request_method(self::TEST_URL);
+            $this->curl->$request_method($this->testUrl);
         }
         return $this->curl->response;
     }
