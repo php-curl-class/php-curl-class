@@ -169,19 +169,20 @@ function get_multi_curl_property_value($instance, $property_name)
     return $property->getValue($instance);
 }
 
-function get_request_stats($start, $stop, $request_stats)
+function get_request_stats($request_stats, $multi_curl)
 {
-    $messages = array('total duration: ' . sprintf('%.6f', round($stop - $start, 6)) . "\n");
+    $messages =
+        array('total duration: ' . sprintf('%.6f', round($multi_curl->stopTime - $multi_curl->startTime, 6)) . "\n");
 
     foreach ($request_stats as $instance_id => &$value) {
-        $value['relative_start'] = sprintf('%.6f', round($value['start'] - $start, 6));
-        $value['relative_stop'] = sprintf('%.6f', round($value['stop'] - $start, 6));
+        $value['relative_start'] = sprintf('%.6f', round($value['start'] - $multi_curl->startTime, 6));
+        $value['relative_stop'] = sprintf('%.6f', round($value['stop'] - $multi_curl->startTime, 6));
         $value['duration'] = (string)round($value['stop'] - $value['start'], 6);
 
         $messages[] =
-            $value['relative_start'] . ' - ' .  'request ' . $instance_id . ' start' . "\n" .
-            $value['relative_stop']  . ' - ' .  'request ' . $instance_id . ' complete' . "\n" .
-            $value['duration']       . ' - ' .  'request ' . $instance_id . ' duration' . "\n";
+            $value['relative_start']        . ' - ' . 'request ' . $instance_id . ' start'        . "\n" .
+            $value['relative_stop']         . ' - ' . 'request ' . $instance_id . ' complete'     . "\n" .
+            $value['duration']              . ' - ' . 'request ' . $instance_id . ' duration'     . "\n";
 
         unset($value['start']);
         unset($value['stop']);

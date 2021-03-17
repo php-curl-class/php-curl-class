@@ -3625,10 +3625,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=1');
         $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=1');
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // Assert R0 starts around 0 and not before.
         $this->assertGreaterThanOrEqual(0, $request_stats['0']['relative_start']);
@@ -3696,10 +3694,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=2');
         $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=1');
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // Assert R0 starts around 0 and not before.
         $this->assertGreaterThanOrEqual(0, $request_stats['0']['relative_start']);
@@ -3765,10 +3761,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=5');
         $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=1');
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // Assert R0 starts around 0 and not before.
         $this->assertGreaterThanOrEqual(0, $request_stats['0']['relative_start']);
@@ -3834,10 +3828,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=6');
         $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=1');
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // Assert R0 starts around 0 and not before.
         $this->assertGreaterThanOrEqual(0, $request_stats['0']['relative_start'], $request_stats['message']);
@@ -3904,10 +3896,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=2');
         $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=2');
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // Assert R0 starts around 0 and not before.
         $this->assertGreaterThanOrEqual(0, $request_stats['0']['relative_start']);
@@ -3974,10 +3964,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=2');
         $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=2');
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // Assert R0 starts around 0 and not before.
         $this->assertGreaterThanOrEqual(0, $request_stats['0']['relative_start']);
@@ -4045,10 +4033,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=2');
         $multi_curl->addGet(Test::getTestUrl('8006') . '?seconds=2');
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // Assert R0 starts around 0 and not before.
         $this->assertGreaterThanOrEqual(0, $request_stats['0']['relative_start']);
@@ -4123,10 +4109,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=1');
         $multi_curl->addGet(Test::getTestUrl('8006') . '?seconds=2');
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // Assert R0 starts around 0 and not before.
         $this->assertGreaterThanOrEqual(0, $request_stats['0']['relative_start']);
@@ -4201,10 +4185,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::getTestUrl('8005') . '?seconds=2');
         $multi_curl->addGet(Test::getTestUrl('8006') . '?seconds=2');
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // Assert R0 starts around 0 and not before.
         $this->assertGreaterThanOrEqual(0, $request_stats['0']['relative_start']);
@@ -4267,10 +4249,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::getTestUrl('8002'));
         $multi_curl->addGet(Test::getTestUrl('8003'));
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // Assert R0 starts around 0 and not before.
         $this->assertGreaterThanOrEqual(0, $request_stats['0']['relative_start']);
@@ -4307,10 +4287,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=20');
         $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=10');
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // Assert R5 starts around 30 and not before.
         $this->assertGreaterThanOrEqual(30, $request_stats['5']['relative_start']);
@@ -4336,10 +4314,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=70');
         $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=10');
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // Assert R1 starts around 60 and not before.
         $this->assertGreaterThanOrEqual(60, $request_stats['1']['relative_start']);
@@ -4369,10 +4345,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=45');
         $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=10');
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // Assert R3 starts around 60 and not before.
         $this->assertGreaterThanOrEqual(60, $request_stats['3']['relative_start']);
@@ -4399,10 +4373,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=5');
         $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=5');
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // Assert R3 starts around 65 and not before.
         $this->assertGreaterThanOrEqual(65, $request_stats['3']['relative_start']);
@@ -4428,10 +4400,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             $multi_curl->addGet(Test::TEST_URL . '?seconds=1');
         }
 
-        $start = microtime(true);
         $multi_curl->start();
-        $stop = microtime(true);
-        $request_stats = \Helper\get_request_stats($start, $stop, $request_stats);
+        $request_stats = \Helper\get_request_stats($request_stats, $multi_curl);
 
         // 0-9 starts >= 0.
         // 10-19 starts >= 120.
