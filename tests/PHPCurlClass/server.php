@@ -308,32 +308,6 @@ if ($test === 'http_basic_auth') {
     echo '  "server_stop": "' . microtime(true) . '"' . "\n";
     echo '}' . "\n";
     exit;
-} elseif ($test === 'timeout_legacy') {
-    // Use --no-buffer to view loading indicator (e.g.
-    // curl --header "X-DEBUG-TEST: timeout_legacy" --include --no-buffer 127.0.0.1:8000/?seconds=3).
-    header('Content-Type: application/json');
-    $unsafe_seconds = (int)$_GET['seconds'];
-    $start = microtime(true);
-    echo '{' . "\n";
-    echo '  "loading": "';
-
-    while (true) {
-        echo '.';
-        flush();
-        sleep(1);
-        $elapsed = microtime(true) - $start;
-        if ($elapsed >= $unsafe_seconds) {
-            break;
-        }
-    }
-
-    echo '",' . "\n";
-    echo '  "elapsed_seconds": "' . $elapsed . '",' . "\n";
-    echo '  "server_port": "' . ((int)$_SERVER['SERVER_PORT']) . '",' . "\n";
-    echo '  "server_start": "' . $server_start . '",' . "\n";
-    echo '  "server_stop": "' . microtime(true) . '"' . "\n";
-    echo '}' . "\n";
-    exit;
 } elseif ($test === 'error_message') {
     if (function_exists('http_response_code')) {
         http_response_code(401);

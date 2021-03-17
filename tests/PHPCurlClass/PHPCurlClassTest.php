@@ -1162,7 +1162,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
     {
         $test = new Test('8003');
         $test->curl->setTimeout(10);
-        $test->server('timeout_legacy', 'GET', array(
+        $test->server('timeout', 'GET', array(
             'seconds' => '5',
         ));
 
