@@ -916,7 +916,11 @@ class MultiCurl
 
             // Wait for activity on any curl_multi connection when curl_multi_select (libcurl) fails to correctly block.
             // https://bugs.php.net/bug.php?id=63411
-            if (curl_multi_select($this->multiCurl) === -1) {
+            //
+            // Also, use a shorter curl_multi_select() timeout instead the default of one second. This allows pending
+            // requests to have more accurate start times. Without a shorter timeout, it can be nearly a full second
+            // before available request quota is rechecked and pending requests can be initialized.
+            if (curl_multi_select($this->multiCurl, 0.2) === -1) {
                 usleep(100000);
             }
 
