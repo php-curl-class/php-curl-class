@@ -180,45 +180,6 @@ elif [[ "${CI_PHP_VERSION}" == "7.4" ]]; then
     start_php_servers
 elif [[ "${CI_PHP_VERSION}" == "8.0" ]]; then
     start_php_servers
-elif [[ "${CI_PHP_VERSION}" == "hhvm" || "${CI_PHP_VERSION}" == "hhvm-nightly" ]]; then
-    curl "https://nginx.org/keys/nginx_signing.key" | sudo apt-key add -
-    echo "deb https://nginx.org/packages/mainline/ubuntu/ trusty nginx" | sudo tee -a /etc/apt/sources.list
-    echo "deb-src https://nginx.org/packages/mainline/ubuntu/ trusty nginx" | sudo tee -a /etc/apt/sources.list
-    sudo apt-get update
-    sudo apt-get install -y nginx
-    sudo tee /etc/nginx/conf.d/default.conf <<"EOF"
-server {
-    listen 8000 default_server;
-    server_name localhost;
-    root /usr/share/nginx/html;
-    location / {
-        fastcgi_pass   127.0.0.1:9000;
-        fastcgi_index  index.php;
-        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-        include        fastcgi_params;
-    }
-}
-EOF
-    sudo /etc/init.d/hhvm restart
-    sleep 5
-    sudo service nginx stop
-    sleep 5
-    sudo service nginx start
-
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    root="${SCRIPT_DIR}/PHPCurlClass"
-    sudo cp -v "${root}/"* "/usr/share/nginx/html/"
-
-    # Use an older version of PHPUnit for HHVM builds so that unit tests can be
-    # started. HHVM 3.18 (PHP_VERSION=PHP 5.6.99-hhvm) is the last version to
-    # run on Trusty yet PHPUnit 6 requires PHP 7.0 or PHP 7.1.
-    # Avoids error:
-    #   This version of PHPUnit is supported on PHP 7.0 and PHP 7.1.
-    #   You are using PHP 5.6.99-hhvm (/usr/bin/hhvm).
-    if [[ "${CI_PHP_VERSION}" == "hhvm" ]]; then
-        phpunit_shim
-        composer require phpunit/phpunit:5.7.*
-    fi
 elif [[ "${CI_PHP_VERSION}" == "nightly" ]]; then
     start_php_servers
 fi

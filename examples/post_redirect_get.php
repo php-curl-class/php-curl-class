@@ -20,8 +20,8 @@ $curl->post('https://www.example.com/login/', array(
 
 // A POST request performs a post-redirect-get by default. Other request
 // methods force an option which conflicts with the post-redirect-get behavior.
-// Due to technical limitations of PHP engines <5.5.11 and HHVM, it is not
-// possible to reset this option. It is therefore impossible to perform a
-// post-redirect-get request using a php-curl-class Curl object that has already
-// been used to perform other types of requests. Either use a new php-curl-class
-// Curl object or upgrade your PHP engine.
+// Due to technical limitations of PHP engines <5.5.11, it is not possible to
+// reset this option. It is therefore impossible to perform a post-redirect-get
+// request using a php-curl-class Curl object that has already been used to
+// perform other types of requests. Either use a new php-curl-class Curl object
+// or upgrade your PHP engine.

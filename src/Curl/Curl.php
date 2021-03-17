@@ -686,9 +686,9 @@ class Curl
      *       - In order to force a 303 redirection to be performed using the same method, the
      *         underlying cURL object must be set in a special state (the CURLOPT_CURSTOMREQUEST
      *         option must be set to the method to use after the redirection). Due to a limitation
-     *         of the cURL extension of PHP < 5.5.11 ([2], [3]) and of HHVM, it is not possible
-     *         to reset this option. Using these PHP engines, it is therefore impossible to
-     *         restore this behavior on an existing php-curl-class Curl object.
+     *         of the cURL extension of PHP < 5.5.11 ([2], [3]), it is not possible to reset this
+     *         option. Using these PHP engines, it is therefore impossible to restore this behavior
+     *         on an existing php-curl-class Curl object.
      *
      * @return mixed Returns the value provided by exec.
      *
@@ -710,9 +710,9 @@ class Curl
             $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         } else {
             if (isset($this->options[CURLOPT_CUSTOMREQUEST])) {
-                if ((version_compare(PHP_VERSION, '5.5.11') < 0) || defined('HHVM_VERSION')) {
+                if ((version_compare(PHP_VERSION, '5.5.11') < 0)) {
                     trigger_error(
-                        'Due to technical limitations of PHP <= 5.5.11 and HHVM, it is not possible to '
+                        'Due to technical limitations of PHP <= 5.5.11, it is not possible to '
                         . 'perform a post-redirect-get request using a php-curl-class Curl object that '
                         . 'has already been used to perform other types of requests. Either use a new '
                         . 'php-curl-class Curl object or upgrade your PHP engine.',
