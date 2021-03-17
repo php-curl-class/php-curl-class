@@ -9,6 +9,8 @@ class Test
     const TEST_URL = 'http://127.0.0.1:8000/';
     const ERROR_URL = 'http://1.2.3.4/';
 
+    public  $message;
+
     private $testUrl;
 
     public function __construct($port = null)
@@ -30,6 +32,16 @@ class Test
         } else {
             $this->curl->$request_method($this->testUrl);
         }
+
+        $this->message =
+            'error message: ' . $this->curl->errorMessage . "\n" .
+            'curl error message: ' . $this->curl->curlErrorMessage . "\n" .
+            'http error message: ' . $this->curl->httpErrorMessage . "\n" .
+            'error code: ' . $this->curl->errorCode . "\n" .
+            'curl error code: ' . $this->curl->curlErrorCode . "\n" .
+            'raw response: ' . $this->curl->rawResponse . "\n" .
+            '';
+
         return $this->curl->response;
     }
 

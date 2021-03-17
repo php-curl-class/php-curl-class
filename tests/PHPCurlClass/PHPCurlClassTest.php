@@ -1161,26 +1161,16 @@ class CurlTest extends \PHPUnit\Framework\TestCase
     public function testTimeout()
     {
         $test = new Test('8003');
-        $test->curl->verbose();
         $test->curl->setTimeout(10);
         $test->server('timeout_legacy', 'GET', array(
             'seconds' => '5',
         ));
 
-        $message =
-            'error message: ' . $test->curl->errorMessage . "\n" .
-            'curl error message: ' . $test->curl->curlErrorMessage . "\n" .
-            'http error message: ' . $test->curl->httpErrorMessage . "\n" .
-            'error code: ' . $test->curl->errorCode . "\n" .
-            'curl error code: ' . $test->curl->curlErrorCode . "\n" .
-            'raw response: ' . $test->curl->rawResponse . "\n" .
-            '';
-
-        $this->assertFalse($test->curl->error, $message);
-        $this->assertFalse($test->curl->curlError, $message);
-        $this->assertNotEquals(CURLE_OPERATION_TIMEOUTED, $test->curl->errorCode, $message);
-        $this->assertNotEquals(CURLE_OPERATION_TIMEOUTED, $test->curl->curlErrorCode, $message);
-        $this->assertFalse($test->curl->httpError, $message);
+        $this->assertFalse($test->curl->error, $test->message);
+        $this->assertFalse($test->curl->curlError, $test->message);
+        $this->assertNotEquals(CURLE_OPERATION_TIMEOUTED, $test->curl->errorCode, $test->message);
+        $this->assertNotEquals(CURLE_OPERATION_TIMEOUTED, $test->curl->curlErrorCode, $test->message);
+        $this->assertFalse($test->curl->httpError, $test->message);
     }
 
     public function testError()
