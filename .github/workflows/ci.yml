@@ -28,4 +28,4 @@ jobs:
           bash tests/before_script.sh
           bash tests/script.sh
         env:
-          TRAVIS_PHP_VERSION: ${{ matrix.php }}
+          CI_PHP_VERSION: ${{ matrix.php }}

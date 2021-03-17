@@ -509,7 +509,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             $this->markTestSkipped();
         }
 
-        if (getenv('TRAVIS_PHP_VERSION') === 'hhvm-nightly') {
+        if (getenv('CI_PHP_VERSION') === 'hhvm-nightly') {
             $this->markTestSkipped();
         }
 
@@ -3246,7 +3246,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
     {
         // Skip memory leak test failing for PHP 7.
         // "Failed asserting that 8192 is less than 1000."
-        if (getenv('TRAVIS_PHP_VERSION') === '7.0') {
+        if (getenv('CI_PHP_VERSION') === '7.0') {
             $this->markTestSkipped();
         }
 

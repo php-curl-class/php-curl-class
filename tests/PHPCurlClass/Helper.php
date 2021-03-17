@@ -69,7 +69,7 @@ class Test
     public static function getTestUrl($port)
     {
         if (getenv('PHP_CURL_CLASS_LOCAL_TEST') === 'yes' ||
-            in_array(getenv('TRAVIS_PHP_VERSION'), array('7.0', '7.1', '7.2', '7.3', '7.4', '8.0', 'nightly'))) {
+            in_array(getenv('CI_PHP_VERSION'), array('7.0', '7.1', '7.2', '7.3', '7.4', '8.0', 'nightly'))) {
             return 'http://127.0.0.1:' . $port . '/';
         } else {
             return self::TEST_URL;

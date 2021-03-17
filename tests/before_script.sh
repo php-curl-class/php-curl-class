@@ -94,7 +94,7 @@ start_php_servers() {
 }
 
 set -x
-echo "TRAVIS_PHP_VERSION: ${TRAVIS_PHP_VERSION}"
+echo "CI_PHP_VERSION: ${CI_PHP_VERSION}"
 php -r "var_dump(phpversion());"
 php -r "var_dump(curl_version());"
 
@@ -117,7 +117,7 @@ fi
 # Let test server know we should allow testing.
 export PHP_CURL_CLASS_TEST_MODE_ENABLED="yes"
 
-if [[ "${TRAVIS_PHP_VERSION}" == "5.3" ]]; then
+if [[ "${CI_PHP_VERSION}" == "5.3" ]]; then
     if ! [ -x "$(command -v add-apt-repository)" ]; then
         $superuser apt-get install -y python-software-properties
         $superuser apt-get install -y software-properties-common
@@ -151,36 +151,36 @@ EOF
     phpunit_shim
     phpunit_v4_8_shim
     php_v5_3_shim
-elif [[ "${TRAVIS_PHP_VERSION}" == "5.4" ]]; then
+elif [[ "${CI_PHP_VERSION}" == "5.4" ]]; then
     install_nginx
     use_php_fpm
     reload_nginx
     phpunit_shim
-elif [[ "${TRAVIS_PHP_VERSION}" == "5.5" ]]; then
+elif [[ "${CI_PHP_VERSION}" == "5.5" ]]; then
     install_nginx
     use_php_fpm
     reload_nginx
     phpunit_shim
-elif [[ "${TRAVIS_PHP_VERSION}" == "5.6" ]]; then
+elif [[ "${CI_PHP_VERSION}" == "5.6" ]]; then
     install_nginx
     use_php_fpm
     reload_nginx
     phpunit_shim
-elif [[ "${TRAVIS_PHP_VERSION}" == "7.0" ]]; then
+elif [[ "${CI_PHP_VERSION}" == "7.0" ]]; then
     phpunit_v6_5_shim
     start_php_servers
-elif [[ "${TRAVIS_PHP_VERSION}" == "7.1" ]]; then
+elif [[ "${CI_PHP_VERSION}" == "7.1" ]]; then
     phpunit_v7_5_shim
     start_php_servers
-elif [[ "${TRAVIS_PHP_VERSION}" == "7.2" ]]; then
+elif [[ "${CI_PHP_VERSION}" == "7.2" ]]; then
     start_php_servers
-elif [[ "${TRAVIS_PHP_VERSION}" == "7.3" ]]; then
+elif [[ "${CI_PHP_VERSION}" == "7.3" ]]; then
     start_php_servers
-elif [[ "${TRAVIS_PHP_VERSION}" == "7.4" ]]; then
+elif [[ "${CI_PHP_VERSION}" == "7.4" ]]; then
     start_php_servers
-elif [[ "${TRAVIS_PHP_VERSION}" == "8.0" ]]; then
+elif [[ "${CI_PHP_VERSION}" == "8.0" ]]; then
     start_php_servers
-elif [[ "${TRAVIS_PHP_VERSION}" == "hhvm" || "${TRAVIS_PHP_VERSION}" == "hhvm-nightly" ]]; then
+elif [[ "${CI_PHP_VERSION}" == "hhvm" || "${CI_PHP_VERSION}" == "hhvm-nightly" ]]; then
     curl "https://nginx.org/keys/nginx_signing.key" | sudo apt-key add -
     echo "deb https://nginx.org/packages/mainline/ubuntu/ trusty nginx" | sudo tee -a /etc/apt/sources.list
     echo "deb-src https://nginx.org/packages/mainline/ubuntu/ trusty nginx" | sudo tee -a /etc/apt/sources.list
@@ -215,10 +215,10 @@ EOF
     # Avoids error:
     #   This version of PHPUnit is supported on PHP 7.0 and PHP 7.1.
     #   You are using PHP 5.6.99-hhvm (/usr/bin/hhvm).
-    if [[ "${TRAVIS_PHP_VERSION}" == "hhvm" ]]; then
+    if [[ "${CI_PHP_VERSION}" == "hhvm" ]]; then
         phpunit_shim
         composer require phpunit/phpunit:5.7.*
     fi
-elif [[ "${TRAVIS_PHP_VERSION}" == "nightly" ]]; then
+elif [[ "${CI_PHP_VERSION}" == "nightly" ]]; then
     start_php_servers
 fi
