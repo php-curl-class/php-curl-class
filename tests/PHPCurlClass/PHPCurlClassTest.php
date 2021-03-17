@@ -497,35 +497,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
         $this->assertEquals('Redirected: POST', $test->server('post_redirect_get', 'POST', array(), true));
 
-        // On compatible PHP engines, ensure that it is possible to reuse an existing Curl object
-        if (version_compare(PHP_VERSION, '5.5.11') > 0) {
-            $this->assertEquals('Redirected: GET', $test->server('post_redirect_get', 'POST'));
-        }
-    }
-
-    public function testPostRedirectGetReuseObjectIncompatibleEngine()
-    {
-        if (version_compare(PHP_VERSION, '5.5.11') > 0) {
-            $this->markTestSkipped();
-        }
-
-        try {
-            // Follow 303 redirection with POST
-            $test = new Test();
-            $test->curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
-            $test->server('post_redirect_get', 'POST', array(), true);
-
-            // On incompatible PHP engines, reusing an existing Curl object to perform a
-            // post-redirect-get request will trigger a PHP error
-            $test->server('post_redirect_get', 'POST');
-
-            $this->assertTrue(
-                false,
-                'Reusing an existing Curl object on incompatible PHP engines shall trigger an error.'
-            );
-        } catch (\PHPUnit_Framework_Error $e) {
-            $this->assertTrue(true);
-        }
+        // Ensure that it is possible to reuse an existing Curl object.
+        $this->assertEquals('Redirected: GET', $test->server('post_redirect_get', 'POST'));
     }
 
     public function testPutRequestMethod()
@@ -3301,11 +3274,6 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testOptionSet()
     {
-        // Skip this test on 5.3 and 5.4.
-        if (version_compare(PHP_VERSION, '5.5.0', '<')) {
-            $this->markTestSkipped();
-        }
-
         // Skip this test on 8.0 and later:
         //   "ValueError: curl_setopt(): cURL option must not contain any null bytes"
         if (version_compare(PHP_VERSION, '8.0.0', '>=')) {
@@ -3524,14 +3492,6 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             'redirect_url',
             'request_header',
         );
-
-        // Not all keys are included on PHP 5.3 (tested 5.3.29).
-        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
-            foreach (array('primary_ip', 'primary_port', 'local_ip', 'local_port') as $value) {
-                $key = array_search($value, $expected_keys);
-                unset($expected_keys[$key]);
-            }
-        }
 
         foreach ($expected_keys as $key) {
             $this->assertArrayHasKey($key, $info);

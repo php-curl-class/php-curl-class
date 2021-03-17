@@ -710,17 +710,7 @@ class Curl
             $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         } else {
             if (isset($this->options[CURLOPT_CUSTOMREQUEST])) {
-                if ((version_compare(PHP_VERSION, '5.5.11') < 0)) {
-                    trigger_error(
-                        'Due to technical limitations of PHP <= 5.5.11, it is not possible to '
-                        . 'perform a post-redirect-get request using a php-curl-class Curl object that '
-                        . 'has already been used to perform other types of requests. Either use a new '
-                        . 'php-curl-class Curl object or upgrade your PHP engine.',
-                        E_USER_ERROR
-                    );
-                } else {
-                    $this->setOpt(CURLOPT_CUSTOMREQUEST, null);
-                }
+                $this->setOpt(CURLOPT_CUSTOMREQUEST, null);
             }
         }
 
@@ -874,20 +864,10 @@ class Curl
      */
     public function setMaxFilesize($bytes)
     {
-        // Make compatible with PHP version both before and after 5.5.0. PHP 5.5.0 added the cURL resource as the first
-        // argument to the CURLOPT_PROGRESSFUNCTION callback.
-        $gte_v550 = version_compare(PHP_VERSION, '5.5.0') >= 0;
-        if ($gte_v550) {
-            $callback = function ($resource, $download_size, $downloaded, $upload_size, $uploaded) use ($bytes) {
-                // Abort the transfer when $downloaded bytes exceeds maximum $bytes by returning a non-zero value.
-                return $downloaded > $bytes ? 1 : 0;
-            };
-        } else {
-            $callback = function ($download_size, $downloaded, $upload_size, $uploaded) use ($bytes) {
-                return $downloaded > $bytes ? 1 : 0;
-            };
-        }
-
+        $callback = function ($resource, $download_size, $downloaded, $upload_size, $uploaded) use ($bytes) {
+            // Abort the transfer when $downloaded bytes exceeds maximum $bytes by returning a non-zero value.
+            return $downloaded > $bytes ? 1 : 0;
+        };
         $this->progress($callback);
     }
 
