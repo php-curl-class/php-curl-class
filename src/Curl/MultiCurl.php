@@ -9,9 +9,14 @@ class MultiCurl
     public $baseUrl = null;
     public $multiCurl = null;
 
+    public $startTime = null;
+    public $stopTime = null;
+
     private $curls = array();
     private $activeCurls = array();
     private $isStarted = false;
+    private $currentStartTime = null;
+    private $currentRequestCount = 0;
     private $concurrency = 25;
     private $nextCurlId = 0;
 
@@ -22,8 +27,6 @@ class MultiCurl
     private $interval = null;
     private $intervalSeconds = null;
     private $unit = null;
-    private $currentStartTime = null;
-    private $currentRequestCount = 0;
 
     private $beforeSendCallback = null;
     private $successCallback = null;
@@ -899,6 +902,7 @@ class MultiCurl
         }
 
         $this->isStarted = true;
+        $this->startTime = microtime(true);
         $this->currentStartTime = microtime(true);
         $this->currentRequestCount = 0;
 
@@ -967,6 +971,7 @@ class MultiCurl
         } while ($active || count($this->activeCurls) || count($this->curls));
 
         $this->isStarted = false;
+        $this->stopTime = microtime(true);
     }
 
     /**
