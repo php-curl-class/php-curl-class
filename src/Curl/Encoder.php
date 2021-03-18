@@ -22,11 +22,7 @@ class Encoder
         $args = func_get_args();
         $value = call_user_func_array('json_encode', $args);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            if (function_exists('json_last_error_msg')) {
-                $error_message = 'json_encode error: ' . json_last_error_msg();
-            } else {
-                $error_message = 'json_encode error';
-            }
+            $error_message = 'json_encode error: ' . json_last_error_msg();
             throw new \ErrorException($error_message);
         }
         return $value;
