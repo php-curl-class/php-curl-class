@@ -121,7 +121,7 @@ class Curl
      * Before Send
      *
      * @access public
-     * @param  $callback
+     * @param  $callback callable|null
      */
     public function beforeSend($callback)
     {
@@ -227,7 +227,7 @@ class Curl
      * Complete
      *
      * @access public
-     * @param  $callback
+     * @param  $callback callable|null
      */
     public function complete($callback)
     {
@@ -238,7 +238,7 @@ class Curl
      * Progress
      *
      * @access public
-     * @param  $callback
+     * @param  $callback callable|null
      */
     public function progress($callback)
     {
@@ -437,7 +437,7 @@ class Curl
      * Error
      *
      * @access public
-     * @param  $callback
+     * @param  $callback callable|null
      */
     public function error($callback)
     {
@@ -1367,7 +1367,7 @@ class Curl
      * Success
      *
      * @access public
-     * @param  $callback
+     * @param  $callback callable|null
      */
     public function success($callback)
     {

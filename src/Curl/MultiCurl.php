@@ -355,7 +355,7 @@ class MultiCurl
      * Before Send
      *
      * @access public
-     * @param  $callback
+     * @param  $callback callable|null
      */
     public function beforeSend($callback)
     {
@@ -383,7 +383,7 @@ class MultiCurl
      * Complete
      *
      * @access public
-     * @param  $callback
+     * @param  $callback callable|null
      */
     public function complete($callback)
     {
@@ -394,7 +394,7 @@ class MultiCurl
      * Error
      *
      * @access public
-     * @param  $callback
+     * @param  $callback callable|null
      */
     public function error($callback)
     {
@@ -978,7 +978,7 @@ class MultiCurl
      * Success
      *
      * @access public
-     * @param  $callback
+     * @param  $callback callable|null
      */
     public function success($callback)
     {
