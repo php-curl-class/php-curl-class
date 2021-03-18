@@ -15,14 +15,14 @@ if (php_sapi_name() !== 'cli') {
 }
 
 // Request authorization from the user.
-$auth_url = OAUTH2_AUTH_URL . '?' . http_build_query(array(
+$auth_url = OAUTH2_AUTH_URL . '?' . http_build_query([
     'access_type' => 'offline',
     'approval_prompt' => 'force',
     'client_id' => CLIENT_ID,
     'redirect_uri' => REDIRECT_URI,
     'response_type' => 'code',
     'scope' => 'https://www.googleapis.com/auth/spreadsheets',
-));
+]);
 echo 'Open the following link in your browser:' . "\n";
 echo $auth_url . "\n";
 echo 'Enter verification code: ';
@@ -30,33 +30,33 @@ $code = trim(fgets(STDIN));
 
 // Exchange authorization code for an access token.
 $curl = new Curl();
-$curl->post(OAUTH2_TOKEN_URI, array(
+$curl->post(OAUTH2_TOKEN_URI, [
     'client_id' => CLIENT_ID,
     'client_secret' => CLIENT_SECRET,
     'code' => $code,
     'grant_type' => 'authorization_code',
     'redirect_uri' => REDIRECT_URI,
-));
+]);
 $access_token = $curl->response;
 
 // Update spreadsheet.
 $spreadsheet_id = '1Z2cXhdG-K44KgSzHTcGhx1dY-xY31yuYGwX21F4GeUp';
 $range = 'Sheet1!A1';
 $url = 'https://sheets.googleapis.com/v4/spreadsheets/' . $spreadsheet_id . '/values/' . $range;
-$url .= '?' . http_build_query(array(
+$url .= '?' . http_build_query([
     'valueInputOption' => 'USER_ENTERED',
-));
+]);
 
-$data = array(
-    'values' => array(
-        array(
+$data = [
+    'values' => [
+        [
             'This is cell A1',
             'B1',
             'C1',
             'and D1',
-        ),
-    ),
-);
+        ],
+    ],
+];
 
 $curl = new Curl();
 $curl->setHeader('Content-Type', 'application/json');

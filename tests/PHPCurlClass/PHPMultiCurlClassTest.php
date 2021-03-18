@@ -669,8 +669,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             \PHPUnit\Framework\Assert::assertTrue($instance->error);
             \PHPUnit\Framework\Assert::assertTrue($instance->curlError);
             \PHPUnit\Framework\Assert::assertFalse($instance->httpError);
-            $possible_errors = array(
-                CURLE_SEND_ERROR, CURLE_OPERATION_TIMEOUTED, CURLE_COULDNT_CONNECT, CURLE_GOT_NOTHING);
+            $possible_errors = [
+                CURLE_SEND_ERROR, CURLE_OPERATION_TIMEOUTED, CURLE_COULDNT_CONNECT, CURLE_GOT_NOTHING];
             \PHPUnit\Framework\Assert::assertTrue(
                 in_array($instance->errorCode, $possible_errors, true),
                 'errorCode: ' . $instance->errorCode
@@ -2045,7 +2045,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
     {
         $multi_curl_user_agent = 'multi curl user agent';
         $curl_user_agent = 'curl user agent';
-        $data = array('key' => 'HTTP_USER_AGENT');
+        $data = ['key' => 'HTTP_USER_AGENT'];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'server');
@@ -2250,15 +2250,15 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
     {
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'setcookie');
-        $multi_curl->setCookies(array(
+        $multi_curl->setCookies([
             'mycookie' => 'yum',
             'cookie-for-all-before' => 'a',
-        ));
+        ]);
 
         $get_1 = $multi_curl->addGet(Test::TEST_URL);
-        $get_1->setCookies(array(
+        $get_1->setCookies([
             'cookie-for-1st-request' => '1',
-        ));
+        ]);
         $get_1->complete(function ($instance) {
             \PHPUnit\Framework\Assert::assertEquals('yum', $instance->responseCookies['mycookie']);
             \PHPUnit\Framework\Assert::assertEquals('a', $instance->responseCookies['cookie-for-all-before']);
@@ -2267,13 +2267,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         });
 
         $get_2 = $multi_curl->addGet(Test::TEST_URL);
-        $get_2->setCookies(array(
+        $get_2->setCookies([
             'cookie-for-2nd-request' => '2',
-        ));
+        ]);
         $get_2->beforeSend(function ($instance) {
-            $instance->setCookies(array(
+            $instance->setCookies([
                 'mycookie' => 'yummy',
-            ));
+            ]);
         });
         $get_2->complete(function ($instance) {
             \PHPUnit\Framework\Assert::assertEquals('yummy', $instance->responseCookies['mycookie']);
@@ -2282,9 +2282,9 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             \PHPUnit\Framework\Assert::assertEquals('2', $instance->responseCookies['cookie-for-2nd-request']);
         });
 
-        $multi_curl->setCookies(array(
+        $multi_curl->setCookies([
             'cookie-for-all-after' => 'b',
-        ));
+        ]);
         $multi_curl->start();
 
         $this->assertEquals('yum', $get_1->responseCookies['mycookie']);
@@ -2293,25 +2293,25 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testJsonRequest()
     {
-        foreach (array(
-                array(
-                    array(
+        foreach ([
+                [
+                    [
                         'key' => 'value',
-                    ),
+                    ],
                     '{"key":"value"}',
-                ),
-                array(
-                    array(
+                ],
+                [
+                    [
                         'key' => 'value',
-                        'strings' => array(
+                        'strings' => [
                             'a',
                             'b',
                             'c',
-                        ),
-                    ),
+                        ],
+                    ],
                     '{"key":"value","strings":["a","b","c"]}',
-                ),
-            ) as $test) {
+                ],
+            ] as $test) {
             list($data, $expected_response) = $test;
 
             $multi_curl = new MultiCurl();
@@ -2322,18 +2322,18 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             $multi_curl->addPost(Test::TEST_URL, json_encode($data));
             $multi_curl->start();
 
-            foreach (array(
+            foreach ([
                 'Content-Type',
                 'content-type',
-                'CONTENT-TYPE') as $key) {
-                foreach (array(
+                'CONTENT-TYPE'] as $key) {
+                foreach ([
                     'APPLICATION/JSON',
                     'APPLICATION/JSON; CHARSET=UTF-8',
                     'APPLICATION/JSON;CHARSET=UTF-8',
                     'application/json',
                     'application/json; charset=utf-8',
                     'application/json;charset=UTF-8',
-                    ) as $value) {
+                    ] as $value) {
                     $multi_curl = new MultiCurl();
                     $multi_curl->setHeader('X-DEBUG-TEST', 'post_json');
                     $multi_curl->setHeader($key, $value);
@@ -2358,10 +2358,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testJsonDecoder()
     {
-        $data = array(
+        $data = [
             'key' => 'Content-Type',
             'value' => 'application/json',
-        );
+        ];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'json_response');
@@ -2571,9 +2571,9 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $downloaded_file_path = tempnam('/tmp', 'php-curl-class.');
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'download_response');
-        $multi_curl->addDownload(Test::TEST_URL . '?' . http_build_query(array(
+        $multi_curl->addDownload(Test::TEST_URL . '?' . http_build_query([
             'file_path' => $uploaded_file_path,
-        )), $downloaded_file_path);
+        ]), $downloaded_file_path);
         $multi_curl->complete(function ($instance) use ($upload_file_path) {
             \PHPUnit\Framework\Assert::assertFalse($instance->error);
             \PHPUnit\Framework\Assert::assertEquals(md5_file($upload_file_path), $instance->responseHeaders['ETag']);
@@ -2601,7 +2601,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
         $filesize = filesize($filename);
 
-        foreach (array(
+        foreach ([
                 false,
                 0,
                 1,
@@ -2632,7 +2632,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 $filesize + 2,
                 $filesize + 3,
 
-            ) as $length) {
+            ] as $length) {
             $source = Test::TEST_URL;
             $destination = \Helper\get_tmp_file_path();
 
@@ -2669,9 +2669,9 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             // Download (the remaining bytes of) the file.
             $multi_curl = new MultiCurl();
             $multi_curl->setHeader('X-DEBUG-TEST', 'download_file_range');
-            $multi_curl->addDownload($source . '?' . http_build_query(array(
+            $multi_curl->addDownload($source . '?' . http_build_query([
                 'file_path' => $uploaded_file_path,
-            )), $destination);
+            ]), $destination);
 
             clearstatcache();
 
@@ -2726,18 +2726,18 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         // Upload a file.
         $upload_file_path = \Helper\get_png();
         $upload_test = new Test();
-        $upload_test->server('upload_response', 'POST', array(
+        $upload_test->server('upload_response', 'POST', [
             'image' => '@' . $upload_file_path,
-        ));
+        ]);
         $uploaded_file_path = $upload_test->curl->response->file_path;
 
         // Download the file.
         $download_callback_called = false;
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'download_response');
-        $multi_curl->addDownload(Test::TEST_URL . '?' . http_build_query(array(
+        $multi_curl->addDownload(Test::TEST_URL . '?' . http_build_query([
             'file_path' => $uploaded_file_path,
-        )), function ($instance, $fh) use (&$download_callback_called) {
+        ]), function ($instance, $fh) use (&$download_callback_called) {
             \PHPUnit\Framework\Assert::assertFalse($download_callback_called);
             \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
             \PHPUnit\Framework\Assert::assertTrue(is_resource($fh));
@@ -2751,9 +2751,9 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($download_callback_called);
 
         // Remove server file.
-        $this->assertEquals('true', $upload_test->server('upload_cleanup', 'POST', array(
+        $this->assertEquals('true', $upload_test->server('upload_cleanup', 'POST', [
             'file_path' => $uploaded_file_path,
-        )));
+        ]));
 
         unlink($upload_file_path);
         $this->assertFalse(file_exists($upload_file_path));
@@ -2779,11 +2779,11 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetUrlInConstructor()
     {
-        $data = array('key' => 'value');
+        $data = ['key' => 'value'];
 
         $multi_curl = new MultiCurl(Test::TEST_URL);
         $multi_curl->setHeader('X-DEBUG-TEST', 'delete_with_body');
-        $multi_curl->addDelete($data, array('wibble' => 'wubble'))->complete(function ($instance) {
+        $multi_curl->addDelete($data, ['wibble' => 'wubble'])->complete(function ($instance) {
             \PHPUnit\Framework\Assert::assertEquals(
                 '{"get":{"key":"value"},"delete":{"wibble":"wubble"}}',
                 $instance->rawResponse
@@ -2853,7 +2853,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetUrl()
     {
-        $data = array('key' => 'value');
+        $data = ['key' => 'value'];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setUrl(Test::TEST_URL);
@@ -2943,15 +2943,15 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
     {
         $multi_curl = new MultiCurl();
 
-        $urls = array();
-        $copy_of_urls = array();
+        $urls = [];
+        $copy_of_urls = [];
         for ($i = 0; $i < 10; $i++) {
             $url = Test::TEST_URL . '?' . md5(mt_rand());
             $urls[] = $url;
             $copy_of_urls[] = $url;
         }
 
-        $urls_called = array();
+        $urls_called = [];
         $multi_curl->complete(function ($instance) use (&$multi_curl, &$urls, &$urls_called) {
             $urls_called[] = $instance->url;
             $next_url = array_pop($urls);
@@ -3001,7 +3001,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl = new MultiCurl(Test::TEST_URL);
         $multi_curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
         $multi_curl->setHeader('X-DEBUG-TEST', 'post_redirect_get');
-        $multi_curl->addPost(array(), false)->complete(function ($instance) {
+        $multi_curl->addPost([], false)->complete(function ($instance) {
             \PHPUnit\Framework\Assert::assertEquals('Redirected: POST', $instance->response);
         });
         $multi_curl->start();
@@ -3010,7 +3010,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl = new MultiCurl(Test::TEST_URL);
         $multi_curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
         $multi_curl->setHeader('X-DEBUG-TEST', 'post_redirect_get');
-        $multi_curl->addPost(array(), true)->complete(function ($instance) {
+        $multi_curl->addPost([], true)->complete(function ($instance) {
             \PHPUnit\Framework\Assert::assertEquals('Redirected: GET', $instance->response);
         });
         $multi_curl->start();
@@ -3037,10 +3037,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
     {
         $request_key = 'X-Request-Id';
         $request_value = '1';
-        $data = array(
+        $data = [
             'test' => 'server',
             'key' => 'HTTP_X_REQUEST_ID',
-        );
+        ];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader($request_key, $request_value);
@@ -3109,57 +3109,57 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testRetryMulti()
     {
-        $tests = array(
-            array(
+        $tests = [
+            [
                 'maximum_number_of_retries' => null,
                 'failures' => 0,
                 'expect_success' => true,
                 'expect_attempts' => 1,
                 'expect_retries' => 0,
-            ),
-            array(
+            ],
+            [
                 'maximum_number_of_retries' => 0,
                 'failures' => 0,
                 'expect_success' => true,
                 'expect_attempts' => 1,
                 'expect_retries' => 0,
-            ),
-            array(
+            ],
+            [
                 'maximum_number_of_retries' => 0,
                 'failures' => 1,
                 'expect_success' => false,
                 'expect_attempts' => 1,
                 'expect_retries' => 0,
-            ),
-            array(
+            ],
+            [
                 'maximum_number_of_retries' => 1,
                 'failures' => 1,
                 'expect_success' => true,
                 'expect_attempts' => 2,
                 'expect_retries' => 1,
-            ),
-            array(
+            ],
+            [
                 'maximum_number_of_retries' => 1,
                 'failures' => 2,
                 'expect_success' => false,
                 'expect_attempts' => 2,
                 'expect_retries' => 1,
-            ),
-            array(
+            ],
+            [
                 'maximum_number_of_retries' => 2,
                 'failures' => 2,
                 'expect_success' => true,
                 'expect_attempts' => 3,
                 'expect_retries' => 2,
-            ),
-            array(
+            ],
+            [
                 'maximum_number_of_retries' => 3,
                 'failures' => 3,
                 'expect_success' => true,
                 'expect_attempts' => 4,
                 'expect_retries' => 3,
-            ),
-        );
+            ],
+        ];
         foreach ($tests as $test) {
             $maximum_number_of_retries = $test['maximum_number_of_retries'];
             $failures = $test['failures'];
@@ -3175,7 +3175,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 $multi_curl->setRetry($maximum_number_of_retries);
             }
 
-            $instance = $multi_curl->addGet(Test::TEST_URL, array('failures' => $failures));
+            $instance = $multi_curl->addGet(Test::TEST_URL, ['failures' => $failures]);
             $multi_curl->start();
 
             $this->assertEquals($expect_success, !$instance->error);
@@ -3186,57 +3186,57 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testRetryCallableMulti()
     {
-        $tests = array(
-            array(
+        $tests = [
+            [
                 'maximum_number_of_retries' => null,
                 'failures' => 0,
                 'expect_success' => true,
                 'expect_attempts' => 1,
                 'expect_retries' => 0,
-            ),
-            array(
+            ],
+            [
                 'maximum_number_of_retries' => 0,
                 'failures' => 0,
                 'expect_success' => true,
                 'expect_attempts' => 1,
                 'expect_retries' => 0,
-            ),
-            array(
+            ],
+            [
                 'maximum_number_of_retries' => 0,
                 'failures' => 1,
                 'expect_success' => false,
                 'expect_attempts' => 1,
                 'expect_retries' => 0,
-            ),
-            array(
+            ],
+            [
                 'maximum_number_of_retries' => 1,
                 'failures' => 1,
                 'expect_success' => true,
                 'expect_attempts' => 2,
                 'expect_retries' => 1,
-            ),
-            array(
+            ],
+            [
                 'maximum_number_of_retries' => 1,
                 'failures' => 2,
                 'expect_success' => false,
                 'expect_attempts' => 2,
                 'expect_retries' => 1,
-            ),
-            array(
+            ],
+            [
                 'maximum_number_of_retries' => 2,
                 'failures' => 2,
                 'expect_success' => true,
                 'expect_attempts' => 3,
                 'expect_retries' => 2,
-            ),
-            array(
+            ],
+            [
                 'maximum_number_of_retries' => 3,
                 'failures' => 3,
                 'expect_success' => true,
                 'expect_attempts' => 4,
                 'expect_retries' => 3,
-            ),
-        );
+            ],
+        ];
         foreach ($tests as $test) {
             $maximum_number_of_retries = $test['maximum_number_of_retries'];
             $failures = $test['failures'];
@@ -3255,7 +3255,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 });
             }
 
-            $instance = $multi_curl->addGet(Test::TEST_URL, array('failures' => $failures));
+            $instance = $multi_curl->addGet(Test::TEST_URL, ['failures' => $failures]);
             $multi_curl->start();
 
             $this->assertEquals($expect_success, !$instance->error);
@@ -3325,13 +3325,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetProxiesRandomProxy()
     {
-        $proxies = array(
+        $proxies = [
             'example.com:80',
             'example.com:443',
             'example.com:1080',
             'example.com:3128',
             'example.com:8080',
-        );
+        ];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setProxies($proxies);
@@ -3364,13 +3364,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetProxiesAlreadySet()
     {
-        $proxies = array(
+        $proxies = [
             'example.com:80',
             'example.com:443',
             'example.com:1080',
             'example.com:3128',
             'example.com:8080',
-        );
+        ];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setProxies($proxies);
@@ -3437,138 +3437,138 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitUnits()
     {
-        foreach (array(
-                array(
+        foreach ([
+                [
                     'rate_limit' => '1/s',
-                    'expected' => array(
+                    'expected' => [
                         'rate_limit' => '1/1s',
                         'max_requests' => '1',
                         'interval' => '1',
                         'unit' => 's',
                         'interval_seconds' => '1',
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'rate_limit' => '1/1s',
-                    'expected' => array(
+                    'expected' => [
                         'rate_limit' => '1/1s',
                         'max_requests' => '1',
                         'interval' => '1',
                         'unit' => 's',
                         'interval_seconds' => '1',
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'rate_limit' => '10/60s',
-                    'expected' => array(
+                    'expected' => [
                         'rate_limit' => '10/60s',
                         'max_requests' => '10',
                         'interval' => '60',
                         'unit' => 's',
                         'interval_seconds' => '60',
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'rate_limit' => '10/60S',
-                    'expected' => array(
+                    'expected' => [
                         'rate_limit' => '10/60s',
                         'max_requests' => '10',
                         'interval' => '60',
                         'unit' => 's',
                         'interval_seconds' => '60',
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'rate_limit' => '1/m',
-                    'expected' => array(
+                    'expected' => [
                         'rate_limit' => '1/1m',
                         'max_requests' => '1',
                         'interval' => '1',
                         'unit' => 'm',
                         'interval_seconds' => '60',
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'rate_limit' => '1/1m',
-                    'expected' => array(
+                    'expected' => [
                         'rate_limit' => '1/1m',
                         'max_requests' => '1',
                         'interval' => '1',
                         'unit' => 'm',
                         'interval_seconds' => '60',
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'rate_limit' => '5000/60m',
-                    'expected' => array(
+                    'expected' => [
                         'rate_limit' => '5000/60m',
                         'max_requests' => '5000',
                         'interval' => '60',
                         'unit' => 'm',
                         'interval_seconds' => '3600',
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'rate_limit' => '5000/60M',
-                    'expected' => array(
+                    'expected' => [
                         'rate_limit' => '5000/60m',
                         'max_requests' => '5000',
                         'interval' => '60',
                         'unit' => 'm',
                         'interval_seconds' => '3600',
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'rate_limit' => '1/h',
-                    'expected' => array(
+                    'expected' => [
                         'rate_limit' => '1/1h',
                         'max_requests' => '1',
                         'interval' => '1',
                         'unit' => 'h',
                         'interval_seconds' => '3600',
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'rate_limit' => '1/1h',
-                    'expected' => array(
+                    'expected' => [
                         'rate_limit' => '1/1h',
                         'max_requests' => '1',
                         'interval' => '1',
                         'unit' => 'h',
                         'interval_seconds' => '3600',
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'rate_limit' => '5000/1h',
-                    'expected' => array(
+                    'expected' => [
                         'rate_limit' => '5000/1h',
                         'max_requests' => '5000',
                         'interval' => '1',
                         'unit' => 'h',
                         'interval_seconds' => '3600',
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'rate_limit' => '100000/24h',
-                    'expected' => array(
+                    'expected' => [
                         'rate_limit' => '100000/24h',
                         'max_requests' => '100000',
                         'interval' => '24',
                         'unit' => 'h',
                         'interval_seconds' => '86400',
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'rate_limit' => '100000/24H',
-                    'expected' => array(
+                    'expected' => [
                         'rate_limit' => '100000/24h',
                         'max_requests' => '100000',
                         'interval' => '24',
                         'unit' => 'h',
                         'interval_seconds' => '86400',
-                    ),
-                ),
-            ) as $test) {
+                    ],
+                ],
+            ] as $test) {
             $multi_curl = new MultiCurl();
             $multi_curl->setRateLimit($test['rate_limit']);
 
@@ -3606,13 +3606,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         //                                          R4--|
         //  0   1   2   3   4   5   6   7   8   9   10  11  12
 
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -3675,13 +3675,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         //                                          R4--|
         //  0   1   2   3   4   5   6   7   8   9   10  11  12
 
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -3742,13 +3742,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         //                                          R4--|
         //  0   1   2   3   4   5   6   7   8   9   10  11  12
 
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -3809,13 +3809,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         //                                          R4--|
         //  0   1   2   3   4   5   6   7   8   9   10  11  12
 
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -3877,13 +3877,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         //                                          R4------|
         //  0   1   2   3   4   5   6   7   8   9   10  11  12
 
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -3945,13 +3945,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         //                                          R4------|
         //  0   1   2   3   4   5   6   7   8   9   10  11  12
 
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -4013,13 +4013,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         //                                          R5------|
         //  0   1   2   3   4   5   6   7   8   9   10  11  12
 
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -4089,13 +4089,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         //                                          R5------|
         //  0   1   2   3   4   5   6   7   8   9   10  11  12
 
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -4165,13 +4165,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         //                                          R5------|
         //  0   1   2   3   4   5   6   7   8   9   10  11  12
 
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -4233,12 +4233,12 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitPerSecondOnePerSecond()
     {
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setRateLimit('1/1s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -4267,13 +4267,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitFivePerThirtySecond()
     {
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('5/30s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -4297,13 +4297,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitOnePerOneMinute()
     {
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('1/1m');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -4327,13 +4327,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitThreePerOneMinute()
     {
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('3/1m');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -4355,13 +4355,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitThreePerSixtyFiveSeconds()
     {
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('3/65s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -4383,13 +4383,13 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitTenPerTwoMinutes()
     {
-        $request_stats = array();
+        $request_stats = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('10/2m');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id] = array();
+            $request_stats[$instance->id] = [];
             $request_stats[$instance->id]['start'] = microtime(true);
         });
         $multi_curl->complete(function ($instance) use (&$request_stats) {
@@ -4437,7 +4437,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
     public function testSetHeadersAssociativeArray()
     {
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeaders(array(
+        $multi_curl->setHeaders([
             ' Key1 ' => ' Value1 ',
             ' Key2 ' => ' Value2',
             ' Key3 ' => 'Value3 ',
@@ -4454,12 +4454,12 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             'Key14' => ' Value14',
             'Key15' => 'Value15 ',
             'Key16' => 'Value16',
-        ));
+        ]);
         $multi_curl->addGet(Test::TEST_URL);
 
         $curls = \Helper\get_multi_curl_property_value($multi_curl, 'curls');
         foreach ($curls as $curl) {
-            $this->assertEquals(array(
+            $this->assertEquals([
                 'Key1: Value1',
                 'Key2: Value2',
                 'Key3: Value3',
@@ -4476,7 +4476,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 'Key14: Value14',
                 'Key15: Value15',
                 'Key16: Value16',
-            ), $curl->getOpt(CURLOPT_HTTPHEADER));
+            ], $curl->getOpt(CURLOPT_HTTPHEADER));
 
             $headers = \Helper\get_curl_property_value($curl, 'headers');
             $this->assertEquals('Value1', $headers['Key1']);
@@ -4501,7 +4501,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
     public function testSetHeadersIndexedArray()
     {
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeaders(array(
+        $multi_curl->setHeaders([
             ' Key1 : Value1 ',
             ' Key2 : Value2',
             ' Key3 :Value3 ',
@@ -4518,12 +4518,12 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             'Key14: Value14',
             'Key15:Value15 ',
             'Key16:Value16',
-        ));
+        ]);
         $multi_curl->addGet(Test::TEST_URL);
 
         $curls = \Helper\get_multi_curl_property_value($multi_curl, 'curls');
         foreach ($curls as $curl) {
-            $this->assertEquals(array(
+            $this->assertEquals([
                 'Key1: Value1',
                 'Key2: Value2',
                 'Key3: Value3',
@@ -4540,7 +4540,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 'Key14: Value14',
                 'Key15: Value15',
                 'Key16: Value16',
-            ), $curl->getOpt(CURLOPT_HTTPHEADER));
+            ], $curl->getOpt(CURLOPT_HTTPHEADER));
 
             $headers = \Helper\get_curl_property_value($curl, 'headers');
             $this->assertEquals('Value1', $headers['Key1']);

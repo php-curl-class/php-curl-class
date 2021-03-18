@@ -11,7 +11,7 @@ use Curl\Curl;
 // curl "https://httpbin.org/post" -d "foo=bar&foo=baz"
 
 function http_build_query_without_indexes($query) {
-    $array = array();
+    $array = [];
     foreach ($query as $key => $value) {
         $key = rawurlencode($key);
         if (is_array($value)) {
@@ -28,11 +28,11 @@ function http_build_query_without_indexes($query) {
 }
 
 $curl = new Curl();
-$curl->post('https://httpbin.org/post', http_build_query_without_indexes(array(
-    'foo' => array(
+$curl->post('https://httpbin.org/post', http_build_query_without_indexes([
+    'foo' => [
         'bar',
         'baz',
-    ),
-)));
+    ],
+]));
 
 // @codingStandardsIgnoreFile

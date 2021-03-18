@@ -6,18 +6,18 @@ use Curl\Curl;
 const GRATIPAY_USERNAME = 'XXXXXXXXXX';
 const GRATIPAY_API_KEY = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 
-$data = array(
-    array(
+$data = [
+    [
         'username' => 'user' . mt_rand(),
         'platform' => 'gratipay',
         'amount' =>  '0.02',
-    ),
-    array(
+    ],
+    [
         'username' => 'user' . mt_rand(),
         'platform' => 'gratipay',
         'amount' =>  '0.02',
-    ),
-);
+    ],
+];
 
 $curl = new Curl();
 $curl->setHeader('Content-Type', 'application/json');

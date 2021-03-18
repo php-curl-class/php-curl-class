@@ -21,7 +21,7 @@ echo $curl->response;
 Safer:
 
 ```php
-function is_allowed_url($url, $allowed_url_schemes = array('http', 'https')) {
+function is_allowed_url($url, $allowed_url_schemes = ['http', 'https']) {
     $valid_url = filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED) !== false;
     if ($valid_url) {
         $scheme = parse_url($url, PHP_URL_SCHEME);
@@ -54,9 +54,9 @@ $ curl https://www.example.com/upload_photo.php --data "photo=@/etc/passwd"
 ```php
 // upload_photo.php
 $curl = new Curl();
-$curl->post('http://www.anotherwebsite.com/', array(
+$curl->post('http://www.anotherwebsite.com/', [
     'photo' => $_POST['photo'], // DANGER!
-));
+]);
 ```
 
 ### Unsafe response with redirection enabled

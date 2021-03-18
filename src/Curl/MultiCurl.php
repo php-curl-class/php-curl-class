@@ -12,8 +12,8 @@ class MultiCurl
     public $startTime = null;
     public $stopTime = null;
 
-    private $curls = array();
-    private $activeCurls = array();
+    private $curls = [];
+    private $activeCurls = [];
     private $isStarted = false;
     private $currentStartTime = null;
     private $currentRequestCount = 0;
@@ -35,9 +35,9 @@ class MultiCurl
 
     private $retry = null;
 
-    private $cookies = array();
-    private $headers = array();
-    private $options = array();
+    private $cookies = [];
+    private $headers = [];
+    private $options = [];
     private $proxies = null;
 
     private $jsonDecoder = null;
@@ -66,7 +66,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addDelete($url, $query_parameters = array(), $data = array())
+    public function addDelete($url, $query_parameters = [], $data = [])
     {
         if (is_array($url)) {
             $data = $query_parameters;
@@ -150,7 +150,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addGet($url, $data = array())
+    public function addGet($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;
@@ -173,7 +173,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addHead($url, $data = array())
+    public function addHead($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;
@@ -196,7 +196,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addOptions($url, $data = array())
+    public function addOptions($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;
@@ -219,7 +219,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addPatch($url, $data = array())
+    public function addPatch($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;
@@ -290,7 +290,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addPut($url, $data = array())
+    public function addPut($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;
@@ -317,7 +317,7 @@ class MultiCurl
      *
      * @return object
      */
-    public function addSearch($url, $data = array())
+    public function addSearch($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;

@@ -6,9 +6,9 @@ use Curl\Curl;
 // curl --head "http://127.0.0.1:8000/?key=value"
 
 $curl = new Curl();
-$curl->head('http://127.0.0.1:8000/', array(
+$curl->head('http://127.0.0.1:8000/', [
     'key' => 'value',
-));
+]);
 
 if ($curl->error) {
     echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";

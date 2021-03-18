@@ -29,7 +29,7 @@ class Curl
     public $requestHeaders = null;
     public $responseHeaders = null;
     public $rawResponseHeaders = '';
-    public $responseCookies = array();
+    public $responseCookies = [];
     public $response = null;
     public $rawResponse = null;
 
@@ -50,17 +50,17 @@ class Curl
     public $jsonDecoder = null;
     public $xmlDecoder = null;
 
-    private $cookies = array();
-    private $headers = array();
-    private $options = array();
+    private $cookies = [];
+    private $headers = [];
+    private $options = [];
 
-    private $jsonDecoderArgs = array();
+    private $jsonDecoderArgs = [];
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
-    private $xmlDecoderArgs = array();
+    private $xmlDecoderArgs = [];
     private $xmlPattern = '~^(?:text/|application/(?:atom\+|rss\+|soap\+)?)xml~i';
     private $defaultDecoder = null;
 
-    public static $RFC2616 = array(
+    public static $RFC2616 = [
         // RFC 2616: "any CHAR except CTLs or separators".
         // CHAR           = <any US-ASCII character (octets 0 - 127)>
         // CTL            = <any US-ASCII control character
@@ -76,8 +76,8 @@ class Curl
         'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
         'Y', 'Z', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
         'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '|', '~',
-    );
-    public static $RFC6265 = array(
+    ];
+    public static $RFC6265 = [
         // RFC 6265: "US-ASCII characters excluding CTLs, whitespace DQUOTE, comma, semicolon, and backslash".
         // %x21
         '!',
@@ -91,14 +91,14 @@ class Curl
         // %x5D-7E
         ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
         's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',
-    );
+    ];
 
-    private static $deferredProperties = array(
+    private static $deferredProperties = [
         'effectiveUrl',
         'rfc2616',
         'rfc6265',
         'totalTime',
-    );
+    ];
 
     /**
      * Construct
@@ -256,7 +256,7 @@ class Curl
      *
      * @return mixed Returns the value provided by exec.
      */
-    public function delete($url, $query_parameters = array(), $data = array())
+    public function delete($url, $query_parameters = [], $data = [])
     {
         if (is_array($url)) {
             $data = $query_parameters;
@@ -269,7 +269,7 @@ class Curl
 
         // Avoid including a content-length header in DELETE requests unless there is a message body. The following
         // would include "Content-Length: 0" in the request header:
-        //   curl_setopt($ch, CURLOPT_POSTFIELDS, array());
+        //   curl_setopt($ch, CURLOPT_POSTFIELDS, []);
         // RFC 2616 4.3 Message Body:
         //   The presence of a message-body in a request is signaled by the
         //   inclusion of a Content-Length or Transfer-Encoding header field in
@@ -464,7 +464,7 @@ class Curl
         }
 
         if ($ch === null) {
-            $this->responseCookies = array();
+            $this->responseCookies = [];
             $this->call($this->beforeSendCallback);
             $this->rawResponse = curl_exec($this->curl);
             $this->curlErrorCode = curl_errno($this->curl);
@@ -479,7 +479,7 @@ class Curl
         $this->rawResponseHeaders = $this->headerCallbackData->rawResponseHeaders;
         $this->responseCookies = $this->headerCallbackData->responseCookies;
         $this->headerCallbackData->rawResponseHeaders = '';
-        $this->headerCallbackData->responseCookies = array();
+        $this->headerCallbackData->responseCookies = [];
 
         // Include additional error code information in error message when possible.
         if ($this->curlError && function_exists('curl_strerror')) {
@@ -490,7 +490,7 @@ class Curl
         }
 
         $this->httpStatusCode = $this->getInfo(CURLINFO_HTTP_CODE);
-        $this->httpError = in_array(floor($this->httpStatusCode / 100), array(4, 5));
+        $this->httpError = in_array(floor($this->httpStatusCode / 100), [4, 5]);
         $this->error = $this->curlError || $this->httpError;
         $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;
 
@@ -559,7 +559,7 @@ class Curl
      *
      * @return mixed Returns the value provided by exec.
      */
-    public function get($url, $data = array())
+    public function get($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;
@@ -581,7 +581,7 @@ class Curl
      */
     public function getInfo($opt = null)
     {
-        $args = array();
+        $args = [];
         $args[] = $this->curl;
 
         if (func_num_args()) {
@@ -613,7 +613,7 @@ class Curl
      *
      * @return mixed Returns the value provided by exec.
      */
-    public function head($url, $data = array())
+    public function head($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;
@@ -634,7 +634,7 @@ class Curl
      *
      * @return mixed Returns the value provided by exec.
      */
-    public function options($url, $data = array())
+    public function options($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;
@@ -654,7 +654,7 @@ class Curl
      *
      * @return mixed Returns the value provided by exec.
      */
-    public function patch($url, $data = array())
+    public function patch($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;
@@ -728,7 +728,7 @@ class Curl
      *
      * @return mixed Returns the value provided by exec.
      */
-    public function put($url, $data = array())
+    public function put($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;
@@ -757,7 +757,7 @@ class Curl
      *
      * @return mixed Returns the value provided by exec.
      */
-    public function search($url, $data = array())
+    public function search($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;
@@ -1029,7 +1029,7 @@ class Curl
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
-        $headers = array();
+        $headers = [];
         foreach ($this->headers as $key => $value) {
             $headers[] = $key . ': ' . $value;
         }
@@ -1061,7 +1061,7 @@ class Curl
             }
         }
 
-        $headers = array();
+        $headers = [];
         foreach ($this->headers as $key => $value) {
             $headers[] = $key . ': ' . $value;
         }
@@ -1079,7 +1079,7 @@ class Curl
     {
         if ($mixed === false || is_callable($mixed)) {
             $this->jsonDecoder = $mixed;
-            $this->jsonDecoderArgs = array();
+            $this->jsonDecoderArgs = [];
         }
     }
 
@@ -1093,7 +1093,7 @@ class Curl
     {
         if ($mixed === false || is_callable($mixed)) {
             $this->xmlDecoder = $mixed;
-            $this->xmlDecoderArgs = array();
+            $this->xmlDecoderArgs = [];
         }
     }
 
@@ -1108,9 +1108,9 @@ class Curl
      */
     public function setOpt($option, $value)
     {
-        $required_options = array(
+        $required_options = [
             CURLOPT_RETURNTRANSFER => 'CURLOPT_RETURNTRANSFER',
-        );
+        ];
 
         if (in_array($option, array_keys($required_options), true) && $value !== true) {
             trigger_error($required_options[$option] . ' is a required option', E_USER_WARNING);
@@ -1385,7 +1385,7 @@ class Curl
     public function unsetHeader($key)
     {
         unset($this->headers[$key]);
-        $headers = array();
+        $headers = [];
         foreach ($this->headers as $key => $value) {
             $headers[] = $key . ': ' . $value;
         }
@@ -1620,7 +1620,7 @@ class Curl
     public function __get($name)
     {
         $return = null;
-        if (in_array($name, self::$deferredProperties) && is_callable(array($this, $getter = '__get_' . $name))) {
+        if (in_array($name, self::$deferredProperties) && is_callable([$this, $getter = '__get_' . $name])) {
             $return = $this->$name = $this->$getter();
         }
         return $return;
@@ -1768,7 +1768,7 @@ class Curl
             }
         }
 
-        return array(isset($raw_headers['0']) ? $raw_headers['0'] : '', $http_headers);
+        return [isset($raw_headers['0']) ? $raw_headers['0'] : '', $http_headers];
     }
 
     /**
@@ -1870,7 +1870,7 @@ class Curl
      */
     private function setEncodedCookie($key, $value)
     {
-        $name_chars = array();
+        $name_chars = [];
         foreach (str_split($key) as $name_char) {
             if (isset($this->rfc2616[$name_char])) {
                 $name_chars[] = $name_char;
@@ -1879,7 +1879,7 @@ class Curl
             }
         }
 
-        $value_chars = array();
+        $value_chars = [];
         foreach (str_split($value) as $value_char) {
             if (isset($this->rfc6265[$value_char])) {
                 $value_chars[] = $value_char;
@@ -1907,7 +1907,7 @@ class Curl
         // Create a placeholder to temporarily store the header callback data.
         $header_callback_data = new \stdClass();
         $header_callback_data->rawResponseHeaders = '';
-        $header_callback_data->responseCookies = array();
+        $header_callback_data->responseCookies = [];
         $this->headerCallbackData = $header_callback_data;
         $this->setOpt(CURLOPT_HEADERFUNCTION, createHeaderCallback($header_callback_data));
 

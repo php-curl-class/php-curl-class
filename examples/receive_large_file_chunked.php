@@ -5,7 +5,7 @@
 function file_get_contents_chunked($filename, $chunk_size, $callback) {
     $handle = fopen($filename, 'r');
     while (!feof($handle)) {
-        call_user_func_array($callback, array(fread($handle, $chunk_size)));
+        call_user_func_array($callback, [fread($handle, $chunk_size)]);
     }
     fclose($handle);
 }

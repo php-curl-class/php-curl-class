@@ -18,10 +18,10 @@ if (interface_exists('JsonSerializable')) {
 
         public function jsonSerialize()
         {
-            return array(
+            return [
                 'name' => $this->name,
                 'email' => $this->email,
-            );
+            ];
         }
     }
 }

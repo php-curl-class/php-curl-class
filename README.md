@@ -59,17 +59,17 @@ if ($curl->error) {
 ```php
 // https://www.example.com/search?q=keyword
 $curl = new Curl();
-$curl->get('https://www.example.com/search', array(
+$curl->get('https://www.example.com/search', [
     'q' => 'keyword',
-));
+]);
 ```
 
 ```php
 $curl = new Curl();
-$curl->post('https://www.example.com/login/', array(
+$curl->post('https://www.example.com/login/', [
     'username' => 'myusername',
     'password' => 'mypassword',
-));
+]);
 ```
 
 ```php
@@ -100,31 +100,31 @@ $curl->get('https://shortn.example.com/bHbVsP');
 
 ```php
 $curl = new Curl();
-$curl->put('https://api.example.com/user/', array(
+$curl->put('https://api.example.com/user/', [
     'first_name' => 'Zach',
     'last_name' => 'Borboa',
-));
+]);
 ```
 
 ```php
 $curl = new Curl();
-$curl->patch('https://api.example.com/profile/', array(
+$curl->patch('https://api.example.com/profile/', [
     'image' => '@path/to/file.jpg',
-));
+]);
 ```
 
 ```php
 $curl = new Curl();
-$curl->patch('https://api.example.com/profile/', array(
+$curl->patch('https://api.example.com/profile/', [
     'image' => new CURLFile('path/to/file.jpg'),
-));
+]);
 ```
 
 ```php
 $curl = new Curl();
-$curl->delete('https://api.example.com/user/', array(
+$curl->delete('https://api.example.com/user/', [
     'id' => '1234',
-));
+]);
 ```
 
 ```php
@@ -175,15 +175,15 @@ $multi_curl->complete(function($instance) {
     echo 'call completed' . "\n";
 });
 
-$multi_curl->addGet('https://www.google.com/search', array(
+$multi_curl->addGet('https://www.google.com/search', [
     'q' => 'hello world',
-));
-$multi_curl->addGet('https://duckduckgo.com/', array(
+]);
+$multi_curl->addGet('https://duckduckgo.com/', [
     'q' => 'hello world',
-));
-$multi_curl->addGet('https://www.bing.com/search', array(
+]);
+$multi_curl->addGet('https://www.bing.com/search', [
     'q' => 'hello world',
-));
+]);
 
 $multi_curl->start(); // Blocks until all items in the queue have been processed.
 ```
@@ -202,13 +202,13 @@ Curl::buildPostData($data)
 Curl::call()
 Curl::close()
 Curl::complete($callback)
-Curl::delete($url, $query_parameters = array(), $data = array())
+Curl::delete($url, $query_parameters = [], $data = [])
 Curl::disableTimeout()
 Curl::download($url, $mixed_filename)
 Curl::error($callback)
 Curl::exec($ch = null)
 Curl::execDone()
-Curl::get($url, $data = array())
+Curl::get($url, $data = [])
 Curl::getAttempts()
 Curl::getBeforeSendCallback()
 Curl::getCompleteCallback()
@@ -241,19 +241,19 @@ Curl::getRetryDecider()
 Curl::getSuccessCallback()
 Curl::getUrl()
 Curl::getXmlDecoder()
-Curl::head($url, $data = array())
+Curl::head($url, $data = [])
 Curl::isChildOfMultiCurl()
 Curl::isCurlError()
 Curl::isError()
 Curl::isHttpError()
-Curl::options($url, $data = array())
-Curl::patch($url, $data = array())
+Curl::options($url, $data = [])
+Curl::patch($url, $data = [])
 Curl::post($url, $data = '', $follow_303_with_post = false)
 Curl::progress($callback)
-Curl::put($url, $data = array())
+Curl::put($url, $data = [])
 Curl::removeHeader($key)
 Curl::reset()
-Curl::search($url, $data = array())
+Curl::search($url, $data = [])
 Curl::setBasicAuthentication($username, $password = '')
 Curl::setConnectTimeout($seconds)
 Curl::setCookie($key, $value)
@@ -295,15 +295,15 @@ Curl::verbose($on = true, $output = 'STDERR')
 MultiCurl::__construct($base_url = null)
 MultiCurl::__destruct()
 MultiCurl::addCurl(Curl $curl)
-MultiCurl::addDelete($url, $query_parameters = array(), $data = array())
+MultiCurl::addDelete($url, $query_parameters = [], $data = [])
 MultiCurl::addDownload($url, $mixed_filename)
-MultiCurl::addGet($url, $data = array())
-MultiCurl::addHead($url, $data = array())
-MultiCurl::addOptions($url, $data = array())
-MultiCurl::addPatch($url, $data = array())
+MultiCurl::addGet($url, $data = [])
+MultiCurl::addHead($url, $data = [])
+MultiCurl::addOptions($url, $data = [])
+MultiCurl::addPatch($url, $data = [])
 MultiCurl::addPost($url, $data = '', $follow_303_with_post = false)
-MultiCurl::addPut($url, $data = array())
-MultiCurl::addSearch($url, $data = array())
+MultiCurl::addPut($url, $data = [])
+MultiCurl::addSearch($url, $data = [])
 MultiCurl::beforeSend($callback)
 MultiCurl::close()
 MultiCurl::complete($callback)

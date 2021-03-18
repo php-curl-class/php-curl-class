@@ -3,14 +3,14 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Curl\Curl;
 
-$video_ids = array(
+$video_ids = [
     '9bZkp7q19f0',
     '_OBlgSz8sSM',
     'uelHwf8o7_U',
     'KQ6zr6kCPj8',
     'ASO_zypdnsQ',
     'pRpeEdMmmQ0',
-);
+];
 
 foreach ($video_ids as $video_id) {
     $curl = new Curl();

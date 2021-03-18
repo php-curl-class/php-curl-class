@@ -8,7 +8,7 @@ $max_retries = 3;
 $curl = new Curl();
 $curl->setRetry(function ($instance) use ($max_retries) {
     // Retry when the result of curl_getinfo($instance->curl, CURLINFO_HTTP_CODE) is 500, 503.
-    return $instance->retries < $max_retries && in_array($instance->httpStatusCode, array(500, 503));
+    return $instance->retries < $max_retries && in_array($instance->httpStatusCode, [500, 503]);
 });
 $curl->get('https://httpbin.org/status/503');
 

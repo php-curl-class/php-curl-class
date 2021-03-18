@@ -3,11 +3,11 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Curl\MultiCurl;
 
-$urls = array(
+$urls = [
     'tag3' => 'https://httpbin.org/post',
     'tag4' => 'https://httpbin.org/get',
     'tag5' => 'https://httpbin.org/html',
-);
+];
 
 $multi_curl = new MultiCurl();
 

@@ -4,11 +4,11 @@ require __DIR__ . '/../vendor/autoload.php';
 use Curl\ArrayUtil;
 use Curl\MultiCurl;
 
-$proxies = array(
+$proxies = [
     'someproxy.com:9999',
     'someproxy.com:80',
     'someproxy.com:443',
-);
+];
 $max_retries = 3;
 
 $multi_curl = new MultiCurl();

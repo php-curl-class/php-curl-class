@@ -78,7 +78,7 @@ class ArrayUtil
      */
     public static function arrayFlattenMultidim($array, $prefix = false)
     {
-        $return = array();
+        $return = [];
         if (is_array($array) || is_object($array)) {
             if (empty($array)) {
                 $return[$prefix] = '';

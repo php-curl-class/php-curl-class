@@ -14,9 +14,9 @@ require_once 'Helper.php';
 use Helper\Test;
 
 $http_raw_post_data = file_get_contents('php://input');
-$_PUT = array();
-$_PATCH = array();
-$_DELETE = array();
+$_PUT = [];
+$_PATCH = [];
+$_DELETE = [];
 
 $request_method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
 if (!array_key_exists('CONTENT_TYPE', $_SERVER) && array_key_exists('HTTP_CONTENT_TYPE', $_SERVER)) {
@@ -60,15 +60,15 @@ if ($test === 'http_basic_auth') {
     }
 
     header('Content-Type: application/json');
-    echo json_encode(array(
+    echo json_encode([
         'username' => $_SERVER['PHP_AUTH_USER'],
         'password' => $_SERVER['PHP_AUTH_PW'],
-    ));
+    ]);
     exit;
 } elseif ($test === 'http_digest_auth') {
-    $users = array(
+    $users = [
         'myusername' => 'mypassword',
-    );
+    ];
 
     $realm = 'Restricted area';
     $qop = 'auth';
@@ -87,7 +87,7 @@ if ($test === 'http_basic_auth') {
         exit;
     }
 
-    $data = array(
+    $data = [
         'nonce' => '',
         'nc' => '',
         'cnonce' => '',
@@ -95,7 +95,7 @@ if ($test === 'http_basic_auth') {
         'username' => '',
         'uri' => '',
         'response' => '',
-    );
+    ];
     preg_match_all(
         '@(' . implode('|', array_keys($data)) . ')=(?:([\'"])([^\2]+?)\2|([^\s,]+))@',
         $_SERVER['PHP_AUTH_DIGEST'],
@@ -140,10 +140,10 @@ if ($test === 'http_basic_auth') {
     exit;
 } elseif ($test === 'post_multidimensional' || $test === 'post_multidimensional_with_file') {
     header('Content-Type: application/json');
-    echo json_encode(array(
+    echo json_encode([
         'post' => $_POST,
         'files' => $_FILES,
-    ));
+    ]);
     exit;
 } elseif ($test === 'post_file_path_upload') {
     echo Helper\mime_type($_FILES[$key]['tmp_name']);
@@ -188,7 +188,7 @@ if ($test === 'http_basic_auth') {
     } else {
         header('Content-Type: application/json');
     }
-    echo json_encode(array(
+    echo json_encode([
         'null' => null,
         'true' => true,
         'false' => false,
@@ -196,7 +196,7 @@ if ($test === 'http_basic_auth') {
         'float' => 3.14,
         'empty' => '',
         'string' => 'string',
-    ));
+    ]);
     exit;
 } elseif ($test === 'xml_response') {
     $key = $_POST['key'];
@@ -246,9 +246,9 @@ if ($test === 'http_basic_auth') {
     move_uploaded_file($_FILES['image']['tmp_name'], $tmp_filename);
     header('Content-Type: application/json');
     header('ETag: ' . md5_file($tmp_filename));
-    echo json_encode(array(
+    echo json_encode([
         'file_path' => $tmp_filename,
-    ));
+    ]);
     exit;
 } elseif ($test === 'upload_cleanup') {
     $unsafe_file_path = $_POST['file_path'];
@@ -325,10 +325,10 @@ if ($test === 'http_basic_auth') {
     exit;
 } elseif ($test === 'delete_with_body') {
     header('Content-Type: application/json');
-    echo json_encode(array(
+    echo json_encode([
         'get' => $_GET,
         'delete' => $_DELETE,
-    ));
+    ]);
     exit;
 } elseif ($test === 'data_values') {
     header('Content-Type: application/json');
@@ -383,7 +383,7 @@ if ($test === 'http_basic_auth') {
 
 header('Content-Type: text/plain');
 
-$data_mapping = array(
+$data_mapping = [
     'cookie' => $_COOKIE,
     'delete' => $_GET,
     'get' => $_GET,
@@ -391,7 +391,7 @@ $data_mapping = array(
     'post' => $_POST,
     'put' => $_PUT,
     'server' => $_SERVER,
-);
+];
 
 if (!empty($test)) {
     $data = $data_mapping[$test];

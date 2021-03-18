@@ -11,21 +11,21 @@ $multi_curl->complete(function ($instance) {
 
 $curl_1 = new Curl();
 $curl_1->setOpt(CURLOPT_POST, true);
-$curl_1->setOpt(CURLOPT_POSTFIELDS, array(
+$curl_1->setOpt(CURLOPT_POSTFIELDS, [
     'to' => 'alice',
     'subject' => 'hi',
     'body' => 'hi Alice',
-));
+]);
 $curl_1->setUrl('https://httpbin.org/post');
 $multi_curl->addCurl($curl_1);
 
 $curl_2 = new Curl();
 $curl_2->setOpt(CURLOPT_POST, true);
-$curl_2->setOpt(CURLOPT_POSTFIELDS, array(
+$curl_2->setOpt(CURLOPT_POSTFIELDS, [
     'to' => 'bob',
     'subject' => 'hi',
     'body' => 'hi Bob',
-));
+]);
 $curl_2->setUrl('https://httpbin.org/post');
 $multi_curl->addCurl($curl_2);
 

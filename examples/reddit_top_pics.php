@@ -3,7 +3,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Curl\Curl;
 
-$data = array();
+$data = [];
 if (isset($_GET['after'])) {
     $data['after'] = $_GET['after'];
 }

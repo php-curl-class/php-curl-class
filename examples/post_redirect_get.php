@@ -3,20 +3,20 @@
 // using GET requests).
 $curl = new Curl();
 $curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
-$curl->post('https://www.example.com/login/', array(
+$curl->post('https://www.example.com/login/', [
     'username' => 'myusername',
     'password' => 'mypassword',
-));
+]);
 
 // POST data and follow 303 redirections by POSTing data again. Please note
 // that 303 redirections should not be handled this way.
 // https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.4
 $curl = new Curl();
 $curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
-$curl->post('https://www.example.com/login/', array(
+$curl->post('https://www.example.com/login/', [
     'username' => 'myusername',
     'password' => 'mypassword',
-), false);
+], false);
 
 // A POST request performs a post-redirect-get by default. Other request
 // methods force an option which conflicts with the post-redirect-get behavior.

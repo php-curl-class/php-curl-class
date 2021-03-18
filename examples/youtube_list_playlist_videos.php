@@ -8,12 +8,12 @@ const YOUTUBE_API_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 $playlistId = 'RDHJb0VYVtaNc';
 
 $curl = new Curl();
-$curl->get('https://www.googleapis.com/youtube/v3/playlistItems', array(
+$curl->get('https://www.googleapis.com/youtube/v3/playlistItems', [
     'key' => YOUTUBE_API_KEY,
     'maxResults' => '50',
     'part' => 'snippet',
     'playlistId' => $playlistId,
-));
+]);
 
 echo 'Songs in this playlist:' . "\n";
 

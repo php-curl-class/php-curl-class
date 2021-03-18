@@ -8,14 +8,14 @@ use Curl\Curl;
 $curl = new Curl();
 $curl->delete(
     'https://httpbin.org/delete',
-    array(
+    [
         'key' => 'value',
-    ),
-    array(
+    ],
+    [
         'a' => '1',
         'b' => '2',
         'c' => '3',
-    )
+    ]
 );
 
 if ($curl->error) {

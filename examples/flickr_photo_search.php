@@ -5,7 +5,7 @@ use Curl\Curl;
 
 const FLICKR_API_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 
-$data = array(
+$data = [
     'method' => 'flickr.photos.search',
     'api_key' => FLICKR_API_KEY,
     'text' => 'happy',
@@ -13,7 +13,7 @@ $data = array(
     'safe_search' => '3',
     'format' => 'json',
     'nojsoncallback' => '1',
-);
+];
 
 $curl = new Curl();
 $curl->get('https://api.flickr.com/services/rest/', $data);

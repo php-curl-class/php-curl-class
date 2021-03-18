@@ -6,11 +6,11 @@ use Curl\Curl;
 // curl --request PATCH "https://httpbin.org/patch" --data "a=1&b=2&c=3"
 
 $curl = new Curl();
-$curl->patch('https://httpbin.org/patch', array(
+$curl->patch('https://httpbin.org/patch', [
     'a' => '1',
     'b' => '2',
     'c' => '3',
-));
+]);
 
 if ($curl->error) {
     echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";

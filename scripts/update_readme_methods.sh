@@ -34,7 +34,7 @@ echo "${after}" >> "README.md"
 script=$(cat <<'EOF'
     $data = file_get_contents('README.md');
     preg_match_all('/^### ([\w ]+)/m', $data, $matches);
-    $toc = array();
+    $toc = [];
     foreach ($matches['1'] as $match) {
         $href = '#' . str_replace(' ', '-', strtolower($match));
         $toc[] = '- [' . $match . '](' . $href . ')';

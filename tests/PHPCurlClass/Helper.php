@@ -60,7 +60,7 @@ class Test
         \PHPUnit\Framework\Assert::assertEquals($request_method, $this->curl->responseHeaders['X-REQUEST-METHOD']);
     }
 
-    public function chainRequests($first, $second, $data = array())
+    public function chainRequests($first, $second, $data = [])
     {
         $this->chainedRequest($first, $data);
         $this->chainedRequest($second, $data);
@@ -69,7 +69,7 @@ class Test
     public static function getTestUrl($port)
     {
         if (getenv('PHP_CURL_CLASS_LOCAL_TEST') === 'yes' ||
-            in_array(getenv('CI_PHP_VERSION'), array('7.0', '7.1', '7.2', '7.3', '7.4', '8.0', 'nightly'))) {
+            in_array(getenv('CI_PHP_VERSION'), ['7.0', '7.1', '7.2', '7.3', '7.4', '8.0', 'nightly'])) {
             return 'http://127.0.0.1:' . $port . '/';
         } else {
             return self::TEST_URL;
@@ -129,9 +129,9 @@ if (function_exists('finfo_open')) {
 
 function upload_file_to_server($upload_file_path) {
     $upload_test = new Test();
-    $upload_test->server('upload_response', 'POST', array(
+    $upload_test->server('upload_response', 'POST', [
         'image' => '@' . $upload_file_path,
-    ));
+    ]);
     $uploaded_file_path = $upload_test->curl->response->file_path;
 
     // Ensure files are not the same path.
@@ -147,9 +147,9 @@ function remove_file_from_server($uploaded_file_path) {
     $download_test = new Test();
 
     // Ensure file successfully removed.
-    assert('true' === $download_test->server('upload_cleanup', 'POST', array(
+    assert('true' === $download_test->server('upload_cleanup', 'POST', [
         'file_path' => $uploaded_file_path,
-    )));
+    ]));
     assert(file_exists($uploaded_file_path) === false);
 }
 
@@ -172,7 +172,7 @@ function get_multi_curl_property_value($instance, $property_name)
 function get_request_stats($request_stats, $multi_curl)
 {
     $messages =
-        array('total duration: ' . sprintf('%.6f', round($multi_curl->stopTime - $multi_curl->startTime, 6)) . "\n");
+        ['total duration: ' . sprintf('%.6f', round($multi_curl->stopTime - $multi_curl->startTime, 6)) . "\n"];
 
     foreach ($request_stats as $instance_id => &$value) {
         $value['relative_start'] = sprintf('%.6f', round($value['start'] - $multi_curl->startTime, 6));

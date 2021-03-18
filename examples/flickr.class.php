@@ -46,23 +46,23 @@ class Flickr
 
     private function getOAuthParameters()
     {
-        return array(
+        return [
             'oauth_nonce' => md5(microtime() . mt_rand()),
             'oauth_timestamp' => time(),
             'oauth_consumer_key' => FLICKR_API_KEY,
             'oauth_signature_method' => 'HMAC-SHA1',
             'oauth_version' => '1.0',
-        );
+        ];
     }
 
     private function getSignature($request_method, $url, $parameters)
     {
         ksort($parameters, SORT_STRING);
-        $request = implode('&', array(
+        $request = implode('&', [
             rawurlencode($request_method),
             rawurlencode($url),
             rawurlencode(http_build_query($parameters, '', '&', PHP_QUERY_RFC3986)),
-        ));
+        ]);
         $key = FLICKR_API_SECRET . '&';
         if (!empty($_SESSION['oauth_access_token_secret'])) {
             $key .= $_SESSION['oauth_access_token_secret'];
@@ -76,12 +76,12 @@ class Flickr
     private function getRequestToken()
     {
         $oauth_data = $this->getOAuthParameters();
-        $oauth_data['oauth_callback'] = implode('', array(
+        $oauth_data['oauth_callback'] = implode('', [
             isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http',
             '://',
             $_SERVER['SERVER_NAME'],
             $_SERVER['SCRIPT_NAME'],
-        ));
+        ]);
 
         $request_token_url = 'https://www.flickr.com/services/oauth/request_token';
         $oauth_data['oauth_signature'] = $this->getSignature('POST', $request_token_url, $oauth_data);
@@ -93,10 +93,10 @@ class Flickr
         $_SESSION['oauth_token_secret'] = $parts['oauth_token_secret'];
 
         // Continue to Flickr for user's authorization.
-        header('Location: https://secure.flickr.com/services/oauth/authorize?' . http_build_query(array(
+        header('Location: https://secure.flickr.com/services/oauth/authorize?' . http_build_query([
             'oauth_token' => $parts['oauth_token'],
             'perms' => 'write',
-        )));
+        ]));
         exit;
     }
 

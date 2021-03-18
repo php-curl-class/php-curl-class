@@ -3,10 +3,10 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Curl\MultiCurl;
 
-$headers = array(
+$headers = [
     'Content-Type' => 'application/json',
     'X-CUSTOM-HEADER' => 'my-custom-header',
-);
+];
 
 $multi_curl = new MultiCurl();
 

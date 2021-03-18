@@ -101,7 +101,7 @@ class Url
         $r = $this->parseUrl($this->relativeUrl);
         $r['authorized'] = isset($r['scheme']) || isset($r['host']) || isset($r['port'])
             || isset($r['user']) || isset($r['pass']);
-        $target = array();
+        $target = [];
         if (isset($r['scheme'])) {
             $target['scheme'] = $r['scheme'];
             $target['host'] = isset($r['host']) ? $r['host'] : null;
@@ -173,7 +173,7 @@ class Url
         // $9 = Related (fragment)
         preg_match('/^(([^:\/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/', $url, $output_array);
 
-        $parts = array();
+        $parts = [];
         if (isset($output_array['1']) && $output_array['1'] !== '') {
             $parts['scheme'] = $output_array['1'];
         }

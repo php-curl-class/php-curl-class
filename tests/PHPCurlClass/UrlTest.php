@@ -52,16 +52,16 @@ class UrlTest extends \PHPUnit\Framework\TestCase
     public function testRemoveDotSegments()
     {
         // TODO: Add tests using "Normal Examples" and "Abnormal Examples" from RFC 3986.
-        $tests = array(
-            array(
+        $tests = [
+            [
                 'path' => '/a/b/c/./../../g',
                 'expected' => '/a/g',
-            ),
-            array(
+            ],
+            [
                 'path' => 'mid/content=5/../6',
                 'expected' => 'mid/6',
-            ),
-        );
+            ],
+        ];
         foreach ($tests as $test) {
             $actual_path = Url::removeDotSegments($test['path']);
             $this->assertEquals($test['expected'], $actual_path);
@@ -87,14 +87,14 @@ class UrlTest extends \PHPUnit\Framework\TestCase
         //          |           |            |            |        |
         //       scheme     authority       path        query   fragment
         $input_url = 'foo://example.com:8042/over/there?name=ferret#nose';
-        $expected_parts = array(
+        $expected_parts = [
             'scheme' => 'foo',
             'host' => 'example.com',
             'port' => '8042',
             'path' => '/over/there',
             'query' => 'name=ferret',
             'fragment' => 'nose',
-        );
+        ];
 
         $this->assertEquals($expected_parts, parse_url($input_url));
 
@@ -110,7 +110,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
     public function testParseUrlExample()
     {
         $input_url = 'http://username:password@hostname:9090/path?arg=value#anchor';
-        $expected_parts = array(
+        $expected_parts = [
             'scheme' => 'http',
             'host' => 'hostname',
             'port' => '9090',
@@ -119,7 +119,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             'path' => '/path',
             'query' => 'arg=value',
             'fragment' => 'anchor',
-        );
+        ];
 
         $this->assertEquals($expected_parts, parse_url($input_url));
 

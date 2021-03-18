@@ -12,9 +12,9 @@ $curl = new Curl();
 // then try uncommenting the following line:
 // $curl->setHeader('Content-Type', 'multipart/form-data');
 
-$curl->post('https://httpbin.org/post', array(
+$curl->post('https://httpbin.org/post', [
     'myfile' => $myfile,
-));
+]);
 
 if ($curl->error) {
     echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";

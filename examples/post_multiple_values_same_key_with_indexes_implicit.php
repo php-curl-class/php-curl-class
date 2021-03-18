@@ -6,9 +6,9 @@ use Curl\Curl;
 // curl "https://httpbin.org/post" -d "foo[]=bar&foo[]=baz"
 
 $curl = new Curl();
-$curl->post('https://httpbin.org/post', array(
-    'foo' => array(
+$curl->post('https://httpbin.org/post', [
+    'foo' => [
         'bar',
         'baz',
-    ),
-));
+    ],
+]);

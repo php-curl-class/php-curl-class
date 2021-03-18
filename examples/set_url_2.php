@@ -12,8 +12,8 @@ $curl->setUrl('https://www.example.com/search');
 
 for ($i = 1; $i <= $pages; $i++) {
     // https://www.example.com/search?q=coffee&page=N
-    $curl->get(array(
+    $curl->get([
         'q' => $q,
         'page' => $i,
-    ));
+    ]);
 }

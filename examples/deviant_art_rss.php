@@ -4,10 +4,10 @@ require __DIR__ . '/../vendor/autoload.php';
 use Curl\Curl;
 
 $curl = new Curl();
-$curl->get('http://backend.deviantart.com/rss.xml', array(
+$curl->get('http://backend.deviantart.com/rss.xml', [
     'q' => 'boost:popular in:photography/people/fashion',
     'type' => 'deviation',
-));
+]);
 
 foreach ($curl->response->channel->item as $entry) {
     $thumbnails = $entry->children('http://search.yahoo.com/mrss/')->thumbnail;
