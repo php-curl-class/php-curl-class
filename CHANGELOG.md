@@ -4,14 +4,21 @@ PHP Curl Class uses semantic versioning with version numbers written as `MAJOR.M
 `MINOR` and `PATCH` version changes. It is recommended to review `MAJOR` changes prior to upgrade as there may be
 backwards-incompatible changes that will affect existing usage.
 
-### Changes
+## 9.0.0 - 2021-03-19
 
-(TODO: Add changes for next `MAJOR` version release.)
+### Changed
 
-### Manual Review
+- Use short array syntax
 
-Manually view changes on the [comparison page](https://github.com/php-curl-class/php-curl-class/compare/). For example,
-visit [7.4.0...8.0.0](https://github.com/php-curl-class/php-curl-class/compare/7.4.0...8.0.0) to compare the changes for
+### Removed
+
+- Support for PHP 5.3, 5.4, 5.5, and 5.6 [#380](https://github.com/php-curl-class/php-curl-class/issues/380)
+
+## Manual Review
+
+A manual review of changes is possible using the
+[comparison page](https://github.com/php-curl-class/php-curl-class/compare/). For example, visit
+[7.4.0...8.0.0](https://github.com/php-curl-class/php-curl-class/compare/7.4.0...8.0.0) to compare the changes for
 the `MAJOR` upgrade from 7.4.0 to 8.0.0. Comparing against `HEAD` is also possible using the `tag...HEAD` syntax
 ([8.3.0...HEAD](https://github.com/php-curl-class/php-curl-class/compare/8.3.0...HEAD)).
 
