@@ -4,15 +4,14 @@
 <meta charset="utf-8" />
 <title>PHP Curl Class</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="PHP Curl Class: HTTP requests made easy" />
+<meta name="description" content="Easily send HTTP requests and integrate with web APIs using PHP Curl Class" />
 <style>
 
 body {
-    color: #444;
+    color: #333;
     font-size: 16px;
     line-height: 1.6;
     margin: 40px auto;
-    max-width: 640px;
     padding: 0 10px;
 }
 
@@ -25,28 +24,40 @@ a:hover {
     text-decoration: underline;
 }
 
-ul {
-    font-size: 18px;
-    margin-left: 12px;
-    margin-top: 42px;
+h1 {
+    font-size: 4em;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin: 36px 0 18px;
+    text-align: center;
 }
 
+h2 {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1.8em;
+    font-weight: 200;
+    text-align: center;
+}
 
 code {
-    background-color: #f7f7f7;
+    background-color: #f6f8fa;
     color: #b3b3b3;
     display: block;
     font-family: monospace;
-    padding: 8px 12px;
+    margin: 0 auto;
+    max-width: 640px;
+    padding: 14px 20px;
 }
 
 code span {
     color: #333;
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
+p {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 640px;
+    text-align: center;
 }
 
 .pl-c {
@@ -140,7 +151,8 @@ ul {
 </head>
 <body>
 
-<h1>PHP Curl Class: HTTP requests made easy</h1>
+<h1>PHP Curl Class</h1>
+<h2>Easily send HTTP requests and integrate with web APIs</h2>
 
 <code>
 $ composer require php-curl-class/php-curl-class &amp;&gt; /dev/null<br />
