@@ -74,7 +74,7 @@ if [[ ! -z "${trailing_whitespace}" ]]; then
 fi
 
 # Prohibit long lines in php files.
-long_lines=$(find .. -type "f" -iname "*.php" ! -path "*/vendor/*" -exec awk '{print FILENAME":"NR" "length}' {} \; | awk '$2 > 120')
+long_lines=$(find .. -type "f" -iname "*.php" ! -path "*/vendor/*" ! -path "*/www/*" -exec awk '{print FILENAME":"NR" "length}' {} \; | awk '$2 > 120')
 if [[ ! -z "${long_lines}" ]]; then
     result="$(echo -e "${long_lines}" | perl -pe 's/^(.*)$/Long lines found in \1/')"
     echo "${result}"
