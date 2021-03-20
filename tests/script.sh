@@ -6,7 +6,7 @@ set -x
 # Use composer's phpunit and phpcs by adding composer bin directory to the path environment variable.
 export PATH="${PWD}/vendor/bin:${PATH}"
 
-errors=0
+errors=()
 
 source "check_syntax.sh"
 
@@ -25,9 +25,21 @@ fi
 "${phpunit_to_use}" --configuration "phpunit.xml" --debug --verbose
 if [[ "${?}" -ne 0 ]]; then
     echo "Error: phpunit command failed"
-    ((errors++))
+    errors+=("phpunit command failed")
 fi
 
 source "check_coding_standards.sh"
 
-exit "${errors}"
+error_count="${#errors[@]}"
+if [[ "${error_count}" -ge 1 ]]; then
+    echo -e "\nErrors found: ${error_count}"
+
+    iter=0
+    for value in "${errors[@]}"; do
+        ((iter++))
+        echo -e "\nError ${iter} of ${error_count}:"
+        echo "${value}" | perl -pe 's/^(.*)$/\t\1/'
+    done
+fi
+
+exit "${#errors[@]}"

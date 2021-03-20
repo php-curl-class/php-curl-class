@@ -5,5 +5,5 @@ cd "${SCRIPT_DIR}"
 find .. -type "f" -iname "*.php" ! -path "*/vendor/*" | xargs -L "1" php -l
 if [[ "${?}" -ne 0 ]]; then
     echo "Error: php syntax checks failed"
-    ((errors++))
+    errors+=("php syntax checks failed")
 fi
