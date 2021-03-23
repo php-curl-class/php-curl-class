@@ -3107,7 +3107,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->start();
     }
 
-    public function testRetryMulti()
+    public function testRetry()
     {
         $tests = [
             [
@@ -3184,7 +3184,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function testRetryCallableMulti()
+    public function testRetryCallable()
     {
         $tests = [
             [
