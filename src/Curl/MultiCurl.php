@@ -3,6 +3,7 @@
 namespace Curl;
 
 use Curl\ArrayUtil;
+use Curl\Url;
 
 class MultiCurl
 {
