@@ -4,6 +4,7 @@ namespace CurlTest;
 
 use Curl\CaseInsensitiveArray;
 use Curl\Curl;
+use Curl\Url;
 use Helper\Test;
 use Helper\User;
 
@@ -3386,11 +3387,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         foreach ($tests as $test) {
-            $curl_1 = new Curl();
-            $reflector = new \ReflectionObject($curl_1);
-            $method = $reflector->getMethod('buildUrl');
-            $method->setAccessible(true);
-            $actual_url = $method->invoke($curl_1, $test['args']['url'], $test['args']['mixed_data']);
+            $actual_url = Url::buildUrl($test['args']['url'], $test['args']['mixed_data']);
             $this->assertEquals($test['expected'], $actual_url);
 
             $curl_2 = new Curl();
@@ -3413,13 +3410,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
                 ini_set('arg_separator.output', $arg_separator);
             }
 
-            $curl = new Curl();
-
-            $reflector = new \ReflectionObject($curl);
-            $method = $reflector->getMethod('buildUrl');
-            $method->setAccessible(true);
-
-            $actual_url = $method->invoke($curl, $base_url, $data);
+            $actual_url = Url::buildUrl($base_url, $data);
             $this->assertEquals($expected_url, $actual_url);
         }
     }

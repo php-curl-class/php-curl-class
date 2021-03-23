@@ -4,6 +4,7 @@ namespace Curl;
 
 use Curl\ArrayUtil;
 use Curl\Decoder;
+use Curl\Url;
 
 class Curl
 {
@@ -1303,7 +1304,7 @@ class Curl
      */
     public function setUrl($url, $mixed_data = '')
     {
-        $built_url = $this->buildUrl($url, $mixed_data);
+        $built_url = Url::buildUrl($url, $mixed_data);
 
         if ($this->url === null) {
             $this->url = (string)new Url($built_url);
@@ -1678,29 +1679,6 @@ class Curl
         $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function ($k, $v) {
             return $k . '=' . $v;
         }, array_keys($this->cookies), array_values($this->cookies))));
-    }
-
-    /**
-     * Build Url
-     *
-     * @access private
-     * @param  $url
-     * @param  $mixed_data
-     *
-     * @return string
-     */
-    private function buildUrl($url, $mixed_data = '')
-    {
-        $query_string = '';
-        if (!empty($mixed_data)) {
-            $query_mark = strpos($url, '?') > 0 ? '&' : '?';
-            if (is_string($mixed_data)) {
-                $query_string .= $query_mark . $mixed_data;
-            } elseif (is_array($mixed_data)) {
-                $query_string .= $query_mark . http_build_query($mixed_data, '', '&');
-            }
-        }
-        return $url . $query_string;
     }
 
     /**
