@@ -1891,7 +1891,10 @@ class Curl
 
         $this->setOpt(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
-        $this->setUrl($base_url);
+
+        if ($base_url !== null) {
+            $this->setUrl($base_url);
+        }
     }
 }
 
