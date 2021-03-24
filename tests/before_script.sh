@@ -1,3 +1,9 @@
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "${SCRIPT_DIR}"
+
+# Use composer's phpunit and phpcs by adding composer bin directory to the path environment variable.
+export PATH="${PWD}/vendor/bin:${PATH}"
+
 remove_expectWarning() {
     # Fix "Call to undefined method CurlTest\CurlTest::expectWarning()".
     sed -i'' -e"/->expectWarning(/d" "$(pwd)/tests/PHPCurlClass/PHP"*
