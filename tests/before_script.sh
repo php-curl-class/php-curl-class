@@ -1,35 +1,3 @@
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "${SCRIPT_DIR}"
-
-# Use composer's phpunit and phpcs by adding composer bin directory to the path environment variable.
-export PATH="${PWD}/vendor/bin:${PATH}"
-
-remove_expectWarning() {
-    # Fix "Call to undefined method CurlTest\CurlTest::expectWarning()".
-    sed -i'' -e"/->expectWarning(/d" "$(pwd)/tests/PHPCurlClass/PHP"*
-}
-
-replace_assertStringContainsString() {
-    # -->assertStringContainsString(
-    # +->assertContains(
-    find='->assertStringContainsString('
-    replace='->assertContains('
-    sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
-}
-
-phpunit_v6_5_shim() {
-    remove_expectWarning
-    replace_assertStringContainsString
-}
-
-phpunit_v7_5_shim() {
-    remove_expectWarning
-}
-
-phpunit_v8_1_shim() {
-    remove_expectWarning
-}
-
 start_php_servers() {
     for i in $(seq 0 6); do
         port=8000
@@ -48,24 +16,6 @@ composer install --prefer-source --no-interaction
 
 # Let test server know we should allow testing.
 export PHP_CURL_CLASS_TEST_MODE_ENABLED="yes"
-
-# Determine which phpunit to use.
-if [[ -f "../vendor/bin/phpunit" ]]; then
-    phpunit_to_use="../vendor/bin/phpunit"
-else
-    phpunit_to_use="phpunit"
-fi
-
-phpunit_version="$("${phpunit_to_use}" --version | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")"
-echo "${phpunit_version}"
-
-if [[ "${phpunit_version}" == "6.5."* ]]; then
-    phpunit_v6_5_shim
-elif [[ "${phpunit_version}" == "7.5."* ]]; then
-    phpunit_v7_5_shim
-elif [[ "${phpunit_version}" == "8.1."* ]]; then
-    phpunit_v8_1_shim
-fi
 
 if [[ "${CI_PHP_VERSION}" == "7.0" ]]; then
     start_php_servers
