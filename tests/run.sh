@@ -6,9 +6,6 @@ set -x
 # Let test server know we should allow testing.
 export PHP_CURL_CLASS_TEST_MODE_ENABLED="yes"
 
-# Let test server know this is a local test.
-export PHP_CURL_CLASS_LOCAL_TEST="yes"
-
 # Start test servers. Run servers on different ports to allow simultaneous
 # requests without blocking.
 server_count=7

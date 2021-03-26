@@ -68,12 +68,15 @@ class Test
 
     public static function getTestUrl($port)
     {
-        if (getenv('PHP_CURL_CLASS_LOCAL_TEST') === 'yes' ||
-            in_array(getenv('CI_PHP_VERSION'), ['7.0', '7.1', '7.2', '7.3', '7.4', '8.0', 'nightly'])) {
-            return 'http://127.0.0.1:' . $port . '/';
-        } else {
-            return self::TEST_URL;
-        }
+        // Return url pointing to a test server running on the specified port.
+        // To avoid installing and configuring a web server for the tests, PHP's
+        // built-in development server is used. As each development server can
+        // only handle one request at a time (single-threaded) and some tests
+        // expect the server to handle requests simultaneously, multiple
+        // instances are run on different ports. With this setup, requests in
+        // the test can be made to the various port urls without having to be
+        // handled sequentially.
+        return 'http://127.0.0.1:' . $port . '/';
     }
 }
 
