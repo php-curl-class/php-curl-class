@@ -3,12 +3,12 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Curl\MultiCurl;
 
-$server_count = 5;
+$server_count = 7;
 $urls = [];
 $port = 8000;
 for ($i = 0; $i < $server_count; $i++) {
-    $port += 1;
     $urls[] = 'http://localhost:' . $port . '/';
+    $port += 1;
 }
 
 $multi_curl = new MultiCurl();
