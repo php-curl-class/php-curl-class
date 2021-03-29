@@ -17,18 +17,4 @@ composer install --prefer-source --no-interaction
 # Let test server know we should allow testing.
 export PHP_CURL_CLASS_TEST_MODE_ENABLED="yes"
 
-if [[ "${CI_PHP_VERSION}" == "7.0" ]]; then
-    start_php_servers
-elif [[ "${CI_PHP_VERSION}" == "7.1" ]]; then
-    start_php_servers
-elif [[ "${CI_PHP_VERSION}" == "7.2" ]]; then
-    start_php_servers
-elif [[ "${CI_PHP_VERSION}" == "7.3" ]]; then
-    start_php_servers
-elif [[ "${CI_PHP_VERSION}" == "7.4" ]]; then
-    start_php_servers
-elif [[ "${CI_PHP_VERSION}" == "8.0" ]]; then
-    start_php_servers
-elif [[ "${CI_PHP_VERSION}" == "nightly" ]]; then
-    start_php_servers
-fi
+start_php_servers
