@@ -4,7 +4,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Curl\Curl;
 
 $start_url = 'https://php.net/images/logos/php-med-trans.png';
-$final_url = 'https://secure.php.net/images/logos/php-med-trans.png';
+$final_url = 'https://www.php.net/images/logos/php-med-trans.png';
 
 $curl = new Curl();
 $curl->setOpt(CURLOPT_FOLLOWLOCATION, true);

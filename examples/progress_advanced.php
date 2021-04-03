@@ -11,7 +11,7 @@ $curl->progress(function ($client, $download_size, $downloaded, $upload_size, $u
         return;
     }
 
-    // Display a progress bar: xxx% [=======>             ]
+    // Display a progress bar: xxx% [=======>                                ]
     $progress_size = 40;
     $fraction_downloaded = $downloaded / $download_size;
     $dots = round($fraction_downloaded * $progress_size);
@@ -29,4 +29,4 @@ $curl->progress(function ($client, $download_size, $downloaded, $upload_size, $u
 $curl->complete(function ($instance) {
     echo "\n" . 'download complete' . "\n";
 });
-$curl->download('https://secure.php.net/distributions/manual/php_manual_en.html.gz', '/tmp/php_manual_en.html.gz');
+$curl->download('https://www.php.net/distributions/manual/php_manual_en.html.gz', '/tmp/php_manual_en.html.gz');
