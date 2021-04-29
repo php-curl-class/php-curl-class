@@ -346,12 +346,12 @@ class Curl
     public function _fastDownload($url, $filename, $connections = 4) {
         // First we need to retrive the 'Content-Length' header.
         // Use GET because not all hosts support HEAD requests.
-        $this->setOpts([
+        $this->setOpts(array(
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_NOBODY        => true,
             CURLOPT_HEADER        => true,
             CURLOPT_ENCODING      => '',
-        ]);
+        ));
         $this->setUrl($url);
         $this->exec();
 
@@ -371,7 +371,7 @@ class Curl
         $nextChunk = $chunkSize;
 
         // We need this later.
-        $file_parts = [];
+        $file_parts = array();
 
         $multi_curl = new MultiCurl();
         $multi_curl->setConcurrency($connections);
