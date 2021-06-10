@@ -177,19 +177,7 @@ class="pl-pds"></span>{"login":"php-curl-class","id":7654321,"avatar_url": ...}<
 class="pl-pds"></span></span></span><br />
 </code>
 
-<ul>
-    <li>
-        <a href="https://github.com/php-curl-class/php-curl-class">
-            https://github.com/php-curl-class/php-curl-class
-        </a>
-    </li>
-    <li>
-        <a href="https://packagist.org/packages/php-curl-class/php-curl-class">
-            https://packagist.org/packages/php-curl-class/php-curl-class
-        </a>
-    </li>
-</ul>
-
+<p>
 <a href="https://github.com/php-curl-class/php-curl-class/releases/">
     <img alt="" src="https://img.shields.io/github/release/php-curl-class/php-curl-class.svg?style=flat-square">
 </a>
@@ -202,6 +190,7 @@ class="pl-pds"></span></span></span><br />
 <a href="https://github.com/php-curl-class/php-curl-class/releases/">
     <img alt="" src="https://img.shields.io/packagist/dt/php-curl-class/php-curl-class.svg?style=flat-square">
 </a>
+</p>
 
 </body>
 </html>
