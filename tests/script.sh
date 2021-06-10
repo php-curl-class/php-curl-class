@@ -1,8 +1,6 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}"
 
-set -x
-
 # Use composer's phpunit and phpcs by adding composer bin directory to the path environment variable.
 export PATH="${PWD}/vendor/bin:${PATH}"
 
