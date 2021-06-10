@@ -3264,6 +3264,123 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    public function testRelativeUrl()
+    {
+        $multi_curl = new MultiCurl(Test::TEST_URL . 'path/');
+        $this->assertEquals('http://127.0.0.1:8000/path/', (string)$multi_curl->baseUrl);
+
+        $get_1 = $multi_curl->addGet('test', array(
+            'a' => '1',
+            'b' => '2',
+        ));
+        $this->assertEquals('http://127.0.0.1:8000/path/test?a=1&b=2', (string)$get_1->url);
+
+        $get_2 = $multi_curl->addGet('/root', array(
+            'c' => '3',
+            'd' => '4',
+        ));
+        $this->assertEquals('http://127.0.0.1:8000/root?c=3&d=4', (string)$get_2->url);
+
+        $tests = array(
+            array(
+                'args' => array(
+                    'http://www.example.com/',
+                    '/foo',
+                ),
+                'expected' => 'http://www.example.com/foo',
+            ),
+            array(
+                'args' => array(
+                    'http://www.example.com/',
+                    '/foo/',
+                ),
+                'expected' => 'http://www.example.com/foo/',
+            ),
+            array(
+                'args' => array(
+                    'http://www.example.com/',
+                    '/dir/page.html',
+                ),
+                'expected' => 'http://www.example.com/dir/page.html',
+            ),
+            array(
+                'args' => array(
+                    'http://www.example.com/dir1/page2.html',
+                    '/dir/page.html',
+                ),
+                'expected' => 'http://www.example.com/dir/page.html',
+            ),
+            array(
+                'args' => array(
+                    'http://www.example.com/dir1/page2.html',
+                    'dir/page.html',
+                ),
+                'expected' => 'http://www.example.com/dir1/dir/page.html',
+            ),
+            array(
+                'args' => array(
+                    'http://www.example.com/dir1/dir3/page.html',
+                    '../dir/page.html',
+                ),
+                'expected' => 'http://www.example.com/dir1/dir/page.html',
+            ),
+        );
+        foreach ($tests as $test) {
+            $multi_curl = new MultiCurl($test['args']['0']);
+            $multi_curl->setUrl($test['args']['1']);
+            $this->assertEquals(
+                $test['expected'],
+                $multi_curl->getOpt(CURLOPT_URL),
+                "Joint URLs: '{$test['args']['0']}', '{$test['args']['1']}'"
+            );
+
+            $multi_curl = new MultiCurl($test['args']['0']);
+            $multi_curl->setUrl($test['args']['1'], array('a' => '1', 'b' => '2'));
+            $this->assertEquals(
+                $test['expected'] . '?a=1&b=2',
+                $multi_curl->getOpt(CURLOPT_URL),
+                "Joint URL '{$test['args']['0']}' with parameters a=1, b=2"
+            );
+
+            $multi_curl = new MultiCurl();
+            $multi_curl->setUrl($test['args']['0']);
+            $multi_curl->setUrl($test['args']['1']);
+            $this->assertEquals(
+                $test['expected'],
+                $multi_curl->getOpt(CURLOPT_URL),
+                "Joint URLs: '{$test['args']['0']}', '{$test['args']['1']}'"
+            );
+
+            $multi_curl = new MultiCurl();
+            $multi_curl->setUrl($test['args']['0'], array('a' => '1', 'b' => '2'));
+            $multi_curl->setUrl($test['args']['1']);
+            $this->assertEquals(
+                $test['expected'],
+                $multi_curl->getOpt(CURLOPT_URL),
+                "Joint URL '{$test['args']['0']}' with parameters a=1, b=2 and URL '{$test['args']['1']}'"
+            );
+
+            $multi_curl = new MultiCurl();
+            $multi_curl->setUrl($test['args']['0']);
+            $multi_curl->setUrl($test['args']['1'], array('a' => '1', 'b' => '2'));
+            $this->assertEquals(
+                $test['expected'] . '?a=1&b=2',
+                $multi_curl->getOpt(CURLOPT_URL),
+                "Joint URL '{$test['args']['0']}' and URL '{$test['args']['1']}' with parameters a=1, b=2"
+            );
+
+            $multi_curl = new MultiCurl();
+            $multi_curl->setUrl($test['args']['0'], array('a' => '1', 'b' => '2'));
+            $multi_curl->setUrl($test['args']['1'], array('c' => '3', 'd' => '4'));
+            $this->assertEquals(
+                $test['expected'] . '?c=3&d=4',
+                $multi_curl->getOpt(CURLOPT_URL),
+                "Joint URL '{$test['args']['0']}' with parameters a=1, b=2 " .
+                "and URL '{$test['args']['1']}' with parameters c=3, d=4"
+            );
+        }
+    }
+
     public function testPostDataEmptyJson()
     {
         $multi_curl = new MultiCurl();

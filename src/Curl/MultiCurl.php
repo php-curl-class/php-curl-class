@@ -73,6 +73,8 @@ class MultiCurl
             $query_parameters = $url;
             $url = $this->baseUrl;
         }
+        $this->setUrl($url, $query_parameters);
+
         $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
         $curl->setUrl($url, $query_parameters);
@@ -92,6 +94,8 @@ class MultiCurl
      */
     public function addDownload($url, $mixed_filename)
     {
+        $this->setUrl($url);
+
         $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
         $curl->setUrl($url);
@@ -156,6 +160,8 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
+        $this->setUrl($url, $data);
+
         $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
         $curl->setUrl($url, $data);
@@ -179,6 +185,8 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
+        $this->setUrl($url, $data);
+
         $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
         $curl->setUrl($url, $data);
@@ -202,6 +210,8 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
+        $this->setUrl($url, $data);
+
         $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
         $curl->setUrl($url, $data);
@@ -225,6 +235,7 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
+        $this->setUrl($url, $data);
 
         $curl = new Curl($this->baseUrl);
 
@@ -258,6 +269,7 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
+        $this->setUrl($url, $data);
 
         $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
@@ -296,6 +308,8 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
+        $this->setUrl($url, $data);
+
         $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
         $curl->setUrl($url);
@@ -323,6 +337,8 @@ class MultiCurl
             $data = $url;
             $url = $this->baseUrl;
         }
+        $this->setUrl($url, $data);
+
         $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
         $curl->setUrl($url);
@@ -858,10 +874,19 @@ class MultiCurl
      *
      * @access public
      * @param  $url
+     * @param  $mixed_data
      */
-    public function setUrl($url)
+    public function setUrl($url, $mixed_data = '')
     {
-        $this->baseUrl = $url;
+        $built_url = Url::buildUrl($url, $mixed_data);
+
+        if ($this->baseUrl === null) {
+            $this->baseUrl = (string)new Url($built_url);
+        } else {
+            $this->baseUrl = (string)new Url($this->baseUrl, $built_url);
+        }
+
+        $this->setOpt(CURLOPT_URL, $this->baseUrl);
     }
 
     /**
