@@ -4,7 +4,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Curl\Curl;
 
 $curl = new Curl();
-$curl->get('https://secure.php.net/');
+$curl->get('https://www.php.net/');
 
 if ($curl->error) {
     echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";

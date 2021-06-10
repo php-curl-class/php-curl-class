@@ -11,6 +11,6 @@ $callback = function ($instance, $tmpfile) {
 };
 
 $multi_curl = new MultiCurl();
-$multi_curl->addDownload('https://secure.php.net/images/logos/php-med-trans.png', $callback);
+$multi_curl->addDownload('https://www.php.net/images/logos/php-med-trans.png', $callback);
 $multi_curl->addDownload('https://upload.wikimedia.org/wikipedia/commons/c/c1/PHP_Logo.png', $callback);
 $multi_curl->start();

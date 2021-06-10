@@ -16,6 +16,6 @@ $multi_curl->complete(function ($instance) {
     echo 'call to "' . $instance->url . '" completed.' . "\n";
 });
 
-$multi_curl->addDownload('https://secure.php.net/images/logos/php-med-trans.png', '/tmp/php-med-trans.png');
+$multi_curl->addDownload('https://www.php.net/images/logos/php-med-trans.png', '/tmp/php-med-trans.png');
 $multi_curl->addDownload('https://upload.wikimedia.org/wikipedia/commons/c/c1/PHP_Logo.png', '/tmp/PHP_Logo.png');
 $multi_curl->start();

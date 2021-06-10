@@ -11,5 +11,5 @@ $callback = function ($instance, $tmpfile) {
 };
 
 $curl = new Curl();
-$curl->download('https://secure.php.net/images/logos/php-med-trans.png', $callback);
+$curl->download('https://www.php.net/images/logos/php-med-trans.png', $callback);
 $curl->download('https://upload.wikimedia.org/wikipedia/commons/c/c1/PHP_Logo.png', $callback);

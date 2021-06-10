@@ -14,4 +14,4 @@ $curl->progress(function ($client, $download_size, $downloaded, $upload_size, $u
     $percent = floor($downloaded * 100 / $download_size);
     echo ' ' . $percent . '%' . "\r";
 });
-$curl->download('https://secure.php.net/distributions/manual/php_manual_en.html.gz', '/tmp/php_manual_en.html.gz');
+$curl->download('https://www.php.net/distributions/manual/php_manual_en.html.gz', '/tmp/php_manual_en.html.gz');
