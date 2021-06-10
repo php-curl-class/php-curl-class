@@ -64,6 +64,10 @@ p {
     text-align: center;
 }
 
+p:last-child {
+    font-size: 200%;
+}
+
 .pl-c {
     color: #969896;
 }
@@ -193,6 +197,12 @@ p {
             alt=""
             src="https://img.shields.io/packagist/dt/php-curl-class/php-curl-class.svg?style=flat-square">
     </a>
+</p>
+
+<p>
+    <a
+        href="https://www.buymeacoffee.com/zachborboa"
+        title="Buy me a coffee!">☕</a>
 </p>
 
 </body>
