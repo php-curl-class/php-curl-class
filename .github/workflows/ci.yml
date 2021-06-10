@@ -28,6 +28,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Test
-        run: bash tests/script.sh
+        run: bash tests/ci.sh
         env:
           CI_PHP_VERSION: ${{ matrix.php }}
