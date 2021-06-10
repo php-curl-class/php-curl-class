@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - php5.x-master
   pull_request:
   schedule:
     - cron: '0 17 * * *'
