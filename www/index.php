@@ -158,40 +158,19 @@ p {
 <h1>PHP Curl Class</h1>
 <h2>Easily send HTTP requests and integrate with web APIs</h2>
 
-<code>
-$ composer require php-curl-class/php-curl-class &amp;&gt; /dev/null<br />
-$ php --interactive<br />
-php &gt; <span class="pl-s1"><span class="pl-k">require</span> <span class="pl-c1">__DIR__</span> <span
-class="pl-k">.</span> <span class="pl-s"><span class="pl-pds">'</span>/vendor/autoload.php<span
-class="pl-pds">'</span></span>;</span><br />
-php &gt; <span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">\Curl\Curl</span>;</span><br />
-php &gt; <span class="pl-s1"><span class="pl-smi">$curl</span> <span class="pl-k">=</span> <span
-class="pl-k">new</span> <span class="pl-c1">\Curl\</span><span class="pl-c1">Curl</span>();</span><br />
-php &gt; <span class="pl-s1"><span class="pl-smi">$curl</span><span
-class="pl-k">-&gt;</span>setBasicAuthentication(<span class="pl-s"><span class="pl-pds">'</span>user<span
-class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>pass<span
-class="pl-pds">'</span></span>);</span><br />
-php &gt; <span class="pl-s1"><span class="pl-smi">$curl</span><span class="pl-k">-&gt;</span>get(<span
-class="pl-s"><span class="pl-pds">'</span>https://api.github.com/user<span class="pl-pds">'</span></span>);</span><br />
-php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span
-class="pl-k">-&gt;</span><span class="pl-smi">httpStatusCode</span>;</span><br />
-<span class="pl-s1"><span class="pl-c1">200</span></span><br />
-php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span
-class="pl-k">-&gt;</span><span class="pl-smi">responseHeaders</span>[<span class="pl-s"><span
-class="pl-pds">'</span>content-type<span class="pl-pds">'</span></span>];</span><br />
-<span class="pl-s1"><span class="pl-s"><span class="pl-pds"></span>application/json; charset=utf-8<span
-class="pl-pds"></span></span></span><br />
-php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span
-class="pl-k">-&gt;</span><span class="pl-smi">response</span><span class="pl-k">-&gt;</span><span
-class="pl-smi">login</span>;</span><br />
-<span class="pl-s1"><span class="pl-s"><span class="pl-pds"></span>php-curl-class<span
-class="pl-pds"></span></span></span><br />
-php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span
-class="pl-k">-&gt;</span><span class="pl-smi">rawResponse</span>;</span><br />
-<span class="pl-s1"><span class="pl-s"><span
-class="pl-pds"></span>{"login":"php-curl-class","id":7654321,"avatar_url": ...}<span
-class="pl-pds"></span></span></span><br />
-</code>
+<figure>
+    <code>
+        <span class="pl-s1"><span class="pl-c1">$</span>curl</span> = <span class="pl-k">new</span> <span class="pl-v">Curl</span>();<br />
+        <span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-en">get</span>(<span class="pl-s">'https://www.example.com/'</span>);<br />
+        <br />
+        <span class="pl-k">if</span> (<span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-c1">error</span>) {<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="pl-k">echo</span> <span class="pl-s">'Error: '</span> . <span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-c1">errorCode</span> . <span class="pl-s">': '</span> . <span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-c1">errorMessage</span> . <span class="pl-s">"\n"</span>;<br />
+        } <span class="pl-k">else</span> {<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="pl-k">echo</span> <span class="pl-s">'Success! Here is the response:'</span> . <span class="pl-s">"\n"</span>;<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="pl-en">var_dump</span>(<span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-c1">response</span>);<br />
+        }<br />
+    </code>
+</figure>
 
 <p>
     <a href="https://github.com/php-curl-class/php-curl-class/releases/">
