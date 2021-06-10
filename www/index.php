@@ -191,16 +191,24 @@ class="pl-pds"></span></span></span><br />
 
 <p>
     <a href="https://github.com/php-curl-class/php-curl-class/releases/">
-        <img alt="" src="https://img.shields.io/github/release/php-curl-class/php-curl-class.svg?style=flat-square">
+        <img
+            alt=""
+            src="https://img.shields.io/github/release/php-curl-class/php-curl-class.svg?style=flat-square">
     </a>
     <a href="https://github.com/php-curl-class/php-curl-class/blob/master/LICENSE">
-        <img alt="" src="https://img.shields.io/github/license/php-curl-class/php-curl-class.svg?style=flat-square">
+        <img
+            alt=""
+            src="https://img.shields.io/github/license/php-curl-class/php-curl-class.svg?style=flat-square">
     </a>
     <a href="https://github.com/php-curl-class/php-curl-class/actions/workflows/ci.yml">
-        <img alt="" src="https://img.shields.io/github/workflow/status/php-curl-class/php-curl-class/ci?style=flat-square">
+        <img
+            alt=""
+            src="https://img.shields.io/github/workflow/status/php-curl-class/php-curl-class/ci?style=flat-square">
     </a>
     <a href="https://github.com/php-curl-class/php-curl-class/releases/">
-        <img alt="" src="https://img.shields.io/packagist/dt/php-curl-class/php-curl-class.svg?style=flat-square">
+        <img
+            alt=""
+            src="https://img.shields.io/packagist/dt/php-curl-class/php-curl-class.svg?style=flat-square">
     </a>
 </p>
 
