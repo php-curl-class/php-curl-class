@@ -33,7 +33,7 @@ class ArrayUtil
      */
     public static function is_array_assoc($array)
     {
-        return $this->isArrayAssoc($array);
+        return static::isArrayAssoc($array);
     }
 
     /**
@@ -64,7 +64,7 @@ class ArrayUtil
      */
     public static function is_array_multidim($array)
     {
-        return $this->isArrayMultidim($array);
+        return static::isArrayMultidim($array);
     }
 
     /**
@@ -123,7 +123,7 @@ class ArrayUtil
      */
     public static function array_flatten_multidim($array, $prefix = false)
     {
-        return $this->arrayFlattenMultidim($array, $prefix);
+        return static::arrayFlattenMultidim($array, $prefix);
     }
 
     /**
@@ -150,6 +150,6 @@ class ArrayUtil
      */
     public static function array_random($array)
     {
-        return $this->arrayRandom($array);
+        return static::arrayRandom($array);
     }
 }
