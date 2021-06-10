@@ -90,3 +90,5 @@ var_dump($raw_response);
 $ composer self-update
 $ composer --version
 ```
+
+Compare your version of composer with latest release ![](https://img.shields.io/github/v/release/composer/composer.svg?style=flat-square&color=rgba(0,0,0,0)&label=) which is also listed on [composer's releases page](https://github.com/composer/composer/releases).
