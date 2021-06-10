@@ -34,23 +34,27 @@ h1 {
 
 h2 {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 1.8em;
+    font-size: 1.5em;
     font-weight: 200;
+    text-align: center;
+}
+
+figure {
     text-align: center;
 }
 
 code {
     background-color: #f6f8fa;
     color: #b3b3b3;
-    display: block;
-    font-family: monospace;
+    display: inline-block;
+    font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
     margin: 0 auto;
-    max-width: 640px;
     padding: 14px 20px;
+    text-align: left;
 }
 
 code span {
-    color: #333;
+    color: #24292e;
 }
 
 p {
