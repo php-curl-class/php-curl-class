@@ -1,9 +1,3 @@
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "${SCRIPT_DIR}"
-
-# Use composer's phpunit and phpcs by adding composer bin directory to the path environment variable.
-export PATH="${PWD}/vendor/bin:${PATH}"
-
 install_nginx() {
     $superuser apt-get install -y nginx
 }
@@ -34,65 +28,6 @@ EOF
 
 reload_nginx() {
     $superuser /etc/init.d/nginx restart
-}
-
-php_v5_3_shim() {
-    remove_double_colon_class_name_resolution
-}
-
-phpunit_shim() {
-    # -class CurlTest extends \PHPUnit\Framework\TestCase
-    # +class CurlTest extends \PHPUnit_Framework_TestCase
-    find='class CurlTest extends \\PHPUnit\\Framework\\TestCase'
-    replace='class CurlTest extends \\PHPUnit_Framework_TestCase'
-    sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
-
-    # -\PHPUnit\Framework\Assert
-    # +\PHPUnit_Framework_Assert
-    find='\\PHPUnit\\Framework\\Assert'
-    replace='\\PHPUnit_Framework_Assert'
-    sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
-    sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/Helper.php"
-
-    # -\PHPUnit\Framework\Error\Warning
-    # +\PHPUnit_Framework_Error_Warning
-    find='\\PHPUnit\\Framework\\Error\\Warning'
-    replace='\\PHPUnit_Framework_Error_Warning'
-    sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
-}
-
-remove_double_colon_class_name_resolution() {
-    sed -i'' -e"/::class/d" "$(pwd)/tests/PHPCurlClass/PHP"*
-}
-
-remove_expectWarning() {
-    # Fix "Call to undefined method CurlTest\CurlTest::expectWarning()".
-    sed -i'' -e"/->expectWarning(/d" "$(pwd)/tests/PHPCurlClass/PHP"*
-}
-
-replace_assertStringContainsString() {
-    # -->assertStringContainsString(
-    # +->assertContains(
-    find='->assertStringContainsString('
-    replace='->assertContains('
-    sed -i'' -e"s/${find}/${replace}/" "$(pwd)/tests/PHPCurlClass/PHP"*
-}
-
-phpunit_v4_8_shim() {
-    replace_assertStringContainsString
-}
-
-phpunit_v6_5_shim() {
-    remove_expectWarning
-    replace_assertStringContainsString
-}
-
-phpunit_v7_5_shim() {
-    remove_expectWarning
-}
-
-phpunit_v8_1_shim() {
-    remove_expectWarning
 }
 
 start_php_servers() {
@@ -126,24 +61,6 @@ fi
 
 # Let test server know we should allow testing.
 export PHP_CURL_CLASS_TEST_MODE_ENABLED="yes"
-
-# Determine which phpunit to use.
-if [[ -f "../vendor/bin/phpunit" ]]; then
-    phpunit_to_use="../vendor/bin/phpunit"
-else
-    phpunit_to_use="phpunit"
-fi
-
-phpunit_version="$("${phpunit_to_use}" --version | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")"
-echo "${phpunit_version}"
-
-if [[ "${phpunit_version}" == "6.5."* ]]; then
-    phpunit_v6_5_shim
-elif [[ "${phpunit_version}" == "7.5."* ]]; then
-    phpunit_v7_5_shim
-elif [[ "${phpunit_version}" == "8.1."* ]]; then
-    phpunit_v8_1_shim
-fi
 
 if [[ "${CI_PHP_VERSION}" == "5.3" ]]; then
     if ! [ -x "$(command -v add-apt-repository)" ]; then
