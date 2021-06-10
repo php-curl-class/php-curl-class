@@ -2977,7 +2977,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl = new MultiCurl();
         $multi_curl->addGet(Test::TEST_URL);
         $multi_curl->start();
-        $this->assertNotNull($multi_curl->multiCurl);
+        $this->assertTrue(is_object($multi_curl->multiCurl) || is_resource($multi_curl->multiCurl));
         $multi_curl->close();
         $this->assertNull($multi_curl->multiCurl);
     }

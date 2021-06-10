@@ -2996,11 +2996,9 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testClose()
     {
-        $test = new Test();
-        $curl = $test->curl;
-        $curl->setHeader('X-DEBUG-TEST', 'post');
+        $curl = new Curl();
         $curl->post(Test::TEST_URL);
-        $this->assertNotNull($curl->curl);
+        $this->assertTrue(is_object($curl->curl) || is_resource($curl->curl));
         $curl->close();
         $this->assertNull($curl->curl);
     }

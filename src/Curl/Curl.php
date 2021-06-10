@@ -212,10 +212,10 @@ class Curl
      */
     public function close()
     {
-        if ($this->curl !== null) {
+        if (is_resource($this->curl) || $this->curl instanceof \CurlHandle) {
             curl_close($this->curl);
-            $this->curl = null;
         }
+        $this->curl = null;
         $this->options = null;
         $this->jsonDecoder = null;
         $this->jsonDecoderArgs = null;
@@ -1439,7 +1439,7 @@ class Curl
      */
     public function reset()
     {
-        if (function_exists('curl_reset') && $this->curl !== null) {
+        if (function_exists('curl_reset') && (is_resource($this->curl) || $this->curl instanceof \CurlHandle)) {
             curl_reset($this->curl);
         } else {
             $this->curl = curl_init();
