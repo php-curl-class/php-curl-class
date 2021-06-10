@@ -85,6 +85,29 @@ class Url
     }
 
     /**
+     * Build Url
+     *
+     * @access public
+     * @param  $url
+     * @param  $mixed_data
+     *
+     * @return string
+     */
+    public static function buildUrl($url, $mixed_data = '')
+    {
+        $query_string = '';
+        if (!empty($mixed_data)) {
+            $query_mark = strpos($url, '?') > 0 ? '&' : '?';
+            if (is_string($mixed_data)) {
+                $query_string .= $query_mark . $mixed_data;
+            } elseif (is_array($mixed_data)) {
+                $query_string .= $query_mark . http_build_query($mixed_data, '', '&');
+            }
+        }
+        return $url . $query_string;
+    }
+
+    /**
      * Absolutize url.
      *
      * Combine the base and relative url into an absolute url.
