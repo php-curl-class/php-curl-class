@@ -1,3 +1,9 @@
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "${SCRIPT_DIR}"
+
+# Use composer's phpunit and phpcs by adding composer bin directory to the path environment variable.
+export PATH="${PWD}/vendor/bin:${PATH}"
+
 install_nginx() {
     $superuser apt-get install -y nginx
 }
