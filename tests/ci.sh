@@ -1,3 +1,29 @@
+remove_expectWarning() {
+    # Fix "Call to undefined method CurlTest\CurlTest::expectWarning()".
+    sed -i'' -e"/->expectWarning(/d" "./PHPCurlClass/PHP"*
+}
+
+replace_assertStringContainsString() {
+    # -->assertStringContainsString(
+    # +->assertContains(
+    find='->assertStringContainsString('
+    replace='->assertContains('
+    sed -i'' -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+}
+
+phpunit_v6_5_shim() {
+    remove_expectWarning
+    replace_assertStringContainsString
+}
+
+phpunit_v7_5_shim() {
+    remove_expectWarning
+}
+
+phpunit_v8_1_shim() {
+    remove_expectWarning
+}
+
 set -x
 
 composer self-update
@@ -25,32 +51,6 @@ for i in $(seq 0 $(("${server_count}" - 1))); do
 
     php -S "127.0.0.1:${port}" -t PHPCurlClass/ &
 done
-
-remove_expectWarning() {
-    # Fix "Call to undefined method CurlTest\CurlTest::expectWarning()".
-    sed -i'' -e"/->expectWarning(/d" "./PHPCurlClass/PHP"*
-}
-
-replace_assertStringContainsString() {
-    # -->assertStringContainsString(
-    # +->assertContains(
-    find='->assertStringContainsString('
-    replace='->assertContains('
-    sed -i'' -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
-}
-
-phpunit_v6_5_shim() {
-    remove_expectWarning
-    replace_assertStringContainsString
-}
-
-phpunit_v7_5_shim() {
-    remove_expectWarning
-}
-
-phpunit_v8_1_shim() {
-    remove_expectWarning
-}
 
 errors=()
 
