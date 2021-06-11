@@ -393,10 +393,10 @@ class MultiCurl
             $curl->close();
         }
 
-        if ($this->multiCurl !== null) {
+        if (is_resource($this->multiCurl) || $this->multiCurl instanceof \CurlMultiHandle) {
             curl_multi_close($this->multiCurl);
-            $this->multiCurl = null;
         }
+        $this->multiCurl = null;
     }
 
     /**
