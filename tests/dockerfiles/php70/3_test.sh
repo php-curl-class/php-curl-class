@@ -10,8 +10,7 @@ export CI_PHP_VERSION="7.0" &&
     touch "/tmp/.composer_updated" ||
     exit 0
 ) &&
-bash "tests/before_script.sh" &&
-bash "tests/script.sh"
+bash "tests/run.sh"
 END
 )
 set -x
