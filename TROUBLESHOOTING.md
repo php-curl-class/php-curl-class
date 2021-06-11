@@ -7,7 +7,7 @@ $ cd php-curl-class/
 $ composer update
 $ composer info
 ```
-Compare your version with latest release ![](https://img.shields.io/github/v/release/php-curl-class/php-curl-class.svg?style=flat-square&color=rgba(0,0,0,0)&label=) which is also listed on the [releases page](https://github.com/php-curl-class/php-curl-class/releases).
+Compare your version with latest release ![](https://img.shields.io/github/release/php-curl-class/php-curl-class.svg?style=flat-square&sort=semver&color=rgba(0,0,0,0)&label=) which is also listed on the [releases page](https://github.com/php-curl-class/php-curl-class/releases).
 
 ### Ensure php is using the latest version of curl
 
