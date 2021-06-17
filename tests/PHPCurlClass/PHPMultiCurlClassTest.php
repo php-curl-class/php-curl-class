@@ -4678,4 +4678,44 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals('Value16', $headers['Key16']);
         }
     }
+
+    public function testSetAutoReferer()
+    {
+        $multi_curl = new MultiCurl();
+        $this->assertNull($multi_curl->getOpt(CURLOPT_AUTOREFERER));
+        $multi_curl->setAutoReferer(true);
+        $this->assertTrue($multi_curl->getOpt(CURLOPT_AUTOREFERER));
+    }
+
+    public function testSetAutoReferrer()
+    {
+        $multi_curl = new MultiCurl();
+        $this->assertNull($multi_curl->getOpt(CURLOPT_AUTOREFERER));
+        $multi_curl->setAutoReferrer(true);
+        $this->assertTrue($multi_curl->getOpt(CURLOPT_AUTOREFERER));
+    }
+
+    public function testSetFollowLocation()
+    {
+        $multi_curl = new MultiCurl();
+        $this->assertNull($multi_curl->getOpt(CURLOPT_FOLLOWLOCATION));
+        $multi_curl->setFollowLocation(true);
+        $this->assertTrue($multi_curl->getOpt(CURLOPT_FOLLOWLOCATION));
+    }
+
+    public function testSetForbidReuse()
+    {
+        $multi_curl = new MultiCurl();
+        $this->assertNull($multi_curl->getOpt(CURLOPT_FORBID_REUSE));
+        $multi_curl->setForbidReuse(true);
+        $this->assertTrue($multi_curl->getOpt(CURLOPT_FORBID_REUSE));
+    }
+
+    public function testSetMaximumRedirects()
+    {
+        $multi_curl = new MultiCurl();
+        $this->assertNull($multi_curl->getOpt(CURLOPT_MAXREDIRS));
+        $multi_curl->setMaximumRedirects(3);
+        $this->assertEquals(3, $multi_curl->getOpt(CURLOPT_MAXREDIRS));
+    }
 }
