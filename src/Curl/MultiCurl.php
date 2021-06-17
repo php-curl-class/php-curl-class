@@ -1072,6 +1072,56 @@ class MultiCurl
     }
 
     /**
+     * Set auto referer
+     *
+     * @access public
+     */
+    public function setAutoReferer($auto_referer = true)
+    {
+        $this->setAutoReferrer($auto_referer);
+    }
+
+    /**
+     * Set auto referrer
+     *
+     * @access public
+     */
+    public function setAutoReferrer($auto_referrer = true)
+    {
+        $this->setOpt(CURLOPT_AUTOREFERER, $auto_referrer);
+    }
+
+    /**
+     * Set follow location
+     *
+     * @access public
+     */
+    public function setFollowLocation($follow_location = true)
+    {
+        $this->setOpt(CURLOPT_FOLLOWLOCATION, $follow_location);
+    }
+
+    /**
+     * Set forbid reuse
+     *
+     * @access public
+     */
+    public function setForbidReuse($forbid_reuse = true)
+    {
+        $this->setOpt(CURLOPT_FORBID_REUSE, $forbid_reuse);
+    }
+
+    /**
+     * Set maximum redirects
+     *
+     * @access public
+     */
+    public function setMaximumRedirects($maximum_redirects)
+    {
+        $this->setOpt(CURLOPT_MAXREDIRS, $maximum_redirects);
+    }
+
+    /**
      * Destruct
      *
      * @access public

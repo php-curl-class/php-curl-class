@@ -3987,4 +3987,44 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('Value15', $headers['Key15']);
         $this->assertEquals('Value16', $headers['Key16']);
     }
+
+    public function testSetAutoReferer()
+    {
+        $curl = new Curl();
+        $this->assertNull($curl->getOpt(CURLOPT_AUTOREFERER));
+        $curl->setAutoReferer(true);
+        $this->assertTrue($curl->getOpt(CURLOPT_AUTOREFERER));
+    }
+
+    public function testSetAutoReferrer()
+    {
+        $curl = new Curl();
+        $this->assertNull($curl->getOpt(CURLOPT_AUTOREFERER));
+        $curl->setAutoReferrer(true);
+        $this->assertTrue($curl->getOpt(CURLOPT_AUTOREFERER));
+    }
+
+    public function testSetFollowLocation()
+    {
+        $curl = new Curl();
+        $this->assertNull($curl->getOpt(CURLOPT_FOLLOWLOCATION));
+        $curl->setFollowLocation(true);
+        $this->assertTrue($curl->getOpt(CURLOPT_FOLLOWLOCATION));
+    }
+
+    public function testSetForbidReuse()
+    {
+        $curl = new Curl();
+        $this->assertNull($curl->getOpt(CURLOPT_FORBID_REUSE));
+        $curl->setForbidReuse(true);
+        $this->assertTrue($curl->getOpt(CURLOPT_FORBID_REUSE));
+    }
+
+    public function testSetMaximumRedirects()
+    {
+        $curl = new Curl();
+        $this->assertNull($curl->getOpt(CURLOPT_MAXREDIRS));
+        $curl->setMaximumRedirects(3);
+        $this->assertEquals(3, $curl->getOpt(CURLOPT_MAXREDIRS));
+    }
 }
