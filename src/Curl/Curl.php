@@ -685,7 +685,7 @@ class Curl
      *       - According to the HTTP specs (see [1]), a 303 redirection should be followed using
      *         the GET method. 301 and 302 must not.
      *       - In order to force a 303 redirection to be performed using the same method, the
-     *         underlying cURL object must be set in a special state (the CURLOPT_CURSTOMREQUEST
+     *         underlying cURL object must be set in a special state (the CURLOPT_CUSTOMREQUEST
      *         option must be set to the method to use after the redirection). Due to a limitation
      *         of the cURL extension of PHP < 5.5.11 ([2], [3]), it is not possible to reset this
      *         option. Using these PHP engines, it is therefore impossible to restore this behavior
