@@ -4,6 +4,30 @@ PHP Curl Class uses semantic versioning with version numbers written as `MAJOR.M
 `MINOR` and `PATCH` version changes. It is recommended to review `MAJOR` changes prior to upgrade as there may be
 backwards-incompatible changes that will affect existing usage.
 
+## 9.2.0 - 2021-06-23
+
+### Added
+
+- Additional Curl::set\* and MultiCurl::set\* helper methods
+
+    ```
+    Curl::setAutoReferer()
+    Curl::setAutoReferrer()
+    Curl::setFollowLocation()
+    Curl::setForbidReuse()
+    Curl::setMaximumRedirects()
+    MultiCurl::setAutoReferer()
+    MultiCurl::setAutoReferrer()
+    MultiCurl::setFollowLocation()
+    MultiCurl::setForbidReuse()
+    MultiCurl::setMaximumRedirects()
+    ```
+
+### Fixed
+
+- Closing curl handles [#670](https://github.com/php-curl-class/php-curl-class/issues/670)
+- Use of "$this" in non-object context [#671](https://github.com/php-curl-class/php-curl-class/pull/671)
+
 ## 9.1.0 - 2021-03-24
 
 ### Added
