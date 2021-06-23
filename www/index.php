@@ -180,7 +180,7 @@ p:last-child {
     <a href="https://github.com/php-curl-class/php-curl-class/releases/">
         <img
             alt=""
-            src="https://img.shields.io/github/release/php-curl-class/php-curl-class.svg?style=flat-square" />
+            src="https://img.shields.io/github/release/php-curl-class/php-curl-class.svg?style=flat-square&sort=semver" />
     </a>
     <a href="https://github.com/php-curl-class/php-curl-class/blob/master/LICENSE">
         <img
