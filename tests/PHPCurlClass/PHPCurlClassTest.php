@@ -4027,4 +4027,28 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $curl->setMaximumRedirects(3);
         $this->assertEquals(3, $curl->getOpt(CURLOPT_MAXREDIRS));
     }
+
+    public function testDiagnose()
+    {
+        $test = new Test();
+        $test->server('error_message', 'GET');
+
+        ob_start();
+        $test->curl->diagnose();
+        $output = ob_get_contents();
+        ob_end_clean();
+
+        $this->assertStringContainsString('--- Begin PHP Curl Class diagnostic output ---', $output);
+        $this->assertStringContainsString('PHP Curl Class version: ' . Curl::VERSION, $output);
+        $this->assertStringContainsString('PHP version: ' . PHP_VERSION, $output);
+        $this->assertStringContainsString('Sent an HTTP GET request ', $output);
+        $this->assertStringContainsString('Request contained no body.', $output);
+        $this->assertStringContainsString('Received an HTTP status code of 401.', $output);
+        $this->assertStringContainsString(
+            'Received an HTTP 401 error response with message "HTTP/1.1 401 Unauthorized".',
+            $output
+        );
+        $this->assertStringContainsString('Received an empty response body.', $output);
+        $this->assertStringContainsString('--- End PHP Curl Class diagnostic output ---', $output);
+    }
 }

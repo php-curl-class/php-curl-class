@@ -1,5 +1,13 @@
 # Troubleshooting
 
+### Debug using the diagnose method
+
+```php
+$curl = new Curl();
+$curl->get('https://www.example.com/');
+$curl->diagnose(); // <-- HERE
+```
+
 ### Debug the entire curl instance
 
 ```php

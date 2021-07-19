@@ -1433,6 +1433,89 @@ class Curl
     }
 
     /**
+     * Diagnose
+     *
+     * @access public
+     */
+    public function diagnose()
+    {
+        echo "\n";
+        echo '--- Begin PHP Curl Class diagnostic output ---' . "\n";
+        echo 'PHP Curl Class version: ' . self::VERSION . "\n";
+        echo 'PHP version: ' . PHP_VERSION . "\n";
+
+        $curl_version = curl_version();
+        echo 'Curl version: ' . $curl_version['version'] . "\n";
+
+        if ($this->attempts === 0) {
+            echo 'No HTTP requests have been made.' . "\n";
+        } else {
+            $request_method = $this->getOpt(CURLOPT_CUSTOMREQUEST);
+            $request_url = $this->getOpt(CURLOPT_URL);
+            $request_headers_count = count($this->requestHeaders);
+            $request_body_empty = empty($this->getOpt(CURLOPT_POSTFIELDS));
+            $response_length = isset($this->responseHeaders['Content-Length']) ?
+                $this->responseHeaders['Content-Length'] : '(not specified in response)';
+            $response_headers_count = count($this->responseHeaders);
+
+            echo
+                'Sent an HTTP '   . $request_method . ' request to "' . $request_url . '".' . "\n" .
+                'Request contained ' . (
+                    $request_headers_count === 1 ? 'no headers.' :
+                    $request_headers_count . ' headers:'
+                ) . "\n";
+            if ($this->requestHeaders !== null) {
+                $i = 1;
+                foreach ($this->requestHeaders as $key => $value) {
+                    echo '    ' . $i . ' ' . $key . ': ' . $value . "\n";
+                    $i += 1;
+                }
+            }
+
+            echo 'Request contained ' . ($request_body_empty ? 'no body' : 'a body') . '.' . "\n";
+
+            echo
+                'Received response containing ' . (
+                    $response_headers_count === 1 ? 'no headers.' :
+                    $response_headers_count . ' headers:'
+                ) . "\n";
+            if ($this->responseHeaders !== null) {
+                $i = 1;
+                foreach ($this->responseHeaders as $key => $value) {
+                    echo '    ' . $i . ' ' . $key . ': ' . $value . "\n";
+                    $i += 1;
+                }
+            }
+
+            if ($this->curlError) {
+                echo
+                    'A curl error (' . $this->curlErrorCode . ') occurred ' .
+                    'with message "' . $this->curlErrorMessage . '".' . "\n";
+            }
+            if (!empty($this->httpStatusCode)) {
+                echo 'Received an HTTP status code of ' . $this->httpStatusCode . '.' . "\n";
+            }
+            if ($this->httpError) {
+                echo
+                    'Received an HTTP ' . $this->httpStatusCode . ' error response ' .
+                    'with message "' . $this->httpErrorMessage . '".' . "\n";
+            }
+
+            if ($this->response === null) {
+                echo 'Received no response body.' . "\n";
+            } elseif ($this->response === '') {
+                echo 'Received an empty response body.' . "\n";
+            } else {
+                echo 'Received a non-empty response body.' . "\n";
+                echo 'Response content length: ' . $response_length . "\n";
+            }
+        }
+
+        echo '--- End PHP Curl Class diagnostic output ---' . "\n";
+        echo "\n";
+    }
+
+    /**
      * Reset
      *
      * @access public
