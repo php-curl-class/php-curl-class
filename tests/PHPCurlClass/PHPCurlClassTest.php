@@ -4038,17 +4038,18 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $output = ob_get_contents();
         ob_end_clean();
 
-        $this->assertStringContainsString('--- Begin PHP Curl Class diagnostic output ---', $output);
-        $this->assertStringContainsString('PHP Curl Class version: ' . Curl::VERSION, $output);
-        $this->assertStringContainsString('PHP version: ' . PHP_VERSION, $output);
-        $this->assertStringContainsString('Sent an HTTP GET request ', $output);
-        $this->assertStringContainsString('Request contained no body.', $output);
-        $this->assertStringContainsString('Received an HTTP status code of 401.', $output);
-        $this->assertStringContainsString(
+        foreach ([
+            '--- Begin PHP Curl Class diagnostic output ---',
+            'PHP Curl Class version: ' . Curl::VERSION,
+            'PHP version: ' . PHP_VERSION,
+            'Sent an HTTP GET request ',
+            'Request contained no body.',
+            'Received an HTTP status code of 401.',
             'Received an HTTP 401 error response with message "HTTP/1.1 401 Unauthorized".',
-            $output
-        );
-        $this->assertStringContainsString('Received an empty response body (response="").', $output);
-        $this->assertStringContainsString('--- End PHP Curl Class diagnostic output ---', $output);
+            'Received an empty response body (response="").',
+            '--- End PHP Curl Class diagnostic output ---',
+        ] as $expected_string) {
+            $this->assertStringContainsString($expected_string, $output);
+        }
     }
 }
