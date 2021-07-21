@@ -1436,9 +1436,14 @@ class Curl
      * Diagnose
      *
      * @access public
+     * @param  bool $return
      */
-    public function diagnose()
+    public function diagnose($return = false)
     {
+        if ($return) {
+            ob_start();
+        }
+
         echo "\n";
         echo '--- Begin PHP Curl Class diagnostic output ---' . "\n";
         echo 'PHP Curl Class version: ' . self::VERSION . "\n";
@@ -1527,6 +1532,12 @@ class Curl
 
         echo '--- End PHP Curl Class diagnostic output ---' . "\n";
         echo "\n";
+
+        if ($return) {
+            $output = ob_get_contents();
+            ob_end_clean();
+            return $output;
+        }
     }
 
     /**

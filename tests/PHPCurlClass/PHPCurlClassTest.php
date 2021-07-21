@@ -4030,12 +4030,25 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testDiagnose()
     {
-        $test = new Test();
-        $test->server('error_message', 'GET');
-
+        // Test diagnose() with default parameters.
+        $test_1 = new Test();
+        $test_1->server('error_message', 'GET');
         ob_start();
-        $test->curl->diagnose();
-        $output = ob_get_contents();
+        $test_1->curl->diagnose();
+        $test_1_output = ob_get_contents();
+        ob_end_clean();
+
+        // Test diagnose() with return=true.
+        $test_2 = new Test();
+        $test_2->server('error_message', 'GET');
+        $test_2_output = $test_2->curl->diagnose(true);
+
+        // Test diagnose() with return=false.
+        $test_3 = new Test();
+        $test_3->server('error_message', 'GET');
+        ob_start();
+        $test_3->curl->diagnose(false);
+        $test_3_output = ob_get_contents();
         ob_end_clean();
 
         foreach ([
@@ -4049,7 +4062,9 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             'Received an empty response body (response="").',
             '--- End PHP Curl Class diagnostic output ---',
         ] as $expected_string) {
-            $this->assertStringContainsString($expected_string, $output);
+            $this->assertStringContainsString($expected_string, $test_1_output);
+            $this->assertStringContainsString($expected_string, $test_2_output);
+            $this->assertStringContainsString($expected_string, $test_3_output);
         }
     }
 }
