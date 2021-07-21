@@ -4048,7 +4048,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             'Received an HTTP 401 error response with message "HTTP/1.1 401 Unauthorized".',
             $output
         );
-        $this->assertStringContainsString('Received an empty response body.', $output);
+        $this->assertStringContainsString('Received an empty response body (response="").', $output);
         $this->assertStringContainsString('--- End PHP Curl Class diagnostic output ---', $output);
     }
 }
