@@ -1465,9 +1465,8 @@ class Curl
 
             echo
                 'Sent an HTTP '   . $request_method . ' request to "' . $request_url . '".' . "\n" .
-                'Request contained ' . (
-                    $request_headers_count === 0 ? 'no headers.' :
-                    $request_headers_count . ' headers:'
+                'Request contained ' . $request_headers_count . ' ' . (
+                    $request_headers_count === 1 ? 'header:' : 'headers:'
                 ) . "\n";
             if ($this->requestHeaders !== null) {
                 $i = 1;
@@ -1486,9 +1485,8 @@ class Curl
             }
 
             echo
-                'Received response containing ' . (
-                    $response_headers_count === 0 ? 'no headers.' :
-                    $response_headers_count . ' headers:'
+                'Response contains ' . $response_headers_count . ' ' . (
+                    $response_headers_count === 1 ? 'header:' : 'headers:'
                 ) . "\n";
             if ($this->responseHeaders !== null) {
                 $i = 1;
