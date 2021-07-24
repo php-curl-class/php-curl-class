@@ -94,7 +94,7 @@ var_dump($curl->responseHeaders);
 
 ```php
 $curl = new Curl();
-$curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+$curl->setFollowLocation();
 $curl->get('https://shortn.example.com/bHbVsP');
 ```
 
