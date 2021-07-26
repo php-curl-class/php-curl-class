@@ -491,7 +491,7 @@ class Curl
         }
 
         $this->httpStatusCode = $this->getInfo(CURLINFO_HTTP_CODE);
-        $this->httpError = in_array(floor($this->httpStatusCode / 100), [4, 5]);
+        $this->httpError = in_array(floor($this->httpStatusCode / 100), [4, 5], true);
         $this->error = $this->curlError || $this->httpError;
         $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;
 
@@ -1777,7 +1777,7 @@ class Curl
     public function __get($name)
     {
         $return = null;
-        if (in_array($name, self::$deferredProperties) && is_callable([$this, $getter = '__get_' . $name])) {
+        if (in_array($name, self::$deferredProperties, true) && is_callable([$this, $getter = '__get_' . $name])) {
             $return = $this->$name = $this->$getter();
         }
         return $return;
