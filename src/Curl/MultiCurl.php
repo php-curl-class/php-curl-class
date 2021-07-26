@@ -117,7 +117,7 @@ class MultiCurl
             // path. The download request will include header "Range: bytes=$filesize-" which is syntactically valid,
             // but unsatisfiable.
             $download_filename = $filename . '.pccdownload';
-            $this->downloadFileName = $download_filename;
+            $curl->downloadFileName = $download_filename;
 
             // Attempt to resume download only when a temporary download file exists and is not empty.
             if (is_file($download_filename) && $filesize = filesize($download_filename)) {

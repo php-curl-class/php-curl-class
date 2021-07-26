@@ -1845,7 +1845,7 @@ class Curl
      */
     private function downloadComplete($fh)
     {
-        if ($this->error && is_file($this->downloadFileName)) {
+        if ($this->error && is_file((string) $this->downloadFileName)) {
             @unlink($this->downloadFileName);
         } elseif (!$this->error && $this->downloadCompleteCallback) {
             rewind($fh);

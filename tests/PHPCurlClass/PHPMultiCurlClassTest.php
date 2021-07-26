@@ -2574,9 +2574,12 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addDownload(Test::TEST_URL . '?' . http_build_query([
             'file_path' => $uploaded_file_path,
         ]), $downloaded_file_path);
-        $multi_curl->complete(function ($instance) use ($upload_file_path) {
-            \PHPUnit\Framework\Assert::assertFalse($instance->error);
+        $multi_curl->complete(function ($instance) use ($upload_file_path, $downloaded_file_path) {
             \PHPUnit\Framework\Assert::assertEquals(md5_file($upload_file_path), $instance->responseHeaders['ETag']);
+            \PHPUnit\Framework\Assert::assertEquals(
+                $instance->downloadFileName,
+                $downloaded_file_path . '.pccdownload'
+            );
         });
         $multi_curl->start();
         $this->assertNotEquals($uploaded_file_path, $downloaded_file_path);
@@ -2595,7 +2598,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testDownloadCallback()
     {
-        // Upload a file.
+        // Create and upload a file.
         $upload_file_path = \Helper\get_png();
         $uploaded_file_path = \Helper\upload_file_to_server($upload_file_path);
 
@@ -2623,9 +2626,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
         unlink($upload_file_path);
         $this->assertFalse(file_exists($upload_file_path));
-        $this->assertFalse(file_exists($uploaded_file_path));
     }
-
 
     public function testDownloadRange()
     {
@@ -2749,7 +2750,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->setHeader('X-DEBUG-TEST', '404');
         $multi_curl->addDownload(Test::TEST_URL, $destination);
         $multi_curl->complete(function ($instance) use ($destination) {
-            \PHPUnit\Framework\Assert::assertFalse(file_exists($instance->getDownloadFileName()));
+            \PHPUnit\Framework\Assert::assertFalse(file_exists($instance->downloadFileName));
             \PHPUnit\Framework\Assert::assertFalse(file_exists($destination));
         });
         $multi_curl->start();

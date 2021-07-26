@@ -661,6 +661,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(filesize($upload_file_path), filesize($downloaded_file_path));
         $this->assertEquals(md5_file($upload_file_path), md5_file($downloaded_file_path));
         $this->assertEquals(md5_file($upload_file_path), $download_test->curl->responseHeaders['ETag']);
+        $this->assertEquals($download_test->curl->downloadFileName, $downloaded_file_path . '.pccdownload');
 
         // Ensure successive requests set the appropriate values.
         $this->assertEquals('GET', $download_test->server('request_method', 'GET'));
@@ -683,28 +684,27 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $uploaded_file_path = \Helper\upload_file_to_server($upload_file_path);
 
         // Download the file.
-        $callback_called = false;
+        $download_callback_called = false;
         $curl = new Curl();
         $curl->setHeader('X-DEBUG-TEST', 'download_response');
         $curl->download(Test::TEST_URL . '?' . http_build_query([
             'file_path' => $uploaded_file_path,
-        ]), function ($instance, $fh) use (&$callback_called) {
-            \PHPUnit\Framework\Assert::assertFalse($callback_called);
+        ]), function ($instance, $fh) use (&$download_callback_called) {
+            \PHPUnit\Framework\Assert::assertFalse($download_callback_called);
             \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
             \PHPUnit\Framework\Assert::assertTrue(is_resource($fh));
             \PHPUnit\Framework\Assert::assertEquals('stream', get_resource_type($fh));
             \PHPUnit\Framework\Assert::assertGreaterThan(0, strlen(stream_get_contents($fh)));
             \PHPUnit\Framework\Assert::assertEquals(0, strlen(stream_get_contents($fh)));
             \PHPUnit\Framework\Assert::assertTrue(fclose($fh));
-            $callback_called = true;
+            $download_callback_called = true;
         });
-        $this->assertTrue($callback_called);
+        $this->assertTrue($download_callback_called);
 
         // Remove server file.
         \Helper\remove_file_from_server($uploaded_file_path);
 
         unlink($upload_file_path);
-        $this->assertFalse(file_exists($upload_file_path));
         $this->assertFalse(file_exists($upload_file_path));
     }
 
@@ -825,8 +825,24 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test->curl->setHeader('X-DEBUG-TEST', '404');
         $test->curl->download(Test::TEST_URL, $destination);
 
-        $this->assertFalse(file_exists($test->curl->getDownloadFileName()));
+        $this->assertFalse(file_exists($test->curl->downloadFileName));
         $this->assertFalse(file_exists($destination));
+    }
+
+    public function testDownloadCallbackError()
+    {
+        $download_before_send_called = false;
+        $download_callback_called = false;
+        $curl = new Curl();
+        $curl->beforeSend(function ($instance) use (&$download_before_send_called) {
+            \PHPUnit\Framework\Assert::assertFalse($download_before_send_called);
+            $download_before_send_called = true;
+        });
+        $curl->download(Test::ERROR_URL, function ($instance, $fh) use (&$download_callback_called) {
+            $download_callback_called = true;
+        });
+        $this->assertTrue($download_before_send_called);
+        $this->assertFalse($download_callback_called);
     }
 
     public function testMaxFilesize()
