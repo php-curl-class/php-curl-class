@@ -2561,7 +2561,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->start();
     }
 
-    public function testDownload()
+    public function testDownloadToFile()
     {
         // Create and upload a file.
         $upload_file_path = \Helper\get_png();
@@ -2592,6 +2592,40 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse(file_exists($upload_file_path));
         $this->assertFalse(file_exists($downloaded_file_path));
     }
+
+    public function testDownloadCallback()
+    {
+        // Upload a file.
+        $upload_file_path = \Helper\get_png();
+        $uploaded_file_path = \Helper\upload_file_to_server($upload_file_path);
+
+        // Download the file.
+        $download_callback_called = false;
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'download_response');
+        $multi_curl->addDownload(Test::TEST_URL . '?' . http_build_query([
+            'file_path' => $uploaded_file_path,
+        ]), function ($instance, $fh) use (&$download_callback_called) {
+            \PHPUnit\Framework\Assert::assertFalse($download_callback_called);
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertTrue(is_resource($fh));
+            \PHPUnit\Framework\Assert::assertEquals('stream', get_resource_type($fh));
+            \PHPUnit\Framework\Assert::assertGreaterThan(0, strlen(stream_get_contents($fh)));
+            \PHPUnit\Framework\Assert::assertEquals(0, strlen(stream_get_contents($fh)));
+            \PHPUnit\Framework\Assert::assertTrue(fclose($fh));
+            $download_callback_called = true;
+        });
+        $multi_curl->start();
+        $this->assertTrue($download_callback_called);
+
+        // Remove server file.
+        \Helper\remove_file_from_server($uploaded_file_path);
+
+        unlink($upload_file_path);
+        $this->assertFalse(file_exists($upload_file_path));
+        $this->assertFalse(file_exists($uploaded_file_path));
+    }
+
 
     public function testDownloadRange()
     {
@@ -2719,45 +2753,6 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             \PHPUnit\Framework\Assert::assertFalse(file_exists($destination));
         });
         $multi_curl->start();
-    }
-
-    public function testDownloadCallback()
-    {
-        // Upload a file.
-        $upload_file_path = \Helper\get_png();
-        $upload_test = new Test();
-        $upload_test->server('upload_response', 'POST', [
-            'image' => '@' . $upload_file_path,
-        ]);
-        $uploaded_file_path = $upload_test->curl->response->file_path;
-
-        // Download the file.
-        $download_callback_called = false;
-        $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'download_response');
-        $multi_curl->addDownload(Test::TEST_URL . '?' . http_build_query([
-            'file_path' => $uploaded_file_path,
-        ]), function ($instance, $fh) use (&$download_callback_called) {
-            \PHPUnit\Framework\Assert::assertFalse($download_callback_called);
-            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
-            \PHPUnit\Framework\Assert::assertTrue(is_resource($fh));
-            \PHPUnit\Framework\Assert::assertEquals('stream', get_resource_type($fh));
-            \PHPUnit\Framework\Assert::assertGreaterThan(0, strlen(stream_get_contents($fh)));
-            \PHPUnit\Framework\Assert::assertEquals(0, strlen(stream_get_contents($fh)));
-            \PHPUnit\Framework\Assert::assertTrue(fclose($fh));
-            $download_callback_called = true;
-        });
-        $multi_curl->start();
-        $this->assertTrue($download_callback_called);
-
-        // Remove server file.
-        $this->assertEquals('true', $upload_test->server('upload_cleanup', 'POST', [
-            'file_path' => $uploaded_file_path,
-        ]));
-
-        unlink($upload_file_path);
-        $this->assertFalse(file_exists($upload_file_path));
-        $this->assertFalse(file_exists($uploaded_file_path));
     }
 
     public function testDownloadCallbackError()

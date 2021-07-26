@@ -643,7 +643,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('OPTIONS', $test->curl->responseHeaders['X-REQUEST-METHOD']);
     }
 
-    public function testDownload()
+    public function testDownloadToFile()
     {
         // Create and upload a file.
         $upload_file_path = \Helper\get_png();
@@ -704,6 +704,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         \Helper\remove_file_from_server($uploaded_file_path);
 
         unlink($upload_file_path);
+        $this->assertFalse(file_exists($upload_file_path));
         $this->assertFalse(file_exists($upload_file_path));
     }
 
