@@ -880,7 +880,7 @@ class Curl
      */
     public function setPort($port)
     {
-        $this->setOpt(CURLOPT_PORT, intval($port));
+        $this->setOpt(CURLOPT_PORT, (int) $port);
     }
 
     /**
