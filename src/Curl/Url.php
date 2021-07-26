@@ -194,7 +194,7 @@ class Url
         // $7 = <undefined> (query)
         // $8 = #Related (ignore)
         // $9 = Related (fragment)
-        preg_match('/^(([^:\/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/', $url, $output_array);
+        preg_match('/^(([^:\/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/', (string) $url, $output_array);
 
         $parts = [];
         if (isset($output_array['1']) && $output_array['1'] !== '') {

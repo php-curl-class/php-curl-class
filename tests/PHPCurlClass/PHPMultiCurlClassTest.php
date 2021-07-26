@@ -2946,7 +2946,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $urls = [];
         $copy_of_urls = [];
         for ($i = 0; $i < 10; $i++) {
-            $url = Test::TEST_URL . '?' . md5(mt_rand());
+            $url = Test::TEST_URL . '?' . md5((string) mt_rand());
             $urls[] = $url;
             $copy_of_urls[] = $url;
         }
