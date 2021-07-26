@@ -491,7 +491,7 @@ class Curl
         }
 
         $this->httpStatusCode = $this->getInfo(CURLINFO_HTTP_CODE);
-        $this->httpError = in_array(floor($this->httpStatusCode / 100), [4, 5], true);
+        $this->httpError = in_array((int) floor($this->httpStatusCode / 100), [4, 5], true);
         $this->error = $this->curlError || $this->httpError;
         $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;
 
