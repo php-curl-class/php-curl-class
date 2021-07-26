@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 $server_start = microtime(true);
 
 // Prevent direct access unless testing.
