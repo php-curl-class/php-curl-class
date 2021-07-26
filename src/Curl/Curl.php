@@ -409,7 +409,7 @@ class Curl
 
             $multi_curl->addCurl($curl);
 
-            if ($i != $connections) {
+            if ($i !== $connections) {
                 $offset = $nextChunk + 1; // Add 1 to match offset.
                 $nextChunk = $nextChunk + $chunkSize;
             }
