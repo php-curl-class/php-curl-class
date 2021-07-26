@@ -84,7 +84,7 @@ function create_png()
 {
     // PNG image data, 1 x 1, 1-bit colormap, non-interlaced
     ob_start();
-    imagepng(imagecreatefromstring(base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')));
+    imagepng(imagecreatefromstring(base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', true)));
     $raw_image = ob_get_contents();
     ob_end_clean();
     return $raw_image;
@@ -150,9 +150,9 @@ function remove_file_from_server($uploaded_file_path) {
     $download_test = new Test();
 
     // Ensure file successfully removed.
-    assert('true' === $download_test->server('upload_cleanup', 'POST', [
+    assert($download_test->server('upload_cleanup', 'POST', [
         'file_path' => $uploaded_file_path,
-    ]));
+    ]) === 'true');
     assert(file_exists($uploaded_file_path) === false);
 }
 

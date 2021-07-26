@@ -10,7 +10,7 @@ const CLIENT_ID = 'XXXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.apps.googleuser
 const CLIENT_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXX';
 const REDIRECT_URI = 'https://www.example.com/oauth2callback';
 
-if (php_sapi_name() !== 'cli') {
+if (PHP_SAPI !== 'cli') {
     throw new Exception('This application must be run on the command line.');
 }
 

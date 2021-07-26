@@ -1054,7 +1054,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testCookieFile()
     {
-        $cookie_file = dirname(__FILE__) . '/cookiefile.txt';
+        $cookie_file = __DIR__ . '/cookiefile.txt';
         $cookie_data = implode("\t", [
             '127.0.0.1', // domain
             'FALSE',     // tailmatch
@@ -1079,7 +1079,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testCookieJar()
     {
-        $cookie_jar = dirname(__FILE__) . '/cookiejar.txt';
+        $cookie_jar = __DIR__ . '/cookiejar.txt';
 
         $test = new Test();
         $test->curl->setCookieJar($cookie_jar);

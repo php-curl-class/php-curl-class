@@ -9,12 +9,12 @@ $curl = new Curl('https://www.example.com/api/');
 $response = $curl->get('test', [
     'key' => 'value',
 ]);
-assert('https://www.example.com/api/test?key=value' === $curl->url);
+assert($curl->url === 'https://www.example.com/api/test?key=value');
 assert($curl->url === $curl->effectiveUrl);
 
 // https://www.example.com/root?key=value
 $response = $curl->get('/root', [
     'key' => 'value',
 ]);
-assert('https://www.example.com/root?key=value' === $curl->url);
+assert($curl->url === 'https://www.example.com/root?key=value');
 assert($curl->url === $curl->effectiveUrl);

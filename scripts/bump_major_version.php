@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?php
-require dirname(__FILE__) . '/../src/Curl/Curl.php';
+require __DIR__ . '/../src/Curl/Curl.php';
 
 $current_version = Curl\Curl::VERSION;
 list($major, $_, $__) = explode('.', $current_version);
@@ -8,7 +8,7 @@ $new_version = implode('.', [(string)((int)$major += 1), '0', '0']);
 
 foreach ([
         [
-            dirname(__FILE__) . '/../src/Curl/Curl.php',
+            __DIR__ . '/../src/Curl/Curl.php',
             '/const VERSION = \'(?:\d+.\d+.\d+)\';/',
             'const VERSION = \'' . $new_version . '\';',
         ],
