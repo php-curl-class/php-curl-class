@@ -17,24 +17,6 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(extension_loaded('mbstring'));
     }
 
-    public function testArrayAssociative()
-    {
-        $this->assertTrue(\Curl\ArrayUtil::isArrayAssoc([
-            'foo' => 'wibble',
-            'bar' => 'wubble',
-            'baz' => 'wobble',
-        ]));
-    }
-
-    public function testArrayIndexed()
-    {
-        $this->assertFalse(\Curl\ArrayUtil::isArrayAssoc([
-            'wibble',
-            'wubble',
-            'wobble',
-        ]));
-    }
-
     public function testCaseInsensitiveArrayGet()
     {
         $array = new CaseInsensitiveArray();
