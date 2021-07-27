@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Helper;
 
@@ -103,7 +103,7 @@ function get_tmp_file_path()
     // Return temporary file path without creating file.
     $tmp_file_path =
         rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) .
-        DIRECTORY_SEPARATOR . 'php-curl-class.' . uniqid(rand(), true);
+        DIRECTORY_SEPARATOR . 'php-curl-class.' . uniqid((string) rand(), true);
     return $tmp_file_path;
 }
 

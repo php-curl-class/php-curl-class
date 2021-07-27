@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Curl;
 
@@ -117,7 +117,7 @@ class MultiCurl
             // path. The download request will include header "Range: bytes=$filesize-" which is syntactically valid,
             // but unsatisfiable.
             $download_filename = $filename . '.pccdownload';
-            $this->downloadFileName = $download_filename;
+            $curl->downloadFileName = $download_filename;
 
             // Attempt to resume download only when a temporary download file exists and is not empty.
             if (is_file($download_filename) && $filesize = filesize($download_filename)) {
@@ -1270,7 +1270,7 @@ class MultiCurl
         $sleep_seconds = $sleep_until - microtime(true);
 
         // Avoid using time_sleep_until() as it appears to be less precise and not sleep long enough.
-        usleep($sleep_seconds * 1000000);
+        usleep((int) $sleep_seconds * 1000000);
 
         // Ensure that enough time has passed as usleep() may not have waited long enough.
         $this->currentStartTime = microtime(true);

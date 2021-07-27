@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace CurlTest;
 
@@ -2561,7 +2561,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->start();
     }
 
-    public function testDownload()
+    public function testDownloadToFile()
     {
         // Create and upload a file.
         $upload_file_path = \Helper\get_png();
@@ -2574,9 +2574,12 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addDownload(Test::TEST_URL . '?' . http_build_query([
             'file_path' => $uploaded_file_path,
         ]), $downloaded_file_path);
-        $multi_curl->complete(function ($instance) use ($upload_file_path) {
-            \PHPUnit\Framework\Assert::assertFalse($instance->error);
+        $multi_curl->complete(function ($instance) use ($upload_file_path, $downloaded_file_path) {
             \PHPUnit\Framework\Assert::assertEquals(md5_file($upload_file_path), $instance->responseHeaders['ETag']);
+            \PHPUnit\Framework\Assert::assertEquals(
+                $instance->downloadFileName,
+                $downloaded_file_path . '.pccdownload'
+            );
         });
         $multi_curl->start();
         $this->assertNotEquals($uploaded_file_path, $downloaded_file_path);
@@ -2591,6 +2594,38 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         unlink($downloaded_file_path);
         $this->assertFalse(file_exists($upload_file_path));
         $this->assertFalse(file_exists($downloaded_file_path));
+    }
+
+    public function testDownloadCallback()
+    {
+        // Create and upload a file.
+        $upload_file_path = \Helper\get_png();
+        $uploaded_file_path = \Helper\upload_file_to_server($upload_file_path);
+
+        // Download the file.
+        $download_callback_called = false;
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'download_response');
+        $multi_curl->addDownload(Test::TEST_URL . '?' . http_build_query([
+            'file_path' => $uploaded_file_path,
+        ]), function ($instance, $fh) use (&$download_callback_called) {
+            \PHPUnit\Framework\Assert::assertFalse($download_callback_called);
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            \PHPUnit\Framework\Assert::assertTrue(is_resource($fh));
+            \PHPUnit\Framework\Assert::assertEquals('stream', get_resource_type($fh));
+            \PHPUnit\Framework\Assert::assertGreaterThan(0, strlen(stream_get_contents($fh)));
+            \PHPUnit\Framework\Assert::assertEquals(0, strlen(stream_get_contents($fh)));
+            \PHPUnit\Framework\Assert::assertTrue(fclose($fh));
+            $download_callback_called = true;
+        });
+        $multi_curl->start();
+        $this->assertTrue($download_callback_called);
+
+        // Remove server file.
+        \Helper\remove_file_from_server($uploaded_file_path);
+
+        unlink($upload_file_path);
+        $this->assertFalse(file_exists($upload_file_path));
     }
 
     public function testDownloadRange()
@@ -2715,49 +2750,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->setHeader('X-DEBUG-TEST', '404');
         $multi_curl->addDownload(Test::TEST_URL, $destination);
         $multi_curl->complete(function ($instance) use ($destination) {
-            \PHPUnit\Framework\Assert::assertFalse(file_exists($instance->getDownloadFileName()));
+            \PHPUnit\Framework\Assert::assertFalse(file_exists($instance->downloadFileName));
             \PHPUnit\Framework\Assert::assertFalse(file_exists($destination));
         });
         $multi_curl->start();
-    }
-
-    public function testDownloadCallback()
-    {
-        // Upload a file.
-        $upload_file_path = \Helper\get_png();
-        $upload_test = new Test();
-        $upload_test->server('upload_response', 'POST', [
-            'image' => '@' . $upload_file_path,
-        ]);
-        $uploaded_file_path = $upload_test->curl->response->file_path;
-
-        // Download the file.
-        $download_callback_called = false;
-        $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'download_response');
-        $multi_curl->addDownload(Test::TEST_URL . '?' . http_build_query([
-            'file_path' => $uploaded_file_path,
-        ]), function ($instance, $fh) use (&$download_callback_called) {
-            \PHPUnit\Framework\Assert::assertFalse($download_callback_called);
-            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
-            \PHPUnit\Framework\Assert::assertTrue(is_resource($fh));
-            \PHPUnit\Framework\Assert::assertEquals('stream', get_resource_type($fh));
-            \PHPUnit\Framework\Assert::assertGreaterThan(0, strlen(stream_get_contents($fh)));
-            \PHPUnit\Framework\Assert::assertEquals(0, strlen(stream_get_contents($fh)));
-            \PHPUnit\Framework\Assert::assertTrue(fclose($fh));
-            $download_callback_called = true;
-        });
-        $multi_curl->start();
-        $this->assertTrue($download_callback_called);
-
-        // Remove server file.
-        $this->assertEquals('true', $upload_test->server('upload_cleanup', 'POST', [
-            'file_path' => $uploaded_file_path,
-        ]));
-
-        unlink($upload_file_path);
-        $this->assertFalse(file_exists($upload_file_path));
-        $this->assertFalse(file_exists($uploaded_file_path));
     }
 
     public function testDownloadCallbackError()
@@ -2946,7 +2942,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $urls = [];
         $copy_of_urls = [];
         for ($i = 0; $i < 10; $i++) {
-            $url = Test::TEST_URL . '?' . md5(mt_rand());
+            $url = Test::TEST_URL . '?' . md5((string) mt_rand());
             $urls[] = $url;
             $copy_of_urls[] = $url;
         }
@@ -3778,7 +3774,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertLessThanOrEqual(10.5, $request_stats['4']['relative_start']);
         // Assert R4 ends around 11.
         $this->assertGreaterThanOrEqual(10.8, $request_stats['4']['relative_stop']);
-        $this->assertLessThanOrEqual(11.5, $request_stats['4']['relative_stop']);
+        $this->assertLessThanOrEqual(11.5 + 1, $request_stats['4']['relative_stop']);
     }
 
     public function testSetRateLimitPerSecond2()
@@ -3847,7 +3843,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertLessThanOrEqual(10.5, $request_stats['4']['relative_start']);
         // Assert R4 ends around 11.
         $this->assertGreaterThanOrEqual(10.8, $request_stats['4']['relative_stop']);
-        $this->assertLessThanOrEqual(11.5, $request_stats['4']['relative_stop']);
+        $this->assertLessThanOrEqual(11.5 + 1, $request_stats['4']['relative_stop']);
     }
 
     public function testSetRateLimitPerSecond3()
@@ -4049,7 +4045,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertLessThanOrEqual(10.5, $request_stats['4']['relative_start']);
         // Assert R4 ends around 12.
         $this->assertGreaterThanOrEqual(11.8, $request_stats['4']['relative_stop']);
-        $this->assertLessThanOrEqual(12.5, $request_stats['4']['relative_stop']);
+        $this->assertLessThanOrEqual(12.5 + 1, $request_stats['4']['relative_stop']);
     }
 
     public function testSetRateLimitPerSecond6()
@@ -4117,7 +4113,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertLessThanOrEqual(10.5, $request_stats['4']['relative_start']);
         // Assert R4 ends around 12.
         $this->assertGreaterThanOrEqual(11.8, $request_stats['4']['relative_stop']);
-        $this->assertLessThanOrEqual(12.5, $request_stats['4']['relative_stop']);
+        $this->assertLessThanOrEqual(12.5 + 1, $request_stats['4']['relative_stop']);
     }
 
     public function testSetRateLimitPerSecond7()

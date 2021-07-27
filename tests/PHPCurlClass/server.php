@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 $server_start = microtime(true);
 
 // Prevent direct access unless testing.
@@ -264,7 +264,7 @@ if ($test === 'http_basic_auth') {
     exit;
 } elseif ($test === 'download_file_size') {
     $bytes = isset($_GET['bytes']) ? $_GET['bytes'] : 1234;
-    $str = str_repeat('.', $bytes);
+    $str = str_repeat('.', (int) $bytes);
     header('Content-Type: application/octet-stream');
     header('Content-Length: ' . strlen($str));
     header('ETag: ' . md5($str));
@@ -292,7 +292,7 @@ if ($test === 'http_basic_auth') {
         $dots_to_print = floor($elapsed) - $dots_printed;
 
         if ($dots_to_print) {
-            echo str_repeat('.', $dots_to_print);
+            echo str_repeat('.', (int) $dots_to_print);
             $dots_printed += $dots_to_print;
         }
 
