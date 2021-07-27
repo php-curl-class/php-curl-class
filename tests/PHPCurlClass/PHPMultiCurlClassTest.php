@@ -3774,7 +3774,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertLessThanOrEqual(10.5, $request_stats['4']['relative_start']);
         // Assert R4 ends around 11.
         $this->assertGreaterThanOrEqual(10.8, $request_stats['4']['relative_stop']);
-        $this->assertLessThanOrEqual(11.5, $request_stats['4']['relative_stop']);
+        $this->assertLessThanOrEqual(11.5 + 1, $request_stats['4']['relative_stop']);
     }
 
     public function testSetRateLimitPerSecond2()
@@ -3843,7 +3843,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertLessThanOrEqual(10.5, $request_stats['4']['relative_start']);
         // Assert R4 ends around 11.
         $this->assertGreaterThanOrEqual(10.8, $request_stats['4']['relative_stop']);
-        $this->assertLessThanOrEqual(11.5, $request_stats['4']['relative_stop']);
+        $this->assertLessThanOrEqual(11.5 + 1, $request_stats['4']['relative_stop']);
     }
 
     public function testSetRateLimitPerSecond3()
@@ -4045,7 +4045,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertLessThanOrEqual(10.5, $request_stats['4']['relative_start']);
         // Assert R4 ends around 12.
         $this->assertGreaterThanOrEqual(11.8, $request_stats['4']['relative_stop']);
-        $this->assertLessThanOrEqual(12.5, $request_stats['4']['relative_stop']);
+        $this->assertLessThanOrEqual(12.5 + 1, $request_stats['4']['relative_stop']);
     }
 
     public function testSetRateLimitPerSecond6()
@@ -4113,7 +4113,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertLessThanOrEqual(10.5, $request_stats['4']['relative_start']);
         // Assert R4 ends around 12.
         $this->assertGreaterThanOrEqual(11.8, $request_stats['4']['relative_stop']);
-        $this->assertLessThanOrEqual(12.5, $request_stats['4']['relative_stop']);
+        $this->assertLessThanOrEqual(12.5 + 1, $request_stats['4']['relative_stop']);
     }
 
     public function testSetRateLimitPerSecond7()
