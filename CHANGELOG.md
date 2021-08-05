@@ -4,6 +4,16 @@ PHP Curl Class uses semantic versioning with version numbers written as `MAJOR.M
 `MINOR` and `PATCH` version changes. It is recommended to review `MAJOR` changes prior to upgrade as there may be
 backwards-incompatible changes that will affect existing usage.
 
+## 9.3.1 - 2021-08-05
+
+### Changed
+
+- Enabled strict types (`declare(strict_types=1);`)
+
+### Fixed
+
+- Fixed `Curl::downloadFileName` not being set correctly
+
 ## 9.3.0 - 2021-07-23
 
 ### Added
