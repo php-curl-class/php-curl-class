@@ -114,14 +114,14 @@ class Url
      */
     private function absolutizeUrl()
     {
-        $b = $this->parseUrl($this->baseUrl);
+        $b = self::parseUrl($this->baseUrl);
         if (!isset($b['path'])) {
             $b['path'] = '/';
         }
         if ($this->relativeUrl === null) {
             return $this->unparseUrl($b);
         }
-        $r = $this->parseUrl($this->relativeUrl);
+        $r = self::parseUrl($this->relativeUrl);
         $r['authorized'] = isset($r['scheme']) || isset($r['host']) || isset($r['port'])
             || isset($r['user']) || isset($r['pass']);
         $target = [];
@@ -178,7 +178,7 @@ class Url
      *
      * Parse url into components of a URI as specified by RFC 3986.
      */
-    private function parseUrl($url)
+    public static function parseUrl($url)
     {
         // RFC 3986 - Parsing a URI Reference with a Regular Expression.
         //       ^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?
@@ -223,7 +223,7 @@ class Url
             }
         }
         if (isset($output_array['5']) && $output_array['5'] !== '') {
-            $parts['path'] = $this->percentEncodeChars($output_array['5']);
+            $parts['path'] = self::percentEncodeChars($output_array['5']);
         }
         if (isset($output_array['7']) && $output_array['7'] !== '') {
             $parts['query'] = $output_array['7'];
@@ -240,7 +240,7 @@ class Url
      * Percent-encode characters to represent a data octet in a component when
      * that octet's corresponding character is outside the allowed set.
      */
-    private function percentEncodeChars($chars)
+    private static function percentEncodeChars($chars)
     {
         // ALPHA         = A-Z / a-z
         $alpha = 'A-Za-z';

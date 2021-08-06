@@ -98,12 +98,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals($expected_parts, parse_url($input_url));
 
-        $reflector = new \ReflectionClass('Curl\Url');
-        $reflection_method = $reflector->getMethod('parseUrl');
-        $reflection_method->setAccessible(true);
-
-        $url = new Url(null);
-        $result = $reflection_method->invoke($url, $input_url);
+        $result = Url::parseUrl($input_url);
         $this->assertEquals($expected_parts, $result);
     }
 
@@ -123,12 +118,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals($expected_parts, parse_url($input_url));
 
-        $reflector = new \ReflectionClass('Curl\Url');
-        $reflection_method = $reflector->getMethod('parseUrl');
-        $reflection_method->setAccessible(true);
-
-        $url = new Url(null);
-        $result = $reflection_method->invoke($url, $input_url);
+        $result = Url::parseUrl($input_url);
         $this->assertEquals($expected_parts, $result);
     }
 
