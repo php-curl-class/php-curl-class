@@ -11,20 +11,10 @@ after=$(tail -n +$(
 
 echo "${before}" > "README.md"
 
-curl_max_line_number=$(grep --context="0" --line-number --max-count="1" '^}$' "src/Curl/Curl.php" | \
-    perl -pe 's/^(\d+):.*/\1/')
 echo '```php' >> "README.md"
-head -n "${curl_max_line_number}" "src/Curl/Curl.php" | \
-    egrep "^    .* function .*" | \
-    egrep "^    public" | \
-    sort | \
-    perl -pe 's/^    public (.* )?function /Curl::/' \
-    >> "README.md"
-egrep "^    .* function .*" "src/Curl/MultiCurl.php" | \
-    egrep "^    public" | \
-    sort | \
-    perl -pe 's/^    public (.* )?function /MultiCurl::/' \
-    >> "README.md"
+find "src/Curl" -type f -name "*Curl*" |
+    sort |
+    xargs -L 1 -I {} bash -c 'class_name="$(basename --suffix=".php" "{}")" && egrep "^    .* function .*" "{}" | egrep "^    public" | sort | perl -pe "s/^    public (.* )?function /${class_name}::/"' >> "README.md"
 echo '```' >> "README.md"
 echo >> "README.md"
 
