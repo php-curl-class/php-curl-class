@@ -68,7 +68,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function testCyrillicChars()
+    public function testUrlCyrillicChars()
     {
         $path_part = 'Банан-комнатный-саженцы-банана';
         $original_url = 'https://www.example.com/path/' . $path_part               . '/page.html';
@@ -122,17 +122,32 @@ class UrlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expected_parts, $result);
     }
 
-    public function testIpv6NoPort()
+    public function testUrlIpv6NoPort()
     {
         $expected_url = 'http://[::1]/test';
         $actual_url = new Url($expected_url);
         $this->assertEquals($expected_url, $actual_url);
     }
 
-    public function testIpv6Port()
+    public function testUrlIpv6Port()
     {
         $expected_url = 'http://[::1]:80/test';
         $actual_url = new Url($expected_url);
         $this->assertEquals($expected_url, $actual_url);
+    }
+
+    public function testParseUrlSchemelessUrl()
+    {
+        $input_url = '10.1.2.43:8080/config/getconfig';
+        $expected_parts = [
+            'host' => '10.1.2.43',
+            'port' => '8080',
+            'path' => '/config/getconfig',
+        ];
+
+        $this->assertEquals($expected_parts, parse_url($input_url));
+
+        $result = Url::parseUrl($input_url);
+        $this->assertEquals($expected_parts, $result);
     }
 }
