@@ -180,7 +180,11 @@ class Url
      */
     public static function parseUrl($url)
     {
-        return parse_url((string) $url);
+        $parts = parse_url((string) $url);
+        if (isset($parts['path'])) {
+            $parts['path'] = self::percentEncodeChars($parts['path']);
+        }
+        return $parts;
     }
 
     /**
