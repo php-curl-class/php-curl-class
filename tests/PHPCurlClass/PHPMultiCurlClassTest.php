@@ -4435,7 +4435,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertLessThanOrEqual(60.5, $request_stats['1']['relative_start']);
         // Assert R2 starts around 120 and not before.
         $this->assertGreaterThanOrEqual(120, $request_stats['2']['relative_start']);
-        $this->assertLessThanOrEqual(120.5, $request_stats['2']['relative_start']);
+        $this->assertLessThanOrEqual(120.5 + 1, $request_stats['2']['relative_start']);
     }
 
     public function testSetRateLimitThreePerOneMinute()
