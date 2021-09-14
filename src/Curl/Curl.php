@@ -1459,8 +1459,9 @@ class Curl
             $request_url = $this->getOpt(CURLOPT_URL);
             $request_headers_count = count($this->requestHeaders);
             $request_body_empty = empty($this->getOpt(CURLOPT_POSTFIELDS));
-            $response_length = isset($this->responseHeaders['Content-Length']) ?
-                $this->responseHeaders['Content-Length'] : '(not specified in response)';
+            $response_header_length = isset($this->responseHeaders['Content-Length']) ?
+                $this->responseHeaders['Content-Length'] : '(not specified in response header)';
+            $response_calculated_length = strlen($this->rawResponse);
             $response_headers_count = count($this->responseHeaders);
 
             echo
@@ -1524,7 +1525,11 @@ class Curl
                 echo 'Received an empty response body (response="").' . "\n";
             } else {
                 echo 'Received a non-empty response body.' . "\n";
-                echo 'Response content length: ' . $response_length . "\n";
+                if (isset($this->responseHeaders['Content-Length'])) {
+                    echo 'Response content length (from content-length header): ' . $response_header_length . "\n";
+                } else {
+                    echo 'Response content length (calculated): ' . $response_calculated_length . "\n";
+                }
             }
         }
 
