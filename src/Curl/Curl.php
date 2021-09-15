@@ -476,6 +476,13 @@ class Curl
         }
         $this->curlError = $this->curlErrorCode !== 0;
 
+        // Ensure Curl::rawResponse is a string as curl_exec() can return false.
+        // Without this, calling strlen($curl->rawResponse) will error the
+        // strict types setting is enabled.
+        if (!is_string($this->rawResponse)) {
+            $this->rawResponse = '';
+        }
+
         // Transfer the header callback data and release the temporary store to avoid memory leak.
         $this->rawResponseHeaders = $this->headerCallbackData->rawResponseHeaders;
         $this->responseCookies = $this->headerCallbackData->responseCookies;
