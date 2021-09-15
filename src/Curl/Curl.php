@@ -1461,7 +1461,8 @@ class Curl
             $request_body_empty = empty($this->getOpt(CURLOPT_POSTFIELDS));
             $response_header_length = isset($this->responseHeaders['Content-Length']) ?
                 $this->responseHeaders['Content-Length'] : '(not specified in response header)';
-            $response_calculated_length = strlen($this->rawResponse);
+            $response_calculated_length = is_string($this->rawResponse) ?
+                strlen($this->rawResponse) : '(' . var_export($this->rawResponse, true) . ')';
             $response_headers_count = count($this->responseHeaders);
 
             echo
