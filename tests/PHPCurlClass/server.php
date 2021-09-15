@@ -263,6 +263,9 @@ if ($test === 'http_basic_auth') {
     readfile($unsafe_file_path);
     exit;
 } elseif ($test === 'download_file_size') {
+    if (isset($_GET['http_response_code'])) {
+        http_response_code((int) $_GET['http_response_code']);
+    }
     $bytes = isset($_GET['bytes']) ? $_GET['bytes'] : 1234;
     $str = str_repeat('.', (int) $bytes);
     header('Content-Type: application/octet-stream');

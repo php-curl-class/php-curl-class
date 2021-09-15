@@ -51,6 +51,7 @@ class Curl
     public $jsonDecoder = null;
     public $xmlDecoder = null;
 
+    private $headerCallbackData;
     private $cookies = [];
     private $headers = [];
     private $options = [];
@@ -488,6 +489,8 @@ class Curl
         $this->responseCookies = $this->headerCallbackData->responseCookies;
         $this->headerCallbackData->rawResponseHeaders = '';
         $this->headerCallbackData->responseCookies = [];
+        $this->headerCallbackData->stopRequestDecider = null;
+        $this->headerCallbackData->stopRequest = false;
 
         // Include additional error code information in error message when possible.
         if ($this->curlError && function_exists('curl_strerror')) {
@@ -2055,6 +2058,8 @@ class Curl
         $header_callback_data = new \stdClass();
         $header_callback_data->rawResponseHeaders = '';
         $header_callback_data->responseCookies = [];
+        $header_callback_data->stopRequestDecider = null;
+        $header_callback_data->stopRequest = false;
         $this->headerCallbackData = $header_callback_data;
         $this->setOpt(CURLOPT_HEADERFUNCTION, createHeaderCallback($header_callback_data));
 
@@ -2064,6 +2069,42 @@ class Curl
         if ($base_url !== null) {
             $this->setUrl($base_url);
         }
+    }
+
+    /**
+     * Set Stop
+     *
+     * Specify a callable decider to stop the request early without waiting for
+     * the full response to be received.
+     *
+     * The callable is passed two parameters. The first is the cURL resource,
+     * the second is a string with header data. Both parameters match the
+     * parameters in the CURLOPT_HEADERFUNCTION callback.
+     *
+     * The callable must return a truthy value for the request to be stopped
+     * early.
+     *
+     * @access public
+     * @param  $callback callable
+     */
+    public function setStop($callback)
+    {
+        $this->headerCallbackData->stopRequestDecider = $callback;
+        $this->headerCallbackData->stopRequest = false;
+
+        $header_callback_data = $this->headerCallbackData;
+        $this->progress(function (
+            $resource,
+            $download_size,
+            $downloaded,
+            $upload_size,
+            $uploaded
+        ) use (
+            $header_callback_data
+        ) {
+            // Abort the transfer when the stop request flag has been set by returning a non-zero value.
+            return $header_callback_data->stopRequest ? 1 : 0;
+        });
     }
 }
 
@@ -2083,6 +2124,14 @@ function createHeaderCallback($header_callback_data) {
         if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]+)/mi', $header, $cookie) === 1) {
             $header_callback_data->responseCookies[$cookie[1]] = trim($cookie[2], " \n\r\t\0\x0B");
         }
+
+        if ($header_callback_data->stopRequestDecider !== null) {
+            $stop_request_decider = $header_callback_data->stopRequestDecider;
+            if ($stop_request_decider($ch, $header)) {
+                $header_callback_data->stopRequest = true;
+            }
+        }
+
         $header_callback_data->rawResponseHeaders .= $header;
         return strlen($header);
     };
