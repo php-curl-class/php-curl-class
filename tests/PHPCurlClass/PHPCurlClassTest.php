@@ -4066,4 +4066,73 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             $this->assertStringContainsString($expected_string, $test_3_output);
         }
     }
+
+    public function testStopRequest() {
+        $response_length_bytes = 1e6; // 1e6 = 1 megabyte
+
+        $stop_request_early = function ($ch, $header) {
+            // Stop requests returning error responses early without downloading the
+            // full error response.
+            //
+            // Check the header for the status line starting with "HTTP/".
+            // Status-Line per RFC 2616:
+            //   6.1 Status-Line:
+            //     Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+            if (stripos($header, 'HTTP/') === 0) {
+                $status_line_parts = explode(' ', $header);
+                if (isset($status_line_parts['1'])) {
+                    $http_status_code = $status_line_parts['1'];
+                    $http_error = in_array((int) floor($http_status_code / 100), [4, 5], true);
+                    if ($http_error) {
+                        // Return true to stop receiving the response.
+                        return true;
+                    }
+                }
+            }
+
+            // Return false to continue receiving the response.
+            return false;
+        };
+
+        // Verify that full response is fetched for an error.
+        $test_1 = new Test();
+        $test_1->server('download_file_size', 'GET', [
+            'bytes' => $response_length_bytes,
+            'http_response_code' => '500',
+        ]);
+        $this->assertEquals($response_length_bytes, $test_1->curl->responseHeaders['Content-Length']);
+        $this->assertEquals($response_length_bytes, $test_1->curl->getInfo(CURLINFO_SIZE_DOWNLOAD));
+        $this->assertEquals($response_length_bytes, strlen($test_1->curl->rawResponse));
+        $this->assertTrue($test_1->curl->error);
+        $this->assertFalse($test_1->curl->curlError);
+        $this->assertTrue($test_1->curl->httpError);
+
+        // Verify that full response is not fetched for an error.
+        $test_2 = new Test();
+        $test_2->curl->setStop($stop_request_early);
+        $test_2->server('download_file_size', 'GET', [
+            'bytes' => $response_length_bytes,
+            'http_response_code' => '500',
+        ]);
+        $this->assertEquals($response_length_bytes, $test_2->curl->responseHeaders['Content-Length']);
+        $this->assertLessThan($response_length_bytes, $test_2->curl->getInfo(CURLINFO_SIZE_DOWNLOAD));
+        $this->assertLessThan($response_length_bytes, strlen($test_2->curl->rawResponse));
+        $this->assertTrue($test_2->curl->error);
+        $this->assertTrue($test_2->curl->curlError);
+        $this->assertTrue($test_2->curl->httpError);
+
+        // Verify that full response is still fetched for a non-error.
+        $test_3 = new Test();
+        $test_3->curl->setStop($stop_request_early);
+        $test_3->server('download_file_size', 'GET', [
+            'bytes' => $response_length_bytes,
+            'http_response_code' => '200',
+        ]);
+        $this->assertEquals($response_length_bytes, $test_3->curl->responseHeaders['Content-Length']);
+        $this->assertEquals($response_length_bytes, $test_3->curl->getInfo(CURLINFO_SIZE_DOWNLOAD));
+        $this->assertEquals($response_length_bytes, strlen($test_3->curl->rawResponse));
+        $this->assertFalse($test_3->curl->error);
+        $this->assertFalse($test_3->curl->curlError);
+        $this->assertFalse($test_3->curl->httpError);
+    }
 }
