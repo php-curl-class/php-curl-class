@@ -19,6 +19,7 @@
     },
     "require-dev": {
         "ext-gd": "*",
+        "phpcompatibility/php-compatibility": "*",
         "phpunit/phpunit": "*",
         "squizlabs/php_codesniffer": "*"
     },
