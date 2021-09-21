@@ -1793,7 +1793,7 @@ class Curl
     public function __get($name)
     {
         $return = null;
-        if (in_array($name, self::$deferredProperties, true) && is_callable([$this, $getter = '__get_' . $name])) {
+        if (in_array($name, self::$deferredProperties, true) && is_callable([$this, $getter = '_get_' . $name])) {
             $return = $this->$name = $this->$getter();
         }
         return $return;
@@ -1804,7 +1804,7 @@ class Curl
      *
      * @access private
      */
-    private function __get_effectiveUrl()
+    private function _get_effectiveUrl()
     {
         return $this->getInfo(CURLINFO_EFFECTIVE_URL);
     }
@@ -1814,7 +1814,7 @@ class Curl
      *
      * @access private
      */
-    private function __get_rfc2616()
+    private function _get_rfc2616()
     {
         return array_fill_keys(self::$RFC2616, true);
     }
@@ -1824,7 +1824,7 @@ class Curl
      *
      * @access private
      */
-    private function __get_rfc6265()
+    private function _get_rfc6265()
     {
         return array_fill_keys(self::$RFC6265, true);
     }
@@ -1834,7 +1834,7 @@ class Curl
      *
      * @access private
      */
-    private function __get_totalTime()
+    private function _get_totalTime()
     {
         return $this->getInfo(CURLINFO_TOTAL_TIME);
     }
