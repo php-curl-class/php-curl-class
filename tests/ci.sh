@@ -45,11 +45,13 @@ export PHP_CURL_CLASS_TEST_MODE_ENABLED="yes"
 # Start test servers. Run servers on different ports to allow simultaneous
 # requests without blocking.
 server_count=7
+declare -A pids
 for i in $(seq 0 $(("${server_count}" - 1))); do
     port=8000
     (( port += $i ))
 
-    php -S "127.0.0.1:${port}" -t PHPCurlClass/ &
+    php -S "127.0.0.1:${port}" -t PHPCurlClass/ &> /dev/null &
+    pids["${i}"]="${!}"
 done
 
 errors=()
