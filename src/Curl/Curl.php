@@ -478,7 +478,7 @@ class Curl
         $this->curlError = $this->curlErrorCode !== 0;
 
         // Ensure Curl::rawResponse is a string as curl_exec() can return false.
-        // Without this, calling strlen($curl->rawResponse) will error the
+        // Without this, calling strlen($curl->rawResponse) will error when the
         // strict types setting is enabled.
         if (!is_string($this->rawResponse)) {
             $this->rawResponse = '';
