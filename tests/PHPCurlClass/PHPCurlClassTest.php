@@ -1232,7 +1232,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test_3->curl->setOpt(CURLINFO_HEADER_OUT, false);
         $test_3->curl->verbose();
         $test_3->server('response_header', 'GET');
-        $this->assertNull($test_3->curl->requestHeaders);
+        $this->assertEmpty($test_3->curl->requestHeaders);
     }
 
     public function testHeaderRedirect()
