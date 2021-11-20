@@ -27,7 +27,8 @@ class Curl
     public $httpErrorMessage = null;
 
     public $url = null;
-    public $requestHeaders = null;
+    public $requestHeaders = [];
+
     public $responseHeaders = null;
     public $rawResponseHeaders = '';
     public $responseCookies = [];
@@ -1480,7 +1481,7 @@ class Curl
                 'Request contained ' . $request_headers_count . ' ' . (
                     $request_headers_count === 1 ? 'header:' : 'headers:'
                 ) . "\n";
-            if ($this->requestHeaders !== null) {
+            if ($request_headers_count) {
                 $i = 1;
                 foreach ($this->requestHeaders as $key => $value) {
                     echo '    ' . $i . ' ' . $key . ': ' . $value . "\n";
