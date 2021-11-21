@@ -196,3 +196,16 @@ function get_request_stats($request_stats, $multi_curl)
 
     return $request_stats;
 }
+
+function get_request_method($instance) {
+    $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
+
+    // POST requests have CURLOPT_CUSTOMREQUEST unset by default to allow
+    // post/redirect/get requests so infer that instance is a POST when the
+    // CURLOPT_POST option is enabled.
+    if ($request_method === null && $instance->getOpt(CURLOPT_POST) === true) {
+        $request_method = 'POST';
+    }
+
+    return $request_method;
+}

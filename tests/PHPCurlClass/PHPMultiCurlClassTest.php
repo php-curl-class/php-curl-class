@@ -69,7 +69,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
         ) {
             \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
-            $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
+            $request_method = \Helper\get_request_method($instance);
             if ($request_method === 'DELETE') {
                 \PHPUnit\Framework\Assert::assertFalse($delete_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_success_called);
@@ -146,7 +146,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
         ) {
             \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
-            $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
+            $request_method = \Helper\get_request_method($instance);
             if ($request_method === 'DELETE') {
                 \PHPUnit\Framework\Assert::assertTrue($delete_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_success_called);
@@ -244,7 +244,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
         ) {
             \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
-            $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
+            $request_method = \Helper\get_request_method($instance);
             if ($request_method === 'DELETE') {
                 \PHPUnit\Framework\Assert::assertTrue($delete_before_send_called);
                 \PHPUnit\Framework\Assert::assertTrue($delete_success_called);
@@ -429,7 +429,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
         ) {
             \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
-            $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
+            $request_method = \Helper\get_request_method($instance);
             if ($request_method === 'DELETE') {
                 \PHPUnit\Framework\Assert::assertFalse($delete_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_success_called);
@@ -526,7 +526,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
         ) {
             \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
-            $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
+            $request_method = \Helper\get_request_method($instance);
             if ($request_method === 'DELETE') {
                 \PHPUnit\Framework\Assert::assertTrue($delete_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_success_called);
@@ -603,7 +603,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             &$search_before_send_called, &$search_success_called, &$search_error_called, &$search_complete_called
         ) {
             \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
-            $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
+            $request_method = \Helper\get_request_method($instance);
             if ($request_method === 'DELETE') {
                 \PHPUnit\Framework\Assert::assertTrue($delete_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_success_called);
