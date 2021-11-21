@@ -4716,4 +4716,41 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->setMaximumRedirects(3);
         $this->assertEquals(3, $multi_curl->getOpt(CURLOPT_MAXREDIRS));
     }
+
+    public function testPostDataArray()
+    {
+        $data = ['key' => 'value'];
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'post');
+        $multi_curl->addPost(Test::TEST_URL, $data);
+        $multi_curl->complete(function ($instance) {
+            \PHPUnit\Framework\Assert::assertEquals(
+                'POST / HTTP/1.1',
+                $instance->requestHeaders['Request-Line']
+            );
+            \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->url);
+            \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->effectiveUrl);
+        });
+        $multi_curl->start();
+    }
+
+    public function testPostDataString()
+    {
+        $data = str_repeat('-', 100);
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'post_json');
+        $multi_curl->addPost(Test::TEST_URL, $data);
+        $multi_curl->complete(function ($instance) use ($data) {
+            \PHPUnit\Framework\Assert::assertEquals(
+                'POST / HTTP/1.1',
+                $instance->requestHeaders['Request-Line']
+            );
+            \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->url);
+            \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->effectiveUrl);
+            \PHPUnit\Framework\Assert::assertEquals($data, $instance->response);
+        });
+        $multi_curl->start();
+    }
 }

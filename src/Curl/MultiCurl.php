@@ -276,7 +276,7 @@ class MultiCurl
 
         $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
-        $this->setUrl($url, $data);
+        $this->setUrl($url);
 
         if (is_array($data) && empty($data)) {
             $curl->removeHeader('Content-Length');
