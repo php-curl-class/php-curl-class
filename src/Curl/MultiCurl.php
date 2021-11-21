@@ -261,7 +261,7 @@ class MultiCurl
      * @param  $url
      * @param  $data
      * @param  $follow_303_with_post
-     *     If true, will cause 303 redirections to be followed using GET requests (default: false).
+     *     If true, will cause 303 redirections to be followed using a POST request (default: false).
      *     Note: Redirections are only followed if the CURLOPT_FOLLOWLOCATION option is set to true.
      *
      * @return object
@@ -284,11 +284,11 @@ class MultiCurl
 
         $curl->setUrl($url);
 
-        /*
-         * For post-redirect-get requests, the CURLOPT_CUSTOMREQUEST option must not
-         * be set, otherwise cURL will perform POST requests for redirections.
-         */
-        if (!$follow_303_with_post) {
+        // Set the request method to "POST" when following a 303 redirect with
+        // an additional POST request is desired. This is equivalent to setting
+        // the -X, --request command line option where curl won't change the
+        // request method according to the HTTP 30x response code.
+        if ($follow_303_with_post) {
             $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
         }
 

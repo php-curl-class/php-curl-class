@@ -718,12 +718,17 @@ class Curl
 
         $this->setUrl($url);
 
+        // Set the request method to "POST" when following a 303 redirect with
+        // an additional POST request is desired. This is equivalent to setting
+        // the -X, --request command line option where curl won't change the
+        // request method according to the HTTP 30x response code.
         if ($follow_303_with_post) {
             $this->setOpt(CURLOPT_CUSTOMREQUEST, 'POST');
-        } else {
-            if (isset($this->options[CURLOPT_CUSTOMREQUEST])) {
-                $this->setOpt(CURLOPT_CUSTOMREQUEST, null);
-            }
+        } elseif (isset($this->options[CURLOPT_CUSTOMREQUEST])) {
+            // Unset the CURLOPT_CUSTOMREQUEST option so that curl does not use
+            // a POST request after a post/redirect/get redirection. Without
+            // this, curl will use the method string specified for all requests.
+            $this->setOpt(CURLOPT_CUSTOMREQUEST, null);
         }
 
         $this->setOpt(CURLOPT_POST, true);

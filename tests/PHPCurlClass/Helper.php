@@ -53,7 +53,8 @@ class Test
     private function chainedRequest($request_method, $data)
     {
         if ($request_method === 'POST') {
-            $this->server('request_method', $request_method, $data, true);
+            $follow_303_with_post = true;
+            $this->server('request_method', $request_method, $data, $follow_303_with_post);
         } else {
             $this->server('request_method', $request_method, $data);
         }

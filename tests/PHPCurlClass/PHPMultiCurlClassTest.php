@@ -2993,20 +2993,20 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testMultiPostRedirectGet()
     {
-        // Deny post-redirect-get
+        // Deny the post-redirect-get and make a POST following the redirection.
         $multi_curl = new MultiCurl(Test::TEST_URL);
-        $multi_curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+        $multi_curl->setFollowLocation(true);
         $multi_curl->setHeader('X-DEBUG-TEST', 'post_redirect_get');
-        $multi_curl->addPost([], false)->complete(function ($instance) {
+        $multi_curl->addPost([], true)->complete(function ($instance) {
             \PHPUnit\Framework\Assert::assertEquals('Redirected: POST', $instance->response);
         });
         $multi_curl->start();
 
-        // Allow post-redirect-get
+        // Allow the post-redirect-get and make a GET following the redirection.
         $multi_curl = new MultiCurl(Test::TEST_URL);
-        $multi_curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+        $multi_curl->setFollowLocation(true);
         $multi_curl->setHeader('X-DEBUG-TEST', 'post_redirect_get');
-        $multi_curl->addPost([], true)->complete(function ($instance) {
+        $multi_curl->addPost([], false)->complete(function ($instance) {
             \PHPUnit\Framework\Assert::assertEquals('Redirected: GET', $instance->response);
         });
         $multi_curl->start();
@@ -4697,6 +4697,8 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($multi_curl->getOpt(CURLOPT_FOLLOWLOCATION));
         $multi_curl->setFollowLocation(true);
         $this->assertTrue($multi_curl->getOpt(CURLOPT_FOLLOWLOCATION));
+        $multi_curl->setFollowLocation(false);
+        $this->assertFalse($multi_curl->getOpt(CURLOPT_FOLLOWLOCATION));
     }
 
     public function testSetForbidReuse()
