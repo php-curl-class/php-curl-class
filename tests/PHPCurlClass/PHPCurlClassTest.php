@@ -4162,4 +4162,85 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
         $this->assertEquals($data, $curl->response);
     }
+
+    public function testPatchDataArray()
+    {
+        $data = ['key' => 'value'];
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'post');
+        $curl->patch(Test::TEST_URL, $data);
+
+        $this->assertEquals('POST / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->url);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
+    }
+
+    public function testPatchDataString()
+    {
+        $data = str_repeat('-', 100);
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'post_json');
+        $curl->patch(Test::TEST_URL, $data);
+
+        $this->assertEquals('POST / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->url);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
+        $this->assertEquals($data, $curl->response);
+    }
+
+    public function testPutDataArray()
+    {
+        $data = ['key' => 'value'];
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'post');
+        $curl->put(Test::TEST_URL, $data);
+
+        $this->assertEquals('POST / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->url);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
+    }
+
+    public function testPutDataString()
+    {
+        $data = str_repeat('-', 100);
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'post_json');
+        $curl->put(Test::TEST_URL, $data);
+
+        $this->assertEquals('POST / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->url);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
+        $this->assertEquals($data, $curl->response);
+    }
+
+    public function testSearchDataArray()
+    {
+        $data = ['key' => 'value'];
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'post');
+        $curl->search(Test::TEST_URL, $data);
+
+        $this->assertEquals('POST / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->url);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
+    }
+
+    public function testSearchPutDataString()
+    {
+        $data = str_repeat('-', 100);
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'post_json');
+        $curl->search(Test::TEST_URL, $data);
+
+        $this->assertEquals('POST / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->url);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
+        $this->assertEquals($data, $curl->response);
+    }
 }
