@@ -4759,11 +4759,11 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $data = ['key' => 'value'];
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'post');
+        $multi_curl->setHeader('X-DEBUG-TEST', 'patch');
         $multi_curl->addPatch(Test::TEST_URL, $data);
         $multi_curl->complete(function ($instance) {
             \PHPUnit\Framework\Assert::assertEquals(
-                'POST / HTTP/1.1',
+                'PATCH / HTTP/1.1',
                 $instance->requestHeaders['Request-Line']
             );
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->url);
@@ -4777,11 +4777,11 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $data = str_repeat('-', 100);
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'post_json');
+        $multi_curl->setHeader('X-DEBUG-TEST', 'patch_json');
         $multi_curl->addPatch(Test::TEST_URL, $data);
         $multi_curl->complete(function ($instance) use ($data) {
             \PHPUnit\Framework\Assert::assertEquals(
-                'POST / HTTP/1.1',
+                'PATCH / HTTP/1.1',
                 $instance->requestHeaders['Request-Line']
             );
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->url);
@@ -4796,11 +4796,11 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $data = ['key' => 'value'];
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'post');
+        $multi_curl->setHeader('X-DEBUG-TEST', 'put');
         $multi_curl->addPut(Test::TEST_URL, $data);
         $multi_curl->complete(function ($instance) {
             \PHPUnit\Framework\Assert::assertEquals(
-                'POST / HTTP/1.1',
+                'PUT / HTTP/1.1',
                 $instance->requestHeaders['Request-Line']
             );
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->url);
@@ -4814,11 +4814,11 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $data = str_repeat('-', 100);
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'post_json');
+        $multi_curl->setHeader('X-DEBUG-TEST', 'put_json');
         $multi_curl->addPut(Test::TEST_URL, $data);
         $multi_curl->complete(function ($instance) use ($data) {
             \PHPUnit\Framework\Assert::assertEquals(
-                'POST / HTTP/1.1',
+                'PUT / HTTP/1.1',
                 $instance->requestHeaders['Request-Line']
             );
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->url);
@@ -4833,11 +4833,11 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $data = ['key' => 'value'];
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'post');
+        $multi_curl->setHeader('X-DEBUG-TEST', 'search');
         $multi_curl->addSearch(Test::TEST_URL, $data);
         $multi_curl->complete(function ($instance) {
             \PHPUnit\Framework\Assert::assertEquals(
-                'POST / HTTP/1.1',
+                'SEARCH / HTTP/1.1',
                 $instance->requestHeaders['Request-Line']
             );
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->url);
@@ -4851,11 +4851,11 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $data = str_repeat('-', 100);
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'post_json');
+        $multi_curl->setHeader('X-DEBUG-TEST', 'search_json');
         $multi_curl->addSearch(Test::TEST_URL, $data);
         $multi_curl->complete(function ($instance) use ($data) {
             \PHPUnit\Framework\Assert::assertEquals(
-                'POST / HTTP/1.1',
+                'SEARCH / HTTP/1.1',
                 $instance->requestHeaders['Request-Line']
             );
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->url);
