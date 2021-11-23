@@ -4786,7 +4786,6 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             );
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->url);
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->effectiveUrl);
-            \PHPUnit\Framework\Assert::assertEquals($data, $instance->response);
         });
         $multi_curl->start();
     }
@@ -4823,7 +4822,6 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             );
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->url);
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->effectiveUrl);
-            \PHPUnit\Framework\Assert::assertEquals($data, $instance->response);
         });
         $multi_curl->start();
     }
@@ -4860,7 +4858,6 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             );
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->url);
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->effectiveUrl);
-            \PHPUnit\Framework\Assert::assertEquals($data, $instance->response);
         });
         $multi_curl->start();
     }

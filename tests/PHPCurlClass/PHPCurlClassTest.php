@@ -4173,7 +4173,6 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals('PATCH / HTTP/1.1', $curl->requestHeaders['Request-Line']);
         $this->assertEquals(Test::TEST_URL, $curl->url);
-        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
     }
 
     public function testPatchDataString()
@@ -4200,7 +4199,6 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals('PUT / HTTP/1.1', $curl->requestHeaders['Request-Line']);
         $this->assertEquals(Test::TEST_URL, $curl->url);
-        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
     }
 
     public function testPutDataString()
@@ -4214,7 +4212,6 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('PUT / HTTP/1.1', $curl->requestHeaders['Request-Line']);
         $this->assertEquals(Test::TEST_URL, $curl->url);
         $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
-        $this->assertEquals($data, $curl->response);
     }
 
     public function testSearchDataArray()
@@ -4230,7 +4227,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
     }
 
-    public function testSearchPutDataString()
+    public function testSearchDataString()
     {
         $data = str_repeat('-', 100);
 
@@ -4241,6 +4238,5 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('SEARCH / HTTP/1.1', $curl->requestHeaders['Request-Line']);
         $this->assertEquals(Test::TEST_URL, $curl->url);
         $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
-        $this->assertEquals($data, $curl->response);
     }
 }
