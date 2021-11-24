@@ -24,6 +24,14 @@ phpunit_v8_1_shim() {
     remove_expectWarning
 }
 
+php_v7_0_shim() {
+    # -protected function setUp(): void
+    # +protected function setUp()
+    find='protected function setUp(): void'
+    replace='protected function setUp()'
+    sed -i'' -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+}
+
 set -x
 
 # Use composer's phpunit and phpcs by adding composer bin directory to the path environment variable.
@@ -71,6 +79,10 @@ elif [[ "${phpunit_version}" == "7.5."* ]]; then
     phpunit_v7_5_shim
 elif [[ "${phpunit_version}" == "8.1."* ]]; then
     phpunit_v8_1_shim
+fi
+
+if [[ "${CI_PHP_VERSION}" == "7.0" ]]; then
+    php_v7_0_shim
 fi
 
 # Run tests.
