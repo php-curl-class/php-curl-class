@@ -247,7 +247,7 @@ class MultiCurl
         }
 
         $this->queueHandle($curl);
-        $this->setUrl($url, $data);
+        $this->setUrl($url);
         $curl->setUrl($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $curl->setOpt(CURLOPT_POSTFIELDS, $curl->buildPostData($data));
@@ -315,7 +315,7 @@ class MultiCurl
 
         $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
-        $this->setUrl($url, $data);
+        $this->setUrl($url);
         $curl->setUrl($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
         $put_data = $curl->buildPostData($data);
@@ -344,7 +344,7 @@ class MultiCurl
 
         $curl = new Curl($this->baseUrl);
         $this->queueHandle($curl);
-        $this->setUrl($url, $data);
+        $this->setUrl($url);
         $curl->setUrl($url);
         $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'SEARCH');
         $put_data = $curl->buildPostData($data);
