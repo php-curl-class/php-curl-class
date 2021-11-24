@@ -8,6 +8,13 @@ use Helper\Test;
 
 class MultiCurlTest extends \PHPUnit\Framework\TestCase
 {
+    private $skip_slow_tests;
+
+    protected function setUp(): void
+    {
+        $this->skip_slow_tests = in_array(getenv('PHP_CURL_CLASS_SKIP_SLOW_TESTS'), ['1', 'y', 'Y']);
+    }
+
     public function testMultiCurlCallback()
     {
         $delete_before_send_called = false;
@@ -370,6 +377,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testMultiCurlCallbackError()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $delete_before_send_called = false;
         $delete_success_called = false;
         $delete_error_called = false;
@@ -1168,6 +1179,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testCurlCallbackError()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $multi_curl = new MultiCurl();
 
         $delete_before_send_called = false;
@@ -2758,6 +2773,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testDownloadCallbackError()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $download_before_send_called = false;
         $download_callback_called = false;
         $multi_curl = new MultiCurl();
@@ -3710,6 +3729,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitPerSecond1()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         //  R0--|
         //  R1--|
         //      W---------------|
@@ -3779,6 +3802,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitPerSecond2()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         //  R0--|
         //  R1------|
         //          W-----------|
@@ -3848,6 +3875,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitPerSecond3()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         //  R0------|
         //  R1------------------|
         //                      R2------|
@@ -3915,6 +3946,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitPerSecond4()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         //  R0------|
         //  R1----------------------------------|
         //                      R2----------|
@@ -3982,6 +4017,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitPerSecond5()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         //  R0--------------------------|
         //  R1--------------------------|
         //                      R2------|
@@ -4050,6 +4089,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitPerSecond6()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         //  R0--------------------------|
         //  R1--------------------------|
         //                      R2--------------|
@@ -4118,6 +4161,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitPerSecond7()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         //  R0------|
         //  R1----------------------------------------------|
         //                      R2----------------------|
@@ -4194,6 +4241,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitPerSecond8()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         //  R0------------------------------|
         //  R1----------------------------------------------|
         //                      R2--------------------------|
@@ -4270,6 +4321,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitPerSecond9()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         //  R0----------------------------------------------|
         //  R1----------------------------------------------|
         //                      R2--------------------------|
@@ -4346,6 +4401,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitPerSecondOnePerSecond()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
@@ -4380,6 +4439,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitFivePerThirtySecond()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
@@ -4410,6 +4473,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitOnePerOneMinute()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
@@ -4440,6 +4507,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitThreePerOneMinute()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
@@ -4468,6 +4539,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitThreePerSixtyFiveSeconds()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
@@ -4496,6 +4571,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitTenPerTwoMinutes()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $request_stats = [];
 
         $multi_curl = new MultiCurl();

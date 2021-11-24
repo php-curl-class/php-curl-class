@@ -10,6 +10,13 @@ use Helper\User;
 
 class CurlTest extends \PHPUnit\Framework\TestCase
 {
+    private $skip_slow_tests;
+
+    protected function setUp(): void
+    {
+        $this->skip_slow_tests = in_array(getenv('PHP_CURL_CLASS_SKIP_SLOW_TESTS'), ['1', 'y', 'Y']);
+    }
+
     public function testExtensionsLoaded()
     {
         $this->assertTrue(extension_loaded('curl'));
@@ -813,6 +820,10 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testDownloadCallbackError()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $download_before_send_called = false;
         $download_callback_called = false;
         $curl = new Curl();
@@ -1102,6 +1113,10 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testDefaultTimeout()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $test = new Test('8001');
         $test->server('timeout', 'GET', [
             'seconds' => '31',
@@ -1115,6 +1130,10 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testTimeoutError()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $test = new Test('8002');
         $test->curl->setTimeout(5);
         $test->server('timeout', 'GET', [
@@ -1129,6 +1148,10 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testTimeout()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $test = new Test('8003');
         $test->curl->setTimeout(10);
         $test->server('timeout', 'GET', [
@@ -1144,6 +1167,10 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testError()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $test = new Test('8004');
         $test->curl->get(Test::ERROR_URL);
         $this->assertTrue($test->curl->error);
@@ -2928,6 +2955,10 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testErrorCallback()
     {
+        if ($this->skip_slow_tests) {
+            $this->markTestSkipped();
+        }
+
         $before_send_called = false;
         $success_called = false;
         $error_called = false;
