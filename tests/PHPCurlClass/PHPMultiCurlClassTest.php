@@ -4856,7 +4856,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $data = str_repeat('-', 100);
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'patch_json');
+        $multi_curl->setHeader('X-DEBUG-TEST', 'patch');
         $multi_curl->addPatch(Test::TEST_URL, $data);
         $multi_curl->complete(function ($instance) use ($data) {
             \PHPUnit\Framework\Assert::assertEquals(
@@ -4883,6 +4883,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             );
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->url);
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->effectiveUrl);
+            \PHPUnit\Framework\Assert::assertEquals('key=value', $instance->response);
         });
         $multi_curl->start();
     }
@@ -4892,7 +4893,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $data = str_repeat('-', 100);
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'put_json');
+        $multi_curl->setHeader('X-DEBUG-TEST', 'put');
         $multi_curl->addPut(Test::TEST_URL, $data);
         $multi_curl->complete(function ($instance) use ($data) {
             \PHPUnit\Framework\Assert::assertEquals(
@@ -4928,7 +4929,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $data = str_repeat('-', 100);
 
         $multi_curl = new MultiCurl();
-        $multi_curl->setHeader('X-DEBUG-TEST', 'search_json');
+        $multi_curl->setHeader('X-DEBUG-TEST', 'search');
         $multi_curl->addSearch(Test::TEST_URL, $data);
         $multi_curl->complete(function ($instance) use ($data) {
             \PHPUnit\Framework\Assert::assertEquals(
