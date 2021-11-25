@@ -21,10 +21,9 @@ jobs:
           - '7.3'
           - '7.4'
           - '8.0'
+          - '8.1'
         future-release: [false]
         include:
-          - php: '8.1'
-            future-release: true
           - php: '8.2'
             future-release: true
       fail-fast: false

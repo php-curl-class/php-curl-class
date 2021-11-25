@@ -34,7 +34,7 @@ For latest commit version:
 
 ### Requirements
 
-PHP Curl Class works with PHP 7.0, 7.1, 7.2, 7.3, 7.4, and 8.0.
+PHP Curl Class works with PHP 7.0, 7.1, 7.2, 7.3, 7.4, 8.0, and 8.1.
 
 ### Quick Start and Examples
 
