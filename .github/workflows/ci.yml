@@ -21,8 +21,15 @@ jobs:
           - '7.3'
           - '7.4'
           - '8.0'
+        future-release: [false]
+        include:
+          - php: '8.1'
+            future-release: true
+          - php: '8.2'
+            future-release: true
       fail-fast: false
     name: PHP ${{ matrix.php }}
+    continue-on-error: ${{ matrix.future-release }}
 
     steps:
       - name: Set up php
@@ -37,3 +44,4 @@ jobs:
         run: bash tests/ci.sh
         env:
           CI_PHP_VERSION: ${{ matrix.php }}
+          CI_PHP_FUTURE_RELEASE: ${{ matrix.future-release }}

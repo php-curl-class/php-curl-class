@@ -41,6 +41,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}"
 
 echo "CI_PHP_VERSION: ${CI_PHP_VERSION}"
+echo "CI_PHP_FUTURE_RELEASE: ${CI_PHP_FUTURE_RELEASE}"
 php -r "var_dump(phpversion());"
 php -r "var_dump(curl_version());"
 
@@ -119,4 +120,8 @@ for pid in "${pids[@]}"; do
   kill "${pid}" &> /dev/null &
 done
 
-exit "${#errors[@]}"
+if [[ "${CI_PHP_FUTURE_RELEASE}" != "true" ]]; then
+    exit "${#errors[@]}"
+elif [[ "${#errors[@]}" -ne 0 ]]; then
+    echo "One or more tests failed, but allowed as CI_PHP_FUTURE_RELEASE is on for PHP version ${CI_PHP_VERSION}."
+fi
