@@ -44,3 +44,4 @@ jobs:
         run: bash tests/ci.sh
         env:
           CI_PHP_VERSION: ${{ matrix.php }}
+          CI_PHP_FUTURE_RELEASE: ${{ matrix.future-release }}
