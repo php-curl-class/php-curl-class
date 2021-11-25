@@ -312,11 +312,8 @@ if ($test === 'http_basic_auth') {
     echo '}' . "\n";
     exit;
 } elseif ($test === 'error_message') {
-    if (function_exists('http_response_code')) {
-        http_response_code(401);
-    } else {
-        header('HTTP/1.1 401 Unauthorized');
-    }
+    // 401 Unauthorized.
+    http_response_code(401);
     exit;
 } elseif ($test === 'redirect') {
     if (!isset($_GET['redirect'])) {
@@ -342,11 +339,8 @@ if ($test === 'http_basic_auth') {
         echo 'Redirected: ' . $request_method;
     } else {
         if ($request_method === 'POST') {
-            if (function_exists('http_response_code')) {
-                http_response_code(303);
-            } else {
-                header('HTTP/1.1 303 See Other');
-            }
+            // 303 See Other.
+            http_response_code(303);
 
             header('Location: ?redirect');
         } else {
