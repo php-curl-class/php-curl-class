@@ -25,6 +25,8 @@ jobs:
         include:
           - php: '8.1'
             future-release: true
+          - php: '8.2'
+            future-release: true
       fail-fast: false
     name: PHP ${{ matrix.php }}
     continue-on-error: ${{ matrix.future-release }}
