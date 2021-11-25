@@ -14,7 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: ['7.0', '7.1', '7.2', '7.3', '7.4', '8.0']
+        php:
+          - '7.0'
+          - '7.1'
+          - '7.2'
+          - '7.3'
+          - '7.4'
+          - '8.0'
       fail-fast: false
     name: PHP ${{ matrix.php }}
 
