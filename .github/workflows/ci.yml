@@ -47,3 +47,4 @@ jobs:
 
       - name: Static analysis
         run: "vendor/bin/psalm"
+        if: ${{ !matrix.future-release }}
