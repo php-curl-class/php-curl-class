@@ -44,3 +44,7 @@ jobs:
         env:
           CI_PHP_VERSION: ${{ matrix.php }}
           CI_PHP_FUTURE_RELEASE: ${{ matrix.future-release }}
+
+      - name: Static analysis
+        run: "vendor/bin/psalm"
+        if: ${{ !matrix.future-release && matrix.php >= 7.1 }}

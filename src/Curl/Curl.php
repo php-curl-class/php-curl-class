@@ -1428,7 +1428,7 @@ class Curl
      *
      * @access public
      * @param  bool $on
-     * @param  resource $output
+     * @param  resource|string $output
      */
     public function verbose($on = true, $output = 'STDERR')
     {

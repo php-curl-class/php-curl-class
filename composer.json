@@ -21,7 +21,8 @@
         "ext-gd": "*",
         "phpcompatibility/php-compatibility": "*",
         "phpunit/phpunit": "*",
-        "squizlabs/php_codesniffer": "*"
+        "squizlabs/php_codesniffer": "*",
+        "vimeo/psalm": "*"
     },
     "suggest": {
         "ext-mbstring": "*"
