@@ -12,4 +12,16 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <referencedClass name="CurlHandle" />
+                <file name="src/Curl/Curl.php" />
+            </errorLevel>
+            <errorLevel type="suppress">
+                <referencedClass name="CurlMultiHandle" />
+                <file name="src/Curl/MultiCurl.php" />
+            </errorLevel>
+        </UndefinedClass>
+    </issueHandlers>
 </psalm>
