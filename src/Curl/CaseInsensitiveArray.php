@@ -2,8 +2,6 @@
 
 namespace Curl;
 
-use ReturnTypeWillChange;
-
 class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
 {
 
@@ -66,7 +64,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @access public
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if ($offset === null) {
@@ -92,7 +90,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @access public
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return (bool) array_key_exists(strtolower($offset), $this->data);
@@ -112,7 +110,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @access public
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         $offsetlower = strtolower($offset);
@@ -134,7 +132,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @access public
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         $offsetlower = strtolower($offset);
@@ -152,7 +150,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @access public
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return (int) count($this->data);
@@ -169,7 +167,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @access public
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return current($this->data);
@@ -186,7 +184,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @access public
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function next()
     {
         next($this->data);
@@ -203,7 +201,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @access public
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function key()
     {
         $key = key($this->data);
@@ -219,7 +217,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @access public
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return (bool) (key($this->data) !== null);
@@ -236,7 +234,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @access public
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         reset($this->data);
