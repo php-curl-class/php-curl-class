@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php:
+        php-version:
           - '7.0'
           - '7.1'
           - '7.2'
@@ -24,17 +24,17 @@ jobs:
           - '8.1'
         future-release: [false]
         include:
-          - php: '8.2'
+          - php-version: '8.2'
             future-release: true
       fail-fast: false
-    name: PHP ${{ matrix.php }}
+    name: PHP ${{ matrix.php-version }}
     continue-on-error: ${{ matrix.future-release }}
 
     steps:
       - name: Set up php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          php-version: ${{ matrix.php-version }}
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -42,9 +42,9 @@ jobs:
       - name: Test
         run: bash tests/ci.sh
         env:
-          CI_PHP_VERSION: ${{ matrix.php }}
+          CI_PHP_VERSION: ${{ matrix.php-version }}
           CI_PHP_FUTURE_RELEASE: ${{ matrix.future-release }}
 
       - name: Static analysis
         run: "vendor/bin/psalm"
-        if: ${{ !matrix.future-release && matrix.php >= 7.1 }}
+        if: ${{ !matrix.future-release && matrix.php-version >= 7.1 }}
