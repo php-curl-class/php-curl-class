@@ -4,6 +4,14 @@ PHP Curl Class uses semantic versioning with version numbers written as `MAJOR.M
 `MINOR` and `PATCH` version changes. It is recommended to review `MAJOR` changes prior to upgrade as there may be
 backwards-incompatible changes that will affect existing usage.
 
+## 9.5.1 - 2021-12-14
+
+### Fixed
+
+- Silence PHP 8.1 deprecations [#691](https://github.com/php-curl-class/php-curl-class/issues/691)
+- Remove data parameter from additional request types
+  [#689](https://github.com/php-curl-class/php-curl-class/issues/689)
+
 ## 9.5.0 - 2021-11-21
 
 ### Added
