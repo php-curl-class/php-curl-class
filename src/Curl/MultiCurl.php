@@ -1016,6 +1016,19 @@ class MultiCurl
     }
 
     /**
+     * Stop
+     *
+     * @access public
+     */
+    public function stop()
+    {
+        while (count($this->queuedCurls)) {
+            $curl = array_pop($this->queuedCurls);
+            $curl->close();
+        }
+    }
+
+    /**
      * Success
      *
      * @access public

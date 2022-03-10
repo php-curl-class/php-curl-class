@@ -4941,4 +4941,45 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         });
         $multi_curl->start();
     }
+
+    public function testCurlStop()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setConcurrency(1);
+        $request_count = 0;
+        $multi_curl->complete(function ($instance) use (&$request_count, $multi_curl) {
+            $request_count += 1;
+            $multi_curl->stop();
+        });
+
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+
+        $multi_curl->start();
+
+        $this->assertEquals(1, $request_count);
+    }
+
+    public function testCurlStopOnError()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setConcurrency(1);
+        $request_count = 0;
+        $multi_curl->complete(function ($instance) use (&$request_count) {
+            $request_count += 1;
+        });
+        $multi_curl->error(function ($instance) use ($multi_curl) {
+            $multi_curl->stop();
+        });
+
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::ERROR_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+
+        $multi_curl->start();
+
+        $this->assertEquals(3, $request_count);
+    }
 }
