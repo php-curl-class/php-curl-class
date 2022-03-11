@@ -3471,10 +3471,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $get_2 = $multi_curl->addGet(Test::TEST_URL);
         $get_3 = $multi_curl->addGet(Test::TEST_URL);
 
-        // Make MultiCurl::curls accessible and MultiCurl::initHandle()
+        // Make MultiCurl::queuedCurls accessible and MultiCurl::initHandle()
         // callable.
         $reflector = new \ReflectionClass('\Curl\MultiCurl');
-        $property = $reflector->getProperty('curls');
+        $property = $reflector->getProperty('queuedCurls');
         $property->setAccessible(true);
         $multi_curl_curls = $property->getValue($multi_curl);
         $multi_curl_initHandle = $reflector->getMethod('initHandle');
@@ -3511,10 +3511,10 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $get_2->setProxy('example.com:9999');
         $get_3 = $multi_curl->addGet(Test::TEST_URL);
 
-        // Make MultiCurl::curls accessible and MultiCurl::initHandle()
+        // Make MultiCurl::queuedCurls accessible and MultiCurl::initHandle()
         // callable.
         $reflector = new \ReflectionClass('\Curl\MultiCurl');
-        $property = $reflector->getProperty('curls');
+        $property = $reflector->getProperty('queuedCurls');
         $property->setAccessible(true);
         $multi_curl_curls = $property->getValue($multi_curl);
         $multi_curl_initHandle = $reflector->getMethod('initHandle');
@@ -4649,7 +4649,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         ]);
         $multi_curl->addGet(Test::TEST_URL);
 
-        $curls = \Helper\get_multi_curl_property_value($multi_curl, 'curls');
+        $curls = \Helper\get_multi_curl_property_value($multi_curl, 'queuedCurls');
         foreach ($curls as $curl) {
             $this->assertEquals([
                 'Key1: Value1',
@@ -4713,7 +4713,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         ]);
         $multi_curl->addGet(Test::TEST_URL);
 
-        $curls = \Helper\get_multi_curl_property_value($multi_curl, 'curls');
+        $curls = \Helper\get_multi_curl_property_value($multi_curl, 'queuedCurls');
         foreach ($curls as $curl) {
             $this->assertEquals([
                 'Key1: Value1',
@@ -4940,5 +4940,46 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
             \PHPUnit\Framework\Assert::assertEquals(Test::TEST_URL, $instance->effectiveUrl);
         });
         $multi_curl->start();
+    }
+
+    public function testCurlStop()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setConcurrency(1);
+        $request_count = 0;
+        $multi_curl->complete(function ($instance) use (&$request_count, $multi_curl) {
+            $request_count += 1;
+            $multi_curl->stop();
+        });
+
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+
+        $multi_curl->start();
+
+        $this->assertEquals(1, $request_count);
+    }
+
+    public function testCurlStopOnError()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setConcurrency(1);
+        $request_count = 0;
+        $multi_curl->complete(function ($instance) use (&$request_count) {
+            $request_count += 1;
+        });
+        $multi_curl->error(function ($instance) use ($multi_curl) {
+            $multi_curl->stop();
+        });
+
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::ERROR_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+
+        $multi_curl->start();
+
+        $this->assertEquals(3, $request_count);
     }
 }

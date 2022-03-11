@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 remove_expectWarning() {
     # Fix "Call to undefined method CurlTest\CurlTest::expectWarning()".
     sed -i'' -e"/->expectWarning(/d" "./PHPCurlClass/PHP"*

@@ -13,7 +13,7 @@ class MultiCurl
     public $startTime = null;
     public $stopTime = null;
 
-    private $curls = [];
+    private $queuedCurls = [];
     private $activeCurls = [];
     private $isStarted = false;
     private $currentStartTime = null;
@@ -389,7 +389,7 @@ class MultiCurl
      */
     public function close()
     {
-        foreach ($this->curls as $curl) {
+        foreach ($this->queuedCurls as $curl) {
             $curl->close();
         }
 
@@ -738,7 +738,7 @@ class MultiCurl
         // existing instances when they have not already been set to avoid
         // unexpectedly changing the request url after is has been specified.
         if ($option === CURLOPT_URL) {
-            foreach ($this->curls as $curl_id => $curl) {
+            foreach ($this->queuedCurls as $curl_id => $curl) {
                 if (!isset($this->instanceSpecificOptions[$curl_id][$option]) ||
                     $this->instanceSpecificOptions[$curl_id][$option] === null) {
                     $this->instanceSpecificOptions[$curl_id][$option] = $value;
@@ -948,7 +948,7 @@ class MultiCurl
         $this->currentRequestCount = 0;
 
         do {
-            while (count($this->curls) &&
+            while (count($this->queuedCurls) &&
                 count($this->activeCurls) < $this->concurrency &&
                 (!$this->rateLimitEnabled || $this->hasRequestQuota())
             ) {
@@ -1009,10 +1009,23 @@ class MultiCurl
                     }
                 }
             }
-        } while ($active || count($this->activeCurls) || count($this->curls));
+        } while ($active || count($this->activeCurls) || count($this->queuedCurls));
 
         $this->isStarted = false;
         $this->stopTime = microtime(true);
+    }
+
+    /**
+     * Stop
+     *
+     * @access public
+     */
+    public function stop()
+    {
+        while (count($this->queuedCurls)) {
+            $curl = array_pop($this->queuedCurls);
+            $curl->close();
+        }
     }
 
     /**
@@ -1138,7 +1151,7 @@ class MultiCurl
      */
     private function updateHeaders()
     {
-        foreach ($this->curls as $curl) {
+        foreach ($this->queuedCurls as $curl) {
             $curl->setHeaders($this->headers);
         }
     }
@@ -1154,7 +1167,7 @@ class MultiCurl
         // Use sequential ids to allow for ordered post processing.
         $curl->id = $this->nextCurlId++;
         $curl->childOfMultiCurl = true;
-        $this->curls[$curl->id] = $curl;
+        $this->queuedCurls[$curl->id] = $curl;
 
         $curl->setHeaders($this->headers);
     }
@@ -1168,7 +1181,7 @@ class MultiCurl
      */
     private function initHandle()
     {
-        $curl = array_shift($this->curls);
+        $curl = array_shift($this->queuedCurls);
         if ($curl === null) {
             return;
         }
