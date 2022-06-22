@@ -3256,7 +3256,12 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             }
             echo '{"before":' . memory_get_usage() . ',';
             $curl = new Curl();
+
+            // Unset the $curl object instead of calling $curl->close(). Calling
+            // unset($curl) should trigger the clean up: __destruct() which
+            // calls $curl->close().
             unset($curl);
+
             echo '"after":' . memory_get_usage() . '}';
             sleep(1);
         }
