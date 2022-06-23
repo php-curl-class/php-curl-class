@@ -5,10 +5,8 @@ use Curl\MultiCurl;
 
 $multi_curl = new MultiCurl();
 
-// Count the number of completed requests.
-$request_count = 0;
-$multi_curl->complete(function ($instance) use (&$request_count) {
-    $request_count += 1;
+$multi_curl->beforeSend(function ($instance) {
+    echo 'about to make request ' . $instance->id . ': "' . $instance->url . '".' . "\n";
 });
 
 $multi_curl->success(function ($instance) use (&$request_count, $multi_curl) {
@@ -17,6 +15,17 @@ $multi_curl->success(function ($instance) use (&$request_count, $multi_curl) {
     // Stop pending requests and attempt to stop active requests after the first
     // successful request.
     $multi_curl->stop();
+});
+
+$multi_curl->error(function ($instance) {
+    echo 'call to "' . $instance->url . '" was unsuccessful.' . "\n";
+});
+
+// Count the number of completed requests.
+$request_count = 0;
+$multi_curl->complete(function ($instance) use (&$request_count) {
+    echo 'call to "' . $instance->url . '" completed.' . "\n";
+    $request_count += 1;
 });
 
 $multi_curl->addGet('https://httpbin.org/delay/4');
