@@ -995,7 +995,8 @@ class MultiCurl
                 }
             }
 
-            while (($info_array = curl_multi_info_read($this->multiCurl)) !== false) {
+            while ((is_resource($this->multiCurl) || $this->multiCurl instanceof \CurlMultiHandle) &&
+                (($info_array = curl_multi_info_read($this->multiCurl)) !== false)) {
                 if ($info_array['msg'] === CURLMSG_DONE) {
                     foreach ($this->activeCurls as $key => $curl) {
                         if ($curl->curl === $info_array['handle']) {
