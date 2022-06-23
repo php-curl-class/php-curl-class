@@ -186,7 +186,29 @@ class Curl
                 !isset($this->headers['Content-Type']) ||
                 !preg_match('/^multipart\/form-data/', $this->headers['Content-Type'])
             )) {
-            $data = http_build_query($data, '', '&');
+            // Avoid using http_build_query() as keys with null values are
+            // unexpectedly excluded from the resulting string.
+            //
+            // http_build_query(['a' => '1', 'b' => null, 'c' => '3']);
+            // >> "a=1&c=3"
+            // http_build_query(['a' => '1', 'b' => '',   'c' => '3']);
+            // >> "a=1&b=&c=3"
+            //
+            // $data = http_build_query($data, '', '&');
+            $data = implode('&', array_map(function ($k, $v) {
+                // Encode keys and values using urlencode() to match the default
+                // behavior http_build_query() where $encoding_type is
+                // PHP_QUERY_RFC1738.
+                //
+                // Use strval() as urlencode() expects a string parameter:
+                //   TypeError: urlencode() expects parameter 1 to be string, integer given
+                //   TypeError: urlencode() expects parameter 1 to be string, null given
+                //
+                // php_raw_url_encode()
+                // php_url_encode()
+                // https://github.com/php/php-src/blob/master/ext/standard/http.c
+                return urlencode($k) . '=' . urlencode(strval($v));
+            }, array_keys($data), array_values($data)));
         }
 
         return $data;
