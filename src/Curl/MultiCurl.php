@@ -20,6 +20,7 @@ class MultiCurl
     private $currentRequestCount = 0;
     private $concurrency = 25;
     private $nextCurlId = 0;
+    private $preferRequestTimeAccuracy = false;
 
     private $rateLimit = null;
     private $rateLimitEnabled = false;
@@ -959,17 +960,40 @@ class MultiCurl
                 $this->waitUntilRequestQuotaAvailable();
             }
 
-            // Wait for activity on any curl_multi connection when curl_multi_select (libcurl) fails to correctly block.
-            // https://bugs.php.net/bug.php?id=63411
-            //
-            // Also, use a shorter curl_multi_select() timeout instead the default of one second. This allows pending
-            // requests to have more accurate start times. Without a shorter timeout, it can be nearly a full second
-            // before available request quota is rechecked and pending requests can be initialized.
-            if (curl_multi_select($this->multiCurl, 0.2) === -1) {
-                usleep(100000);
-            }
+            if ($this->preferRequestTimeAccuracy) {
+                // Wait for activity on any curl_multi connection when curl_multi_select (libcurl) fails to correctly
+                // block.
+                // https://bugs.php.net/bug.php?id=63411
+                //
+                // Also, use a shorter curl_multi_select() timeout instead the default of one second. This allows
+                // pending requests to have more accurate start times. Without a shorter timeout, it can be nearly a
+                // full second before available request quota is rechecked and pending requests can be initialized.
+                if (curl_multi_select($this->multiCurl, 0.2) === -1) {
+                    usleep(100000);
+                }
 
-            curl_multi_exec($this->multiCurl, $active);
+                curl_multi_exec($this->multiCurl, $active);
+            } else {
+                // Use multiple loops to get data off of the multi handler. Without this, the following error may appear
+                // intermittently on certain versions of PHP:
+                //   curl_multi_exec(): supplied resource is not a valid cURL handle resource
+
+                // Clear out the curl buffer.
+                do {
+                    $status = curl_multi_exec($this->multiCurl, $active);
+                } while ($status === CURLM_CALL_MULTI_PERFORM);
+
+                // Wait for more information and then get that information.
+                while ($active && $status === CURLM_OK) {
+                    // Check if the network socket has some data.
+                    if (curl_multi_select($this->multiCurl) !== -1) {
+                        // Process the data for as long as the system tells us to keep getting it.
+                        do {
+                            $status = curl_multi_exec($this->multiCurl, $active);
+                        } while ($status === CURLM_CALL_MULTI_PERFORM);
+                    }
+                }
+            }
 
             while (($info_array = curl_multi_info_read($this->multiCurl)) !== false) {
                 if ($info_array['msg'] === CURLMSG_DONE) {
@@ -1022,9 +1046,16 @@ class MultiCurl
      */
     public function stop()
     {
+        // Remove any queued curl requests.
         while (count($this->queuedCurls)) {
             $curl = array_pop($this->queuedCurls);
             $curl->close();
+        }
+
+        // Attempt to stop active curl requests.
+        while (count($this->activeCurls)) {
+            $curl = array_pop($this->activeCurls);
+            $curl->stop();
         }
     }
 
@@ -1132,6 +1163,16 @@ class MultiCurl
     public function setMaximumRedirects($maximum_redirects)
     {
         $this->setOpt(CURLOPT_MAXREDIRS, $maximum_redirects);
+    }
+
+    /**
+     * Set request time accuracy
+     *
+     * @access public
+     */
+    public function setRequestTimeAccuracy()
+    {
+        $this->preferRequestTimeAccuracy = true;
     }
 
     /**

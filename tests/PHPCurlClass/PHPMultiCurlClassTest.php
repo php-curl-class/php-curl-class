@@ -3745,6 +3745,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
@@ -3818,6 +3819,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
@@ -3889,6 +3891,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
@@ -3960,6 +3963,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
@@ -4032,6 +4036,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
@@ -4104,6 +4109,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
@@ -4176,6 +4182,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
@@ -4256,6 +4263,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
@@ -4336,6 +4344,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
@@ -4408,6 +4417,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setRateLimit('1/1s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
             $request_stats[$instance->id] = [];
@@ -4446,6 +4456,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('5/30s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
@@ -4480,6 +4491,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('1/1m');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
@@ -4514,6 +4526,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('3/1m');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
@@ -4546,6 +4559,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('3/65s');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
@@ -4578,6 +4592,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $request_stats = [];
 
         $multi_curl = new MultiCurl();
+        $multi_curl->setRequestTimeAccuracy();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('10/2m');
         $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
@@ -4942,7 +4957,25 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl->start();
     }
 
-    public function testCurlStop()
+    public function testCurlStopActiveConcurrencyDefault()
+    {
+        $multi_curl = new MultiCurl();
+        $request_count = 0;
+        $multi_curl->complete(function ($instance) use (&$request_count, $multi_curl) {
+            $request_count += 1;
+            $multi_curl->stop();
+        });
+
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+
+        $multi_curl->start();
+
+        $this->assertEquals(1, $request_count);
+    }
+
+    public function testCurlStopActiveConcurrencyOne()
     {
         $multi_curl = new MultiCurl();
         $multi_curl->setConcurrency(1);
