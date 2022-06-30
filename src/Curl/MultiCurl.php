@@ -1055,7 +1055,12 @@ class MultiCurl
 
         // Attempt to stop active curl requests.
         while (count($this->activeCurls)) {
+            // Remove instance from active curls.
             $curl = array_pop($this->activeCurls);
+
+            // Remove active curl handle.
+            curl_multi_remove_handle($this->multiCurl, $curl->curl);
+
             $curl->stop();
         }
     }
