@@ -5015,4 +5015,27 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(3, $request_count);
     }
+
+    public function testBeforeSendEachRequest()
+    {
+        // Ensure MultiCurl::beforeSend() is called before each request including retries.
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setOpt(CURLOPT_COOKIEJAR, '/dev/null');
+        $multi_curl->setHeader('X-DEBUG-TEST', 'retry');
+        $multi_curl->setRetry(5);
+
+        $before_send_call_count = 0;
+        $multi_curl->beforeSend(function ($instance) use (&$before_send_call_count) {
+            $before_send_call_count += 1;
+        });
+
+        $instance = $multi_curl->addGet(Test::TEST_URL, ['failures' => 5]);
+        $multi_curl->start();
+
+        $this->assertEquals(6, $before_send_call_count);
+        $this->assertEquals(6, $instance->attempts);
+        $this->assertEquals(5, $instance->retries);
+        $this->assertFalse($instance->error);
+    }
 }
