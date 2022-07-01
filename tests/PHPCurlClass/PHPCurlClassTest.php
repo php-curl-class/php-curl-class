@@ -4293,4 +4293,25 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(Test::TEST_URL, $curl->url);
         $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
     }
+
+    public function testBeforeSendEachRequest()
+    {
+        // Ensure Curl::beforeSend() is called before each request including retries.
+
+        $test = new Test();
+        $test->curl->setOpt(CURLOPT_COOKIEJAR, '/dev/null');
+        $test->curl->setRetry(5);
+
+        $before_send_call_count = 0;
+        $test->curl->beforeSend(function ($instance) use (&$before_send_call_count) {
+            $before_send_call_count += 1;
+        });
+
+        $test->server('retry', 'GET', ['failures' => 5]);
+
+        $this->assertEquals(6, $before_send_call_count);
+        $this->assertEquals(6, $test->curl->attempts);
+        $this->assertEquals(5, $test->curl->retries);
+        $this->assertFalse($test->curl->error);
+    }
 }
