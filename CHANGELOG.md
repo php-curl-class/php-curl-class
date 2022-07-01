@@ -4,6 +4,16 @@ PHP Curl Class uses semantic versioning with version numbers written as `MAJOR.M
 `MINOR` and `PATCH` version changes. It is recommended to review `MAJOR` changes prior to upgrade as there may be
 backwards-incompatible changes that will affect existing usage.
 
+## 9.6.1 - 2022-06-30
+
+### Fixed
+
+- Attempt to stop active requests when `MultiCurl::stop()` is called
+  [#714](https://github.com/php-curl-class/php-curl-class/issues/714)
+  [#718](https://github.com/php-curl-class/php-curl-class/issues/718)
+- Retain keys for arrays with null values when building post data
+  [#712](https://github.com/php-curl-class/php-curl-class/issues/712)
+
 ## 9.6.0 - 2022-03-17
 
 ### Added
