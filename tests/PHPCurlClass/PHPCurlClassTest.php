@@ -72,6 +72,15 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    public function testBuildPostDataIntegerKey()
+    {
+        $curl = new Curl();
+        $this->assertEquals('abc=foo&123=bar', $curl->buildPostData([
+            'abc' => 'foo',
+            '123' => 'bar',
+        ]));
+    }
+
     public function testUserAgent()
     {
         $php_version = preg_replace('/([\.\+\?\*\(\)\[\]\^\$\/])/', '\\\\\1', 'PHP/' . PHP_VERSION);
