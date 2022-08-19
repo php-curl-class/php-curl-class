@@ -208,7 +208,7 @@ class Curl
                 // php_url_encode()
                 // https://github.com/php/php-src/blob/master/ext/standard/http.c
                 return urlencode(strval($k)) . '=' . urlencode(strval($v));
-            }, array_keys($data), array_values($data)));
+            }, array_keys((array)$data), array_values((array)$data)));
         }
 
         return $data;
