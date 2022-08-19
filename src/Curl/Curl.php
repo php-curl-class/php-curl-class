@@ -189,10 +189,11 @@ class Curl
             // Avoid using http_build_query() as keys with null values are
             // unexpectedly excluded from the resulting string.
             //
-            // http_build_query(['a' => '1', 'b' => null, 'c' => '3']);
-            // >> "a=1&c=3"
-            // http_build_query(['a' => '1', 'b' => '',   'c' => '3']);
-            // >> "a=1&b=&c=3"
+            // $ php -a
+            // php > echo http_build_query(['a' => '1', 'b' => null, 'c' => '3']);
+            // a=1&c=3
+            // php > echo http_build_query(['a' => '1', 'b' => '',   'c' => '3']);
+            // a=1&b=&c=3
             //
             // $data = http_build_query($data, '', '&');
             $data = implode('&', array_map(function ($k, $v) {
