@@ -87,7 +87,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $data->{'abc'} = 'foo';
         $data->{'123'} = 'bar';
         $curl = new Curl();
-        $curl->buildPostData($data);
+        $this->assertEquals('abc=foo&123=bar', $curl->buildPostData($data));
     }
 
     public function testUserAgent()
