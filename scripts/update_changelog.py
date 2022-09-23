@@ -190,6 +190,9 @@ def main():
     print('diff after commit:')
     print(local_repo.git.diff(color='always'))
 
+    print('log after commit:')
+    print(local_repo.git.log(n=1))
+
 
 if __name__ == '__main__':
     main()
