@@ -33,5 +33,10 @@
         "psr-4": {
             "Curl\\": "src/Curl/"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }
