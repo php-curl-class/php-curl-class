@@ -165,14 +165,17 @@ def main():
                 for pull in pulls_missing_semver_label)))
         raise Exception(error_message)
 
-    print('before:')
-    print(local_repo.git.status())
+    # print('before:')
+    # print(local_repo.git.status())
 
     local_repo.git.add(CHANGELOG_PATH)
     local_repo.git.add(LIBRARY_FILE_PATH)
 
-    print('after:')
-    print(local_repo.git.status())
+    # print('after:')
+    # print(local_repo.git.status())
+
+    print('diff:')
+    print(local_repo.git.diff('--cached'))
 
 if __name__ == '__main__':
     main()
