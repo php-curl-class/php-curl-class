@@ -23,6 +23,12 @@ def main():
     # Find most recent tag and timestamp.
     #   git for-each-ref --format="%(refname:short) | %(creatordate)" "refs/tags/*"
     local_repo = git.Repo(ROOT)
+
+    # Fetch tags since `git fetch' is run with --no-tags during actions/checkout.
+    #   git fetch --tags
+    for remote in local_repo.remotes:
+        remote.fetch()
+
     most_recent_tag = local_repo.tags[-1]
     print('most_recent_tag: {}'.format(most_recent_tag))
     most_recent_tag_datetime = most_recent_tag.commit.committed_datetime
