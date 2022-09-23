@@ -131,6 +131,8 @@ def main():
     print('running command: {}'.format(command))
     proc = subprocess.Popen(command, shell=False, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     stdout, stderr = proc.communicate()
+    print('stdout: {}'.format(stdout))
+    print('stderr: {}'.format(stderr))
     result = json.loads(stdout)
     pprint.pprint(result)
 
