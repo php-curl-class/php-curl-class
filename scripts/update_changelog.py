@@ -191,6 +191,10 @@ def main():
     # git log --max-count=1 --patch
     print(local_repo.git.log(max_count='1', patch=True, color='always'))
 
+    # Create tag.
+    tag_name = result['new_version']
+    local_repo.create_tag(path=tag_name)
+
 
 if __name__ == '__main__':
     main()
