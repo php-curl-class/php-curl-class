@@ -19,6 +19,7 @@ PRODUCTION = os.getenv('PRODUCTION', False)
 CURRENT_FILE = Path(__file__)
 ROOT = CURRENT_FILE.parents[1]
 CHANGELOG_PATH = ROOT / 'CHANGELOG.md'
+LIBRARY_FILE_PATH = ROOT / 'src/Curl/Curl.php'
 
 # TODO: Adjust number of recent pull requests to include likely number of
 # pull requests since the last release.
@@ -153,7 +154,7 @@ def main():
         '<!-- CHANGELOG_PLACEHOLDER -->\n\n{}'.format(release_content),
     )
     print(new_content[:800])
-    # CHANGELOG_PATH.write_text(new_content)
+    CHANGELOG_PATH.write_text(new_content)
 
     # Raise error if any pull request is missing a semantic version change type.
     if pulls_missing_semver_label:
@@ -163,6 +164,15 @@ def main():
                 '  {}'.format(pull.html_url)
                 for pull in pulls_missing_semver_label)))
         raise Exception(error_message)
+
+    print('before:')
+    print(local_repo.git.status())
+
+    local_repo.git.add(CHANGELOG_PATH)
+    local_repo.git.add(LIBRARY_FILE_PATH)
+
+    print('after:')
+    print(local_repo.git.status())
 
 if __name__ == '__main__':
     main()
