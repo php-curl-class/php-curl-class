@@ -19,4 +19,10 @@ foreach ([
 }
 
 $rightwards_arrow = json_decode('"\u2192"');
-echo 'Bump version: ' . $current_version . ' ' . $rightwards_arrow . ' ' . $new_version . "\n";
+$message = 'Bump version: ' . $current_version . ' ' . $rightwards_arrow . ' ' . $new_version;
+
+echo json_encode([
+    'message' => $message,
+    'old_version' => $current_version,
+    'new_version' => $new_version,
+], JSON_PRETTY_PRINT) . "\n";
