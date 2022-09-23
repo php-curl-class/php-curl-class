@@ -28,26 +28,16 @@ def main():
     #   git for-each-ref --format="%(refname:short) | %(creatordate)" "refs/tags/*"
     local_repo = git.Repo(ROOT)
 
-    print('before:')
-    print(local_repo.git.tag('--list'))
-
     # Fetch tags since `git fetch' is run with --no-tags during actions/checkout.
     #   git fetch --tags
     for remote in local_repo.remotes:
         remote.fetch('--tags')
-
-    print('after:')
-    print(local_repo.git.tag('--list'))
 
     # Sort the tags by version.
     #   git tag --list | sort --reverse --version-sort
     tags = sorted(
         local_repo.tags,
         key=lambda tag: list(map(int, tag.name.split('.'))), reverse=True)
-
-    print('sorted tags:')
-    for tag in tags:
-        print(tag.name)
 
     most_recent_tag = tags[0]
     print('most_recent_tag: {}'.format(most_recent_tag))
@@ -63,6 +53,18 @@ def main():
     )[:RECENT_PULL_REQUEST_LIMIT]
 
     pull_request_changes = []
+
+    # Group pull requests by semantic version change type.
+    pull_request_by_type = {
+        'major': [],
+        'minor': [],
+        'patch': [],
+        'unspecified': [],
+    }
+
+    # Track if any pull request is missing a semantic version change type.
+    pulls_missing_semver_label = []
+
     for pull in recent_pulls:
         # print('-' * 10)
 
@@ -80,6 +82,20 @@ def main():
             # print('skipping since merged prior to last release: {}'.format(pull.title))
             # print(pull.html_url)
             continue
+
+        pull_labels = {
+            label.name for label in pull.labels
+        }
+        if 'major-incompatible-changes' in pull_labels:
+            group_name = 'major'
+        elif 'minor-backwards-compatible-added-functionality' in pull_labels:
+            group_name = 'minor'
+        elif 'patch-backwards-compatible-bug-fixes' in pull_labels:
+            group_name = 'patch'
+        else:
+            group_name = 'unspecified'
+            pulls_missing_semver_label.append(pull)
+        pull_request_by_type[group_name].append(pull)
 
         # pprint.pprint(dir(pull))
         pprint.pprint(pull.title)
@@ -115,6 +131,14 @@ def main():
     print(new_content[:800])
     # CHANGELOG_PATH.write_text(new_content)
 
+    # Raise error if any pull request is missing a semantic version change type.
+    if pulls_missing_semver_label:
+        error_message = (
+            'Merged pull request(s) found without semantic version label:\n'
+            '{}'.format('\n'.join(
+                '  {}'.format(pull.html_url)
+                for pull in pulls_missing_semver_label)))
+        raise Exception(error_message)
 
 if __name__ == '__main__':
     main()
