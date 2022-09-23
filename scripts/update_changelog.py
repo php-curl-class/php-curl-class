@@ -177,5 +177,15 @@ def main():
     print('diff:')
     print(local_repo.git.diff(cached=True, color='always'))
 
+    local_repo.git.commit(
+        message=result['message'],
+        author='{} <{}>'.format(
+            local_repo.git.config('--get', 'user.name'),
+            local_repo.git.config('--get', 'user.email')))
+
+    print('diff after commit:')
+    print(local_repo.git.diff(color='always'))
+
+
 if __name__ == '__main__':
     main()
