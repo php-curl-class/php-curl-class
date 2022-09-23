@@ -1,5 +1,7 @@
+import json
 import os
 import pprint
+import subprocess
 from copy import copy
 from datetime import datetime, timezone
 from pathlib import Path
@@ -108,20 +110,31 @@ def main():
 
         # print('-' * 10)
 
-    pprint.pprint(pull_request_by_type)
+    # pprint.pprint(pull_request_changes)
+
+    # pprint.pprint(pull_request_by_type)
     highest_semantic_version = None
+    php_file_path = ''
     if pull_request_by_type.get('major'):
         highest_semantic_version = 'major'
+        php_file_path = './bump_major_version.php'
     elif pull_request_by_type.get('minor'):
         highest_semantic_version = 'minor'
+        php_file_path = './bump_minor_version.php'
     elif pull_request_by_type.get('patch'):
         highest_semantic_version = 'patch'
+        php_file_path = './bump_patch_version.php'
     print('highest_semantic_version: {}'.format(highest_semantic_version))
 
-    pprint.pprint(pull_request_changes)
+    # Bump version and get next semantic version.
+    command = ['php', php_file_path]
+    print('running command: {}'.format(command))
+    proc = subprocess.Popen(command, shell=False, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    stdout, stderr = proc.communicate()
+    result = json.loads(stdout)
+    pprint.pprint(result)
 
-    # TODO: Fetch next actual semantic version.
-    release_version = most_recent_tag
+    release_version = result['new_version']
     release_date = datetime.today().strftime('%Y-%m-%d')
     release_title = '{} - {}'.format(release_version, release_date)
     print('release_title: {}'.format(release_title))
