@@ -2,9 +2,7 @@
 <ruleset name="PSR2Modified">
     <!-- Run against the PHPCompatibility ruleset. -->
     <rule ref="PHPCompatibility" />
-    <!--
-    <config name="installed_paths" value="vendor/phpcompatibility/php-compatibility" />
-    -->
+    <config name="installed_paths" value="vendor/phpcompatibility/php-compatibility,vendor/phpcsstandards/phpcsutils/PHPCS23Utils" />
 
     <!-- Run against the PSR2 ruleset with some exclusions. -->
     <rule ref="PSR2">
