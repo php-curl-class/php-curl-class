@@ -33,7 +33,9 @@ def main():
     for remote in local_repo.remotes:
         remote.fetch()
 
-    most_recent_tag = local_repo.tags[-1]
+    tags = sorted(local_repo.tags, key=lambda tag: tag.commit.committed_datetime)
+    most_recent_tag = tags[-1]
+
     print('most_recent_tag: {}'.format(most_recent_tag))
     most_recent_tag_datetime = most_recent_tag.commit.committed_datetime
     print('most_recent_tag_datetime: {}'.format(most_recent_tag_datetime))
