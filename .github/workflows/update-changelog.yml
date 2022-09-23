@@ -1,5 +1,9 @@
 name: Update Changelog
 
+on:
+  schedule:
+    - cron: '0 3 * * *'
+
 jobs:
   release:
     # Prevent this workflow from running elsewhere.
