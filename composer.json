@@ -18,6 +18,7 @@
         "ext-curl": "*"
     },
     "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "*",
         "ext-gd": "*",
         "phpcompatibility/php-compatibility": "dev-develop",
         "phpcsstandards/phpcsutils": "@alpha",
