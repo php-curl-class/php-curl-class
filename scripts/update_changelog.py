@@ -97,17 +97,26 @@ def main():
             pulls_missing_semver_label.append(pull)
         pull_request_by_type[group_name].append(pull)
 
-        # pprint.pprint(dir(pull))
-        pprint.pprint(pull.title)
-        pprint.pprint('most recent: {}'.format(most_recent_tag_datetime))
-        pprint.pprint('merged at:   {}'.format(pull.merged_at))
-        print(pull.html_url)
+        # pprint.pprint(pull.title)
+        # pprint.pprint('most recent: {}'.format(most_recent_tag_datetime))
+        # pprint.pprint('merged at:   {}'.format(pull.merged_at))
+        # print(pull.html_url)
 
         pull_request_changes.append(
             '- {} ([#{}]({}))'.format(pull.title, pull.number, pull.html_url)
         )
 
-        print('-' * 10)
+        # print('-' * 10)
+
+    pprint.pprint(pull_request_by_type)
+    highest_semantic_version = None
+    if pull_request_by_type.get('major'):
+        highest_semantic_version = 'major'
+    elif pull_request_by_type.get('minor'):
+        highest_semantic_version = 'minor'
+    elif pull_request_by_type.get('patch'):
+        highest_semantic_version = 'patch'
+    print('highest_semantic_version: {}'.format(highest_semantic_version))
 
     pprint.pprint(pull_request_changes)
 
