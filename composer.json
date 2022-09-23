@@ -19,7 +19,8 @@
     },
     "require-dev": {
         "ext-gd": "*",
-        "phpcompatibility/php-compatibility": "*",
+        "phpcompatibility/php-compatibility": "dev-develop",
+        "phpcsstandards/phpcsutils": "@alpha",
         "phpunit/phpunit": "*",
         "squizlabs/php_codesniffer": "*",
         "vimeo/psalm": "*"
