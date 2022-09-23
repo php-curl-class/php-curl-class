@@ -117,13 +117,13 @@ def main():
     php_file_path = ''
     if pull_request_by_type.get('major'):
         highest_semantic_version = 'major'
-        php_file_path = './bump_major_version.php'
+        php_file_path = 'scripts/bump_major_version.php'
     elif pull_request_by_type.get('minor'):
         highest_semantic_version = 'minor'
-        php_file_path = './bump_minor_version.php'
+        php_file_path = 'scripts/bump_minor_version.php'
     elif pull_request_by_type.get('patch'):
         highest_semantic_version = 'patch'
-        php_file_path = './bump_patch_version.php'
+        php_file_path = 'scripts/bump_patch_version.php'
     print('highest_semantic_version: {}'.format(highest_semantic_version))
 
     # Bump version and get next semantic version.
