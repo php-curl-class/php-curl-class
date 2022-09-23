@@ -188,10 +188,8 @@ def main():
             local_repo.git.config('--get', 'user.email')))
 
     print('diff after commit:')
-    print(local_repo.git.diff(color='always'))
-
-    print('log after commit:')
-    print(local_repo.git.log(n=1))
+    # git log --max-count=1 --patch
+    print(local_repo.git.log(max_count='1', patch=True, color='always'))
 
 
 if __name__ == '__main__':
