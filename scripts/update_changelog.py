@@ -153,7 +153,7 @@ def main():
         '<!-- CHANGELOG_PLACEHOLDER -->',
         '<!-- CHANGELOG_PLACEHOLDER -->\n\n{}'.format(release_content),
     )
-    print(new_content[:800])
+    # print(new_content[:800])
     CHANGELOG_PATH.write_text(new_content)
 
     # Raise error if any pull request is missing a semantic version change type.
@@ -175,7 +175,7 @@ def main():
     # print(local_repo.git.status())
 
     print('diff:')
-    print(local_repo.git.diff('--cached'))
+    print(local_repo.git.diff(cached=True, color='always'))
 
 if __name__ == '__main__':
     main()
