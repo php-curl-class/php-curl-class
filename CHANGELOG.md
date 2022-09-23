@@ -4,6 +4,8 @@ PHP Curl Class uses semantic versioning with version numbers written as `MAJOR.M
 `MINOR` and `PATCH` version changes. It is recommended to review `MAJOR` changes prior to upgrade as there may be
 backwards-incompatible changes that will affect existing usage.
 
+<!-- CHANGELOG_PLACEHOLDER -->
+
 ## 9.6.1 - 2022-06-30
 
 ### Fixed

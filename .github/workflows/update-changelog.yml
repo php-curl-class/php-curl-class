@@ -1,0 +1,14 @@
+name: Update Changelog
+
+jobs:
+  release:
+    # Prevent this workflow from running elsewhere.
+    if: github.repository_owner == 'php-curl-class'
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Update list
+        run: python scripts/update_changelog.py
