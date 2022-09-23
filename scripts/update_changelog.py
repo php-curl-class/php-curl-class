@@ -113,6 +113,10 @@ def main():
 
     # pprint.pprint(pull_request_changes)
 
+    if not pull_request_changes:
+        print('No merged pull requests found')
+        return
+
     # pprint.pprint(pull_request_by_type)
     highest_semantic_version = None
     php_file_path = ''
