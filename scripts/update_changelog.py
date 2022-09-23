@@ -18,6 +18,10 @@ CURRENT_FILE = Path(__file__)
 ROOT = CURRENT_FILE.parents[1]
 CHANGELOG_PATH = ROOT / 'CHANGELOG.md'
 
+# TODO: Adjust number of recent pull requests to include likely number of
+# pull requests since the last release.
+RECENT_PULL_REQUEST_LIMIT = 10
+
 
 def main():
     # Find most recent tag and timestamp.
@@ -35,14 +39,13 @@ def main():
     print('most_recent_tag_datetime: {}'.format(most_recent_tag_datetime))
 
     # Find merged pull requests since the most recent tag.
-    # TODO: Adjust number of recent pull requests to include likely number of
-    # pull requests since the last release.
     github_repo = Github(login_or_token=GITHUB_TOKEN).get_repo(GITHUB_REPOSITORY)
     recent_pulls = github_repo.get_pulls(
         state='closed',
         sort='updated',
         direction='desc',
-    )[:10]
+    )[:RECENT_PULL_REQUEST_LIMIT]
+
     pull_request_changes = []
     for pull in recent_pulls:
         # print('-' * 10)
