@@ -34,7 +34,7 @@ def main():
     # Fetch tags since `git fetch' is run with --no-tags during actions/checkout.
     #   git fetch --tags
     for remote in local_repo.remotes:
-        remote.fetch()
+        remote.fetch('--tags')
 
     print('after:')
     print(local_repo.git.tag('--list'))
