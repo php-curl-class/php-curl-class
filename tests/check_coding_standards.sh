@@ -69,7 +69,7 @@ if [[ ! -z "${invalid_indentation}" ]]; then
 fi
 
 # Prohibit trailing whitespace in php files.
-trailing_whitespace=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --color=always --line-number -H " +$" {} \;)
+trailing_whitespace=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --extended-regexp --line-number -H " +$" {} \;)
 if [[ ! -z "${trailing_whitespace}" ]]; then
     result="$(echo -e "${trailing_whitespace}" | perl -pe 's/^(.*)$/Trailing whitespace found in \1/')"
     echo "${result}"
@@ -85,7 +85,7 @@ if [[ ! -z "${long_lines}" ]]; then
 fi
 
 # Prohibit @author in php files.
-at_author=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --color=always --line-number -H "@author" {} \;)
+at_author=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --extended-regexp --line-number -H "@author" {} \;)
 if [[ ! -z "${at_author}" ]]; then
     result="$(echo -e "${at_author}" | perl -pe 's/^(.*)$/\@author found in \1/')"
     echo "${result}"
@@ -93,7 +93,7 @@ if [[ ! -z "${at_author}" ]]; then
 fi
 
 # Prohibit screaming caps notation in php files.
-caps=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --color=always --line-number -H -e "FALSE[^']" -e "NULL" -e "TRUE" {} \;)
+caps=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --extended-regexp --line-number -H -e "FALSE[^']" -e "NULL" -e "TRUE" {} \;)
 if [[ ! -z "${caps}" ]]; then
     result="$(echo -e "${caps}" | perl -pe 's/^(.*)$/All caps found in \1/')"
     echo "${result}"
@@ -101,7 +101,7 @@ if [[ ! -z "${caps}" ]]; then
 fi
 
 # Require identical comparison operators (===, not ==) in php files.
-equal=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --color=always --line-number -H "[^!=]==[^=]" {} \;)
+equal=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --extended-regexp --line-number -H "[^!=]==[^=]" {} \;)
 if [[ ! -z "${equal}" ]]; then
     result="$(echo -e "${equal}" | perl -pe 's/^(.*)$/Non-identical comparison operator found in \1/')"
     echo "${result}"
@@ -109,7 +109,7 @@ if [[ ! -z "${equal}" ]]; then
 fi
 
 # Require keyword "elseif" to be used instead of "else if" so that all control keywords look like single words.
-elseif=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec egrep --color=always --line-number -H "else\s+if" {} \;)
+elseif=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --extended-regexp --line-number -H "else\s+if" {} \;)
 if [[ ! -z "${elseif}" ]]; then
     result="$(echo -e "${elseif}" | perl -pe 's/^(.*)$/Found "else if" instead of "elseif" in \1/')"
     echo "${result}"
