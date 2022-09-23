@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
 <ruleset name="PSR2Modified">
     <!-- Run against the PHPCompatibility ruleset. -->
-    <rule ref="PHPCompatibility" />
+    <rule ref="PHPCompatibility">
+        <!-- TODO: Remove the following exclusion when this list() error is no longer incorrectly flagged. -->
+        <exclude name="PHPCompatibility.Lists.AssignmentOrder.Affected" />
+    </rule>
     <config name="installed_paths" value="vendor/phpcompatibility/php-compatibility,vendor/phpcsstandards/phpcsutils/PHPCS23Utils" />
 
     <!-- Run against the PSR2 ruleset with some exclusions. -->
