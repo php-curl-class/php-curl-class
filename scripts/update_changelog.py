@@ -144,10 +144,9 @@ def main():
 
     release_version = result['new_version']
     today = datetime.today()
-    print('today: {}'.format(today))
-    print('today.tzinfo: {}'.format(today.tzinfo))
+    print('today: {} (tzinfo={})'.format(today, today.tzinfo))
     today = today.replace(tzinfo=timezone.utc)
-    print('today.tzinfo: {}'.format(today.tzinfo))
+    print('today: {} (tzinfo={})'.format(today, today.tzinfo))
     release_date = today.strftime('%Y-%m-%d')
     print('release_date: {}'.format(release_date))
     release_title = '{} - {}'.format(release_version, release_date)
