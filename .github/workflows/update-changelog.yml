@@ -25,7 +25,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Update changelog
-        run: python scripts/update_changelog.py
+      - name: Make release
+        run: python scripts/make_release.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
