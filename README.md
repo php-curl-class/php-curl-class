@@ -371,13 +371,13 @@ See [SECURITY](https://github.com/php-curl-class/php-curl-class/blob/master/SECU
 
 ### Troubleshooting
 
-See [TROUBLESHOOTING](https://github.com/php-curl-class/php-curl-class/blob/master/TROUBLESHOOTING.md) for troubleshooting.
+See [TROUBLESHOOTING](https://github.com/php-curl-class/php-curl-class/blob/master/TROUBLESHOOTING.md) for help troubleshooting.
 
 ### Testing
 
 See [TESTING](https://github.com/php-curl-class/php-curl-class/blob/master/TESTING.md) for testing information.
 
-### Contribute
+### Contributing
 
 1. Check for open issues or open a new issue to start a discussion around a bug or feature.
 1. Fork the repository on GitHub to start making your changes.
