@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.6.3 - 2022-09-24
+
+- Remove filter flag constants deprecated as of PHP 7.3 ([#730](https://github.com/php-curl-class/php-curl-class/pull/730))
+
 ## 9.6.2 - 2022-09-24
 
 - Call MultiCurl::beforeSend() before each request is made ([#723](https://github.com/php-curl-class/php-curl-class/pull/723))
