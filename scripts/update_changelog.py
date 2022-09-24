@@ -14,6 +14,7 @@ from github import Github
 GITHUB_REPOSITORY = os.getenv('GITHUB_REPOSITORY')
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
+GITHUB_REF_NAME = os.getenv('GITHUB_REF_NAME')
 PRODUCTION = os.getenv('PRODUCTION', False)
 
 CURRENT_FILE = Path(__file__)
@@ -190,6 +191,13 @@ def main():
     print('diff after commit:')
     # git log --max-count=1 --patch
     print(local_repo.git.log(max_count='1', patch=True, color='always'))
+
+    # Push local changes.
+    server = 'https://{}@github.com/{}.git'.format(
+        GITHUB_TOKEN, GITHUB_REPOSITORY)
+    print('pushing changes to branch "{}" of repository "{}"'.format(
+        GITHUB_REF_NAME, GITHUB_REPOSITORY))
+    print(local_repo.git.push(server, GITHUB_REF_NAME))
 
     # Create tag and release.
     tag = result['new_version']
