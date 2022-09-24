@@ -203,12 +203,11 @@ def main():
             result['new_version']))
     commit_sha = local_repo.head.commit.hexsha
     print('tag: {}'.format(tag))
-    print('tag_message: {}'.format(tag_message))
-    print('release_name: {}'.format(release_name))
-    print('release_message: {}'.format(release_message))
+    print('tag_message: "{}"'.format(tag_message))
+    print('release_name: "{}"'.format(release_name))
+    print('release_message: "{}"'.format(release_message))
     print('commit_sha: {}'.format(commit_sha))
 
-    """
     github_repo.create_git_tag_and_release(
         tag=tag,
         tag_message=tag_message,
@@ -218,8 +217,7 @@ def main():
         type='commit',
         draft=True,
     )
-    """
-    print('would have created tag and release')
+    print('created tag and release')
 
 
 if __name__ == '__main__':
