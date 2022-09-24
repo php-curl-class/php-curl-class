@@ -25,13 +25,15 @@ PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.
 
 ### Installation
 
-To install PHP Curl Class, simply:
+To install PHP Curl Class, run the following command:
 
     composer require php-curl-class/php-curl-class
 
-For latest commit version:
+To install the latest commit version:
 
     composer require php-curl-class/php-curl-class @dev
+
+Installation instructions to use the `composer` command can be found on https://github.com/composer/composer.
 
 ### Requirements
 
