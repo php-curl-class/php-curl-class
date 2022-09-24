@@ -7,3 +7,4 @@
 /.gitattributes export-ignore
 /.gitignore export-ignore
 /TROUBLESHOOTING.md export-ignore
+/psalm.xml
