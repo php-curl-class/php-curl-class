@@ -143,7 +143,13 @@ def main():
     pprint.pprint(result)
 
     release_version = result['new_version']
-    release_date = datetime.today().strftime('%Y-%m-%d')
+    today = datetime.today()
+    print('today: {}'.format(today))
+    print('today.tzinfo: {}'.format(today.tzinfo))
+    today = today.replace(tzinfo=timezone.utc)
+    print('today.tzinfo: {}'.format(today.tzinfo))
+    release_date = today.strftime('%Y-%m-%d')
+    print('release_date: {}'.format(release_date))
     release_title = '{} - {}'.format(release_version, release_date)
     print('release_title: {}'.format(release_title))
 
