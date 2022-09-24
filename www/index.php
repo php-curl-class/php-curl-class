@@ -195,6 +195,11 @@ p:last-child {
     <a href="https://github.com/php-curl-class/php-curl-class/releases/">
         <img
             alt=""
+            src="https://img.shields.io/github/workflow/status/php-curl-class/php-curl-class/release?style=flat-square&label=release" />
+    </a>
+    <a href="https://github.com/php-curl-class/php-curl-class/releases/">
+        <img
+            alt=""
             src="https://img.shields.io/packagist/dt/php-curl-class/php-curl-class.svg?style=flat-square" />
     </a>
 </p>
