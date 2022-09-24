@@ -229,7 +229,7 @@ def main():
         release_message=release_message,
         object=commit_sha,
         type='commit',
-        draft=True,
+        draft=False,
     )
     print('created tag and release')
 
