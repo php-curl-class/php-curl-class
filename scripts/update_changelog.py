@@ -14,7 +14,6 @@ from github import Github
 GITHUB_REPOSITORY = os.getenv('GITHUB_REPOSITORY')
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
-GITHUB_REF_NAME = os.getenv('GITHUB_REF_NAME')
 PRODUCTION = os.getenv('PRODUCTION', False)
 
 CURRENT_FILE = Path(__file__)
@@ -192,16 +191,35 @@ def main():
     # git log --max-count=1 --patch
     print(local_repo.git.log(max_count='1', patch=True, color='always'))
 
-    # Create tag.
-    tag_name = result['new_version']
-    local_repo.create_tag(path=tag_name)
+    # Create tag and release.
+    tag = result['new_version']
+    tag_message = result['message']
+    release_name = 'Release {}'.format(release_version)
+    release_message = (
+        'See [change log](https://github.com/php-curl-class/php-curl-class/blob/master/CHANGELOG.md) for changes.\n'
+        '\n'
+        'https://github.com/php-curl-class/php-curl-class/compare/{}...{}'.format(
+            result['old_version'],
+            result['new_version']))
+    commit_sha = local_repo.head.commit.hexsha
+    print('tag: {}'.format(tag))
+    print('tag_message: {}'.format(tag_message))
+    print('release_name: {}'.format(release_name))
+    print('release_message: {}'.format(release_message))
+    print('commit_sha: {}'.format(commit_sha))
 
-    # Push changes and tags.
-    server = 'https://{}@github.com/{}.git'.format(
-        GITHUB_TOKEN, GITHUB_REPOSITORY)
-    print('would be pushing changes to branch "{}" of repository "{}"'.format(
-        GITHUB_REF_NAME, GITHUB_REPOSITORY))
-    local_repo.git.push(server, GITHUB_REF_NAME, follow_tags=True, dry_run=True)
+    """
+    github_repo.create_git_tag_and_release(
+        tag=tag,
+        tag_message=tag_message,
+        release_name=release_name,
+        release_message=release_message,
+        object=commit_sha,
+        type='commit',
+        draft=True,
+    )
+    """
+    print('would have created tag and release')
 
 
 if __name__ == '__main__':
