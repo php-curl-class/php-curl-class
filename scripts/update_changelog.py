@@ -199,9 +199,9 @@ def main():
     # Push changes and tags.
     server = 'https://{}@github.com/{}.git'.format(
         GITHUB_TOKEN, GITHUB_REPOSITORY)
-    print('would be pushing changes to branch {} of repository {}'.format(
+    print('would be pushing changes to branch "{}" of repository "{}"'.format(
         GITHUB_REF_NAME, GITHUB_REPOSITORY))
-    # repo.git.push(server, GITHUB_REF_NAME, dry_run=True)
+    print(local_repo.git.push(server, GITHUB_REF_NAME, dry_run=True))
 
 
 if __name__ == '__main__':
