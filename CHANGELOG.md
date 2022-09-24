@@ -6,6 +6,12 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.6.2 - 2022-09-24
+
+- Call MultiCurl::beforeSend() before each request is made ([#723](https://github.com/php-curl-class/php-curl-class/pull/723))
+- Encode keys for post data with numeric keys ([#726](https://github.com/php-curl-class/php-curl-class/pull/726))
+- Fix building post data with object ([#728](https://github.com/php-curl-class/php-curl-class/pull/728))
+
 ## 9.6.1 - 2022-06-30
 
 ### Fixed
