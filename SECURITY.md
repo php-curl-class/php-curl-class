@@ -22,7 +22,7 @@ Safer:
 
 ```php
 function is_allowed_url($url, $allowed_url_schemes = ['http', 'https']) {
-    $valid_url = filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED) !== false;
+    $valid_url = filter_var($url, FILTER_VALIDATE_URL) !== false;
     if ($valid_url) {
         $scheme = parse_url($url, PHP_URL_SCHEME);
         return in_array($scheme, $allowed_url_schemes, true);
