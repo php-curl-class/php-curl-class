@@ -201,7 +201,7 @@ def main():
         GITHUB_TOKEN, GITHUB_REPOSITORY)
     print('would be pushing changes to branch "{}" of repository "{}"'.format(
         GITHUB_REF_NAME, GITHUB_REPOSITORY))
-    print(local_repo.git.push(server, GITHUB_REF_NAME, dry_run=True))
+    local_repo.git.push(server, GITHUB_REF_NAME, follow_tags=True, dry_run=True)
 
 
 if __name__ == '__main__':
