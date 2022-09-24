@@ -14,6 +14,7 @@ from github import Github
 GITHUB_REPOSITORY = os.getenv('GITHUB_REPOSITORY')
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
+GITHUB_REF_NAME = os.getenv('GITHUB_REF_NAME')
 PRODUCTION = os.getenv('PRODUCTION', False)
 
 CURRENT_FILE = Path(__file__)
@@ -194,6 +195,13 @@ def main():
     # Create tag.
     tag_name = result['new_version']
     local_repo.create_tag(path=tag_name)
+
+    # Push changes and tags.
+    server = 'https://{}@github.com/{}.git'.format(
+        GITHUB_TOKEN, GITHUB_REPOSITORY)
+    print('would be pushing changes to branch {} of repository {}'.format(
+        GITHUB_REF_NAME, GITHUB_REPOSITORY))
+    # repo.git.push(server, GITHUB_REF_NAME, dry_run=True)
 
 
 if __name__ == '__main__':
