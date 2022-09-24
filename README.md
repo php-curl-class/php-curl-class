@@ -27,11 +27,11 @@ PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.
 
 To install PHP Curl Class, simply:
 
-    $ composer require php-curl-class/php-curl-class
+    composer require php-curl-class/php-curl-class
 
 For latest commit version:
 
-    $ composer require php-curl-class/php-curl-class @dev
+    composer require php-curl-class/php-curl-class @dev
 
 ### Requirements
 
