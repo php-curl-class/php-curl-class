@@ -15,7 +15,6 @@ GITHUB_REPOSITORY = os.getenv('GITHUB_REPOSITORY')
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 GITHUB_REF_NAME = os.getenv('GITHUB_REF_NAME')
-PRODUCTION = os.getenv('PRODUCTION', False)
 
 CURRENT_FILE = Path(__file__)
 ROOT = CURRENT_FILE.parents[1]
