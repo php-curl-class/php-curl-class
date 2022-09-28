@@ -4,6 +4,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Curl\Curl;
 use Curl\MultiCurl;
 
+$concurrency = 3;
 $urls = [
     'https://www.example.com/?' . md5(mt_rand()),
     'https://www.example.com/?' . md5(mt_rand()),
@@ -14,6 +15,7 @@ $urls = [
 ];
 
 $multi_curl = new MultiCurl();
+$multi_curl->setConcurrency($concurrency);
 $multi_curl->complete(function ($instance) use (&$multi_curl, &$urls) {
     echo 'complete:' . $instance->url . "\n";
 
@@ -30,7 +32,6 @@ $multi_curl->complete(function ($instance) use (&$multi_curl, &$urls) {
 });
 
 // Queue a few requests.
-$concurrency = 3;
 for ($i = 0; $i < $concurrency; $i++) {
     $next_url = array_shift($urls);
     if ($next_url !== null) {
