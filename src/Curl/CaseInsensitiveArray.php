@@ -146,7 +146,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * @param void
      *
-     * @return int The number of elements stored in the array.
+     * @return integer The number of elements stored in the array.
      *
      * @access public
      */

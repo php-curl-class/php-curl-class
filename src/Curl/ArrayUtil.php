@@ -136,7 +136,20 @@ class ArrayUtil
      */
     public static function arrayRandom($array)
     {
-        return $array[mt_rand(0, count($array) - 1)];
+        return $array[static::arrayRandomIndex($array)];
+    }
+
+    /**
+     * Array Random Index
+     *
+     * @access public
+     * @param  $array
+     *
+     * @return integer
+     */
+    public static function arrayRandomIndex($array)
+    {
+        return mt_rand(0, count($array) - 1);
     }
 
     /**
