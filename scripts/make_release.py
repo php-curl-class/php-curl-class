@@ -201,7 +201,7 @@ def main():
         GITHUB_TOKEN, GITHUB_REPOSITORY)
     print('pushing changes to branch "{}" of repository "{}"'.format(
         GITHUB_REF_NAME, GITHUB_REPOSITORY))
-    print(local_repo.git.push(server, GITHUB_REF_NAME))
+    local_repo.git.push(server, GITHUB_REF_NAME)
 
     # Create tag and release.
     tag = result['new_version']
