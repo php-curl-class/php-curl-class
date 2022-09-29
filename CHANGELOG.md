@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.7.0 - 2022-09-29
+
+- Implement ArrayUtil::arrayRandomIndex() ([#732](https://github.com/php-curl-class/php-curl-class/pull/732))
+
 ## 9.6.3 - 2022-09-24
 
 - Remove filter flag constants deprecated as of PHP 7.3 ([#730](https://github.com/php-curl-class/php-curl-class/pull/730))
