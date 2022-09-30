@@ -114,7 +114,7 @@ def main():
     # pprint.pprint(pull_request_changes)
 
     if not pull_request_changes:
-        print('No merged pull requests found')
+        print('No merged pull requests since the most recent tag release were found')
         return
 
     # pprint.pprint(pull_request_by_type)
