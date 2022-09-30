@@ -17,7 +17,7 @@ $curl->beforeSend(function ($instance) {
 $curl->get('https://httpbin.org/status/503');
 
 if ($curl->error) {
-    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
+    echo 'Error: ' . $curl->errorMessage . "\n";
     echo 'final attempts: ' . $curl->attempts . "\n";
     echo 'final retries: ' . $curl->retries . "\n";
 } else {

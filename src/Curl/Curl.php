@@ -97,6 +97,7 @@ class Curl
     ];
 
     private static $deferredProperties = [
+        'curlErrorCodeConstant',
         'effectiveUrl',
         'rfc2616',
         'rfc6265',
@@ -519,10 +520,17 @@ class Curl
 
         // Include additional error code information in error message when possible.
         if ($this->curlError) {
-            $this->curlErrorMessage =
-                curl_strerror($this->curlErrorCode) . (
-                    empty($this->curlErrorMessage) ? '' : ': ' . $this->curlErrorMessage
-                );
+            $curl_error_message = curl_strerror($this->curlErrorCode);
+
+            if ($this->curlErrorCodeConstant !== '') {
+                $curl_error_message .= ' (' . $this->curlErrorCodeConstant . ')';
+            }
+
+            if (!empty($this->curlErrorMessage)) {
+                $curl_error_message .= ': ' . $this->curlErrorMessage;
+            }
+
+            $this->curlErrorMessage = $curl_error_message;
         }
 
         $this->httpStatusCode = $this->getInfo(CURLINFO_HTTP_CODE);
@@ -547,6 +555,7 @@ class Curl
         $this->errorMessage = $this->curlError ? $this->curlErrorMessage : $this->httpErrorMessage;
 
         // Reset select deferred properties so that they may be recalculated.
+        unset($this->curlErrorCodeConstant);
         unset($this->effectiveUrl);
         unset($this->totalTime);
 
@@ -1830,6 +1839,28 @@ class Curl
             $return = $this->$name = $this->$getter();
         }
         return $return;
+    }
+
+    /**
+     * Get Curl Error Code Constant
+     *
+     * @access private
+     */
+    private function _get_curlErrorCodeConstant()
+    {
+        $constants = get_defined_constants(true);
+        $filtered_array = array_filter(
+            $constants['curl'],
+            function ($key) {
+                return strpos($key, 'CURLE_') !== false;
+            },
+            ARRAY_FILTER_USE_KEY
+        );
+        $curl_const_by_code = array_flip($filtered_array);
+        if (isset($curl_const_by_code[$this->curlErrorCode])) {
+            return $curl_const_by_code[$this->curlErrorCode];
+        }
+        return '';
     }
 
     /**

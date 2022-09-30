@@ -11,7 +11,7 @@ $curl->options('http://127.0.0.1:8000/', [
 ]);
 
 if ($curl->error) {
-    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
+    echo 'Error: ' . $curl->errorMessage . "\n";
 } else {
     echo 'Response:' . "\n";
     var_dump($curl->response);

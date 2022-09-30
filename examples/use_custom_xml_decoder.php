@@ -16,7 +16,7 @@ $curl->setXmlDecoder($my_xml_decoder);
 $curl->get('https://httpbin.org/xml');
 
 if ($curl->error) {
-    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
+    echo 'Error: ' . $curl->errorMessage . "\n";
 } else {
     echo 'Response:' . "\n";
     var_dump($curl->response);
