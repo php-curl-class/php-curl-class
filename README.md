@@ -19,7 +19,7 @@ PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.
 - [Security](#security)
 - [Troubleshooting](#troubleshooting)
 - [Testing](#testing)
-- [Contribute](#contribute)
+- [Contributing](#contributing)
 
 ---
 
