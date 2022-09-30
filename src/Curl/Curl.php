@@ -1520,7 +1520,10 @@ class Curl
 
             echo 'Request contained ' . ($request_body_empty ? 'no body' : 'a body') . '.' . "\n";
 
-            if ($this->getOpt(CURLOPT_VERBOSE) || $this->getOpt(CURLINFO_HEADER_OUT) !== true) {
+            if ($request_headers_count === 0 && (
+                $this->getOpt(CURLOPT_VERBOSE) ||
+                $this->getOpt(CURLINFO_HEADER_OUT) !== true
+            )) {
                 echo
                     'Warning: Request headers (Curl::requestHeaders) are expected be empty ' .
                     '(CURLOPT_VERBOSE was enabled or CURLINFO_HEADER_OUT was disabled).' . "\n";
