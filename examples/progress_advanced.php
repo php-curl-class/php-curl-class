@@ -27,6 +27,10 @@ $curl->progress(function ($client, $download_size, $downloaded, $upload_size, $u
     echo ']' . "\r";
 });
 $curl->complete(function ($instance) {
-    echo "\n" . 'download complete' . "\n";
+    if ($instance->error) {
+        echo "\n" . 'Download error: ' . $instance->errorMessage . "\n";
+    } else {
+        echo "\n" . 'Download complete' . "\n";
+    }
 });
 $curl->download('https://www.php.net/distributions/manual/php_manual_en.html.gz', '/tmp/php_manual_en.html.gz');

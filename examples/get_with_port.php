@@ -11,7 +11,7 @@ $curl->get('https://httpbin.org:443/get', [
 ]);
 
 if ($curl->error) {
-    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
+    echo 'Error: ' . $curl->errorMessage . "\n";
 } else {
     echo 'Response:' . "\n";
     var_dump($curl->response);

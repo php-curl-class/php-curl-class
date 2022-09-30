@@ -16,7 +16,7 @@ $multi_curl->beforeSend(function ($instance) {
 
 $multi_curl->complete(function ($instance) {
     if ($instance->error) {
-        echo 'Error: ' . $instance->errorCode . ': ' . $instance->errorMessage . "\n";
+        echo 'Error: ' . $instance->errorMessage . "\n";
         echo 'final attempts: ' . $instance->attempts . "\n";
         echo 'final retries: ' . $instance->retries . "\n";
     } else {

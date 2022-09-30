@@ -10,7 +10,7 @@ $curl->setRetry($max_retries);
 $curl->get('https://httpbin.org/status/503');
 
 if ($curl->error) {
-    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
+    echo 'Error: ' . $curl->errorMessage . "\n";
     echo 'attempts: ' . $curl->attempts . "\n";
     echo 'retries: ' . $curl->retries . "\n";
 } else {
