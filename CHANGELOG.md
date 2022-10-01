@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.8.0 - 2022-10-01
+
+- Include curl error code constant in curl error message ([#733](https://github.com/php-curl-class/php-curl-class/pull/733))
+
 ## 9.7.0 - 2022-09-29
 
 - Implement ArrayUtil::arrayRandomIndex() ([#732](https://github.com/php-curl-class/php-curl-class/pull/732))
