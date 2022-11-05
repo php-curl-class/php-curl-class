@@ -4108,6 +4108,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             '--- Begin PHP Curl Class diagnostic output ---',
             'PHP Curl Class version: ' . Curl::VERSION,
             'PHP version: ' . PHP_VERSION,
+            'CURLOPT_HTTPGET: true',
             'Sent an HTTP GET request ',
             'Request contained no body.',
             'Received an HTTP status code of 401.',
