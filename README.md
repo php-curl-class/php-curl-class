@@ -195,7 +195,7 @@ More examples are available under [/examples](https://github.com/php-curl-class/
 
 ### Available Methods
 ```php
-Curl::__construct($base_url = null)
+Curl::__construct($base_url = null, $options = [])
 Curl::__destruct()
 Curl::__get($name)
 Curl::_fastDownload($url, $filename, $connections = 4) {
@@ -268,6 +268,7 @@ Curl::setCookieJar($cookie_jar)
 Curl::setCookieString($string)
 Curl::setCookies($cookies)
 Curl::setDefaultDecoder($mixed = 'json')
+Curl::setDefaultHeaderOut()
 Curl::setDefaultJsonDecoder()
 Curl::setDefaultTimeout()
 Curl::setDefaultUserAgent()

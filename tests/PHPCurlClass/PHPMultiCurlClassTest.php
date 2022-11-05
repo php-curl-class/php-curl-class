@@ -2059,31 +2059,35 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
     public function testSetOptAndSetOptOverride()
     {
         $multi_curl_user_agent = 'multi curl user agent';
-        $curl_user_agent = 'curl user agent';
+        $curl_user_agent_2 = 'curl user agent 2';
+        $curl_user_agent_3 = 'curl user agent 3';
         $data = ['key' => 'HTTP_USER_AGENT'];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'server');
+
         $multi_curl->setOpt(CURLOPT_USERAGENT, $multi_curl_user_agent);
 
         $get_1 = $multi_curl->addGet(Test::TEST_URL, $data);
         $get_1->complete(function ($instance) use ($multi_curl_user_agent) {
             \PHPUnit\Framework\Assert::assertEquals($multi_curl_user_agent, $instance->getOpt(CURLOPT_USERAGENT));
-        });
-
-        $get_2 = $multi_curl->addGet(Test::TEST_URL, $data);
-        $get_2->complete(function ($instance) use ($multi_curl_user_agent) {
-            \PHPUnit\Framework\Assert::assertEquals($multi_curl_user_agent, $instance->getOpt(CURLOPT_USERAGENT));
             \PHPUnit\Framework\Assert::assertEquals($multi_curl_user_agent, $instance->response);
         });
 
-        $get_3 = $multi_curl->addGet(Test::TEST_URL, $data);
-        $get_3->beforeSend(function ($instance) use ($curl_user_agent) {
-            $instance->setOpt(CURLOPT_USERAGENT, $curl_user_agent);
+        $get_2 = $multi_curl->addGet(Test::TEST_URL, $data);
+        $get_2->setOpt(CURLOPT_USERAGENT, $curl_user_agent_2);
+        $get_2->complete(function ($instance) use ($curl_user_agent_2) {
+            \PHPUnit\Framework\Assert::assertEquals($curl_user_agent_2, $instance->getOpt(CURLOPT_USERAGENT));
+            \PHPUnit\Framework\Assert::assertEquals($curl_user_agent_2, $instance->response);
         });
-        $get_3->complete(function ($instance) use ($curl_user_agent) {
-            \PHPUnit\Framework\Assert::assertEquals($curl_user_agent, $instance->getOpt(CURLOPT_USERAGENT));
-            \PHPUnit\Framework\Assert::assertEquals($curl_user_agent, $instance->response);
+
+        $get_3 = $multi_curl->addGet(Test::TEST_URL, $data);
+        $get_3->beforeSend(function ($instance) use ($curl_user_agent_3) {
+            $instance->setOpt(CURLOPT_USERAGENT, $curl_user_agent_3);
+        });
+        $get_3->complete(function ($instance) use ($curl_user_agent_3) {
+            \PHPUnit\Framework\Assert::assertEquals($curl_user_agent_3, $instance->getOpt(CURLOPT_USERAGENT));
+            \PHPUnit\Framework\Assert::assertEquals($curl_user_agent_3, $instance->response);
         });
 
         $multi_curl->start();
