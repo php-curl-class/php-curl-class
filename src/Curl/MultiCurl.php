@@ -80,7 +80,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
 
-        $curl = new Curl($this->baseUrl);
+        $curl = new Curl($this->baseUrl, $this->options);
         $this->queueHandle($curl);
         $this->setUrl($url, $query_parameters);
         $curl->setUrl($url, $query_parameters);
@@ -100,7 +100,7 @@ class MultiCurl
      */
     public function addDownload($url, $mixed_filename)
     {
-        $curl = new Curl($this->baseUrl);
+        $curl = new Curl($this->baseUrl, $this->options);
         $this->queueHandle($curl);
         $this->setUrl($url);
         $curl->setUrl($url);
@@ -166,7 +166,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
 
-        $curl = new Curl($this->baseUrl);
+        $curl = new Curl($this->baseUrl, $this->options);
         $this->queueHandle($curl);
         $this->setUrl($url, $data);
         $curl->setUrl($url, $data);
@@ -191,7 +191,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
 
-        $curl = new Curl($this->baseUrl);
+        $curl = new Curl($this->baseUrl, $this->options);
         $this->queueHandle($curl);
         $this->setUrl($url, $data);
         $curl->setUrl($url, $data);
@@ -216,7 +216,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
 
-        $curl = new Curl($this->baseUrl);
+        $curl = new Curl($this->baseUrl, $this->options);
         $this->queueHandle($curl);
         $this->setUrl($url, $data);
         $curl->setUrl($url, $data);
@@ -241,7 +241,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
 
-        $curl = new Curl($this->baseUrl);
+        $curl = new Curl($this->baseUrl, $this->options);
 
         if (is_array($data) && empty($data)) {
             $curl->removeHeader('Content-Length');
@@ -275,7 +275,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
 
-        $curl = new Curl($this->baseUrl);
+        $curl = new Curl($this->baseUrl, $this->options);
         $this->queueHandle($curl);
         $this->setUrl($url);
 
@@ -314,7 +314,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
 
-        $curl = new Curl($this->baseUrl);
+        $curl = new Curl($this->baseUrl, $this->options);
         $this->queueHandle($curl);
         $this->setUrl($url);
         $curl->setUrl($url);
@@ -343,7 +343,7 @@ class MultiCurl
             $url = $this->baseUrl;
         }
 
-        $curl = new Curl($this->baseUrl);
+        $curl = new Curl($this->baseUrl, $this->options);
         $this->queueHandle($curl);
         $this->setUrl($url);
         $curl->setUrl($url);
@@ -1260,9 +1260,6 @@ class MultiCurl
         if ($curl->xmlDecoder === null) {
             $curl->setXmlDecoder($this->xmlDecoder);
         }
-
-        // Pass options set on the MultiCurl instance to the Curl instance.
-        $curl->setOpts($this->options);
 
         // Set instance-specific options on the Curl instance when present.
         if (isset($this->instanceSpecificOptions[$curl->id])) {
