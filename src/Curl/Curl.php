@@ -98,6 +98,7 @@ class Curl
 
     private static $deferredProperties = [
         'curlErrorCodeConstant',
+        'curlErrorCodeConstants',
         'effectiveUrl',
         'rfc2616',
         'rfc6265',
@@ -1842,11 +1843,11 @@ class Curl
     }
 
     /**
-     * Get Curl Error Code Constant
+     * Get Curl Error Code Constants
      *
      * @access private
      */
-    private function _get_curlErrorCodeConstant()
+    private function _get_curlErrorCodeConstants()
     {
         $constants = get_defined_constants(true);
         $filtered_array = array_filter(
@@ -1857,6 +1858,17 @@ class Curl
             ARRAY_FILTER_USE_KEY
         );
         $curl_const_by_code = array_flip($filtered_array);
+        return $curl_const_by_code;
+    }
+
+    /**
+     * Get Curl Error Code Constant
+     *
+     * @access private
+     */
+    private function _get_curlErrorCodeConstant()
+    {
+        $curl_const_by_code = $this->curlErrorCodeConstants;
         if (isset($curl_const_by_code[$this->curlErrorCode])) {
             return $curl_const_by_code[$this->curlErrorCode];
         }
