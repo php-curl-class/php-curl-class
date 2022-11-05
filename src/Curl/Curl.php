@@ -1936,11 +1936,14 @@ class Curl
      */
     private function buildCookies()
     {
-        // Avoid using http_build_query() as unnecessary encoding is performed.
-        // http_build_query($this->cookies, '', '; ');
-        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function ($k, $v) {
-            return $k . '=' . $v;
-        }, array_keys($this->cookies), array_values($this->cookies))));
+        // Avoid changing CURLOPT_COOKIE if there are no cookies set.
+        if (count($this->cookies)) {
+            // Avoid using http_build_query() as unnecessary encoding is performed.
+            // http_build_query($this->cookies, '', '; ');
+            $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function ($k, $v) {
+                return $k . '=' . $v;
+            }, array_keys($this->cookies), array_values($this->cookies))));
+        }
     }
 
     /**
