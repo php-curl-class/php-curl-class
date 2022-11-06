@@ -6,6 +6,12 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.9.0 - 2022-11-06
+
+- Fix MultiCurl::setCookieString() ([#738](https://github.com/php-curl-class/php-curl-class/pull/738))
+- Pass MultiCurl options to new Curl instances earlier ([#737](https://github.com/php-curl-class/php-curl-class/pull/737))
+- Add deferred constant curlErrorCodeConstants ([#736](https://github.com/php-curl-class/php-curl-class/pull/736))
+
 ## 9.8.0 - 2022-10-01
 
 - Include curl error code constant in curl error message ([#733](https://github.com/php-curl-class/php-curl-class/pull/733))
