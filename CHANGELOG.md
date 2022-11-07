@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.10.0 - 2022-11-07
+
+- Display request options in Curl::diagnose() output ([#739](https://github.com/php-curl-class/php-curl-class/pull/739))
+
 ## 9.9.0 - 2022-11-06
 
 - Fix MultiCurl::setCookieString() ([#738](https://github.com/php-curl-class/php-curl-class/pull/738))
