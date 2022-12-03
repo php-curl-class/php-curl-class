@@ -4122,6 +4122,58 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    public function testDiagnoseAllowHeader()
+    {
+        $tests = [
+            [
+                'http_method' => 'GET',
+                'allow_header_name' => 'Allow',
+                'allow_header_value' => 'POST, OPTIONS',
+                'expected' =>
+                    'Warning: A GET request was made, but only the following request types are allowed: POST, OPTIONS',
+            ],
+            [
+                'http_method' => 'GET',
+                'allow_header_name' => 'allow',
+                'allow_header_value' => 'OPTIONS, POST',
+                'expected' =>
+                    'Warning: A GET request was made, but only the following request types are allowed: OPTIONS, POST',
+            ],
+            [
+                'http_method' => 'POST',
+                'allow_header_name' => 'allow',
+                'allow_header_value' => 'GET, OPTIONS',
+                'expected' =>
+                    'Warning: A POST request was made, but only the following request types are allowed: GET, OPTIONS',
+            ],
+            [
+                'http_method' => 'POST',
+                'allow_header_name' => 'allow',
+                'allow_header_value' => 'GET,OPTIONS',
+                'expected' =>
+                    'Warning: A POST request was made, but only the following request types are allowed: GET, OPTIONS',
+            ],
+            [
+                'http_method' => 'POST',
+                'allow_header_name' => 'ALLOW',
+                'allow_header_value' => 'get,options',
+                'expected' =>
+                    'Warning: A POST request was made, but only the following request types are allowed: GET, OPTIONS',
+            ],
+        ];
+
+        foreach ($tests as $test_case) {
+            $test = new Test();
+            $test->server('json_response', $test_case['http_method'], [
+                'key' => $test_case['allow_header_name'],
+                'value' => $test_case['allow_header_value'],
+            ]);
+
+            $test_output = $test->curl->diagnose(true);
+            $this->assertStringContainsString($test_case['expected'], $test_output);
+        }
+    }
+
     public function testStopRequest() {
         $response_length_bytes = 1e6; // 1e6 = 1 megabyte
 
