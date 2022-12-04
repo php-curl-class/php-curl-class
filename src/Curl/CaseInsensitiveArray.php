@@ -2,6 +2,9 @@
 
 namespace Curl;
 
+/**
+ * @psalm-suppress MissingTemplateParam
+ */
 class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
 {
 
