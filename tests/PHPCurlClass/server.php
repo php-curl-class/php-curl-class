@@ -181,13 +181,23 @@ if ($test === 'http_basic_auth') {
     echo 'OK';
     exit;
 } elseif ($test === 'json_response') {
-    if ($request_method === 'POST') {
+    if (isset($_POST['key'])) {
         $key = $_POST['key'];
-        $value = $_POST['value'];
-        header($key . ': ' . $value);
+    } elseif (isset($_GET['key'])) {
+        $key = $_GET['key'];
     } else {
-        header('Content-Type: application/json');
+        $key = 'Content-Type';
     }
+
+    if (isset($_POST['value'])) {
+        $value = $_POST['value'];
+    } elseif (isset($_GET['value'])) {
+        $value = $_GET['value'];
+    } else {
+        $value = 'application/json';
+    }
+
+    header($key . ': ' . $value);
     echo json_encode([
         'null' => null,
         'true' => true,
