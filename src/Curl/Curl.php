@@ -3,7 +3,6 @@
 namespace Curl;
 
 use Curl\ArrayUtil;
-use Curl\Decoder;
 use Curl\Url;
 
 class Curl
