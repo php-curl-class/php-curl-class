@@ -6,6 +6,11 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.11.0 - 2022-12-05
+
+- Add Curl::diagnose() HTTP method check matches methods allowed ([#741](https://github.com/php-curl-class/php-curl-class/pull/741))
+- Add temporary fix missing template params ([#742](https://github.com/php-curl-class/php-curl-class/pull/742))
+
 ## 9.10.0 - 2022-11-07
 
 - Display request options in Curl::diagnose() output ([#739](https://github.com/php-curl-class/php-curl-class/pull/739))
