@@ -4385,4 +4385,15 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(5, $test->curl->retries);
         $this->assertFalse($test->curl->error);
     }
+
+    public function testGzipDecoding()
+    {
+        $test = new Test();
+        $test->server('json_response', 'POST', [
+            'key' => 'content-encoding',
+            'value' => 'gzip',
+            'body' => gzencode('hello'),
+        ]);
+        $this->assertEquals('hello', $test->curl->response);
+    }
 }

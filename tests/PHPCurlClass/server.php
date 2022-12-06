@@ -197,16 +197,22 @@ if ($test === 'http_basic_auth') {
         $value = 'application/json';
     }
 
+    if (isset($_POST['body'])) {
+        $body = $_POST['body'];
+    } else {
+        $body = json_encode([
+            'null' => null,
+            'true' => true,
+            'false' => false,
+            'integer' => 1,
+            'float' => 3.14,
+            'empty' => '',
+            'string' => 'string',
+        ]);
+    }
+
     header($key . ': ' . $value);
-    echo json_encode([
-        'null' => null,
-        'true' => true,
-        'false' => false,
-        'integer' => 1,
-        'float' => 3.14,
-        'empty' => '',
-        'string' => 'string',
-    ]);
+    echo $body;
     exit;
 } elseif ($test === 'xml_response') {
     $key = $_POST['key'];
