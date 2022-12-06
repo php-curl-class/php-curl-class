@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.11.1 - 2022-12-06
+
+- change: remove unused namespace import ([#743](https://github.com/php-curl-class/php-curl-class/pull/743))
+
 ## 9.11.0 - 2022-12-05
 
 - Add Curl::diagnose() HTTP method check matches methods allowed ([#741](https://github.com/php-curl-class/php-curl-class/pull/741))

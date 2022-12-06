@@ -7,7 +7,7 @@ use Curl\Url;
 
 class Curl
 {
-    const VERSION = '9.11.0';
+    const VERSION = '9.11.1';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl = null;
