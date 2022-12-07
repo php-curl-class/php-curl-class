@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.12.0 - 2022-12-07
+
+- Add automatic gzip decoding of response ([#744](https://github.com/php-curl-class/php-curl-class/pull/744))
+
 ## 9.11.1 - 2022-12-06
 
 - change: remove unused namespace import ([#743](https://github.com/php-curl-class/php-curl-class/pull/743))
