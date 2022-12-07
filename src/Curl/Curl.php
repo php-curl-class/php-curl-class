@@ -1961,6 +1961,11 @@ class Curl
             ARRAY_FILTER_USE_KEY
         );
         $curl_const_by_code = array_flip($filtered_array);
+
+        if (!isset($curl_const_by_code[CURLINFO_HEADER_OUT])) {
+            $curl_const_by_code[CURLINFO_HEADER_OUT] = 'CURLINFO_HEADER_OUT';
+        }
+
         return $curl_const_by_code;
     }
 
