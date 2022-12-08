@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.12.1 - 2022-12-08
+
+- Include option constant that uses the CURLINFO_ prefix ([#745](https://github.com/php-curl-class/php-curl-class/pull/745))
+
 ## 9.12.0 - 2022-12-07
 
 - Add automatic gzip decoding of response ([#744](https://github.com/php-curl-class/php-curl-class/pull/744))
