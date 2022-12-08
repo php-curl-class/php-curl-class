@@ -22,9 +22,10 @@ jobs:
           - '7.4'
           - '8.0'
           - '8.1'
+          - '8.2'
         future-release: [false]
         include:
-          - php-version: '8.2'
+          - php-version: '8.3'
             future-release: true
       fail-fast: false
     name: PHP ${{ matrix.php-version }}
