@@ -62,6 +62,7 @@ def main():
         'major': [],
         'minor': [],
         'patch': [],
+        'cleanup': [],
         'unspecified': [],
     }
 
@@ -95,6 +96,8 @@ def main():
             group_name = 'minor'
         elif 'patch-backwards-compatible-bug-fixes' in pull_labels:
             group_name = 'patch'
+        elif 'cleanup-no-release-required' in pull_labels:
+            group_name = 'cleanup'
         else:
             group_name = 'unspecified'
             pulls_missing_semver_label.append(pull)
@@ -105,9 +108,10 @@ def main():
         # pprint.pprint('merged at:   {}'.format(pull.merged_at))
         # print(pull.html_url)
 
-        pull_request_changes.append(
-            '- {} ([#{}]({}))'.format(pull.title, pull.number, pull.html_url)
-        )
+        if group_name in ['major', 'minor', 'patch']:
+            pull_request_changes.append(
+                '- {} ([#{}]({}))'.format(pull.title, pull.number, pull.html_url)
+            )
 
         # print('-' * 10)
 
