@@ -117,9 +117,16 @@ def main():
         print('No merged pull requests since the most recent tag release were found')
         return
 
+    # Raise error if any pull request is missing a semantic version change type.
+    if pulls_missing_semver_label:
+        error_message = (
+            'Merged pull request(s) found without semantic version label:\n'
+            '{}'.format('\n'.join(
+                '  {}'.format(pull.html_url)
+                for pull in pulls_missing_semver_label)))
+        raise Exception(error_message)
+
     # pprint.pprint(pull_request_by_type)
-    highest_semantic_version = None
-    php_file_path = ''
     if pull_request_by_type.get('major'):
         highest_semantic_version = 'major'
         php_file_path = 'scripts/bump_major_version.php'
@@ -129,6 +136,9 @@ def main():
     elif pull_request_by_type.get('patch'):
         highest_semantic_version = 'patch'
         php_file_path = 'scripts/bump_patch_version.php'
+    else:
+        highest_semantic_version = None
+        php_file_path = ''
     print('highest_semantic_version: {}'.format(highest_semantic_version))
 
     # Bump version and get next semantic version.
@@ -164,15 +174,6 @@ def main():
     )
     # print(new_content[:800])
     CHANGELOG_PATH.write_text(new_content)
-
-    # Raise error if any pull request is missing a semantic version change type.
-    if pulls_missing_semver_label:
-        error_message = (
-            'Merged pull request(s) found without semantic version label:\n'
-            '{}'.format('\n'.join(
-                '  {}'.format(pull.html_url)
-                for pull in pulls_missing_semver_label)))
-        raise Exception(error_message)
 
     # print('before:')
     # print(local_repo.git.status())
