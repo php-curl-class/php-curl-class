@@ -2156,7 +2156,8 @@ class Curl
         }
 
         if (isset($response_headers['Content-Encoding']) && $response_headers['Content-Encoding'] === 'gzip') {
-            $decoded_response = gzdecode($response);
+            // Use @ to suppress message "Warning gzdecode(): data error".
+            $decoded_response = @gzdecode($response);
             if ($decoded_response !== false) {
                 $response = $decoded_response;
             }
