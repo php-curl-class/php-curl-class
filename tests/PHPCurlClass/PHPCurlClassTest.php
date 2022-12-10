@@ -4396,4 +4396,21 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         ]);
         $this->assertEquals('hello', $test->curl->response);
     }
+
+    public function testGzipDecodingFailureWithoutWarning()
+    {
+        $test = new Test();
+        $test->server('json_response', 'POST', [
+            'keys' => [
+                'content-type',
+                'content-encoding',
+            ],
+            'values' => [
+                'text/html; charset=utf-8',
+                'gzip',
+            ],
+            'body' => '<html><body>not gzip-encoded</body></html>',
+        ]);
+        $this->assertEquals('<html><body>not gzip-encoded</body></html>', $test->curl->response);
+    }
 }
