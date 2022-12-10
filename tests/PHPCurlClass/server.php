@@ -181,12 +181,9 @@ if ($test === 'http_basic_auth') {
     echo 'OK';
     exit;
 } elseif ($test === 'json_response') {
-    if (isset($_POST['keys']) && isset($_POST['values'])) {
-        foreach ($_POST['keys'] as $index => $key) {
-            if (isset($_POST['values'][$index])) {
-                $value = $_POST['values'][$index];
-                header($key . ': ' . $value);
-            }
+    if (isset($_POST['headers'])) {
+        foreach ($_POST['headers'] as $header) {
+            header($header);
         }
     } else {
         if (isset($_POST['key'])) {
