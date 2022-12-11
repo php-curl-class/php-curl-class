@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.12.2 - 2022-12-11
+
+- Disable warning when gzip-decoding response errors ([#748](https://github.com/php-curl-class/php-curl-class/pull/748))
+
 ## 9.12.1 - 2022-12-08
 
 - Include option constant that uses the CURLINFO_ prefix ([#745](https://github.com/php-curl-class/php-curl-class/pull/745))
