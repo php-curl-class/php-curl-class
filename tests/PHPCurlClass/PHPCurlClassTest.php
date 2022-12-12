@@ -4411,4 +4411,25 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('gzip', $test->curl->responseHeaders['content-encoding']);
         $this->assertEquals('<html><body>not gzip-encoded</body></html>', $test->curl->response);
     }
+
+    public function testGzipDecodingNonStringResponseWithoutError()
+    {
+        $test = new Test();
+        $test->curl->setDefaultDecoder(function () {
+            $response = new \stdClass();
+            $response->{'abc'} = 'foo';
+            $response->{'123'} = 'bar';
+            return $response;
+        });
+        $test->server('json_response', 'POST', [
+            'headers' => [
+                'content-type: text/html; charset=utf-8',
+                'content-encoding: gzip',
+            ],
+        ]);
+        $this->assertEquals('text/html; charset=utf-8', $test->curl->responseHeaders['content-type']);
+        $this->assertEquals('gzip', $test->curl->responseHeaders['content-encoding']);
+        $this->assertEquals('foo', $test->curl->response->{'abc'});
+        $this->assertEquals('bar', $test->curl->response->{'123'});
+    }
 }
