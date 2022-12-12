@@ -1022,14 +1022,12 @@ class Curl
     {
         if ($mixed === false) {
             $this->defaultDecoder = false;
+        } elseif ($mixed === 'json') {
+            $this->defaultDecoder = '\Curl\Decoder::decodeJson';
+        } elseif ($mixed === 'xml') {
+            $this->defaultDecoder = '\Curl\Decoder::decodeXml';
         } elseif (is_callable($mixed)) {
             $this->defaultDecoder = $mixed;
-        } else {
-            if ($mixed === 'json') {
-                $this->defaultDecoder = '\Curl\Decoder::decodeJson';
-            } elseif ($mixed === 'xml') {
-                $this->defaultDecoder = '\Curl\Decoder::decodeXml';
-            }
         }
     }
 
