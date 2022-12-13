@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.12.3 - 2022-12-13
+
+- Ensure string response before gzip decode ([#749](https://github.com/php-curl-class/php-curl-class/pull/749))
+
 ## 9.12.2 - 2022-12-11
 
 - Disable warning when gzip-decoding response errors ([#748](https://github.com/php-curl-class/php-curl-class/pull/748))
