@@ -7,20 +7,20 @@
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
 >
     <projectFiles>
-        <directory name="src" />
+        <directory name="../src" />
         <ignoreFiles>
-            <directory name="vendor" />
+            <directory name="../vendor" />
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
         <UndefinedClass>
             <errorLevel type="suppress">
                 <referencedClass name="CurlHandle" />
-                <file name="src/Curl/Curl.php" />
+                <file name="../src/Curl/Curl.php" />
             </errorLevel>
             <errorLevel type="suppress">
                 <referencedClass name="CurlMultiHandle" />
-                <file name="src/Curl/MultiCurl.php" />
+                <file name="../src/Curl/MultiCurl.php" />
             </errorLevel>
         </UndefinedClass>
     </issueHandlers>
