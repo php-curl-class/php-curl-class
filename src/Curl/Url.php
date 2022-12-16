@@ -15,7 +15,7 @@ class Url
         $this->relativeUrl = $relative_url;
     }
 
-    public function __toString()
+    public function __toString() : string
     {
         return $this->absolutizeUrl();
     }
