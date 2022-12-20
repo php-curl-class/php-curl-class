@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.12.5 - 2022-12-20
+
+- Fix static analysis error ([#752](https://github.com/php-curl-class/php-curl-class/pull/752))
+
 ## 9.12.4 - 2022-12-17
 
 - Exclude additional files from git archive ([#751](https://github.com/php-curl-class/php-curl-class/pull/751))
