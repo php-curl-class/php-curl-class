@@ -31,11 +31,6 @@ def main():
     #   git for-each-ref --format="%(refname:short) | %(creatordate)" "refs/tags/*"
     local_repo = git.Repo(ROOT)
 
-    # Fetch tags since `git fetch' is run with --no-tags during actions/checkout.
-    #   git fetch --tags
-    for remote in local_repo.remotes:
-        remote.fetch('--tags')
-
     # Sort the tags by version.
     #   git tag --list | sort --reverse --version-sort
     tags = sorted(
