@@ -16,6 +16,7 @@ if (interface_exists('JsonSerializable')) {
             $this->email = $email;
         }
 
+        #[\ReturnTypeWillChange]
         public function jsonSerialize()
         {
             return [

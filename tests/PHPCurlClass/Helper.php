@@ -13,6 +13,8 @@ class Test
 
     private $testUrl;
 
+    public $curl;
+
     public function __construct($port = null)
     {
         $this->testUrl = $port === null ? self::TEST_URL : $this->getTestUrl($port);

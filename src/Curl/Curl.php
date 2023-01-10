@@ -5,6 +5,7 @@ namespace Curl;
 use Curl\ArrayUtil;
 use Curl\Url;
 
+#[\AllowDynamicProperties]
 class Curl
 {
     const VERSION = '9.12.5';
