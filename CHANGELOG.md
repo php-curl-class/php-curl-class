@@ -6,6 +6,11 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.12.6 - 2023-01-11
+
+- Replace use of #[\AllowDynamicProperties] ([#756](https://github.com/php-curl-class/php-curl-class/pull/756))
+- silence PHP 8.2 deprecation notices ([#754](https://github.com/php-curl-class/php-curl-class/pull/754))
+
 ## 9.12.5 - 2022-12-20
 
 - Fix static analysis error ([#752](https://github.com/php-curl-class/php-curl-class/pull/752))
