@@ -84,7 +84,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($delete_complete_called);
                 $delete_before_send_called = true;
             }
-            if (isset($instance->download)) {
+            if ($instance->downloadFileName !== null) {
                 \PHPUnit\Framework\Assert::assertFalse($download_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_error_called);
@@ -161,7 +161,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($delete_complete_called);
                 $delete_success_called = true;
             }
-            if (isset($instance->download)) {
+            if ($instance->downloadFileName !== null) {
                 \PHPUnit\Framework\Assert::assertTrue($download_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_error_called);
@@ -259,7 +259,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($delete_complete_called);
                 $delete_complete_called = true;
             }
-            if (isset($instance->download)) {
+            if ($instance->downloadFileName !== null) {
                 \PHPUnit\Framework\Assert::assertTrue($download_before_send_called);
                 \PHPUnit\Framework\Assert::assertTrue($download_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_error_called);
@@ -318,7 +318,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
         $multi_curl->addDelete(Test::TEST_URL);
         $download_file_path = tempnam('/tmp', 'php-curl-class.');
-        $multi_curl->addDownload(Test::TEST_URL, $download_file_path)->download = true;
+        $multi_curl->addDownload(Test::TEST_URL, $download_file_path);
         $multi_curl->addGet(Test::TEST_URL);
         $multi_curl->addHead(Test::TEST_URL);
         $multi_curl->addOptions(Test::TEST_URL);
@@ -448,7 +448,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($delete_complete_called);
                 $delete_before_send_called = true;
             }
-            if (isset($instance->download)) {
+            if ($instance->downloadFileName !== null) {
                 \PHPUnit\Framework\Assert::assertFalse($download_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_error_called);
@@ -545,7 +545,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($delete_complete_called);
                 $delete_error_called = true;
             }
-            if (isset($instance->download)) {
+            if ($instance->downloadFileName !== null) {
                 \PHPUnit\Framework\Assert::assertTrue($download_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_error_called);
@@ -622,7 +622,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
                 \PHPUnit\Framework\Assert::assertFalse($delete_complete_called);
                 $delete_complete_called = true;
             }
-            if (isset($instance->download)) {
+            if ($instance->downloadFileName !== null) {
                 \PHPUnit\Framework\Assert::assertTrue($download_before_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_success_called);
                 \PHPUnit\Framework\Assert::assertTrue($download_error_called);
@@ -694,7 +694,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
         $multi_curl->addDelete(Test::ERROR_URL);
         $download_file_path = tempnam('/tmp', 'php-curl-class.');
-        $multi_curl->addDownload(Test::ERROR_URL, $download_file_path)->download = true;
+        $multi_curl->addDownload(Test::ERROR_URL, $download_file_path);
         $multi_curl->addGet(Test::ERROR_URL);
         $multi_curl->addHead(Test::ERROR_URL);
         $multi_curl->addOptions(Test::ERROR_URL);

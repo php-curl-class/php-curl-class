@@ -5,7 +5,6 @@ namespace Curl;
 use Curl\ArrayUtil;
 use Curl\Url;
 
-#[\AllowDynamicProperties]
 class Curl
 {
     const VERSION = '9.12.5';
@@ -96,6 +95,14 @@ class Curl
         's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',
     ];
 
+    public $curlErrorCodeConstant;
+    public $curlErrorCodeConstants;
+    public $curlOptionCodeConstants;
+    public $effectiveUrl;
+    public $rfc2616;
+    public $rfc6265;
+    public $totalTime;
+
     private static $deferredProperties = [
         'curlErrorCodeConstant',
         'curlErrorCodeConstants',
@@ -118,6 +125,14 @@ class Curl
         if (!extension_loaded('curl')) {
             throw new \ErrorException('cURL library is not loaded');
         }
+
+        unset($this->curlErrorCodeConstant);
+        unset($this->curlErrorCodeConstants);
+        unset($this->curlOptionCodeConstants);
+        unset($this->effectiveUrl);
+        unset($this->rfc2616);
+        unset($this->rfc6265);
+        unset($this->totalTime);
 
         $this->curl = curl_init();
         $this->initialize($base_url, $options);
