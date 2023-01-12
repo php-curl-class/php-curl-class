@@ -4196,6 +4196,33 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    public function testDiagnoseErrorMessage()
+    {
+        $test = new Test();
+        $test->server('json_response', 'POST', [
+            'body' =>
+                json_encode([
+                    'error' => [
+                        'code' => 503,
+                        'message' => 'The service is currently unavailable.',
+                        'errors' => [
+                            [
+                                'message' => 'The service is currently unavailable.',
+                                'domain' => 'global',
+                                'reason' => 'backendError',
+                            ]
+                        ],
+                        'status' => 'UNAVAILABLE',
+                    ],
+                ], JSON_PRETTY_PRINT),
+        ]);
+
+        $test_output = $test->curl->diagnose(true);
+        $this->assertStringContainsString('Found 2 messages in response:', $test_output);
+        $this->assertStringContainsString('code: 503', $test_output);
+        $this->assertStringContainsString('message: The service is currently unavailable.', $test_output);
+    }
+
     public function testStopRequest() {
         $response_length_bytes = 1e6; // 1e6 = 1 megabyte
 
