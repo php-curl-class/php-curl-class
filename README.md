@@ -365,7 +365,7 @@ MultiCurl::stop()
 MultiCurl::success($callback)
 MultiCurl::unsetHeader($key)
 MultiCurl::unsetProxy()
-MultiCurl::verbose($on = true, $output = STDERR)
+MultiCurl::verbose($on = true, $output = 'STDERR')
 ```
 
 ### Security
