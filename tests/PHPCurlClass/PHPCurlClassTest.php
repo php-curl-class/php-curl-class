@@ -4081,7 +4081,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(3, $curl->getOpt(CURLOPT_MAXREDIRS));
     }
 
-    public function testDiagnose()
+    public function testDiagnoseOutputGet()
     {
         // Test diagnose() with default parameters.
         $test_1 = new Test();
@@ -4119,6 +4119,28 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             $this->assertStringContainsString($expected_string, $test_1_output);
             $this->assertStringContainsString($expected_string, $test_2_output);
             $this->assertStringContainsString($expected_string, $test_3_output);
+        }
+    }
+
+    public function testDiagnoseOutputPost()
+    {
+        $test = new Test();
+        $test->server('error_message', 'POST');
+        $test_output = $test->curl->diagnose(true);
+
+        foreach ([
+            '--- Begin PHP Curl Class diagnostic output ---',
+            'PHP Curl Class version: ' . Curl::VERSION,
+            'PHP version: ' . PHP_VERSION,
+            'CURLOPT_POST: true',
+            'Sent an HTTP POST request ',
+            'Request contained no body.',
+            'Received an HTTP status code of 401.',
+            'Received an HTTP 401 error response with message "HTTP/1.1 401 Unauthorized".',
+            'Received an empty response body (response="").',
+            '--- End PHP Curl Class diagnostic output ---',
+        ] as $expected_string) {
+            $this->assertStringContainsString($expected_string, $test_output);
         }
     }
 

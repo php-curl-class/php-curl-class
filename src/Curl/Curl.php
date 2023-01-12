@@ -1529,7 +1529,23 @@ class Curl
         if ($this->attempts === 0) {
             echo 'No HTTP requests have been made.' . "\n";
         } else {
-            $request_method = $this->getOpt(CURLOPT_CUSTOMREQUEST);
+            $request_types = array(
+                'DELETE' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'DELETE',
+                'GET' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'GET' || $this->getOpt(CURLOPT_HTTPGET),
+                'HEAD' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'HEAD',
+                'OPTIONS' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'OPTIONS',
+                'PATCH' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'PATCH',
+                'POST' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'POST' || $this->getOpt(CURLOPT_POST),
+                'PUT' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'PUT',
+                'SEARCH' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'SEARCH',
+            );
+            $request_method = '';
+            foreach ($request_types as $http_method_name => $http_method_used) {
+                if ($http_method_used) {
+                    $request_method = $http_method_name;
+                    break;
+                }
+            }
             $request_url = $this->getOpt(CURLOPT_URL);
             $request_options_count = count($this->options);
             $request_headers_count = count($this->requestHeaders);
@@ -1598,18 +1614,6 @@ class Curl
                 $allowed_request_types = array_map(function ($v) {
                     return trim($v);
                 }, explode(',', strtoupper($this->responseHeaders['allow'])));
-
-                $request_types = array(
-                    'DELETE' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'DELETE',
-                    'GET' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'GET' || $this->getOpt(CURLOPT_HTTPGET),
-                    'HEAD' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'HEAD',
-                    'OPTIONS' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'OPTIONS',
-                    'PATCH' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'PATCH',
-                    'POST' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'POST' || $this->getOpt(CURLOPT_POST),
-                    'PUT' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'PUT',
-                    'SEARCH' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'SEARCH',
-                );
-
                 foreach ($request_types as $http_method_name => $http_method_used) {
                     if ($http_method_used && !in_array($http_method_name, $allowed_request_types, true)) {
                         echo
