@@ -1295,7 +1295,7 @@ class Curl extends BaseCurl
                 $this->getOpt(CURLINFO_HEADER_OUT) !== true
             )) {
                 echo
-                    'Warning: Request headers (Curl::requestHeaders) are expected be empty ' .
+                    'Warning: Request headers (Curl::requestHeaders) are expected to be empty ' .
                     '(CURLOPT_VERBOSE was enabled or CURLINFO_HEADER_OUT was disabled).' . "\n";
             }
 
