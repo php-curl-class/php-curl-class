@@ -3,9 +3,10 @@
 namespace Curl;
 
 use Curl\ArrayUtil;
+use Curl\BaseCurl;
 use Curl\Url;
 
-class Curl
+class Curl extends BaseCurl
 {
     const VERSION = '9.12.6';
     const DEFAULT_TIMEOUT = 30;
@@ -34,11 +35,7 @@ class Curl
     public $response = null;
     public $rawResponse = null;
 
-    public $beforeSendCallback = null;
     public $downloadCompleteCallback = null;
-    public $successCallback = null;
-    public $errorCallback = null;
-    public $completeCallback = null;
     public $fileHandle = null;
     public $downloadFileName = null;
 
@@ -54,7 +51,6 @@ class Curl
     private $headerCallbackData;
     private $cookies = [];
     private $headers = [];
-    private $options = [];
 
     private $jsonDecoderArgs = [];
     private $jsonPattern = '/^(?:application|text)\/(?:[a-z]+(?:[\.-][0-9a-z]+){0,}[\+\.]|x-)?json(?:-[a-z]+)?/i';
@@ -136,17 +132,6 @@ class Curl
 
         $this->curl = curl_init();
         $this->initialize($base_url, $options);
-    }
-
-    /**
-     * Before Send
-     *
-     * @access public
-     * @param  $callback callable|null
-     */
-    public function beforeSend($callback)
-    {
-        $this->beforeSendCallback = $callback;
     }
 
     /**
@@ -266,17 +251,6 @@ class Curl
         $this->xmlDecoderArgs = null;
         $this->headerCallbackData = null;
         $this->defaultDecoder = null;
-    }
-
-    /**
-     * Complete
-     *
-     * @access public
-     * @param  $callback callable|null
-     */
-    public function complete($callback)
-    {
-        $this->completeCallback = $callback;
     }
 
     /**
@@ -479,17 +453,6 @@ class Curl
     }
 
     /**
-     * Error
-     *
-     * @access public
-     * @param  $callback callable|null
-     */
-    public function error($callback)
-    {
-        $this->errorCallback = $callback;
-    }
-
-    /**
      * Exec
      *
      * @access public
@@ -651,19 +614,6 @@ class Curl
         }
 
         return call_user_func_array('curl_getinfo', $args);
-    }
-
-    /**
-     * Get Opt
-     *
-     * @access public
-     * @param  $option
-     *
-     * @return mixed
-     */
-    public function getOpt($option)
-    {
-        return isset($this->options[$option]) ? $this->options[$option] : null;
     }
 
     /**
@@ -845,32 +795,6 @@ class Curl
     }
 
     /**
-     * Set Basic Authentication
-     *
-     * @access public
-     * @param  $username
-     * @param  $password
-     */
-    public function setBasicAuthentication($username, $password = '')
-    {
-        $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
-    }
-
-    /**
-     * Set Digest Authentication
-     *
-     * @access public
-     * @param  $username
-     * @param  $password
-     */
-    public function setDigestAuthentication($username, $password = '')
-    {
-        $this->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
-        $this->setOpt(CURLOPT_USERPWD, $username . ':' . $password);
-    }
-
-    /**
      * Set Cookie
      *
      * @access public
@@ -936,28 +860,6 @@ class Curl
             return $downloaded > $bytes ? 1 : 0;
         };
         $this->progress($callback);
-    }
-
-    /**
-     * Set Port
-     *
-     * @access public
-     * @param  $port
-     */
-    public function setPort($port)
-    {
-        $this->setOpt(CURLOPT_PORT, (int) $port);
-    }
-
-    /**
-     * Set Connect Timeout
-     *
-     * @access public
-     * @param  $seconds
-     */
-    public function setConnectTimeout($seconds)
-    {
-        $this->setOpt(CURLOPT_CONNECTTIMEOUT, $seconds);
     }
 
     /**
@@ -1079,17 +981,6 @@ class Curl
         $curl_version = curl_version();
         $user_agent .= ' curl/' . $curl_version['version'];
         $this->setUserAgent($user_agent);
-    }
-
-    /**
-     * Set File
-     *
-     * @access public
-     * @param  $file
-     */
-    public function setFile($file)
-    {
-        $this->setOpt(CURLOPT_FILE, $file);
     }
 
     /**
@@ -1219,112 +1110,6 @@ class Curl
     }
 
     /**
-     * Set Proxy
-     *
-     * Set an HTTP proxy to tunnel requests through.
-     *
-     * @access public
-     * @param  $proxy - The HTTP proxy to tunnel requests through. May include port number.
-     * @param  $port - The port number of the proxy to connect to. This port number can also be set in $proxy.
-     * @param  $username - The username to use for the connection to the proxy.
-     * @param  $password - The password to use for the connection to the proxy.
-     */
-    public function setProxy($proxy, $port = null, $username = null, $password = null)
-    {
-        $this->setOpt(CURLOPT_PROXY, $proxy);
-        if ($port !== null) {
-            $this->setOpt(CURLOPT_PROXYPORT, $port);
-        }
-        if ($username !== null && $password !== null) {
-            $this->setOpt(CURLOPT_PROXYUSERPWD, $username . ':' . $password);
-        }
-    }
-
-    /**
-     * Set Proxy Auth
-     *
-     * Set the HTTP authentication method(s) to use for the proxy connection.
-     *
-     * @access public
-     * @param  $auth
-     */
-    public function setProxyAuth($auth)
-    {
-        $this->setOpt(CURLOPT_PROXYAUTH, $auth);
-    }
-
-    /**
-     * Set Proxy Type
-     *
-     * Set the proxy protocol type.
-     *
-     * @access public
-     * @param  $type
-     */
-    public function setProxyType($type)
-    {
-        $this->setOpt(CURLOPT_PROXYTYPE, $type);
-    }
-
-    /**
-     * Set Proxy Tunnel
-     *
-     * Set the proxy to tunnel through HTTP proxy.
-     *
-     * @access public
-     * @param  $tunnel boolean
-     */
-    public function setProxyTunnel($tunnel = true)
-    {
-        $this->setOpt(CURLOPT_HTTPPROXYTUNNEL, $tunnel);
-    }
-
-    /**
-     * Unset Proxy
-     *
-     * Disable use of the proxy.
-     *
-     * @access public
-     */
-    public function unsetProxy()
-    {
-        $this->setOpt(CURLOPT_PROXY, null);
-    }
-
-    /**
-     * Set Range
-     *
-     * @access public
-     * @param  $range
-     */
-    public function setRange($range)
-    {
-        $this->setOpt(CURLOPT_RANGE, $range);
-    }
-
-    /**
-     * Set Referer
-     *
-     * @access public
-     * @param  $referer
-     */
-    public function setReferer($referer)
-    {
-        $this->setReferrer($referer);
-    }
-
-    /**
-     * Set Referrer
-     *
-     * @access public
-     * @param  $referrer
-     */
-    public function setReferrer($referrer)
-    {
-        $this->setOpt(CURLOPT_REFERER, $referrer);
-    }
-
-    /**
      * Set Retry
      *
      * Number of retries to attempt or decider callable.
@@ -1349,27 +1134,6 @@ class Curl
     }
 
     /**
-     * Set Timeout
-     *
-     * @access public
-     * @param  $seconds
-     */
-    public function setTimeout($seconds)
-    {
-        $this->setOpt(CURLOPT_TIMEOUT, $seconds);
-    }
-
-    /**
-     * Disable Timeout
-     *
-     * @access public
-     */
-    public function disableTimeout()
-    {
-        $this->setTimeout(null);
-    }
-
-    /**
      * Set Url
      *
      * @access public
@@ -1387,31 +1151,6 @@ class Curl
         }
 
         $this->setOpt(CURLOPT_URL, $this->url);
-    }
-
-    /**
-     * Set User Agent
-     *
-     * @access public
-     * @param  $user_agent
-     */
-    public function setUserAgent($user_agent)
-    {
-        $this->setOpt(CURLOPT_USERAGENT, $user_agent);
-    }
-
-    /**
-     * Set Interface
-     *
-     * The name of the outgoing network interface to use.
-     * This can be an interface name, an IP address or a host name.
-     *
-     * @access public
-     * @param  $interface
-     */
-    public function setInterface($interface)
-    {
-        $this->setOpt(CURLOPT_INTERFACE, $interface);
     }
 
     /**
@@ -1439,17 +1178,6 @@ class Curl
     }
 
     /**
-     * Success
-     *
-     * @access public
-     * @param  $callback callable|null
-     */
-    public function success($callback)
-    {
-        $this->successCallback = $callback;
-    }
-
-    /**
      * Unset Header
      *
      * Remove extra header previously set using Curl::setHeader().
@@ -1465,45 +1193,6 @@ class Curl
             $headers[] = $key . ': ' . $value;
         }
         $this->setOpt(CURLOPT_HTTPHEADER, $headers);
-    }
-
-    /**
-     * Remove Header
-     *
-     * Remove an internal header from the request.
-     * Using `curl -H "Host:" ...' is equivalent to $curl->removeHeader('Host');.
-     *
-     * @access public
-     * @param  $key
-     */
-    public function removeHeader($key)
-    {
-        $this->setHeader($key, '');
-    }
-
-    /**
-     * Verbose
-     *
-     * @access public
-     * @param  bool $on
-     * @param  resource|string $output
-     */
-    public function verbose($on = true, $output = 'STDERR')
-    {
-        if ($output === 'STDERR') {
-            if (!defined('STDERR')) {
-                define('STDERR', fopen('php://stderr', 'wb'));
-            }
-            $output = STDERR;
-        }
-
-        // Turn off CURLINFO_HEADER_OUT for verbose to work. This has the side
-        // effect of causing Curl::requestHeaders to be empty.
-        if ($on) {
-            $this->setOpt(CURLINFO_HEADER_OUT, false);
-        }
-        $this->setOpt(CURLOPT_VERBOSE, $on);
-        $this->setOpt(CURLOPT_STDERR, $output);
     }
 
     /**
@@ -1726,56 +1415,6 @@ class Curl
         $this->setDefaultHeaderOut();
 
         $this->initialize();
-    }
-
-    /**
-     * Set auto referer
-     *
-     * @access public
-     */
-    public function setAutoReferer($auto_referer = true)
-    {
-        $this->setAutoReferrer($auto_referer);
-    }
-
-    /**
-     * Set auto referrer
-     *
-     * @access public
-     */
-    public function setAutoReferrer($auto_referrer = true)
-    {
-        $this->setOpt(CURLOPT_AUTOREFERER, $auto_referrer);
-    }
-
-    /**
-     * Set follow location
-     *
-     * @access public
-     */
-    public function setFollowLocation($follow_location = true)
-    {
-        $this->setOpt(CURLOPT_FOLLOWLOCATION, $follow_location);
-    }
-
-    /**
-     * Set forbid reuse
-     *
-     * @access public
-     */
-    public function setForbidReuse($forbid_reuse = true)
-    {
-        $this->setOpt(CURLOPT_FORBID_REUSE, $forbid_reuse);
-    }
-
-    /**
-     * Set maximum redirects
-     *
-     * @access public
-     */
-    public function setMaximumRedirects($maximum_redirects)
-    {
-        $this->setOpt(CURLOPT_MAXREDIRS, $maximum_redirects);
     }
 
     public function getCurl()
