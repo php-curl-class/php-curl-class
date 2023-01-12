@@ -1668,6 +1668,33 @@ class Curl
                 } else {
                     echo 'Response content length (calculated): ' . $response_calculated_length . "\n";
                 }
+
+                if (preg_match($this->jsonPattern, $this->responseHeaders['Content-Type'])) {
+                    $parsed_response = json_decode($this->rawResponse, true);
+                    if ($parsed_response !== null) {
+                        $messages = [];
+                        array_walk_recursive($parsed_response, function ($value, $key) use (&$messages) {
+                            if (in_array($key, ['code', 'error', 'message'], true)) {
+                                $message = $key . ': ' . $value;
+                                $messages[] = $message;
+                            }
+                        });
+                        $messages = array_unique($messages);
+
+                        $messages_count = count($messages);
+                        if ($messages_count) {
+                            echo
+                                'Found ' . $messages_count . ' ' . ($messages_count === 1 ? 'message' : 'messages') .
+                                ' in response:' . "\n";
+
+                            $i = 1;
+                            foreach ($messages as $message) {
+                                echo '    ' . $i . ' ' . $message . "\n";
+                                $i += 1;
+                            }
+                        }
+                    }
+                }
             }
         }
 
