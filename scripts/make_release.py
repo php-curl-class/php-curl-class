@@ -174,17 +174,18 @@ def main():
     # print(new_content[:800])
     CHANGELOG_PATH.write_text(new_content)
 
-    # print('before:')
+    # print('git status before adding files:')
     # print(local_repo.git.status())
 
     local_repo.git.add(CHANGELOG_PATH)
     local_repo.git.add(LIBRARY_FILE_PATH)
 
-    # print('after:')
+    # print('git status after adding files:')
     # print(local_repo.git.status())
 
-    print('diff:')
-    print(local_repo.git.diff(cached=True, color='always'))
+    # print('diff:')
+    # git diff --cached --color=always
+    # print(local_repo.git.diff(cached=True, color='always'))
 
     local_repo.git.commit(
         message=result['message'],
@@ -193,7 +194,7 @@ def main():
             local_repo.git.config('--get', 'user.email')))
 
     print('diff after commit:')
-    # git log --max-count=1 --patch
+    # git log --max-count=1 --patch --color=always
     print(local_repo.git.log(max_count='1', patch=True, color='always'))
 
     # Push local changes.
