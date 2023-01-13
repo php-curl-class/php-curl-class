@@ -6,6 +6,12 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.13.0 - 2023-01-13
+
+- Implement abstract class BaseCurl for Curl and MultiCurl ([#759](https://github.com/php-curl-class/php-curl-class/pull/759))
+- Display error messages found in Curl::diagnose() ([#758](https://github.com/php-curl-class/php-curl-class/pull/758))
+- Fix Curl::diagnose() request type output for POST requests ([#757](https://github.com/php-curl-class/php-curl-class/pull/757))
+
 ## 9.12.6 - 2023-01-11
 
 - Replace use of #[\AllowDynamicProperties] ([#756](https://github.com/php-curl-class/php-curl-class/pull/756))
