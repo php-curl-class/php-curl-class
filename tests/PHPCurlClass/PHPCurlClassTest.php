@@ -4198,29 +4198,79 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testDiagnoseErrorMessage()
     {
-        $test = new Test();
-        $test->server('json_response', 'POST', [
-            'body' =>
-                json_encode([
-                    'error' => [
-                        'code' => 503,
-                        'message' => 'The service is currently unavailable.',
+        $tests = [
+            [
+                'body' =>
+                    json_encode([
+                        'error' => [
+                            'code' => 503,
+                            'message' => 'The service is currently unavailable.',
+                            'errors' => [
+                                [
+                                    'message' => 'The service is currently unavailable.',
+                                    'domain' => 'global',
+                                    'reason' => 'backendError',
+                                ]
+                            ],
+                            'status' => 'UNAVAILABLE',
+                        ],
+                    ], JSON_PRETTY_PRINT),
+                'expects' => [
+                    'Found 2 messages in response:',
+                    'code: 503',
+                    'message: The service is currently unavailable.',
+                ],
+            ],
+            [
+                'body' =>
+                    json_encode([
                         'errors' => [
                             [
-                                'message' => 'The service is currently unavailable.',
-                                'domain' => 'global',
-                                'reason' => 'backendError',
-                            ]
+                                'id' => 'invalid_token',
+                                'message' => 'The access token is invalid',
+                            ],
                         ],
-                        'status' => 'UNAVAILABLE',
-                    ],
-                ], JSON_PRETTY_PRINT),
-        ]);
+                    ]),
+                'expects' => [
+                    'Found 1 message in response:',
+                    'message: The access token is invalid',
+                ],
+            ],
+            [
+                'body' =>
+                    json_encode([
+                        'apiVersion' => '2.0',
+                        'error' => [
+                            'code' => 404,
+                            'message' => 'File Not Found',
+                            'errors' => [
+                                [
+                                    'domain' => 'Calendar',
+                                    'reason' => 'ResourceNotFoundException',
+                                    'message' => 'File Not Found',
+                                ],
+                            ],
+                        ],
+                    ]),
+                'expects' => [
+                    'Found 2 messages in response:',
+                    'code: 404',
+                    'message: File Not Found',
+                ],
+            ],
+        ];
+        foreach ($tests as $test_case) {
+            $test = new Test();
+            $test->server('json_response', 'POST', [
+                'body' => $test_case['body'],
+            ]);
 
-        $test_output = $test->curl->diagnose(true);
-        $this->assertStringContainsString('Found 2 messages in response:', $test_output);
-        $this->assertStringContainsString('code: 503', $test_output);
-        $this->assertStringContainsString('message: The service is currently unavailable.', $test_output);
+            $test_output = $test->curl->diagnose(true);
+
+            foreach ($test_case['expects'] as $expect) {
+                $this->assertStringContainsString($expect, $test_output);
+            }
+        }
     }
 
     public function testStopRequest() {
