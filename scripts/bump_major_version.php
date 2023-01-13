@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+require __DIR__ . '/../src/Curl/BaseCurl.php';
 require __DIR__ . '/../src/Curl/Curl.php';
 
 $current_version = Curl\Curl::VERSION;
