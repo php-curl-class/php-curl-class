@@ -476,18 +476,20 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testPostCurlFileUpload()
     {
-        if (class_exists('CURLFile')) {
-            $file_path = \Helper\get_png();
-
-            $test = new Test();
-            $this->assertEquals('image/png', $test->server('post_file_path_upload', 'POST', [
-                'key' => 'image',
-                'image' => new \CURLFile($file_path),
-            ]));
-
-            unlink($file_path);
-            $this->assertFalse(file_exists($file_path));
+        if (!class_exists('CURLFile')) {
+            $this->markTestSkipped();
         }
+
+        $file_path = \Helper\get_png();
+
+        $test = new Test();
+        $this->assertEquals('image/png', $test->server('post_file_path_upload', 'POST', [
+            'key' => 'image',
+            'image' => new \CURLFile($file_path),
+        ]));
+
+        unlink($file_path);
+        $this->assertFalse(file_exists($file_path));
     }
 
     public function testPostCurlStringFileUpload()
