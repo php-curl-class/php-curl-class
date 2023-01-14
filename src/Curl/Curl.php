@@ -179,6 +179,8 @@ class Curl extends BaseCurl
                     }
                 } elseif ($value instanceof \CURLFile) {
                     $binary_data = true;
+                } elseif ($value instanceof \CURLStringFile) {
+                    $binary_data = true;
                 }
             }
         }
