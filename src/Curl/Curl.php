@@ -177,7 +177,7 @@ class Curl extends BaseCurl
                     if (class_exists('CURLFile')) {
                         $data[$key] = new \CURLFile(substr($value, 1));
                     }
-                } elseif ($value instanceof \CURLFile || $value instanceof \CurlStringFile) {
+                } elseif ($value instanceof \CURLFile || $value instanceof \CURLStringFile) {
                     $binary_data = true;
                 }
             }
