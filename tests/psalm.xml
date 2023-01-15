@@ -22,6 +22,10 @@
                 <referencedClass name="CurlMultiHandle" />
                 <file name="../src/Curl/MultiCurl.php" />
             </errorLevel>
+            <errorLevel type="suppress">
+                <referencedClass name="CURLStringFile" />
+                <file name="../src/Curl/ArrayUtil.php" />
+            </errorLevel>
         </UndefinedClass>
     </issueHandlers>
 </psalm>
