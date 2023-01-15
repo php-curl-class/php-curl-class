@@ -83,8 +83,7 @@ class Test
     }
 }
 
-function create_png()
-{
+function create_png() {
     // PNG image data, 1 x 1, 1-bit colormap, non-interlaced
     ob_start();
     imagepng(imagecreatefromstring(base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', true)));
@@ -93,16 +92,14 @@ function create_png()
     return $raw_image;
 }
 
-function create_tmp_file($data)
-{
+function create_tmp_file($data) {
     $tmp_file = tmpfile();
     fwrite($tmp_file, $data);
     rewind($tmp_file);
     return $tmp_file;
 }
 
-function get_tmp_file_path()
-{
+function get_tmp_file_path() {
     // Return temporary file path without creating file.
     $tmp_file_path =
         rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) .
@@ -110,15 +107,13 @@ function get_tmp_file_path()
     return $tmp_file_path;
 }
 
-function get_png()
-{
+function get_png() {
     $tmp_filename = tempnam('/tmp', 'php-curl-class.');
     file_put_contents($tmp_filename, create_png());
     return $tmp_filename;
 }
 
-function mime_type($file_path)
-{
+function mime_type($file_path) {
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime_type = finfo_file($finfo, $file_path);
     finfo_close($finfo);
