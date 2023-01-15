@@ -93,6 +93,8 @@ class ArrayUtil
                     } else {
                         if ($value instanceof \CURLFile) {
                             $return[$key] = $value;
+                        } elseif ($value instanceof \CURLStringFile) {
+                            $return[$key] = $value;
                         } else {
                             $return = array_merge(
                                 $return,

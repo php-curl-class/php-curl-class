@@ -408,6 +408,14 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             ];
         }
 
+        if (class_exists('CURLStringFile')) {
+            $file_path_3 = \Helper\get_png();
+            $tests[] = [
+                'file_path' => $file_path_3,
+                'post_data_image' => new \CURLStringFile(file_get_contents($file_path_3), 'image', 'image/png'),
+            ];
+        }
+
         foreach ($tests as $test_data) {
             $file_path = $test_data['file_path'];
             $post_data_image = $test_data['post_data_image'];
@@ -468,18 +476,38 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testPostCurlFileUpload()
     {
-        if (class_exists('CURLFile')) {
-            $file_path = \Helper\get_png();
-
-            $test = new Test();
-            $this->assertEquals('image/png', $test->server('post_file_path_upload', 'POST', [
-                'key' => 'image',
-                'image' => new \CURLFile($file_path),
-            ]));
-
-            unlink($file_path);
-            $this->assertFalse(file_exists($file_path));
+        if (!class_exists('CURLFile')) {
+            $this->markTestSkipped();
         }
+
+        $file_path = \Helper\get_png();
+
+        $test = new Test();
+        $this->assertEquals('image/png', $test->server('post_file_path_upload', 'POST', [
+            'key' => 'image',
+            'image' => new \CURLFile($file_path),
+        ]));
+
+        unlink($file_path);
+        $this->assertFalse(file_exists($file_path));
+    }
+
+    public function testPostCurlStringFileUpload()
+    {
+        if (!class_exists('CURLStringFile')) {
+            $this->markTestSkipped();
+        }
+
+        $file_path = \Helper\get_png();
+
+        $test = new Test();
+        $this->assertEquals('image/png', $test->server('post_file_path_upload', 'POST', [
+            'key' => 'image',
+            'image' => new \CURLStringFile(file_get_contents($file_path), 'image', 'image/png'),
+        ]));
+
+        unlink($file_path);
+        $this->assertFalse(file_exists($file_path));
     }
 
     public function testPostNonFilePathUpload()
