@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.13.1 - 2023-01-16
+
+- Allow uploads with CURLStringFile type  ([#762](https://github.com/php-curl-class/php-curl-class/pull/762))
+
 ## 9.13.0 - 2023-01-13
 
 - Implement abstract class BaseCurl for Curl and MultiCurl ([#759](https://github.com/php-curl-class/php-curl-class/pull/759))
