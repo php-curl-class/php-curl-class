@@ -4301,6 +4301,45 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    public function testDiagnoseRequestHeadersEmptyWarning()
+    {
+        $expect = 'Warning: Request headers (Curl::requestHeaders) are expected to be empty';
+
+        $test_1 = new Test();
+        $test_1->curl->verbose();
+        $test_1->server('json_response', 'GET');
+        $test_1_output = $test_1->curl->diagnose(true);
+        $this->assertStringContainsString($expect, $test_1_output);
+
+        $test_2 = new Test();
+        $test_2->curl->setOpt(CURLOPT_VERBOSE, true);
+        $test_2->curl->setOpt(CURLINFO_HEADER_OUT, false);
+        $test_2->server('json_response', 'GET');
+        $test_2_output = $test_2->curl->diagnose(true);
+        $this->assertStringContainsString($expect, $test_2_output);
+
+        $test_3 = new Test();
+        $test_3->curl->setOpt(CURLOPT_VERBOSE, true);
+        $test_3->curl->setOpt(CURLINFO_HEADER_OUT, 0);
+        $test_3->server('json_response', 'GET');
+        $test_3_output = $test_3->curl->diagnose(true);
+        $this->assertStringContainsString($expect, $test_3_output);
+
+        $test_4 = new Test();
+        $test_4->curl->setOpt(CURLOPT_VERBOSE, 1);
+        $test_4->curl->setOpt(CURLINFO_HEADER_OUT, false);
+        $test_4->server('json_response', 'GET');
+        $test_4_output = $test_4->curl->diagnose(true);
+        $this->assertStringContainsString($expect, $test_4_output);
+
+        $test_5 = new Test();
+        $test_5->curl->setOpt(CURLOPT_VERBOSE, 1);
+        $test_5->curl->setOpt(CURLINFO_HEADER_OUT, 0);
+        $test_5->server('json_response', 'GET');
+        $test_5_output = $test_5->curl->diagnose(true);
+        $this->assertStringContainsString($expect, $test_5_output);
+    }
+
     public function testStopRequest() {
         $response_length_bytes = 1e6; // 1e6 = 1 megabyte
 

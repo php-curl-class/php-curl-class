@@ -1294,7 +1294,7 @@ class Curl extends BaseCurl
 
             if ($request_headers_count === 0 && (
                 $this->getOpt(CURLOPT_VERBOSE) ||
-                $this->getOpt(CURLINFO_HEADER_OUT) !== true
+                !$this->getOpt(CURLINFO_HEADER_OUT)
             )) {
                 echo
                     'Warning: Request headers (Curl::requestHeaders) are expected to be empty ' .
@@ -1327,11 +1327,11 @@ class Curl extends BaseCurl
             }
 
             if (!isset($this->responseHeaders['Content-Type'])) {
-                echo 'Response did not set a content type' . "\n";
+                echo 'Response did not set a content type.' . "\n";
             } elseif (preg_match($this->jsonPattern, $this->responseHeaders['Content-Type'])) {
-                echo 'Response appears to be JSON' . "\n";
+                echo 'Response appears to be JSON.' . "\n";
             } elseif (preg_match($this->xmlPattern, $this->responseHeaders['Content-Type'])) {
-                echo 'Response appears to be XML' . "\n";
+                echo 'Response appears to be XML.' . "\n";
             }
 
             if ($this->curlError) {
