@@ -190,12 +190,12 @@ p:last-child {
     <a href="https://github.com/php-curl-class/php-curl-class/actions/workflows/ci.yml">
         <img
             alt=""
-            src="https://img.shields.io/github/workflow/status/php-curl-class/php-curl-class/ci?style=flat-square" />
+            src="https://img.shields.io/github/actions/workflow/status/php-curl-class/php-curl-class/ci.yml?style=flat-square&label=build&branch=master" />
     </a>
     <a href="https://github.com/php-curl-class/php-curl-class/releases/">
         <img
             alt=""
-            src="https://img.shields.io/github/workflow/status/php-curl-class/php-curl-class/release?style=flat-square&label=release" />
+            src="https://img.shields.io/github/actions/workflow/status/php-curl-class/php-curl-class/release.yml?style=flat-square&label=release&branch=master" />
     </a>
     <a href="https://github.com/php-curl-class/php-curl-class/releases/">
         <img
