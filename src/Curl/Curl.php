@@ -6,6 +6,7 @@ use Curl\ArrayUtil;
 use Curl\BaseCurl;
 use Curl\Url;
 
+#[\AllowDynamicProperties]
 class Curl extends BaseCurl
 {
     const VERSION = '9.13.1';
