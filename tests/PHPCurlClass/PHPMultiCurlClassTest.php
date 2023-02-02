@@ -5109,7 +5109,7 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(5, $instance->retries);
         $this->assertFalse($instance->error);
     }
-    
+
     public function testDynamicProperty()
     {
         $multi_curl = new MultiCurl();
