@@ -92,8 +92,7 @@ fi
 # Run tests.
 "${phpunit_to_use}" --version
 "${phpunit_to_use}" \
-    --configuration "phpunit.xml" \
-    --verbose
+    --configuration "phpunit.xml"
 if [[ "${?}" -ne 0 ]]; then
     echo "Error: phpunit command failed"
     errors+=("phpunit command failed")
