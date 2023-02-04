@@ -124,5 +124,5 @@ done
 if [[ "${CI_PHP_FUTURE_RELEASE}" != "true" ]]; then
     exit "${#errors[@]}"
 elif [[ "${#errors[@]}" -ne 0 ]]; then
-    echo "One or more tests failed, but allowed as CI_PHP_FUTURE_RELEASE is on for PHP version ${CI_PHP_VERSION}."
+    echo "One or more tests failed, but allowed as the CI_PHP_FUTURE_RELEASE flag is on for PHP version ${CI_PHP_VERSION}."
 fi

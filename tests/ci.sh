@@ -93,7 +93,6 @@ fi
 "${phpunit_to_use}" --version
 "${phpunit_to_use}" \
     --configuration "phpunit.xml" \
-    --debug \
     --verbose
 if [[ "${?}" -ne 0 ]]; then
     echo "Error: phpunit command failed"
