@@ -93,7 +93,6 @@ extra_args="${@}"
 "${phpunit_to_use}" --version
 "${phpunit_to_use}" \
     --configuration "phpunit.xml" \
-    --debug \
     --verbose \
     ${extra_args}
 if [[ "${?}" -ne 0 ]]; then
