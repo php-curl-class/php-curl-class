@@ -23,14 +23,25 @@ replace_assertMatchesRegularExpression() {
 
 phpunit_v6_5_shim() {
     remove_expectWarning
+    replace_assertMatchesRegularExpression
     replace_assertStringContainsString
 }
 
 phpunit_v7_5_shim() {
     remove_expectWarning
+    replace_assertMatchesRegularExpression
 }
 
-phpunit_v8_1_shim() {
+phpunit_v8_5_shim() {
+    remove_expectWarning
+    replace_assertMatchesRegularExpression
+}
+
+phpunit_v9_shim() {
+    replace_assertMatchesRegularExpression
+}
+
+phpunit_v10_shim() {
     remove_expectWarning
 }
 
@@ -66,7 +77,7 @@ for i in $(seq 0 $(("${server_count}" - 1))); do
     port=8000
     (( port += $i ))
 
-    php -S "127.0.0.1:${port}" -t PHPCurlClass/ &> /dev/null &
+    php -S "127.0.0.1:${port}" server.php &> /dev/null &
     pids["${i}"]="${!}"
 done
 
@@ -84,12 +95,22 @@ fi
 phpunit_version="$("${phpunit_to_use}" --version | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")"
 echo "phpunit_version: ${phpunit_version}"
 
+extra_args="${@}"
 if [[ "${phpunit_version}" == "6.5."* ]]; then
     phpunit_v6_5_shim
+    phpunit_args=" --debug --verbose ${extra_args}"
 elif [[ "${phpunit_version}" == "7.5."* ]]; then
     phpunit_v7_5_shim
-elif [[ "${phpunit_version}" == "8.1."* ]]; then
-    phpunit_v8_1_shim
+    phpunit_args=" --debug --verbose ${extra_args}"
+elif [[ "${phpunit_version}" == "8.5."* ]]; then
+    phpunit_v8_5_shim
+    phpunit_args=" --debug --verbose ${extra_args}"
+elif [[ "${phpunit_version}" == "9."* ]]; then
+    phpunit_v9_shim
+    phpunit_args=" --debug --verbose ${extra_args}"
+elif [[ "${phpunit_version}" == "10."* ]]; then
+    phpunit_v10_shim
+    phpunit_args=" --display-incomplete --display-skipped --display-deprecations --display-errors --display-notices --display-warnings ${extra_args}"
 fi
 
 if [[ "${CI_PHP_VERSION}" == "7.0" ]]; then
@@ -97,11 +118,10 @@ if [[ "${CI_PHP_VERSION}" == "7.0" ]]; then
 fi
 
 # Run tests.
-extra_args="${@}"
 "${phpunit_to_use}" --version
 "${phpunit_to_use}" \
     --configuration "phpunit.xml" \
-    ${extra_args}
+    ${phpunit_args}
 if [[ "${?}" -ne 0 ]]; then
     echo "Error: phpunit command failed"
     errors+=("phpunit command failed")

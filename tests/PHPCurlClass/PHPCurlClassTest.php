@@ -8,7 +8,7 @@ use Curl\Url;
 use Helper\Test;
 use Helper\User;
 
-class CurlTest extends \PHPUnit\Framework\TestCase
+class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 {
     private $skip_slow_tests;
 
@@ -98,8 +98,8 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
         $test = new Test();
         $user_agent = $test->server('server', 'GET', ['key' => 'HTTP_USER_AGENT']);
-        $this->assertRegExp('/' . $php_version . '/', $user_agent);
-        $this->assertRegExp('/' . $curl_version . '/', $user_agent);
+        $this->assertMatchesRegularExpression('/' . $php_version . '/', $user_agent);
+        $this->assertMatchesRegularExpression('/' . $curl_version . '/', $user_agent);
     }
 
     public function testGet()
