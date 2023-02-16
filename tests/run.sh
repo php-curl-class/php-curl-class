@@ -2,7 +2,7 @@
 
 remove_expectWarning() {
     # Fix "Call to undefined method CurlTest\CurlTest::expectWarning()".
-    sed -i'' -e"/->expectWarning(/d" "./PHPCurlClass/PHP"*
+    sed -i$(sed v < /dev/null 2> /dev/null || echo -n " ''") -e "/->expectWarning(/d" "./PHPCurlClass/PHP"*
 }
 
 replace_assertStringContainsString() {
@@ -10,7 +10,15 @@ replace_assertStringContainsString() {
     # +->assertContains(
     find='->assertStringContainsString('
     replace='->assertContains('
-    sed -i'' -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+    sed -i$(sed v < /dev/null 2> /dev/null || echo -n " ''") -e "s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+}
+
+replace_assertMatchesRegularExpression() {
+    # -->assertMatchesRegularExpression(
+    # +->assertRegExp(
+    find='->assertMatchesRegularExpression('
+    replace='->assertRegExp('
+    sed -i$(sed v < /dev/null 2> /dev/null || echo -n " ''") -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
 }
 
 phpunit_v6_5_shim() {
