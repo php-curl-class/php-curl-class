@@ -101,19 +101,19 @@ echo "phpunit_version: ${phpunit_version}"
 extra_args="${@}"
 if [[ "${phpunit_version}" == "6.5."* ]]; then
     phpunit_v6_5_shim
-    phpunit_args=" --debug --verbose ${extra_args}"
+    phpunit_args=" --debug --verbose --fail-on-risky ${extra_args}"
 elif [[ "${phpunit_version}" == "7.5."* ]]; then
     phpunit_v7_5_shim
-    phpunit_args=" --debug --verbose ${extra_args}"
+    phpunit_args=" --debug --verbose --fail-on-risky ${extra_args}"
 elif [[ "${phpunit_version}" == "8.5."* ]]; then
     phpunit_v8_5_shim
-    phpunit_args=" --debug --verbose ${extra_args}"
+    phpunit_args=" --debug --verbose --fail-on-risky ${extra_args}"
 elif [[ "${phpunit_version}" == "9."* ]]; then
     phpunit_v9_shim
-    phpunit_args=" --debug --verbose ${extra_args}"
+    phpunit_args=" --debug --verbose --fail-on-risky ${extra_args}"
 elif [[ "${phpunit_version}" == "10."* ]]; then
     phpunit_v10_shim
-    phpunit_args=" --display-incomplete --display-skipped --display-deprecations --display-errors --display-notices --display-warnings ${extra_args}"
+    phpunit_args=" --display-incomplete --display-skipped --display-deprecations --display-errors --display-notices --display-warnings --fail-on-risky ${extra_args}"
 fi
 
 if [[ "${CI_PHP_VERSION}" == "7.0" ]]; then
