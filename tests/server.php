@@ -11,8 +11,6 @@ require_once 'ContentRangeServer.php';
 require_once 'RangeHeader.php';
 require_once 'Helper.php';
 
-use Helper\Test;
-
 $http_raw_post_data = file_get_contents('php://input');
 $_PUT = [];
 $_PATCH = [];
@@ -146,12 +144,12 @@ if ($test === 'http_basic_auth') {
     ]);
     exit;
 } elseif ($test === 'post_file_path_upload') {
-    echo Helper\mime_type($_FILES[$key]['tmp_name']);
+    echo \Helper\mime_type($_FILES[$key]['tmp_name']);
     exit;
 } elseif ($test === 'put_file_handle') {
     $tmp_filename = tempnam('/tmp', 'php-curl-class.');
     file_put_contents($tmp_filename, $http_raw_post_data);
-    echo Helper\mime_type($tmp_filename);
+    echo \Helper\mime_type($tmp_filename);
     unlink($tmp_filename);
     exit;
 } elseif ($test === 'request_method') {
