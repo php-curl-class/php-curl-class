@@ -3092,6 +3092,7 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @requires PHPUnit < 10
      * @expectedException \PHPUnit\Framework\Error\Warning
      */
     public function testRequiredOptionCurlOptReturnTransferEmitsWarning()
@@ -3100,6 +3101,23 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $curl = new Curl();
         $curl->setOpt(CURLOPT_RETURNTRANSFER, false);
+    }
+
+    /**
+     * @requires PHPUnit >= 10
+     */
+    public function testRequiredOptionCurlOptReturnTransferEmitsWarningPHPUnit10Plus()
+    {
+        set_error_handler(static function (int $errno, string $errstr): never {
+            throw new \Exception($errstr, $errno);
+        }, E_USER_WARNING);
+
+        $this->expectExceptionMessage('CURLOPT_RETURNTRANSFER is a required option');
+
+        $curl = new Curl();
+        $curl->setOpt(CURLOPT_RETURNTRANSFER, false);
+
+        restore_error_handler();
     }
 
     public function testRequestMethodSuccessiveGetRequests()
