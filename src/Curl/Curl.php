@@ -1112,6 +1112,20 @@ class Curl extends BaseCurl
     }
 
     /**
+     * Set Protocols
+     *
+     * Limit what protocols libcurl will accept for a request.
+     *
+     * @access public
+     * @param  $protocols
+     * @see    Curl::setRedirectProtocols()
+     */
+    public function setProtocols($protocols)
+    {
+        $this->setOpt(CURLOPT_PROTOCOLS, $protocols);
+    }
+
+    /**
      * Set Retry
      *
      * Number of retries to attempt or decider callable.
@@ -1133,6 +1147,20 @@ class Curl extends BaseCurl
             $maximum_number_of_retries = $mixed;
             $this->remainingRetries = $maximum_number_of_retries;
         }
+    }
+
+    /**
+     * Set Redirect Protocols
+     *
+     * Limit what protocols libcurl will accept when following a redirect.
+     *
+     * @access public
+     * @param  $redirect_protocols
+     * @see    Curl::setProtocols()
+     */
+    public function setRedirectProtocols($redirect_protocols)
+    {
+        $this->setOpt(CURLOPT_REDIR_PROTOCOLS, $redirect_protocols);
     }
 
     /**
@@ -1919,6 +1947,9 @@ class Curl extends BaseCurl
      */
     private function initialize($base_url = null, $options = [])
     {
+        $this->setProtocols(CURLPROTO_HTTPS | CURLPROTO_HTTP);
+        $this->setRedirectProtocols(CURLPROTO_HTTPS | CURLPROTO_HTTP);
+
         if (isset($options)) {
             $this->setOpts($options);
         }
