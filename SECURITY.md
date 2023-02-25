@@ -35,12 +35,31 @@ $url = $_GET['url'];
 if (!is_allowed_url($url)) {
     die('Unsafe url detected.');
 }
+
+$curl = new Curl();
+$curl->setProtocols(CURLPROTO_HTTPS);
+$curl->setRedirectProtocols(CURLPROTO_HTTPS);
+$curl->get($url);
 ```
 
 ### Url may point to internal urls
 
 * Url may point to internal urls including those behind a firewall (e.g. http://192.168.0.1/ or ftp://192.168.0.1/). Use
   a whitelist to allow certain urls rather than a blacklist.
+
+* Use `Curl::setProtocols()` and `Curl::setRedirectProtocols()` to restrict allowed protocols.
+
+```php
+// Allow only HTTPS protocols.
+$curl->setProtocols(CURLPROTO_HTTPS);
+$curl->setRedirectProtocols(CURLPROTO_HTTPS);
+```
+
+```php
+// Allow HTTPS and HTTP protocols.
+$curl->setProtocols(CURLPROTO_HTTPS | CURLPROTO_HTTP);
+$curl->setRedirectProtocols(CURLPROTO_HTTPS | CURLPROTO_HTTP);
+```
 
 ### Request data may refer to system files
 
