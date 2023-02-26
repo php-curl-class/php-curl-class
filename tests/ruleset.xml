@@ -13,7 +13,6 @@
 
         <!-- TODO: Remove the following exclusion when ArrayUtil functions not in camel caps format like ArrayUtil::is_array_assoc() are removed. -->
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
-        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.UseOneParamPerLine" />
 
         <!-- TODO: Remove the following exclusion when Curl::_fastDownload() is renamed to Curl::fastDownload(). -->
         <exclude name="PSR2.Methods.MethodDeclaration.Underscore" />
