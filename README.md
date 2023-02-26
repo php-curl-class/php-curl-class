@@ -199,7 +199,7 @@ More examples are available under [/examples](https://github.com/php-curl-class/
 Curl::__construct($base_url = null, $options = [])
 Curl::__destruct()
 Curl::__get($name)
-Curl::_fastDownload($url, $filename, $connections = 4) {
+Curl::_fastDownload($url, $filename, $connections = 4)
 Curl::attemptRetry()
 Curl::beforeSend($callback)
 Curl::buildPostData($data)

@@ -364,7 +364,8 @@ class Curl extends BaseCurl
      *
      * @return boolean
      */
-    public function _fastDownload($url, $filename, $connections = 4) {
+    public function _fastDownload($url, $filename, $connections = 4)
+    {
         // First we need to retrive the 'Content-Length' header.
         // Use GET because not all hosts support HEAD requests.
         $this->setOpts([
@@ -2043,7 +2044,8 @@ class Curl extends BaseCurl
  *
  * @return callable
  */
-function createHeaderCallback($header_callback_data) {
+function createHeaderCallback($header_callback_data)
+{
     return function ($ch, $header) use ($header_callback_data) {
         if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]+)/mi', $header, $cookie) === 1) {
             $header_callback_data->responseCookies[$cookie[1]] = trim($cookie[2], " \n\r\t\0\x0B");
@@ -2072,7 +2074,8 @@ function createHeaderCallback($header_callback_data) {
  *
  * @return callable
  */
-function createStopRequestFunction($header_callback_data) {
+function createStopRequestFunction($header_callback_data)
+{
     return function (
         $resource,
         $download_size,
