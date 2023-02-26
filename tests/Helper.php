@@ -83,7 +83,8 @@ class Test
     }
 }
 
-function create_png() {
+function create_png()
+{
     // PNG image data, 1 x 1, 1-bit colormap, non-interlaced
     ob_start();
     imagepng(imagecreatefromstring(base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', true)));
@@ -92,14 +93,16 @@ function create_png() {
     return $raw_image;
 }
 
-function create_tmp_file($data) {
+function create_tmp_file($data)
+{
     $tmp_file = tmpfile();
     fwrite($tmp_file, $data);
     rewind($tmp_file);
     return $tmp_file;
 }
 
-function get_tmp_file_path() {
+function get_tmp_file_path()
+{
     // Return temporary file path without creating file.
     $tmp_file_path =
         rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) .
@@ -107,20 +110,23 @@ function get_tmp_file_path() {
     return $tmp_file_path;
 }
 
-function get_png() {
+function get_png()
+{
     $tmp_filename = tempnam('/tmp', 'php-curl-class.');
     file_put_contents($tmp_filename, create_png());
     return $tmp_filename;
 }
 
-function mime_type($file_path) {
+function mime_type($file_path)
+{
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime_type = finfo_file($finfo, $file_path);
     finfo_close($finfo);
     return $mime_type;
 }
 
-function upload_file_to_server($upload_file_path) {
+function upload_file_to_server($upload_file_path)
+{
     $upload_test = new Test();
     $upload_test->server('upload_response', 'POST', [
         'image' => '@' . $upload_file_path,
@@ -136,7 +142,8 @@ function upload_file_to_server($upload_file_path) {
     return $uploaded_file_path;
 }
 
-function remove_file_from_server($uploaded_file_path) {
+function remove_file_from_server($uploaded_file_path)
+{
     $download_test = new Test();
 
     // Ensure file successfully removed.
@@ -186,7 +193,8 @@ function get_request_stats($request_stats, $multi_curl)
     return $request_stats;
 }
 
-function get_request_method($instance) {
+function get_request_method($instance)
+{
     $request_method = $instance->getOpt(CURLOPT_CUSTOMREQUEST);
 
     // POST requests have CURLOPT_CUSTOMREQUEST unset by default to allow

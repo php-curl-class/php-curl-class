@@ -11,7 +11,6 @@
     <rule ref="PSR2">
         <exclude name="Generic.Functions.FunctionCallArgumentSpacing.TooMuchSpaceAfterComma" />
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
-        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine" />
         <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.UseOneParamPerLine" />
 
         <!-- TODO: Remove the following exclusion when Curl::_fastDownload() is renamed to Curl::fastDownload(). -->

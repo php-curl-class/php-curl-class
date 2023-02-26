@@ -4358,7 +4358,8 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString($expect, $test_5_output);
     }
 
-    public function testStopRequest() {
+    public function testStopRequest()
+    {
         $response_length_bytes = 1e6; // 1e6 = 1 megabyte
 
         $stop_request_early = function ($ch, $header) {
