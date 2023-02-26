@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.14.0 - 2023-02-26
+
+- Make https:// and http:// the allowed request protocols by default ([#767](https://github.com/php-curl-class/php-curl-class/pull/767))
+
 ## 9.13.1 - 2023-01-16
 
 - Allow uploads with CURLStringFile type  ([#762](https://github.com/php-curl-class/php-curl-class/pull/762))
