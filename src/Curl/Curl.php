@@ -1621,7 +1621,8 @@ class Curl extends BaseCurl
     public function __get($name)
     {
         $return = null;
-        if (in_array($name, self::$deferredProperties, true) && is_callable([$this, $getter = '_get_' . $name])) {
+        if (in_array($name, self::$deferredProperties, true) &&
+            is_callable([$this, $getter = '_get' . ucfirst($name)])) {
             $return = $this->$name = $this->$getter();
         }
         return $return;
@@ -1632,7 +1633,7 @@ class Curl extends BaseCurl
      *
      * @access private
      */
-    private function _get_curlErrorCodeConstants()
+    private function _getCurlErrorCodeConstants()
     {
         $constants = get_defined_constants(true);
         $filtered_array = array_filter(
@@ -1651,7 +1652,7 @@ class Curl extends BaseCurl
      *
      * @access private
      */
-    private function _get_curlErrorCodeConstant()
+    private function _getCurlErrorCodeConstant()
     {
         $curl_const_by_code = $this->curlErrorCodeConstants;
         if (isset($curl_const_by_code[$this->curlErrorCode])) {
@@ -1665,7 +1666,7 @@ class Curl extends BaseCurl
      *
      * @access private
      */
-    private function _get_curlOptionCodeConstants()
+    private function _getCurlOptionCodeConstants()
     {
         $constants = get_defined_constants(true);
         $filtered_array = array_filter(
@@ -1689,7 +1690,7 @@ class Curl extends BaseCurl
      *
      * @access private
      */
-    private function _get_effectiveUrl()
+    private function _getEffectiveUrl()
     {
         return $this->getInfo(CURLINFO_EFFECTIVE_URL);
     }
@@ -1699,7 +1700,7 @@ class Curl extends BaseCurl
      *
      * @access private
      */
-    private function _get_rfc2616()
+    private function _getRfc2616()
     {
         return array_fill_keys(self::$RFC2616, true);
     }
@@ -1709,7 +1710,7 @@ class Curl extends BaseCurl
      *
      * @access private
      */
-    private function _get_rfc6265()
+    private function _getRfc6265()
     {
         return array_fill_keys(self::$RFC6265, true);
     }
@@ -1719,7 +1720,7 @@ class Curl extends BaseCurl
      *
      * @access private
      */
-    private function _get_totalTime()
+    private function _getTotalTime()
     {
         return $this->getInfo(CURLINFO_TOTAL_TIME);
     }
