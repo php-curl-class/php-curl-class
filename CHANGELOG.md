@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.14.1 - 2023-02-27
+
+- Remove coding standard ruleset exclusion ([#768](https://github.com/php-curl-class/php-curl-class/pull/768))
+
 ## 9.14.0 - 2023-02-26
 
 - Make https:// and http:// the allowed request protocols by default ([#767](https://github.com/php-curl-class/php-curl-class/pull/767))
