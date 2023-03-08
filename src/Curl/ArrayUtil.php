@@ -90,20 +90,18 @@ class ArrayUtil
                         } else {
                             $return[$key] = $value;
                         }
+                    } elseif ($value instanceof \CURLFile) {
+                        $return[$key] = $value;
+                    } elseif ($value instanceof \CURLStringFile) {
+                        $return[$key] = $value;
                     } else {
-                        if ($value instanceof \CURLFile) {
-                            $return[$key] = $value;
-                        } elseif ($value instanceof \CURLStringFile) {
-                            $return[$key] = $value;
-                        } else {
-                            $return = array_merge(
-                                $return,
-                                self::arrayFlattenMultidim(
-                                    $value,
-                                    $prefix ? $prefix . '[' . $key . ']' : $key
-                                )
-                            );
-                        }
+                        $return = array_merge(
+                            $return,
+                            self::arrayFlattenMultidim(
+                                $value,
+                                $prefix ? $prefix . '[' . $key . ']' : $key
+                            )
+                        );
                     }
                 }
             }
