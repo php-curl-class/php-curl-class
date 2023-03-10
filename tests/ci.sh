@@ -2,7 +2,11 @@
 
 remove_expectWarning() {
     # Fix "Call to undefined method CurlTest\CurlTest::expectWarning()".
-    sed -i$(sed v < /dev/null 2> /dev/null || echo -n " ''") -e "/->expectWarning(/d" "./PHPCurlClass/PHP"*
+    if sed v < /dev/null 2> /dev/null; then
+        sed -i"" -e "/->expectWarning(/d" "./PHPCurlClass/PHP"*
+    else
+        sed -i "" -e "/->expectWarning(/d" "./PHPCurlClass/PHP"*
+    fi
 }
 
 replace_assertStringContainsString() {
@@ -10,7 +14,11 @@ replace_assertStringContainsString() {
     # +->assertContains(
     find='->assertStringContainsString('
     replace='->assertContains('
-    sed -i$(sed v < /dev/null 2> /dev/null || echo -n " ''") -e "s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+    if sed v < /dev/null 2> /dev/null; then
+        sed -i"" -e "s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+    else
+        sed -i "" -e "s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+    fi
 }
 
 replace_assertMatchesRegularExpression() {
@@ -18,7 +26,11 @@ replace_assertMatchesRegularExpression() {
     # +->assertRegExp(
     find='->assertMatchesRegularExpression('
     replace='->assertRegExp('
-    sed -i$(sed v < /dev/null 2> /dev/null || echo -n " ''") -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+    if sed v < /dev/null 2> /dev/null; then
+        sed -i"" -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+    else
+        sed -i "" -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+    fi
 }
 
 phpunit_v6_5_shim() {
@@ -50,7 +62,11 @@ php_v7_0_shim() {
     # +protected function setUp()
     find='protected function setUp(): void'
     replace='protected function setUp()'
-    sed -i'' -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+    if sed v < /dev/null 2> /dev/null; then
+        sed -i"" -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+    else
+        sed -i "" -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+    fi
 }
 
 set -x
