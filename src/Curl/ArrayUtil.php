@@ -83,27 +83,36 @@ class ArrayUtil
             if (empty($array)) {
                 $return[$prefix] = '';
             } else {
+                $arrays_to_merge = [];
+
                 foreach ($array as $key => $value) {
                     if (is_scalar($value)) {
                         if ($prefix) {
-                            $return[$prefix . '[' . $key . ']'] = $value;
+                            $arrays_to_merge[] = [
+                                $prefix . '[' . $key . ']' => $value,
+                            ];
                         } else {
-                            $return[$key] = $value;
+                            $arrays_to_merge[] = [
+                                $key => $value,
+                            ];
                         }
                     } elseif ($value instanceof \CURLFile) {
-                        $return[$key] = $value;
+                        $arrays_to_merge[] = [
+                            $key => $value,
+                        ];
                     } elseif ($value instanceof \CURLStringFile) {
-                        $return[$key] = $value;
+                        $arrays_to_merge[] = [
+                            $key => $value,
+                        ];
                     } else {
-                        $return = array_merge(
-                            $return,
-                            self::arrayFlattenMultidim(
-                                $value,
-                                $prefix ? $prefix . '[' . $key . ']' : $key
-                            )
+                        $arrays_to_merge[] = self::arrayFlattenMultidim(
+                            $value,
+                            $prefix ? $prefix . '[' . $key . ']' : $key
                         );
                     }
                 }
+
+                $return = array_merge($return, ...$arrays_to_merge);
             }
         } elseif ($array === null) {
             $return[$prefix] = $array;
