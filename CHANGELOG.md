@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.14.3 - 2023-03-13
+
+- Remove use of array_merge() inside loop ([#774](https://github.com/php-curl-class/php-curl-class/pull/774))
+
 ## 9.14.2 - 2023-03-09
 
 - Clean up: Reduce nesting ([#771](https://github.com/php-curl-class/php-curl-class/pull/771))
