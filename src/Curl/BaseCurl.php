@@ -161,6 +161,7 @@ abstract class BaseCurl
      * Set follow location
      *
      * @access public
+     * @see    Curl::setMaximumRedirects()
      */
     public function setFollowLocation($follow_location = true)
     {
@@ -200,6 +201,7 @@ abstract class BaseCurl
      * Set maximum redirects
      *
      * @access public
+     * @see    Curl::setFollowLocation()
      */
     public function setMaximumRedirects($maximum_redirects)
     {
