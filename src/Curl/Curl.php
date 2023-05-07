@@ -1337,8 +1337,8 @@ class Curl extends BaseCurl
                 foreach ($request_types as $http_method_name => $http_method_used) {
                     if ($http_method_used && !in_array($http_method_name, $allowed_request_types, true)) {
                         echo
-                            'Warning: A ' . $http_method_name . ' request was made, but only the following request ' .
-                            'types are allowed: ' . implode(', ', $allowed_request_types) . "\n";
+                            'Warning: An HTTP ' . $http_method_name . ' request was made, but only the following ' .
+                            'request types are allowed: ' . implode(', ', $allowed_request_types) . "\n";
                     }
                 }
             }

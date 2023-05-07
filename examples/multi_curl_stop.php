@@ -9,7 +9,7 @@ $multi_curl->beforeSend(function ($instance) {
     echo 'about to make request ' . $instance->id . ': "' . $instance->url . '".' . "\n";
 });
 
-$multi_curl->success(function ($instance) use (&$request_count, $multi_curl) {
+$multi_curl->success(function ($instance) use ($multi_curl) {
     echo 'call to "' . $instance->url . '" was successful.' . "\n";
 
     // Stop pending requests and attempt to stop active requests after the first
