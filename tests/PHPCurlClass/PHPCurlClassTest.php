@@ -4198,35 +4198,40 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
                 'allow_header_name' => 'Allow',
                 'allow_header_value' => 'POST, OPTIONS',
                 'expected' =>
-                    'Warning: A GET request was made, but only the following request types are allowed: POST, OPTIONS',
+                    'Warning: An HTTP GET request was made, but only the following request types are allowed: ' .
+                    'POST, OPTIONS',
             ],
             [
                 'http_method' => 'GET',
                 'allow_header_name' => 'allow',
                 'allow_header_value' => 'OPTIONS, POST',
                 'expected' =>
-                    'Warning: A GET request was made, but only the following request types are allowed: OPTIONS, POST',
+                    'Warning: An HTTP GET request was made, but only the following request types are allowed: ' .
+                    'OPTIONS, POST',
             ],
             [
                 'http_method' => 'POST',
                 'allow_header_name' => 'allow',
                 'allow_header_value' => 'GET, OPTIONS',
                 'expected' =>
-                    'Warning: A POST request was made, but only the following request types are allowed: GET, OPTIONS',
+                    'Warning: An HTTP POST request was made, but only the following request types are allowed: ' .
+                    'GET, OPTIONS',
             ],
             [
                 'http_method' => 'POST',
                 'allow_header_name' => 'allow',
                 'allow_header_value' => 'GET,OPTIONS',
                 'expected' =>
-                    'Warning: A POST request was made, but only the following request types are allowed: GET, OPTIONS',
+                    'Warning: An HTTP POST request was made, but only the following request types are allowed: ' .
+                    'GET, OPTIONS',
             ],
             [
                 'http_method' => 'POST',
                 'allow_header_name' => 'ALLOW',
                 'allow_header_value' => 'get,options',
                 'expected' =>
-                    'Warning: A POST request was made, but only the following request types are allowed: GET, OPTIONS',
+                    'Warning: An HTTP POST request was made, but only the following request types are allowed: ' .
+                    'GET, OPTIONS',
             ],
         ];
 

@@ -149,6 +149,6 @@ fi
     -s \
     .
 if [[ "${?}" -ne 0 ]]; then
-    echo "Error: found standard violation(s)"
-    errors+=("found standard violation(s)")
+    echo "Error: found coding standard violation(s)"
+    errors+=("found coding standard violation(s)")
 fi
