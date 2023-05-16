@@ -1389,7 +1389,8 @@ class Curl extends BaseCurl
                     echo 'Response content length (calculated): ' . $response_calculated_length . "\n";
                 }
 
-                if (preg_match($this->jsonPattern, $this->responseHeaders['Content-Type'])) {
+                if (isset($this->responseHeaders['Content-Type']) &&
+                    preg_match($this->jsonPattern, $this->responseHeaders['Content-Type'])) {
                     $parsed_response = json_decode($this->rawResponse, true);
                     if ($parsed_response !== null) {
                         $messages = [];

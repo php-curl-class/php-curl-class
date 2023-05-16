@@ -4363,6 +4363,18 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString($expect, $test_5_output);
     }
 
+    public function testDiagnoseContentTypeMissing()
+    {
+        $test = new Test();
+        $test->server('json_response', 'POST', [
+            'remove-content-type-header' => '',
+        ]);
+        $test_output = $test->curl->diagnose(true);
+
+        $this->assertFalse(isset($test->curl->responseHeaders['content-type']));
+        $this->assertStringContainsString('Response did not set a content type', $test_output);
+    }
+
     public function testStopRequest()
     {
         $response_length_bytes = 1e6; // 1e6 = 1 megabyte
