@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.14.5 - 2023-05-16
+
+- Handle missing content-type response header in Curl::diagnose() ([#778](https://github.com/php-curl-class/php-curl-class/pull/778))
+
 ## 9.14.4 - 2023-05-08
 
 - Update article in Curl::diagnose() Allow header warning ([#776](https://github.com/php-curl-class/php-curl-class/pull/776))
