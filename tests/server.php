@@ -217,6 +217,10 @@ if ($test === 'http_basic_auth') {
         ]);
     }
 
+    if (isset($_POST['remove-content-type-header'])) {
+        header_remove('Content-Type');
+    }
+
     echo $body;
     exit;
 } elseif ($test === 'xml_response') {
