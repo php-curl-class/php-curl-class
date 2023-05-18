@@ -4154,6 +4154,8 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
             '--- Begin PHP Curl Class diagnostic output ---',
             'PHP Curl Class version: ' . Curl::VERSION,
             'PHP version: ' . PHP_VERSION,
+            'CURLOPT_PROTOCOLS: 3 (CURLPROTO_HTTP | CURLPROTO_HTTPS)',
+            'CURLOPT_REDIR_PROTOCOLS: 3 (CURLPROTO_HTTP | CURLPROTO_HTTPS)',
             'CURLOPT_HTTPGET: true',
             'Sent an HTTP GET request ',
             'Request contained no body.',
@@ -4178,6 +4180,8 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
             '--- Begin PHP Curl Class diagnostic output ---',
             'PHP Curl Class version: ' . Curl::VERSION,
             'PHP version: ' . PHP_VERSION,
+            'CURLOPT_PROTOCOLS: 3 (CURLPROTO_HTTP | CURLPROTO_HTTPS)',
+            'CURLOPT_REDIR_PROTOCOLS: 3 (CURLPROTO_HTTP | CURLPROTO_HTTPS)',
             'CURLOPT_POST: true',
             'Sent an HTTP POST request ',
             'Request contained no body.',
@@ -4244,6 +4248,140 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 
             $test_output = $test->curl->diagnose(true);
             $this->assertStringContainsString($test_case['expected'], $test_output);
+        }
+    }
+
+    public function testDiagnoseBitmaskOptions()
+    {
+        $tests = [
+            [
+                'CURLOPT_PROTOCOLS' => [
+                    'option'   =>  CURLOPT_PROTOCOLS,
+                    'bitmask'  =>  CURLPROTO_HTTP | CURLPROTO_HTTPS,
+                    'expected' => 'CURLPROTO_HTTP | CURLPROTO_HTTPS',
+                ],
+                'CURLOPT_REDIR_PROTOCOLS' => [
+                    'option'   =>  CURLOPT_REDIR_PROTOCOLS,
+                    'bitmask'  =>  CURLPROTO_HTTPS | CURLPROTO_HTTP,
+                    'expected' => 'CURLPROTO_HTTP | CURLPROTO_HTTPS',
+                ],
+            ],
+            [
+                'CURLOPT_PROTOCOLS' => [
+                    'option'   =>  CURLOPT_PROTOCOLS,
+                    'bitmask'  =>  CURLPROTO_TELNET | CURLPROTO_FTPS,
+                    'expected' => 'CURLPROTO_FTPS | CURLPROTO_TELNET',
+                ],
+                'CURLOPT_REDIR_PROTOCOLS' => [
+                    'option'   =>  CURLOPT_REDIR_PROTOCOLS,
+                    'bitmask'  =>  CURLPROTO_SCP | CURLPROTO_LDAP | CURLPROTO_LDAPS,
+                    'expected' => 'CURLPROTO_LDAP | CURLPROTO_LDAPS | CURLPROTO_SCP',
+                ],
+            ],
+            [
+                'CURLOPT_PROTOCOLS' => [
+                    'option'   =>  CURLOPT_PROTOCOLS,
+                    'bitmask'  =>  CURLPROTO_ALL,
+                ],
+                'CURLOPT_REDIR_PROTOCOLS' => [
+                    'option'   =>  CURLOPT_REDIR_PROTOCOLS,
+                    'bitmask'  =>  CURLPROTO_ALL,
+                ],
+            ],
+            [
+                'CURLOPT_PROXYAUTH' => [
+                    'option'   =>  CURLOPT_PROXYAUTH,
+                    'bitmask'  =>  CURLAUTH_BASIC,
+                    'expected' => 'CURLAUTH_BASIC',
+                ],
+            ],
+            [
+                'CURLOPT_PROXYAUTH' => [
+                    'option'   =>  CURLOPT_PROXYAUTH,
+                    'bitmask'  =>  CURLAUTH_DIGEST | CURLAUTH_NTLM,
+                    'expected' => 'CURLAUTH_DIGEST | CURLAUTH_NTLM',
+                ],
+            ],
+            [
+                'CURLOPT_PROXYAUTH' => [
+                    'option'   =>  CURLOPT_PROXYAUTH,
+                    'bitmask'  =>  CURLAUTH_ANY,
+                ],
+            ],
+            [
+                'CURLOPT_PROXYAUTH' => [
+                    'option'   =>  CURLOPT_PROXYAUTH,
+                    'bitmask'  =>  CURLAUTH_ANYSAFE,
+                ],
+            ],
+            [
+                'CURLOPT_HTTPAUTH' => [
+                    'option'   =>  CURLOPT_HTTPAUTH,
+                    'bitmask'  =>  CURLAUTH_BASIC,
+                    'expected' => 'CURLAUTH_BASIC',
+                ],
+            ],
+            [
+                'CURLOPT_HTTPAUTH' => [
+                    'option'   =>  CURLOPT_HTTPAUTH,
+                    'bitmask'  =>  CURLAUTH_DIGEST | CURLAUTH_NTLM,
+                    'expected' => 'CURLAUTH_DIGEST | CURLAUTH_NTLM',
+                ],
+            ],
+            [
+                'CURLOPT_HTTPAUTH' => [
+                    'option'   =>  CURLOPT_HTTPAUTH,
+                    'bitmask'  =>  CURLAUTH_ANY,
+                ],
+            ],
+            [
+                'CURLOPT_HTTPAUTH' => [
+                    'option'   =>  CURLOPT_HTTPAUTH,
+                    'bitmask'  =>  CURLAUTH_ANYSAFE,
+                ],
+            ],
+            [
+                'CURLOPT_SSL_OPTIONS' => [
+                    'option'   =>  CURLOPT_SSL_OPTIONS,
+                    'bitmask'  =>  CURLSSLOPT_ALLOW_BEAST | CURLSSLOPT_NO_REVOKE,
+                    'expected' => 'CURLSSLOPT_ALLOW_BEAST | CURLSSLOPT_NO_REVOKE',
+                ],
+            ],
+            [
+                'CURLOPT_SSH_AUTH_TYPES' => [
+                    'option'   =>  CURLOPT_SSH_AUTH_TYPES,
+                    'bitmask'  =>  CURLSSH_AUTH_KEYBOARD | CURLSSH_AUTH_PASSWORD | CURLSSH_AUTH_PUBLICKEY,
+                    'expected' => 'CURLSSH_AUTH_KEYBOARD | CURLSSH_AUTH_PASSWORD | CURLSSH_AUTH_PUBLICKEY',
+                ],
+            ],
+        ];
+
+        if (defined('CURLOPT_PROXY_SSL_OPTIONS') && defined('CURLSSLOPT_NO_PARTIALCHAIN')) {
+            $tests[] = [
+                'CURLOPT_PROXY_SSL_OPTIONS' => [
+                    'option'   =>  CURLOPT_PROXY_SSL_OPTIONS,
+                    'bitmask'  =>  CURLSSLOPT_ALLOW_BEAST | CURLSSLOPT_NO_REVOKE | CURLSSLOPT_NO_PARTIALCHAIN,
+                    'expected' => 'CURLSSLOPT_ALLOW_BEAST | CURLSSLOPT_NO_PARTIALCHAIN | CURLSSLOPT_NO_REVOKE',
+                ],
+            ];
+        }
+
+        foreach ($tests as $test_case) {
+            $test = new Test();
+            foreach ($test_case as $option_name => $values) {
+                $test->curl->setOpt($values['option'], $values['bitmask']);
+            }
+            $test->server('json_response', 'GET');
+            $test_output = $test->curl->diagnose(true);
+
+            foreach ($test_case as $option_name => $values) {
+                $expected = $option_name . ': ' . $values['bitmask'];
+                if (isset($values['expected'])) {
+                    $expected .= ' (' . $values['expected'] . ')';
+                }
+                $expected .= "\n";
+                $this->assertStringContainsString($expected, $test_output);
+            }
         }
     }
 
