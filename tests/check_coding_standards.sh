@@ -132,23 +132,29 @@ if [[ ! -z "${is_null}" ]]; then
     errors+=("${result}")
 fi
 
-# Determine which phpcs to use.
-if [[ -f "vendor/bin/phpcs" ]]; then
-    phpcs_to_use="vendor/bin/phpcs"
+if   [[ "${CI_PHP_VERSION}" == "7.0" ]]; then :
+elif [[ "${CI_PHP_VERSION}" == "7.1" ]]; then :
 else
-    phpcs_to_use="phpcs"
-fi
 
-# Detect coding standard violations.
-"${phpcs_to_use}" --version
-"${phpcs_to_use}" \
-    --extensions="php" \
-    --ignore="*/vendor/*" \
-    --standard="tests/ruleset.xml" \
-    -p \
-    -s \
-    .
-if [[ "${?}" -ne 0 ]]; then
-    echo "Error: found coding standard violation(s)"
-    errors+=("found coding standard violation(s)")
+    # Determine which phpcs to use.
+    if [[ -f "vendor/bin/phpcs" ]]; then
+        phpcs_to_use="vendor/bin/phpcs"
+    else
+        phpcs_to_use="phpcs"
+    fi
+
+    # Detect coding standard violations.
+    "${phpcs_to_use}" --version
+    "${phpcs_to_use}" \
+        --extensions="php" \
+        --ignore="*/vendor/*" \
+        --standard="tests/ruleset.xml" \
+        -p \
+        -s \
+        .
+    if [[ "${?}" -ne 0 ]]; then
+        echo "Error: found coding standard violation(s)"
+        errors+=("found coding standard violation(s)")
+    fi
+
 fi
