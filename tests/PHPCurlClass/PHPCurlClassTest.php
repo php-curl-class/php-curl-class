@@ -4282,10 +4282,12 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
                 'CURLOPT_PROTOCOLS' => [
                     'option'   =>  CURLOPT_PROTOCOLS,
                     'bitmask'  =>  CURLPROTO_ALL,
+                    'expected' => 'CURLPROTO_ALL',
                 ],
                 'CURLOPT_REDIR_PROTOCOLS' => [
                     'option'   =>  CURLOPT_REDIR_PROTOCOLS,
                     'bitmask'  =>  CURLPROTO_ALL,
+                    'expected' => 'CURLPROTO_ALL',
                 ],
             ],
             [
@@ -4306,12 +4308,14 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
                 'CURLOPT_PROXYAUTH' => [
                     'option'   =>  CURLOPT_PROXYAUTH,
                     'bitmask'  =>  CURLAUTH_ANY,
+                    'expected' => 'CURLAUTH_ANY',
                 ],
             ],
             [
                 'CURLOPT_PROXYAUTH' => [
                     'option'   =>  CURLOPT_PROXYAUTH,
                     'bitmask'  =>  CURLAUTH_ANYSAFE,
+                    'expected' => 'CURLAUTH_ANYSAFE',
                 ],
             ],
             [
@@ -4332,12 +4336,14 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
                 'CURLOPT_HTTPAUTH' => [
                     'option'   =>  CURLOPT_HTTPAUTH,
                     'bitmask'  =>  CURLAUTH_ANY,
+                    'expected' => 'CURLAUTH_ANY',
                 ],
             ],
             [
                 'CURLOPT_HTTPAUTH' => [
                     'option'   =>  CURLOPT_HTTPAUTH,
                     'bitmask'  =>  CURLAUTH_ANYSAFE,
+                    'expected' => 'CURLAUTH_ANYSAFE',
                 ],
             ],
             [
@@ -4383,6 +4389,49 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
                 $this->assertStringContainsString($expected, $test_output);
             }
         }
+    }
+
+    public function testDiagnoseBitmaskOptionsNonPositive()
+    {
+        // CURLOPT_HTTPAUTH
+        //   CURLAUTH_ANY: -17
+        $test_1 = new Test();
+        $test_1->curl->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+        $test_1->server('json_response', 'GET');
+        $test_1_output = $test_1->curl->diagnose(true);
+        $this->assertStringContainsString('CURLOPT_HTTPAUTH: -17 (CURLAUTH_ANY)', $test_1_output);
+
+        // CURLOPT_HTTPAUTH
+        //   CURLAUTH_ANYSAFE: -18
+        $test_2 = new Test();
+        $test_2->curl->setOpt(CURLOPT_HTTPAUTH, CURLAUTH_ANYSAFE);
+        $test_2->server('json_response', 'GET');
+        $test_2_output = $test_2->curl->diagnose(true);
+        $this->assertStringContainsString('CURLOPT_HTTPAUTH: -18 (CURLAUTH_ANYSAFE)', $test_2_output);
+
+        // CURLOPT_PROTOCOLS
+        //   CURLPROTO_ALL: -1
+        $test_3 = new Test();
+        $test_3->curl->setOpt(CURLOPT_PROTOCOLS, CURLPROTO_ALL);
+        $test_3->server('json_response', 'GET');
+        $test_3_output = $test_3->curl->diagnose(true);
+        $this->assertStringContainsString('CURLOPT_PROTOCOLS: -1 (CURLPROTO_ALL)', $test_3_output);
+
+        // CURLOPT_SSH_AUTH_TYPES
+        //   CURLSSH_AUTH_ANY: -1
+        $test_4 = new Test();
+        $test_4->curl->setOpt(CURLOPT_SSH_AUTH_TYPES, CURLSSH_AUTH_ANY);
+        $test_4->server('json_response', 'GET');
+        $test_4_output = $test_4->curl->diagnose(true);
+        $this->assertStringContainsString('CURLOPT_SSH_AUTH_TYPES: -1 (CURLSSH_AUTH_ANY)', $test_4_output);
+
+        // CURLOPT_SSH_AUTH_TYPES
+        //   CURLSSH_AUTH_DEFAULT: -1
+        $test_5 = new Test();
+        $test_5->curl->setOpt(CURLOPT_SSH_AUTH_TYPES, CURLSSH_AUTH_DEFAULT);
+        $test_5->server('json_response', 'GET');
+        $test_5_output = $test_5->curl->diagnose(true);
+        $this->assertStringContainsString('CURLOPT_SSH_AUTH_TYPES: -1 (CURLSSH_AUTH_ANY)', $test_5_output);
     }
 
     public function testDiagnoseErrorMessage()

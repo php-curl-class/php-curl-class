@@ -1319,13 +1319,13 @@ class Curl extends BaseCurl
 
                                 $bit_flags = [];
                                 foreach ($curl_constants as $const_name => $const_value) {
-                                    // Skip attempting to detect bit flags in use that use constants with negative
-                                    // values (e.g. CURLAUTH_ANY, CURLAUTH_ANYSAFE, CURLPROTO_ALL, CURLSSH_AUTH_ANY,
+                                    // Attempt to detect bit flags in use that use constants with negative values (e.g.
+                                    // CURLAUTH_ANY, CURLAUTH_ANYSAFE, CURLPROTO_ALL, CURLSSH_AUTH_ANY,
                                     // CURLSSH_AUTH_DEFAULT, etc.)
-                                    if ($value < 0) {
-                                        $bit_flags = [];
+                                    if ($value < 0 && $value === $const_value) {
+                                        $bit_flags[] = $const_name;
                                         break;
-                                    } elseif ($const_value >= 0 && ($value & $const_value)) {
+                                    } elseif ($value >= 0 && $const_value >= 0 && ($value & $const_value)) {
                                         $bit_flags[] = $const_name;
                                     }
                                 }
