@@ -6,6 +6,11 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.15.0 - 2023-05-22
+
+- Update Curl::diagnose() to detect bit flags with negative values ([#781](https://github.com/php-curl-class/php-curl-class/pull/781))
+- Display bit flags in use when calling Curl::diagnose() ([#779](https://github.com/php-curl-class/php-curl-class/pull/779))
+
 ## 9.14.5 - 2023-05-16
 
 - Handle missing content-type response header in Curl::diagnose() ([#778](https://github.com/php-curl-class/php-curl-class/pull/778))
