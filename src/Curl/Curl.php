@@ -357,14 +357,14 @@ class Curl extends BaseCurl
     /**
      * Fast download
      *
-     * @access private
+     * @access public
      * @param  $url
      * @param  $filename
      * @param  $connections
      *
      * @return boolean
      */
-    public function _fastDownload($url, $filename, $connections = 4)
+    public function fastDownload($url, $filename, $connections = 4)
     {
         // Retrieve content length from the "Content-Length" header and use an
         // HTTP GET request because not all hosts support HEAD requests.
