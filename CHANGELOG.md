@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.15.1 - 2023-05-24
+
+- Fix PHP CodeSniffer errors ([#782](https://github.com/php-curl-class/php-curl-class/pull/782))
+
 ## 9.15.0 - 2023-05-22
 
 - Update Curl::diagnose() to detect bit flags with negative values ([#781](https://github.com/php-curl-class/php-curl-class/pull/781))
