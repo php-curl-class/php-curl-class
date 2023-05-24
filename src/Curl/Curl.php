@@ -366,8 +366,8 @@ class Curl extends BaseCurl
      */
     public function _fastDownload($url, $filename, $connections = 4)
     {
-        // First we need to retrive the 'Content-Length' header.
-        // Use GET because not all hosts support HEAD requests.
+        // Retrieve content length from the "Content-Length" header and use an
+        // HTTP GET request because not all hosts support HEAD requests.
         $this->setOpts([
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_NOBODY        => true,
@@ -380,24 +380,23 @@ class Curl extends BaseCurl
         $content_length = isset($this->responseHeaders['Content-Length']) ?
             $this->responseHeaders['Content-Length'] : null;
 
-        // If content length header is missing, use the normal download.
+        // Use a regular download when content length could not be determined.
         if (!$content_length) {
             return $this->download($url, $filename);
         }
 
-        // Try to divide chunk_size equally.
-        $chunkSize = ceil($content_length / $connections);
+        // Divide chunk_size across the number of connections.
+        $chunk_size = ceil($content_length / $connections);
 
         // First bytes.
         $offset = 0;
-        $nextChunk = $chunkSize;
+        $next_chunk = $chunk_size;
 
-        // We need this later.
-        $file_parts = [];
+        // Keep track of file name parts.
+        $part_file_names = [];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setConcurrency($connections);
-
         $multi_curl->error(function ($instance) {
             return false;
         });
@@ -405,52 +404,59 @@ class Curl extends BaseCurl
         for ($i = 1; $i <= $connections; $i++) {
             // If last chunk then no need to supply it.
             // Range starts with 0, so subtract 1.
-            $nextChunk = $i === $connections ? '' : $nextChunk - 1;
+            $next_chunk = $i === $connections ? '' : $next_chunk - 1;
 
-            // Create part file.
-            $fpath = "$filename.part$i";
-            if (is_file($fpath)) {
-                unlink($fpath);
+            $part_file_name = $filename . '.part' . $i;
+
+            // Save the file name of this part.
+            $part_file_names[] = $part_file_name;
+
+            // Remove any existing file part.
+            if (is_file($part_file_name)) {
+                unlink($part_file_name);
             }
-            $fp = fopen($fpath, 'w');
 
-            // Track all fileparts names; we need this later.
-            $file_parts[] = $fpath;
+            // Create file part.
+            $file_handle = fopen($part_file_name, 'w');
 
             $curl = new Curl();
             $curl->setOpt(CURLOPT_ENCODING, '');
-            $curl->setRange("$offset-$nextChunk");
-            $curl->setFile($fp);
+            $curl->setRange($offset . '-' . $next_chunk);
+            $curl->setFile($file_handle);
             $curl->disableTimeout(); // otherwise download may fail.
             $curl->setUrl($url);
 
-            $curl->complete(function () use ($fp) {
-                fclose($fp);
+            $curl->complete(function () use ($file_handle) {
+                fclose($file_handle);
             });
 
             $multi_curl->addCurl($curl);
 
             if ($i !== $connections) {
-                $offset = $nextChunk + 1; // Add 1 to match offset.
-                $nextChunk = $nextChunk + $chunkSize;
+                $offset = $next_chunk + 1; // Add 1 to match offset.
+                $next_chunk = $next_chunk + $chunk_size;
             }
         }
 
-        // let the magic begin.
+        // Start the simultaneous downloads for each of the ranges in parallel.
         $multi_curl->start();
 
-        // Concatenate chunks to single.
+        // Remove existing download file name at destination.
         if (is_file($filename)) {
             unlink($filename);
         }
-        $mainfp = fopen($filename, 'w');
-        foreach ($file_parts as $part) {
-            $fp = fopen($part, 'r');
-            stream_copy_to_stream($fp, $mainfp);
-            fclose($fp);
-            unlink($part);
+
+        // Combine downloaded chunks into a single file.
+        $main_file_handle = fopen($filename, 'w');
+
+        foreach ($part_file_names as $part_file_name) {
+            $file_handle = fopen($part_file_name, 'r');
+            stream_copy_to_stream($file_handle, $main_file_handle);
+            fclose($file_handle);
+            unlink($part_file_name);
         }
-        fclose($mainfp);
+
+        fclose($main_file_handle);
 
         return true;
     }
