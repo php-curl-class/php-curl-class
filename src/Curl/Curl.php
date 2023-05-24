@@ -1668,7 +1668,7 @@ class Curl extends BaseCurl
     {
         $return = null;
         if (in_array($name, self::$deferredProperties, true) &&
-            is_callable([$this, $getter = '_get' . ucfirst($name)])) {
+            is_callable([$this, $getter = 'get' . ucfirst($name)])) {
             $return = $this->$name = $this->$getter();
         }
         return $return;
@@ -1679,7 +1679,7 @@ class Curl extends BaseCurl
      *
      * @access private
      */
-    private function _getCurlErrorCodeConstants()
+    private function getCurlErrorCodeConstants()
     {
         $constants = get_defined_constants(true);
         $filtered_array = array_filter(
@@ -1698,7 +1698,7 @@ class Curl extends BaseCurl
      *
      * @access private
      */
-    private function _getCurlErrorCodeConstant()
+    private function getCurlErrorCodeConstant()
     {
         $curl_const_by_code = $this->curlErrorCodeConstants;
         if (isset($curl_const_by_code[$this->curlErrorCode])) {
@@ -1712,7 +1712,7 @@ class Curl extends BaseCurl
      *
      * @access private
      */
-    private function _getCurlOptionCodeConstants()
+    private function getCurlOptionCodeConstants()
     {
         $constants = get_defined_constants(true);
         $filtered_array = array_filter(
@@ -1736,7 +1736,7 @@ class Curl extends BaseCurl
      *
      * @access private
      */
-    private function _getEffectiveUrl()
+    private function getEffectiveUrl()
     {
         return $this->getInfo(CURLINFO_EFFECTIVE_URL);
     }
@@ -1746,7 +1746,7 @@ class Curl extends BaseCurl
      *
      * @access private
      */
-    private function _getRfc2616()
+    private function getRfc2616()
     {
         return array_fill_keys(self::$RFC2616, true);
     }
@@ -1756,7 +1756,7 @@ class Curl extends BaseCurl
      *
      * @access private
      */
-    private function _getRfc6265()
+    private function getRfc6265()
     {
         return array_fill_keys(self::$RFC6265, true);
     }
@@ -1766,7 +1766,7 @@ class Curl extends BaseCurl
      *
      * @access private
      */
-    private function _getTotalTime()
+    private function getTotalTime()
     {
         return $this->getInfo(CURLINFO_TOTAL_TIME);
     }
