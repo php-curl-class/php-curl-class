@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.16.0 - 2023-05-25
+
+- Graduate Curl::fastDownload() ([#783](https://github.com/php-curl-class/php-curl-class/pull/783))
+
 ## 9.15.1 - 2023-05-24
 
 - Fix PHP CodeSniffer errors ([#782](https://github.com/php-curl-class/php-curl-class/pull/782))
