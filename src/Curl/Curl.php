@@ -1290,69 +1290,7 @@ class Curl extends BaseCurl
                 $i = 1;
                 foreach ($this->options as $option => $value) {
                     echo '    ' . $i . ' ';
-                    if (isset($this->curlOptionCodeConstants[$option])) {
-                        echo $this->curlOptionCodeConstants[$option] . ':';
-                    } else {
-                        echo $option . ':';
-                    }
-
-                    if (is_string($value)) {
-                        echo ' ' . $value . "\n";
-                    } elseif (is_int($value)) {
-                        echo ' ' . $value;
-
-                        $bit_flag_lookups = [
-                            'CURLOPT_HTTPAUTH' => 'CURLAUTH_',
-                            'CURLOPT_PROTOCOLS' => 'CURLPROTO_',
-                            'CURLOPT_PROXYAUTH' => 'CURLAUTH_',
-                            'CURLOPT_PROXY_SSL_OPTIONS' => 'CURLSSLOPT_',
-                            'CURLOPT_REDIR_PROTOCOLS' => 'CURLPROTO_',
-                            'CURLOPT_SSH_AUTH_TYPES' => 'CURLSSH_AUTH_',
-                            'CURLOPT_SSL_OPTIONS' => 'CURLSSLOPT_',
-                        ];
-                        if (isset($this->curlOptionCodeConstants[$option])) {
-                            $option_name = $this->curlOptionCodeConstants[$option];
-                            if (in_array($option_name, array_keys($bit_flag_lookups))) {
-                                $curl_const_prefix = $bit_flag_lookups[$option_name];
-                                $constants = get_defined_constants(true);
-                                $curl_constants = array_filter(
-                                    $constants['curl'],
-                                    function ($key) use ($curl_const_prefix) {
-                                        return strpos($key, $curl_const_prefix) !== false;
-                                    },
-                                    ARRAY_FILTER_USE_KEY
-                                );
-
-                                $bit_flags = [];
-                                foreach ($curl_constants as $const_name => $const_value) {
-                                    // Attempt to detect bit flags in use that use constants with negative values (e.g.
-                                    // CURLAUTH_ANY, CURLAUTH_ANYSAFE, CURLPROTO_ALL, CURLSSH_AUTH_ANY,
-                                    // CURLSSH_AUTH_DEFAULT, etc.)
-                                    if ($value < 0 && $value === $const_value) {
-                                        $bit_flags[] = $const_name;
-                                        break;
-                                    } elseif ($value >= 0 && $const_value >= 0 && ($value & $const_value)) {
-                                        $bit_flags[] = $const_name;
-                                    }
-                                }
-
-                                if (count($bit_flags)) {
-                                    asort($bit_flags);
-                                    echo ' (' . implode(' | ', $bit_flags) . ')';
-                                }
-                            }
-                        }
-
-                        echo "\n";
-                    } elseif (is_bool($value)) {
-                        echo ' ' . ($value ? 'true' : 'false') . "\n";
-                    } elseif (is_callable($value)) {
-                        echo ' (callable)' . "\n";
-                    } else {
-                        echo ' ' . gettype($value) . ':' . "\n";
-                        var_dump($value);
-                    }
-
+                    $this->displayCurlOptionValue($option, $value);
                     $i += 1;
                 }
             }
@@ -1735,6 +1673,72 @@ class Curl extends BaseCurl
         }
 
         return $curl_const_by_code;
+    }
+
+    private function displayCurlOptionValue($option, $value)
+    {
+        if (isset($this->curlOptionCodeConstants[$option])) {
+            echo $this->curlOptionCodeConstants[$option] . ':';
+        } else {
+            echo $option . ':';
+        }
+
+        if (is_string($value)) {
+            echo ' ' . $value . "\n";
+        } elseif (is_int($value)) {
+            echo ' ' . $value;
+
+            $bit_flag_lookups = [
+                'CURLOPT_HTTPAUTH' => 'CURLAUTH_',
+                'CURLOPT_PROTOCOLS' => 'CURLPROTO_',
+                'CURLOPT_PROXYAUTH' => 'CURLAUTH_',
+                'CURLOPT_PROXY_SSL_OPTIONS' => 'CURLSSLOPT_',
+                'CURLOPT_REDIR_PROTOCOLS' => 'CURLPROTO_',
+                'CURLOPT_SSH_AUTH_TYPES' => 'CURLSSH_AUTH_',
+                'CURLOPT_SSL_OPTIONS' => 'CURLSSLOPT_',
+            ];
+            if (isset($this->curlOptionCodeConstants[$option])) {
+                $option_name = $this->curlOptionCodeConstants[$option];
+                if (in_array($option_name, array_keys($bit_flag_lookups))) {
+                    $curl_const_prefix = $bit_flag_lookups[$option_name];
+                    $constants = get_defined_constants(true);
+                    $curl_constants = array_filter(
+                        $constants['curl'],
+                        function ($key) use ($curl_const_prefix) {
+                            return strpos($key, $curl_const_prefix) !== false;
+                        },
+                        ARRAY_FILTER_USE_KEY
+                    );
+
+                    $bit_flags = [];
+                    foreach ($curl_constants as $const_name => $const_value) {
+                        // Attempt to detect bit flags in use that use constants with negative values (e.g.
+                        // CURLAUTH_ANY, CURLAUTH_ANYSAFE, CURLPROTO_ALL, CURLSSH_AUTH_ANY,
+                        // CURLSSH_AUTH_DEFAULT, etc.)
+                        if ($value < 0 && $value === $const_value) {
+                            $bit_flags[] = $const_name;
+                            break;
+                        } elseif ($value >= 0 && $const_value >= 0 && ($value & $const_value)) {
+                            $bit_flags[] = $const_name;
+                        }
+                    }
+
+                    if (count($bit_flags)) {
+                        asort($bit_flags);
+                        echo ' (' . implode(' | ', $bit_flags) . ')';
+                    }
+                }
+            }
+
+            echo "\n";
+        } elseif (is_bool($value)) {
+            echo ' ' . ($value ? 'true' : 'false') . "\n";
+        } elseif (is_callable($value)) {
+            echo ' (callable)' . "\n";
+        } else {
+            echo ' ' . gettype($value) . ':' . "\n";
+            var_dump($value);
+        }
     }
 
     /**
