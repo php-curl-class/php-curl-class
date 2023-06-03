@@ -386,16 +386,20 @@ if ($test === 'http_basic_auth') {
 
     if ($failures_remaining >= 1) {
         $_SESSION['failures_remaining'] -= 1;
-
-        header('HTTP/1.1 503 Service Unavailable');
-        echo 'Service Unavailable';
-        echo ' (remaining failures: ' . $_SESSION['failures_remaining'] . ')';
-        exit;
+        $message = '503 Service Unavailable';
+    } else {
+        $message = '202 Accepted';
     }
 
-    header('HTTP/1.1 202 Accepted');
-    echo '202 Accepted';
-    echo ' (remaining failures: ' . $_SESSION['failures_remaining'] . ')';
+    $response = json_encode([
+        'message' => $message,
+        'remaining_failures' => $_SESSION['failures_remaining'],
+    ], JSON_PRETTY_PRINT);
+
+    header('HTTP/1.1 ' . $message);
+    header('Content-Type: application/json');
+    header('Content-Length: ' . strlen($response));
+    echo $response;
     exit;
 } elseif ($test === '404') {
     header('HTTP/1.1 404 Not Found');
