@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}/.."
 
@@ -36,7 +38,7 @@ common_fns="$(
 
 echo "${curl_fns}
 ${multicurl_fns}
-${common_fns}" | sort >> "README.md"
+${common_fns}" | sort | uniq >> "README.md"
 
 echo '```' >> "README.md"
 echo >> "README.md"
