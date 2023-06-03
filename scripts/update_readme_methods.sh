@@ -38,7 +38,7 @@ common_fns="$(
 
 echo "${curl_fns}
 ${multicurl_fns}
-${common_fns}" | sort >> "README.md"
+${common_fns}" | sort | uniq >> "README.md"
 
 echo '```' >> "README.md"
 echo >> "README.md"
