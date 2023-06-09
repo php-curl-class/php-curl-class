@@ -863,7 +863,10 @@ class MultiCurl extends BaseCurl
         $curl->childOfMultiCurl = true;
         $this->queuedCurls[$curl->id] = $curl;
 
-        $curl->setHeaders($this->headers);
+        // Avoid overwriting any existing header.
+        if ($curl->getOpt(CURLOPT_HTTPHEADER) === null) {
+            $curl->setHeaders($this->headers);
+        }
     }
 
     /**

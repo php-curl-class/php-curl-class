@@ -3472,6 +3472,26 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($complete_called);
     }
 
+    public function testAddCurlHeaders()
+    {
+        $header_fields = [
+            'X-SOME-HEADER: some-value',
+            'X-ANOTHER-HEADER: another-value',
+        ];
+
+        $curl = new Curl();
+        $curl->setUrl(Test::TEST_URL);
+        $curl->setOpt(CURLOPT_HTTPHEADER, $header_fields);
+        $curl->setUserAgent('agent');
+
+        $this->assertEquals($header_fields, $curl->getOpt(CURLOPT_HTTPHEADER));
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->addCurl($curl);
+
+        $this->assertEquals($header_fields, $curl->getOpt(CURLOPT_HTTPHEADER));
+    }
+
     public function testSequentialId()
     {
         $multi_curl = new MultiCurl();
