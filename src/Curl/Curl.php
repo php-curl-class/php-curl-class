@@ -247,6 +247,7 @@ class Curl extends BaseCurl
         }
         $this->curl = null;
         $this->options = null;
+        $this->userSetOptions = null;
         $this->jsonDecoder = null;
         $this->jsonDecoderArgs = null;
         $this->xmlDecoder = null;
@@ -265,6 +266,12 @@ class Curl extends BaseCurl
     {
         $this->setOpt(CURLOPT_PROGRESSFUNCTION, $callback);
         $this->setOpt(CURLOPT_NOPROGRESS, false);
+    }
+
+    private function progressInternal($callback)
+    {
+        $this->setOptInternal(CURLOPT_PROGRESSFUNCTION, $callback);
+        $this->setOptInternal(CURLOPT_NOPROGRESS, false);
     }
 
     /**
@@ -552,7 +559,7 @@ class Curl extends BaseCurl
         $this->unsetHeader('Content-Length');
 
         // Reset nobody setting possibly set from a HEAD request.
-        $this->setOpt(CURLOPT_NOBODY, false);
+        $this->setOptInternal(CURLOPT_NOBODY, false);
 
         // Allow multicurl to attempt retry as needed.
         if ($this->isChildOfMultiCurl()) {
@@ -600,8 +607,8 @@ class Curl extends BaseCurl
             $url = (string)$this->url;
         }
         $this->setUrl($url, $data);
-        $this->setOpt(CURLOPT_CUSTOMREQUEST, 'GET');
-        $this->setOpt(CURLOPT_HTTPGET, true);
+        $this->setOptInternal(CURLOPT_CUSTOMREQUEST, 'GET');
+        $this->setOptInternal(CURLOPT_HTTPGET, true);
         return $this->exec();
     }
 
@@ -968,6 +975,11 @@ class Curl extends BaseCurl
         $this->setOpt(CURLINFO_HEADER_OUT, true);
     }
 
+    private function setDefaultHeaderOutInternal()
+    {
+        $this->setOptInternal(CURLINFO_HEADER_OUT, true);
+    }
+
     /**
      * Set Default Timeout
      *
@@ -978,6 +990,11 @@ class Curl extends BaseCurl
         $this->setTimeout(self::DEFAULT_TIMEOUT);
     }
 
+    private function setDefaultTimeoutInternal()
+    {
+        $this->setTimeoutInternal(self::DEFAULT_TIMEOUT);
+    }
+
     /**
      * Set Default User Agent
      *
@@ -985,11 +1002,21 @@ class Curl extends BaseCurl
      */
     public function setDefaultUserAgent()
     {
+        $this->setUserAgent($this->getDefaultUserAgent());
+    }
+
+    private function setDefaultUserAgentInternal()
+    {
+        $this->setUserAgentInternal($this->getDefaultUserAgent());
+    }
+
+    private function getDefaultUserAgent()
+    {
         $user_agent = 'PHP-Curl-Class/' . self::VERSION . ' (+https://github.com/php-curl-class/php-curl-class)';
         $user_agent .= ' PHP/' . PHP_VERSION;
         $curl_version = curl_version();
         $user_agent .= ' curl/' . $curl_version['version'];
-        $this->setUserAgent($user_agent);
+        return $user_agent;
     }
 
     /**
@@ -1094,6 +1121,25 @@ class Curl extends BaseCurl
         $success = curl_setopt($this->curl, $option, $value);
         if ($success) {
             $this->options[$option] = $value;
+            $this->userSetOptions[$option] = $value;
+        }
+        return $success;
+    }
+
+    /**
+     * Set Opt Internal
+     *
+     * @access protected
+     * @param  $option
+     * @param  $value
+     *
+     * @return boolean
+     */
+    protected function setOptInternal($option, $value)
+    {
+        $success = curl_setopt($this->curl, $option, $value);
+        if ($success) {
+            $this->options[$option] = $value;
         }
         return $success;
     }
@@ -1132,6 +1178,11 @@ class Curl extends BaseCurl
         $this->setOpt(CURLOPT_PROTOCOLS, $protocols);
     }
 
+    private function setProtocolsInternal($protocols)
+    {
+        $this->setOptInternal(CURLOPT_PROTOCOLS, $protocols);
+    }
+
     /**
      * Set Retry
      *
@@ -1168,6 +1219,11 @@ class Curl extends BaseCurl
     public function setRedirectProtocols($redirect_protocols)
     {
         $this->setOpt(CURLOPT_REDIR_PROTOCOLS, $redirect_protocols);
+    }
+
+    private function setRedirectProtocolsInternal($redirect_protocols)
+    {
+        $this->setOptInternal(CURLOPT_REDIR_PROTOCOLS, $redirect_protocols);
     }
 
     /**
@@ -1431,9 +1487,9 @@ class Curl extends BaseCurl
             $this->curl = curl_init();
         }
 
-        $this->setDefaultUserAgent();
-        $this->setDefaultTimeout();
-        $this->setDefaultHeaderOut();
+        $this->setDefaultUserAgentInternal();
+        $this->setDefaultTimeoutInternal();
+        $this->setDefaultHeaderOutInternal();
 
         $this->initialize();
     }
@@ -2005,8 +2061,8 @@ class Curl extends BaseCurl
      */
     private function initialize($base_url = null, $options = [])
     {
-        $this->setProtocols(CURLPROTO_HTTPS | CURLPROTO_HTTP);
-        $this->setRedirectProtocols(CURLPROTO_HTTPS | CURLPROTO_HTTP);
+        $this->setProtocolsInternal(CURLPROTO_HTTPS | CURLPROTO_HTTP);
+        $this->setRedirectProtocolsInternal(CURLPROTO_HTTPS | CURLPROTO_HTTP);
 
         if (isset($options)) {
             $this->setOpts($options);
@@ -2016,16 +2072,16 @@ class Curl extends BaseCurl
 
         // Only set default user agent if not already set.
         if (!array_key_exists(CURLOPT_USERAGENT, $this->options)) {
-            $this->setDefaultUserAgent();
+            $this->setDefaultUserAgentInternal();
         }
 
         // Only set default timeout if not already set.
         if (!array_key_exists(CURLOPT_TIMEOUT, $this->options)) {
-            $this->setDefaultTimeout();
+            $this->setDefaultTimeoutInternal();
         }
 
         if (!array_key_exists(CURLINFO_HEADER_OUT, $this->options)) {
-            $this->setDefaultHeaderOut();
+            $this->setDefaultHeaderOutInternal();
         }
 
         // Create a placeholder to temporarily store the header callback data.
@@ -2035,10 +2091,10 @@ class Curl extends BaseCurl
         $header_callback_data->stopRequestDecider = null;
         $header_callback_data->stopRequest = false;
         $this->headerCallbackData = $header_callback_data;
-        $this->setStop();
-        $this->setOpt(CURLOPT_HEADERFUNCTION, createHeaderCallback($header_callback_data));
+        $this->setStopInternal();
+        $this->setOptInternal(CURLOPT_HEADERFUNCTION, createHeaderCallback($header_callback_data));
 
-        $this->setOpt(CURLOPT_RETURNTRANSFER, true);
+        $this->setOptInternal(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
 
         if ($base_url !== null) {
@@ -2073,6 +2129,15 @@ class Curl extends BaseCurl
 
         $header_callback_data = $this->headerCallbackData;
         $this->progress(createStopRequestFunction($header_callback_data));
+    }
+
+    private function setStopInternal($callback = null)
+    {
+        $this->headerCallbackData->stopRequestDecider = $callback;
+        $this->headerCallbackData->stopRequest = false;
+
+        $header_callback_data = $this->headerCallbackData;
+        $this->progressInternal(createStopRequestFunction($header_callback_data));
     }
 
     /**

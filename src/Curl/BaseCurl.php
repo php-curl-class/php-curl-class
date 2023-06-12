@@ -10,6 +10,7 @@ abstract class BaseCurl
     public $completeCallback = null;
 
     protected $options = [];
+    protected $userSetOptions = [];
 
     /**
      * Before Send
@@ -157,6 +158,11 @@ abstract class BaseCurl
         $this->setOpt(CURLOPT_FILE, $file);
     }
 
+    protected function setFileInternal($file)
+    {
+        $this->setOptInternal(CURLOPT_FILE, $file);
+    }
+
     /**
      * Set follow location
      *
@@ -209,6 +215,11 @@ abstract class BaseCurl
     }
 
     abstract public function setOpt($option, $value);
+
+    protected function setOptInternal($option, $value)
+    {
+    }
+
     abstract public function setOpts($options);
 
     /**
@@ -294,6 +305,11 @@ abstract class BaseCurl
         $this->setOpt(CURLOPT_RANGE, $range);
     }
 
+    protected function setRangeInternal($range)
+    {
+        $this->setOptInternal(CURLOPT_RANGE, $range);
+    }
+
     /**
      * Set Referer
      *
@@ -329,6 +345,11 @@ abstract class BaseCurl
         $this->setOpt(CURLOPT_TIMEOUT, $seconds);
     }
 
+    protected function setTimeoutInternal($seconds)
+    {
+        $this->setOptInternal(CURLOPT_TIMEOUT, $seconds);
+    }
+
     abstract public function setUrl($url, $mixed_data = '');
 
     /**
@@ -340,6 +361,11 @@ abstract class BaseCurl
     public function setUserAgent($user_agent)
     {
         $this->setOpt(CURLOPT_USERAGENT, $user_agent);
+    }
+
+    protected function setUserAgentInternal($user_agent)
+    {
+        $this->setOptInternal(CURLOPT_USERAGENT, $user_agent);
     }
 
     abstract public function setXmlDecoder($mixed);
