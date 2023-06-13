@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.17.0 - 2023-06-13
+
+- Make method to display curl option value public ([#790](https://github.com/php-curl-class/php-curl-class/pull/790))
+
 ## 9.16.1 - 2023-06-12
 
 - Differentiate between internal options and user-set options ([#788](https://github.com/php-curl-class/php-curl-class/pull/788))
