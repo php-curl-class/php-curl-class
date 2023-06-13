@@ -1554,6 +1554,16 @@ class Curl extends BaseCurl
         return $this->url;
     }
 
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    public function getUserSetOptions()
+    {
+        return $this->userSetOptions;
+    }
+
     public function getRequestHeaders()
     {
         return $this->requestHeaders;
@@ -1731,7 +1741,7 @@ class Curl extends BaseCurl
         return $curl_const_by_code;
     }
 
-    private function displayCurlOptionValue($option, $value)
+    public function displayCurlOptionValue($option, $value)
     {
         if (isset($this->curlOptionCodeConstants[$option])) {
             echo $this->curlOptionCodeConstants[$option] . ':';
