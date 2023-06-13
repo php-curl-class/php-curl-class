@@ -283,9 +283,13 @@ if ($test === 'http_basic_auth') {
     $unsafe_file_path = $_GET['file_path'];
     header('Content-Type: image/png');
     header('Content-Disposition: attachment; filename="image.png"');
-    header('Content-Length: ' . filesize($unsafe_file_path));
-    header('ETag: ' . md5_file($unsafe_file_path));
-    readfile($unsafe_file_path);
+
+    if (!isset($_SERVER['HTTP_RANGE'])) {
+        header('ETag: ' . md5_file($unsafe_file_path));
+    }
+
+    $server = new ContentRangeServer\ContentRangeServer();
+    $server->serve($unsafe_file_path);
     exit;
 } elseif ($test === 'download_file_size') {
     if (isset($_GET['http_response_code'])) {
