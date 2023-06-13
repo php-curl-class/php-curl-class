@@ -3482,7 +3482,6 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         $curl = new Curl();
         $curl->setUrl(Test::TEST_URL);
         $curl->setOpt(CURLOPT_HTTPHEADER, $header_fields);
-        $curl->setUserAgent('agent');
 
         $this->assertEquals($header_fields, $curl->getOpt(CURLOPT_HTTPHEADER));
 
