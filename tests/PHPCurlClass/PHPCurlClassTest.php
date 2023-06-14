@@ -884,6 +884,81 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($download_callback_called);
     }
 
+    public function testFastDownloadSuccessOnly()
+    {
+        // Create a local file.
+        $local_file_path = \Helper\get_png();
+
+        // Upload file to server.
+        $uploaded_server_file_path = \Helper\upload_file_to_server($local_file_path);
+
+        // Download server file and save locally.
+        $url = Test::TEST_URL . '?' . http_build_query([
+            'file_path' => $uploaded_server_file_path,
+        ]);
+        $downloaded_local_file_path = \Helper\get_tmp_file_path();
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'download_response');
+        $curl->fastDownload($url, $downloaded_local_file_path);
+
+        $this->assertEquals(md5_file($local_file_path), md5_file($downloaded_local_file_path));
+
+        // Remove server file.
+        \Helper\remove_file_from_server($uploaded_server_file_path);
+
+        unlink($local_file_path);
+        $this->assertFalse(file_exists($local_file_path));
+
+        unlink($downloaded_local_file_path);
+        $this->assertFalse(file_exists($downloaded_local_file_path));
+    }
+
+    public function testFastDownloadFailOnly()
+    {
+        $url = Test::TEST_URL . '?failures=1';
+        $downloaded_local_file_path = \Helper\get_tmp_file_path();
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'retry');
+        $response = $curl->fastDownload($url, $downloaded_local_file_path);
+
+        $this->assertFalse($response);
+    }
+
+    public function testFastDownloadSuccessFail()
+    {
+        $url = Test::TEST_URL . '?failures=0,1';
+        $downloaded_local_file_path = \Helper\get_tmp_file_path();
+        $cookie_jar = __DIR__ . '/cookiejar.txt';
+        $connections = 1;
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'retry');
+        $curl->setCookieFile($cookie_jar);
+        $curl->setCookieJar($cookie_jar);
+        $response = $curl->fastDownload($url, $downloaded_local_file_path, $connections);
+
+        $this->assertFalse($response);
+        $this->assertTrue(unlink($cookie_jar));
+    }
+
+    public function testFastDownloadSuccessSuccessFail()
+    {
+        $url = Test::TEST_URL . '?failures=0,0,1';
+        $downloaded_local_file_path = \Helper\get_tmp_file_path();
+        $cookie_jar = __DIR__ . '/cookiejar.txt';
+        $connections = 2;
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'retry');
+        $curl->setCookieFile($cookie_jar);
+        $curl->setCookieJar($cookie_jar);
+        $response = $curl->fastDownload($url, $downloaded_local_file_path, $connections);
+
+        $this->assertFalse($response);
+        $this->assertTrue(unlink($cookie_jar));
+    }
+
     public function testMaxFilesize()
     {
         $tests = [
