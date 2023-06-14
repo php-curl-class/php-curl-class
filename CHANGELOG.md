@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.17.1 - 2023-06-14
+
+- Improve and add tests for Curl::fastDownload() ([#791](https://github.com/php-curl-class/php-curl-class/pull/791))
+
 ## 9.17.0 - 2023-06-13
 
 - Make method to display curl option value public ([#790](https://github.com/php-curl-class/php-curl-class/pull/790))
