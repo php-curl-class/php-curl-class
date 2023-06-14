@@ -67,95 +67,165 @@ p {
 p:last-child {
     font-size: 200%;
 }
-
-.pl-c {
-    color: #969896;
-}
-
-.pl-c1, .pl-s .pl-v {
-    color: #0086b3;
-}
-
-.pl-e, .pl-en {
-    color: #795da3;
-}
-
-.pl-smi, .pl-s .pl-s1 {
-    color: #333;
-}
-
-.pl-ent {
-    color: #63a35c;
-}
-
-.pl-k {
-    color: #a71d5d;
-}
-
-.pl-s, .pl-pds, .pl-s .pl-pse .pl-s1, .pl-sr, .pl-sr .pl-cce, .pl-sr .pl-sre, .pl-sr .pl-sra {
-    color: #183691;
-}
-
-.pl-v {
-    color: #ed6a43;
-}
-
-.pl-id {
-    color: #b52a1d;
-}
-
-.pl-ii {
-    background-color: #b52a1d;
-    color: #f8f8f8;
-}
-
-.pl-sr .pl-cce {
-    color: #63a35c;
-    font-weight: bold;
-}
-
-.pl-ml {
-    color: #693a17;
-}
-
-.pl-mh, .pl-mh .pl-en, .pl-ms {
-    color: #1d3e81;
-    font-weight: bold;
-}
-
-.pl-mq {
-    color: #008080;
-}
-
-.pl-mi {
-    color: #333;
-    font-style: italic;
-}
-
-.pl-mb {
-    color: #333;
-    font-weight: bold;
-}
-
-.pl-md {
-    background-color: #ffecec;
-    color: #bd2c00;
-}
-
-.pl-mi1 {
-    background-color: #eaffea;
-    color: #55a532;
-}
-
-.pl-mdr {
-    color: #795da3;
-    font-weight: bold;
-}
-
-.pl-mo {
-    color: #1d3e81;
-}
 </style>
+
+<style>
+/* PrismJS 1.29.0
+https://prismjs.com/download.html#themes=prism-solarizedlight&languages=markup+markup-templating+php */
+/*
+ Solarized Color Schemes originally by Ethan Schoonover
+ http://ethanschoonover.com/solarized
+
+ Ported for PrismJS by Hector Matos
+ Website: https://krakendev.io
+ Twitter Handle: https://twitter.com/allonsykraken)
+*/
+
+/*
+SOLARIZED HEX
+--------- -------
+base03    #002b36
+base02    #073642
+base01    #586e75
+base00    #657b83
+base0     #839496
+base1     #93a1a1
+base2     #eee8d5
+base3     #fdf6e3
+yellow    #b58900
+orange    #cb4b16
+red       #dc322f
+magenta   #d33682
+violet    #6c71c4
+blue      #268bd2
+cyan      #2aa198
+green     #859900
+*/
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: #657b83; /* base00 */
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	background: #073642; /* base02 */
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	background: #073642; /* base02 */
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+	border-radius: 0.3em;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background-color: #fdf6e3; /* base3 */
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: #93a1a1; /* base1 */
+}
+
+.token.punctuation {
+	color: #586e75; /* base01 */
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #268bd2; /* blue */
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.url,
+.token.inserted {
+	color: #2aa198; /* cyan */
+}
+
+.token.entity {
+	color: #657b83; /* base00 */
+	background: #eee8d5; /* base2 */
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #859900; /* green */
+}
+
+.token.function,
+.token.class-name {
+	color: #b58900; /* yellow */
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #cb4b16; /* orange */
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+
+
+</style>
+
 </head>
 <body>
 
@@ -163,18 +233,27 @@ p:last-child {
 <h2>Easily send HTTP requests and integrate with web APIs</h2>
 
 <figure>
-    <code>
-        <span class="pl-s1"><span class="pl-c1">$</span>curl</span> = <span class="pl-k">new</span> <span class="pl-v">Curl</span>();<br />
-        <span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-en">get</span>(<span class="pl-s">'https://www.example.com/'</span>);<br />
-        <br />
-        <span class="pl-k">if</span> (<span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-c1">error</span>) {<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;<span class="pl-k">echo</span> <span class="pl-s">'Error: '</span> . <span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-c1">errorCode</span> . <span class="pl-s">': '</span> . <span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-c1">errorMessage</span> . <span class="pl-s">"\n"</span>;<br />
-        } <span class="pl-k">else</span> {<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;<span class="pl-k">echo</span> <span class="pl-s">'Success! Here is the response:'</span> . <span class="pl-s">"\n"</span>;<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;<span class="pl-en">var_dump</span>(<span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-c1">response</span>);<br />
-        }<br />
-    </code>
+    <pre>
+<code class="language-php"><!--
+--><span class="token variable">$curl</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Curl</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token variable">$curl</span><span class="token operator">-></span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'https://www.example.com/'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">$curl</span><span class="token operator">-></span><span class="token property">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">echo</span> <span class="token string single-quoted-string">'Error: '</span> <span class="token operator">.</span> <span class="token variable">$curl</span><span class="token operator">-></span><span class="token property">errorMessage</span> <span class="token operator">.</span> <span class="token string double-quoted-string">"\n"</span><span class="token punctuation">;</span>
+    <span class="token variable">$curl</span><span class="token operator">-></span><span class="token function">diagnose</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+    <span class="token keyword">echo</span> <span class="token string single-quoted-string">'Success! Here is the response:'</span> <span class="token operator">.</span> <span class="token string double-quoted-string">"\n"</span><span class="token punctuation">;</span>
+    <span class="token function">var_dump</span><span class="token punctuation">(</span><span class="token variable">$curl</span><span class="token operator">-></span><span class="token property">response</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code>
+    </pre>
 </figure>
+
+<p>
+    <a href="https://github.com/php-curl-class/php-curl-class">
+        https://github.com/php-curl-class/php-curl-class
+    </a>
+</p>
 
 <p>
     <a href="https://github.com/php-curl-class/php-curl-class/releases/">
