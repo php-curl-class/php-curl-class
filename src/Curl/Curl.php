@@ -2095,7 +2095,7 @@ class Curl extends BaseCurl
             $this->setOpts($options);
         }
 
-        $this->id = uniqid('', true);
+        $this->id = bin2hex(random_bytes(16));
 
         // Only set default user agent if not already set.
         if (!array_key_exists(CURLOPT_USERAGENT, $this->options)) {
