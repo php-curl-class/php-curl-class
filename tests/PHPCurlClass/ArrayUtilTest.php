@@ -33,7 +33,7 @@ class ArrayUtilTest extends \PHPUnit\Framework\TestCase
 
     public function testArrayFlattenMultidimArray()
     {
-        $data = array(
+        $data = [
             'key-1' => 'value-1',
             'key-2' => 'value-2',
             'key-3' => [
@@ -44,7 +44,7 @@ class ArrayUtilTest extends \PHPUnit\Framework\TestCase
                     'nested-more-key-2' => 'nested-more-value-2',
                 ],
             ],
-        );
+        ];
 
         $this->assertEquals([
             'key-1' => 'value-1',

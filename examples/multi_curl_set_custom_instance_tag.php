@@ -9,7 +9,7 @@ $tags_to_urls = [
     'tag5' => 'https://httpbin.org/status/503',
 ];
 
-$ids_to_tags = array();
+$ids_to_tags = [];
 
 $multi_curl = new MultiCurl();
 

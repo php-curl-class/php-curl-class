@@ -1325,7 +1325,7 @@ class Curl extends BaseCurl
         if ($this->attempts === 0) {
             echo 'No HTTP requests have been made.' . "\n";
         } else {
-            $request_types = array(
+            $request_types = [
                 'DELETE' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'DELETE',
                 'GET' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'GET' || $this->getOpt(CURLOPT_HTTPGET),
                 'HEAD' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'HEAD',
@@ -1334,7 +1334,7 @@ class Curl extends BaseCurl
                 'POST' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'POST' || $this->getOpt(CURLOPT_POST),
                 'PUT' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'PUT',
                 'SEARCH' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'SEARCH',
-            );
+            ];
             $request_method = '';
             foreach ($request_types as $http_method_name => $http_method_used) {
                 if ($http_method_used) {
