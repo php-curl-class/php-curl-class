@@ -132,6 +132,7 @@ if [[ ! -z "${is_null}" ]]; then
     errors+=("${result}")
 fi
 
+# Run PHP_CodeSniffer.
 if   [[ "${CI_PHP_VERSION}" == "7.0" ]]; then :
 elif [[ "${CI_PHP_VERSION}" == "7.1" ]]; then :
 else
@@ -153,8 +154,19 @@ else
         -s \
         .
     if [[ "${?}" -ne 0 ]]; then
-        echo "Error: found coding standard violation(s)"
-        errors+=("found coding standard violation(s)")
+        echo "Error: found PHP_CodeSniffer coding standard violation(s)"
+        errors+=("found PHP_CodeSniffer coding standard violation(s)")
     fi
 
+fi
+
+# Run PHP-CS-Fixer.
+if   [[ "${CI_PHP_VERSION}" == "7.0" ]]; then :
+else
+    vendor/bin/php-cs-fixer --version
+    vendor/bin/php-cs-fixer fix --ansi --config="tests/.php-cs-fixer.php" --diff --dry-run
+    if [[ "${?}" -ne 0 ]]; then
+        echo "Error: found PHP-CS-Fixer coding standard violation(s)"
+        errors+=("found PHP-CS-Fixer coding standard violation(s)")
+    fi
 fi

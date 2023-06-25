@@ -2,10 +2,6 @@
 
 namespace Curl;
 
-use Curl\ArrayUtil;
-use Curl\BaseCurl;
-use Curl\Url;
-
 class MultiCurl extends BaseCurl
 {
     public $baseUrl = null;

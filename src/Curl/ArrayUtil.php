@@ -2,8 +2,6 @@
 
 namespace Curl;
 
-use Curl\CaseInsensitiveArray;
-
 class ArrayUtil
 {
     /**
