@@ -2,8 +2,6 @@
 
 namespace Curl;
 
-use Curl\StringUtil;
-
 class Url
 {
     private $baseUrl = null;

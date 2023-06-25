@@ -4008,7 +4008,7 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $expected_response = '{"name":"Alice","email":"alice@example.com"}';
 
-        $user = new \Helper\User('Alice', 'alice@example.com');
+        $user = new User('Alice', 'alice@example.com');
         $this->assertEquals($expected_response, json_encode($user));
 
         $test = new Test();
