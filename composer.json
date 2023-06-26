@@ -20,6 +20,7 @@
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "*",
         "ext-gd": "*",
+        "friendsofphp/php-cs-fixer": "*",
         "phpcompatibility/php-compatibility": "dev-develop",
         "phpcsstandards/phpcsutils": "@alpha",
         "phpunit/phpunit": "*",

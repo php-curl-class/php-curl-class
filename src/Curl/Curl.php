@@ -2,10 +2,6 @@
 
 namespace Curl;
 
-use Curl\ArrayUtil;
-use Curl\BaseCurl;
-use Curl\Url;
-
 class Curl extends BaseCurl
 {
     const VERSION = '9.17.1';
