@@ -6,6 +6,7 @@ $finder = PhpCsFixer\Finder::create()
 $config = new PhpCsFixer\Config();
 $config
     ->setRules([
+        'array_syntax' => ['syntax' => 'short'],
         'no_unused_imports' => true,
     ])
     ->setFinder($finder);
