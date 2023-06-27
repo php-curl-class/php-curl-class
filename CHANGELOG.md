@@ -6,6 +6,12 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.17.2 - 2023-06-27
+
+- Use short array syntax ([#793](https://github.com/php-curl-class/php-curl-class/pull/793))
+- Add PHP-CS-Fixer to check for unused imports ([#794](https://github.com/php-curl-class/php-curl-class/pull/794))
+- Replace `uniqid` by `random_bytes` ([#792](https://github.com/php-curl-class/php-curl-class/pull/792))
+
 ## 9.17.1 - 2023-06-14
 
 - Improve and add tests for Curl::fastDownload() ([#791](https://github.com/php-curl-class/php-curl-class/pull/791))
