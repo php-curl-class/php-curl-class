@@ -30,4 +30,4 @@ jobs:
       - name: Make release
         run: python scripts/make_release.py
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PHP_CURL_CLASS_TOKEN }}
