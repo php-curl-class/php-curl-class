@@ -22,6 +22,8 @@ class Url
      * Remove dot segments.
      *
      * Interpret and remove the special "." and ".." path segments from a referenced path.
+     *
+     * @param mixed $input
      */
     public static function removeDotSegments($input)
     {
@@ -85,10 +87,8 @@ class Url
     /**
      * Build Url
      *
-     * @access public
-     * @param  $url
-     * @param  $mixed_data
-     *
+     * @param         $url
+     * @param         $mixed_data
      * @return string
      */
     public static function buildUrl($url, $mixed_data = '')
@@ -175,6 +175,8 @@ class Url
      * Parse url.
      *
      * Parse url into components of a URI as specified by RFC 3986.
+     *
+     * @param mixed $url
      */
     public static function parseUrl($url)
     {
@@ -190,6 +192,8 @@ class Url
      *
      * Percent-encode characters to represent a data octet in a component when
      * that octet's corresponding character is outside the allowed set.
+     *
+     * @param mixed $chars
      */
     private static function percentEncodeChars($chars)
     {
@@ -227,6 +231,8 @@ class Url
      * Unparse url.
      *
      * Combine url components into a url.
+     *
+     * @param mixed $parsed_url
      */
     private function unparseUrl($parsed_url)
     {

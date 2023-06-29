@@ -9,11 +9,9 @@ class Encoder
      *
      * Wrap json_encode() to throw error when the value being encoded fails.
      *
-     * @access public
-     * @param  $value
-     * @param  $options
-     * @param  $depth
-     *
+     * @param                  $value
+     * @param                  $options
+     * @param                  $depth
      * @return string
      * @throws \ErrorException
      */

@@ -108,8 +108,8 @@ class Curl extends BaseCurl
     /**
      * Construct
      *
-     * @access public
-     * @param  $base_url
+     * @param                  $base_url
+     * @param  mixed           $options
      * @throws \ErrorException
      */
     public function __construct($base_url = null, $options = [])
@@ -133,9 +133,7 @@ class Curl extends BaseCurl
     /**
      * Build Post Data
      *
-     * @access public
-     * @param  $data
-     *
+     * @param                  $data
      * @return array|string
      * @throws \ErrorException
      */
@@ -218,8 +216,6 @@ class Curl extends BaseCurl
 
     /**
      * Call
-     *
-     * @access public
      */
     public function call()
     {
@@ -233,8 +229,6 @@ class Curl extends BaseCurl
 
     /**
      * Close
-     *
-     * @access public
      */
     public function close()
     {
@@ -255,8 +249,7 @@ class Curl extends BaseCurl
     /**
      * Progress
      *
-     * @access public
-     * @param  $callback callable|null
+     * @param $callback callable|null
      */
     public function progress($callback)
     {
@@ -273,11 +266,9 @@ class Curl extends BaseCurl
     /**
      * Delete
      *
-     * @access public
-     * @param  $url
-     * @param  $query_parameters
-     * @param  $data
-     *
+     * @param        $url
+     * @param        $query_parameters
+     * @param        $data
      * @return mixed Returns the value provided by exec.
      */
     public function delete($url, $query_parameters = [], $data = [])
@@ -307,11 +298,9 @@ class Curl extends BaseCurl
     /**
      * Download
      *
-     * @access public
-     * @param  $url
-     * @param  $mixed_filename
-     *
-     * @return boolean
+     * @param       $url
+     * @param       $mixed_filename
+     * @return bool
      */
     public function download($url, $mixed_filename)
     {
@@ -360,12 +349,10 @@ class Curl extends BaseCurl
     /**
      * Fast download
      *
-     * @access public
-     * @param  $url
-     * @param  $filename
-     * @param  $connections
-     *
-     * @return boolean
+     * @param       $url
+     * @param       $filename
+     * @param       $connections
+     * @return bool
      */
     public function fastDownload($url, $filename, $connections = 4)
     {
@@ -478,9 +465,7 @@ class Curl extends BaseCurl
     /**
      * Exec
      *
-     * @access public
-     * @param  $ch
-     *
+     * @param        $ch
      * @return mixed Returns the value provided by parseResponse.
      */
     public function exec($ch = null)
@@ -601,10 +586,8 @@ class Curl extends BaseCurl
     /**
      * Get
      *
-     * @access public
-     * @param  $url
-     * @param  $data
-     *
+     * @param        $url
+     * @param        $data
      * @return mixed Returns the value provided by exec.
      */
     public function get($url, $data = [])
@@ -622,9 +605,7 @@ class Curl extends BaseCurl
     /**
      * Get Info
      *
-     * @access public
-     * @param  $opt
-     *
+     * @param        $opt
      * @return mixed
      */
     public function getInfo($opt = null)
@@ -642,10 +623,8 @@ class Curl extends BaseCurl
     /**
      * Head
      *
-     * @access public
-     * @param  $url
-     * @param  $data
-     *
+     * @param        $url
+     * @param        $data
      * @return mixed Returns the value provided by exec.
      */
     public function head($url, $data = [])
@@ -663,10 +642,8 @@ class Curl extends BaseCurl
     /**
      * Options
      *
-     * @access public
-     * @param  $url
-     * @param  $data
-     *
+     * @param        $url
+     * @param        $data
      * @return mixed Returns the value provided by exec.
      */
     public function options($url, $data = [])
@@ -683,10 +660,8 @@ class Curl extends BaseCurl
     /**
      * Patch
      *
-     * @access public
-     * @param  $url
-     * @param  $data
-     *
+     * @param        $url
+     * @param        $data
      * @return mixed Returns the value provided by exec.
      */
     public function patch($url, $data = [])
@@ -709,22 +684,23 @@ class Curl extends BaseCurl
     /**
      * Post
      *
-     * @access public
-     * @param  $url
-     * @param  $data
-     * @param  $follow_303_with_post
-     *     If true, will cause 303 redirections to be followed using a POST request (default: false).
-     *     Notes:
-     *       - Redirections are only followed if the CURLOPT_FOLLOWLOCATION option is set to true.
-     *       - According to the HTTP specs (see [1]), a 303 redirection should be followed using
-     *         the GET method. 301 and 302 must not.
-     *       - In order to force a 303 redirection to be performed using the same method, the
-     *         underlying cURL object must be set in a special state (the CURLOPT_CUSTOMREQUEST
-     *         option must be set to the method to use after the redirection). Due to a limitation
-     *         of the cURL extension of PHP < 5.5.11 ([2], [3]), it is not possible to reset this
-     *         option. Using these PHP engines, it is therefore impossible to restore this behavior
-     *         on an existing php-curl-class Curl object.
-     *
+     * @param        $url
+     * @param        $data
+     * @param        $follow_303_with_post
+     *                                     If true, will cause 303 redirections to be followed using a POST request
+     *                                     (default: false).
+     *                                     Notes:
+     *                                     - Redirections are only followed if the CURLOPT_FOLLOWLOCATION option is set
+     *                                     to true.
+     *                                     - According to the HTTP specs (see [1]), a 303 redirection should be followed
+     *                                     using the GET method. 301 and 302 must not.
+     *                                     - In order to force a 303 redirection to be performed using the same method,
+     *                                     the underlying cURL object must be set in a special state (the
+     *                                     CURLOPT_CUSTOMREQUEST option must be set to the method to use after the
+     *                                     redirection). Due to a limitation of the cURL extension of PHP < 5.5.11 ([2],
+     *                                     [3]), it is not possible to reset this option. Using these PHP engines, it is
+     *                                     therefore impossible to restore this behavior on an existing php-curl-class
+     *                                     Curl object.
      * @return mixed Returns the value provided by exec.
      *
      * [1] https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.2
@@ -762,10 +738,8 @@ class Curl extends BaseCurl
     /**
      * Put
      *
-     * @access public
-     * @param  $url
-     * @param  $data
-     *
+     * @param        $url
+     * @param        $data
      * @return mixed Returns the value provided by exec.
      */
     public function put($url, $data = [])
@@ -791,10 +765,8 @@ class Curl extends BaseCurl
     /**
      * Search
      *
-     * @access public
-     * @param  $url
-     * @param  $data
-     *
+     * @param        $url
+     * @param        $data
      * @return mixed Returns the value provided by exec.
      */
     public function search($url, $data = [])
@@ -820,9 +792,8 @@ class Curl extends BaseCurl
     /**
      * Set Cookie
      *
-     * @access public
-     * @param  $key
-     * @param  $value
+     * @param $key
+     * @param $value
      */
     public function setCookie($key, $value)
     {
@@ -833,8 +804,7 @@ class Curl extends BaseCurl
     /**
      * Set Cookies
      *
-     * @access public
-     * @param  $cookies
+     * @param $cookies
      */
     public function setCookies($cookies)
     {
@@ -847,9 +817,7 @@ class Curl extends BaseCurl
     /**
      * Get Cookie
      *
-     * @access public
-     * @param  $key
-     *
+     * @param        $key
      * @return mixed
      */
     public function getCookie($key)
@@ -860,9 +828,7 @@ class Curl extends BaseCurl
     /**
      * Get Response Cookie
      *
-     * @access public
-     * @param  $key
-     *
+     * @param        $key
      * @return mixed
      */
     public function getResponseCookie($key)
@@ -873,8 +839,7 @@ class Curl extends BaseCurl
     /**
      * Set Max Filesize
      *
-     * @access public
-     * @param  $bytes
+     * @param $bytes
      */
     public function setMaxFilesize($bytes)
     {
@@ -888,9 +853,7 @@ class Curl extends BaseCurl
     /**
      * Set Cookie String
      *
-     * @access public
-     * @param  $string
-     *
+     * @param       $string
      * @return bool
      */
     public function setCookieString($string)
@@ -901,10 +864,8 @@ class Curl extends BaseCurl
     /**
      * Set Cookie File
      *
-     * @access public
-     * @param  $cookie_file
-     *
-     * @return boolean
+     * @param       $cookie_file
+     * @return bool
      */
     public function setCookieFile($cookie_file)
     {
@@ -914,10 +875,8 @@ class Curl extends BaseCurl
     /**
      * Set Cookie Jar
      *
-     * @access public
-     * @param  $cookie_jar
-     *
-     * @return boolean
+     * @param       $cookie_jar
+     * @return bool
      */
     public function setCookieJar($cookie_jar)
     {
@@ -927,10 +886,9 @@ class Curl extends BaseCurl
     /**
      * Set Default JSON Decoder
      *
-     * @access public
-     * @param  $assoc
-     * @param  $depth
-     * @param  $options
+     * @param $assoc
+     * @param $depth
+     * @param $options
      */
     public function setDefaultJsonDecoder()
     {
@@ -941,11 +899,10 @@ class Curl extends BaseCurl
     /**
      * Set Default XML Decoder
      *
-     * @access public
-     * @param  $class_name
-     * @param  $options
-     * @param  $ns
-     * @param  $is_prefix
+     * @param $class_name
+     * @param $options
+     * @param $ns
+     * @param $is_prefix
      */
     public function setDefaultXmlDecoder()
     {
@@ -956,8 +913,7 @@ class Curl extends BaseCurl
     /**
      * Set Default Decoder
      *
-     * @access public
-     * @param  $mixed boolean|callable|string
+     * @param $mixed boolean|callable|string
      */
     public function setDefaultDecoder($mixed = 'json')
     {
@@ -974,8 +930,6 @@ class Curl extends BaseCurl
 
     /**
      * Set Default Header Out
-     *
-     * @access public
      */
     public function setDefaultHeaderOut()
     {
@@ -989,8 +943,6 @@ class Curl extends BaseCurl
 
     /**
      * Set Default Timeout
-     *
-     * @access public
      */
     public function setDefaultTimeout()
     {
@@ -1004,8 +956,6 @@ class Curl extends BaseCurl
 
     /**
      * Set Default User Agent
-     *
-     * @access public
      */
     public function setDefaultUserAgent()
     {
@@ -1031,9 +981,8 @@ class Curl extends BaseCurl
      *
      * Add extra header to include in the request.
      *
-     * @access public
-     * @param  $key
-     * @param  $value
+     * @param $key
+     * @param $value
      */
     public function setHeader($key, $value)
     {
@@ -1050,8 +999,7 @@ class Curl extends BaseCurl
      *
      * Add extra headers to include in the request.
      *
-     * @access public
-     * @param  $headers
+     * @param $headers
      */
     public function setHeaders($headers)
     {
@@ -1081,8 +1029,7 @@ class Curl extends BaseCurl
     /**
      * Set JSON Decoder
      *
-     * @access public
-     * @param  $mixed boolean|callable
+     * @param $mixed boolean|callable
      */
     public function setJsonDecoder($mixed)
     {
@@ -1095,8 +1042,7 @@ class Curl extends BaseCurl
     /**
      * Set XML Decoder
      *
-     * @access public
-     * @param  $mixed boolean|callable
+     * @param $mixed boolean|callable
      */
     public function setXmlDecoder($mixed)
     {
@@ -1109,11 +1055,9 @@ class Curl extends BaseCurl
     /**
      * Set Opt
      *
-     * @access public
-     * @param  $option
-     * @param  $value
-     *
-     * @return boolean
+     * @param       $option
+     * @param       $value
+     * @return bool
      */
     public function setOpt($option, $value)
     {
@@ -1136,11 +1080,9 @@ class Curl extends BaseCurl
     /**
      * Set Opt Internal
      *
-     * @access protected
-     * @param  $option
-     * @param  $value
-     *
-     * @return boolean
+     * @param       $option
+     * @param       $value
+     * @return bool
      */
     protected function setOptInternal($option, $value)
     {
@@ -1154,12 +1096,12 @@ class Curl extends BaseCurl
     /**
      * Set Opts
      *
-     * @access public
-     * @param  $options
-     *
-     * @return boolean
-     *   Returns true if all options were successfully set. If an option could not be successfully set, false is
-     *   immediately returned, ignoring any future options in the options array. Similar to curl_setopt_array().
+     * @param       $options
+     * @return bool
+     *              Returns true if all options were successfully set. If an
+     *              option could not be successfully set, false is immediately
+     *              returned, ignoring any future options in the options array.
+     *              Similar to curl_setopt_array().
      */
     public function setOpts($options)
     {
@@ -1179,8 +1121,7 @@ class Curl extends BaseCurl
      *
      * Limit what protocols libcurl will accept for a request.
      *
-     * @access public
-     * @param  $protocols
+     * @param $protocols
      * @see    Curl::setRedirectProtocols()
      */
     public function setProtocols($protocols)
@@ -1204,8 +1145,7 @@ class Curl extends BaseCurl
      * When using a callable decider, the request will be retried until the
      * function returns a value which evaluates to false.
      *
-     * @access public
-     * @param  $mixed
+     * @param $mixed
      */
     public function setRetry($mixed)
     {
@@ -1222,8 +1162,7 @@ class Curl extends BaseCurl
      *
      * Limit what protocols libcurl will accept when following a redirect.
      *
-     * @access public
-     * @param  $redirect_protocols
+     * @param $redirect_protocols
      * @see    Curl::setProtocols()
      */
     public function setRedirectProtocols($redirect_protocols)
@@ -1239,9 +1178,8 @@ class Curl extends BaseCurl
     /**
      * Set Url
      *
-     * @access public
-     * @param  $url
-     * @param  $mixed_data
+     * @param $url
+     * @param $mixed_data
      */
     public function setUrl($url, $mixed_data = '')
     {
@@ -1258,8 +1196,6 @@ class Curl extends BaseCurl
 
     /**
      * Attempt Retry
-     *
-     * @access public
      */
     public function attemptRetry()
     {
@@ -1285,8 +1221,7 @@ class Curl extends BaseCurl
      *
      * Remove extra header previously set using Curl::setHeader().
      *
-     * @access public
-     * @param  $key
+     * @param $key
      */
     public function unsetHeader($key)
     {
@@ -1301,8 +1236,7 @@ class Curl extends BaseCurl
     /**
      * Diagnose
      *
-     * @access public
-     * @param  bool $return
+     * @param bool $return
      */
     public function diagnose($return = false)
     {
@@ -1486,8 +1420,6 @@ class Curl extends BaseCurl
 
     /**
      * Reset
-     *
-     * @access public
      */
     public function reset()
     {
@@ -1676,8 +1608,6 @@ class Curl extends BaseCurl
 
     /**
      * Destruct
-     *
-     * @access public
      */
     public function __destruct()
     {
@@ -1696,8 +1626,6 @@ class Curl extends BaseCurl
 
     /**
      * Get Curl Error Code Constants
-     *
-     * @access private
      */
     private function getCurlErrorCodeConstants()
     {
@@ -1715,8 +1643,6 @@ class Curl extends BaseCurl
 
     /**
      * Get Curl Error Code Constant
-     *
-     * @access private
      */
     private function getCurlErrorCodeConstant()
     {
@@ -1729,8 +1655,6 @@ class Curl extends BaseCurl
 
     /**
      * Get Curl Option Code Constants
-     *
-     * @access private
      */
     private function getCurlOptionCodeConstants()
     {
@@ -1775,7 +1699,7 @@ class Curl extends BaseCurl
             ];
             if (isset($this->curlOptionCodeConstants[$option])) {
                 $option_name = $this->curlOptionCodeConstants[$option];
-                if (in_array($option_name, array_keys($bit_flag_lookups))) {
+                if (in_array($option_name, array_keys($bit_flag_lookups), true)) {
                     $curl_const_prefix = $bit_flag_lookups[$option_name];
                     $constants = get_defined_constants(true);
                     $curl_constants = array_filter(
@@ -1822,8 +1746,6 @@ class Curl extends BaseCurl
 
     /**
      * Get Effective Url
-     *
-     * @access private
      */
     private function getEffectiveUrl()
     {
@@ -1832,8 +1754,6 @@ class Curl extends BaseCurl
 
     /**
      * Get RFC 2616
-     *
-     * @access private
      */
     private function getRfc2616()
     {
@@ -1842,8 +1762,6 @@ class Curl extends BaseCurl
 
     /**
      * Get RFC 6265
-     *
-     * @access private
      */
     private function getRfc6265()
     {
@@ -1852,8 +1770,6 @@ class Curl extends BaseCurl
 
     /**
      * Get Total Time
-     *
-     * @access private
      */
     private function getTotalTime()
     {
@@ -1862,8 +1778,6 @@ class Curl extends BaseCurl
 
     /**
      * Build Cookies
-     *
-     * @access private
      */
     private function buildCookies()
     {
@@ -1880,8 +1794,7 @@ class Curl extends BaseCurl
     /**
      * Download Complete
      *
-     * @access private
-     * @param  $fh
+     * @param $fh
      */
     private function downloadComplete($fh)
     {
@@ -1917,9 +1830,7 @@ class Curl extends BaseCurl
     /**
      * Parse Headers
      *
-     * @access private
-     * @param  $raw_headers
-     *
+     * @param        $raw_headers
      * @return array
      */
     private function parseHeaders($raw_headers)
@@ -1948,9 +1859,7 @@ class Curl extends BaseCurl
     /**
      * Parse Request Headers
      *
-     * @access private
-     * @param  $raw_headers
-     *
+     * @param                             $raw_headers
      * @return \Curl\CaseInsensitiveArray
      */
     private function parseRequestHeaders($raw_headers)
@@ -1967,21 +1876,21 @@ class Curl extends BaseCurl
     /**
      * Parse Response
      *
-     * @access private
-     * @param  $response_headers
-     * @param  $raw_response
-     *
+     * @param        $response_headers
+     * @param        $raw_response
      * @return mixed
-     *   If the response content-type is json:
-     *     Returns the json decoder's return value: A stdClass object when the default json decoder is used.
-     *   If the response content-type is xml:
-     *     Returns the xml decoder's return value: A SimpleXMLElement object when the default xml decoder is used.
-     *   If the response content-type is something else:
-     *     Returns the original raw response unless a default decoder has been set.
-     *   If the response content-type cannot be determined:
-     *     Returns the original raw response.
-     *   If the response content-encoding is gzip:
-     *     Returns the response gzip-decoded.
+     *               If the response content-type is json: Returns the json decoder's return value: A stdClass object
+     *               when the default json decoder is used.
+     *
+     *               If the response content-type is xml: Returns the xml decoder's return value: A SimpleXMLElement
+     *               object when the default xml decoder is used.
+     *
+     *               If the response content-type is something else: Returns the original raw response unless a default
+     *               decoder has been set.
+     *
+     *               If the response content-type cannot be determined: Returns the original raw response.
+     *
+     *               If the response content-encoding is gzip: Returns the response gzip-decoded.
      */
     private function parseResponse($response_headers, $raw_response)
     {
@@ -2021,9 +1930,7 @@ class Curl extends BaseCurl
     /**
      * Parse Response Headers
      *
-     * @access private
-     * @param  $raw_response_headers
-     *
+     * @param                             $raw_response_headers
      * @return \Curl\CaseInsensitiveArray
      */
     private function parseResponseHeaders($raw_response_headers)
@@ -2049,9 +1956,8 @@ class Curl extends BaseCurl
     /**
      * Set Encoded Cookie
      *
-     * @access private
-     * @param  $key
-     * @param  $value
+     * @param $key
+     * @param $value
      */
     private function setEncodedCookie($key, $value)
     {
@@ -2079,8 +1985,8 @@ class Curl extends BaseCurl
     /**
      * Initialize
      *
-     * @access private
-     * @param  $base_url
+     * @param       $base_url
+     * @param mixed $options
      */
     private function initialize($base_url = null, $options = [])
     {
@@ -2142,8 +2048,7 @@ class Curl extends BaseCurl
      * callback and instead just check the value of stopRequest for attempting
      * to stop the request as used by Curl::stop().
      *
-     * @access public
-     * @param  $callback callable|null
+     * @param $callback callable|null
      */
     public function setStop($callback = null)
     {
@@ -2169,8 +2074,6 @@ class Curl extends BaseCurl
      * Attempt to stop request.
      *
      * Used by MultiCurl::stop() when making multiple parallel requests.
-     *
-     * @access public
      */
     public function stop()
     {
@@ -2185,8 +2088,7 @@ class Curl extends BaseCurl
  * unset($curl) automatically calls __destruct() as expected. Otherwise, manually calling $curl->close() will be
  * necessary to prevent a memory leak.
  *
- * @param  $header_callback_data
- *
+ * @param           $header_callback_data
  * @return callable
  */
 function createHeaderCallback($header_callback_data)
@@ -2215,8 +2117,7 @@ function createHeaderCallback($header_callback_data)
  * stopRequest flag is on. Keep this function separate from the class to prevent
  * a memory leak.
  *
- * @param  $header_callback_data
- *
+ * @param           $header_callback_data
  * @return callable
  */
 function createStopRequestFunction($header_callback_data)
