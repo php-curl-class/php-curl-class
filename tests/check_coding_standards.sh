@@ -84,22 +84,6 @@ if [[ ! -z "${long_lines}" ]]; then
     errors+=("${result}")
 fi
 
-# Prohibit @author in php files.
-at_author=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --extended-regexp --line-number -H "@author" {} \;)
-if [[ ! -z "${at_author}" ]]; then
-    result="$(echo -e "${at_author}" | perl -pe 's/^(.*)$/\@author found in \1/')"
-    echo "${result}"
-    errors+=("${result}")
-fi
-
-# Prohibit screaming caps notation in php files.
-caps=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --extended-regexp --line-number -H -e "FALSE[^']" -e "NULL" -e "TRUE" {} \;)
-if [[ ! -z "${caps}" ]]; then
-    result="$(echo -e "${caps}" | perl -pe 's/^(.*)$/All caps found in \1/')"
-    echo "${result}"
-    errors+=("${result}")
-fi
-
 # Require identical comparison operators (===, not ==) in php files.
 equal=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --extended-regexp --line-number -H "[^!=]==[^=]" {} \;)
 if [[ ! -z "${equal}" ]]; then
@@ -108,26 +92,10 @@ if [[ ! -z "${equal}" ]]; then
     errors+=("${result}")
 fi
 
-# Require keyword "elseif" to be used instead of "else if" so that all control keywords look like single words.
-elseif=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --extended-regexp --line-number -H "else\s+if" {} \;)
-if [[ ! -z "${elseif}" ]]; then
-    result="$(echo -e "${elseif}" | perl -pe 's/^(.*)$/Found "else if" instead of "elseif" in \1/')"
-    echo "${result}"
-    errors+=("${result}")
-fi
-
 # Require both braces on else statement line; "} else {" and not "}\nelse {".
 elses=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --line-number -H --perl-regexp '^(\s+)?else(\s+)?{' {} \;)
 if [[ ! -z "${elses}" ]]; then
     result="$(echo -e "${elses}" | perl -pe 's/^(.*)$/Found newline before "else" statement in \1/')"
-    echo "${result}"
-    errors+=("${result}")
-fi
-
-# Prohibit use of "is_null" and suggest using the strict comparison operator.
-is_null=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --line-number -H -e "is_null" {} \;)
-if [[ ! -z "${is_null}" ]]; then
-    result="$(echo -e "${is_null}" | perl -pe 's/^(.*)$/is_null found in \1.  Replace with strict comparison (e.g. "\$x === null")./')"
     echo "${result}"
     errors+=("${result}")
 fi
@@ -162,6 +130,9 @@ fi
 
 # Run PHP-CS-Fixer.
 if   [[ "${CI_PHP_VERSION}" == "7.0" ]]; then :
+elif [[ "${CI_PHP_VERSION}" == "7.1" ]]; then :
+elif [[ "${CI_PHP_VERSION}" == "7.2" ]]; then :
+elif [[ "${CI_PHP_VERSION}" == "7.3" ]]; then :
 else
     vendor/bin/php-cs-fixer --version
     vendor/bin/php-cs-fixer fix --ansi --config="tests/.php-cs-fixer.php" --diff --dry-run

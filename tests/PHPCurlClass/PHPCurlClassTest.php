@@ -14,7 +14,7 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 
     protected function setUp(): void
     {
-        $this->skip_slow_tests = in_array(getenv('PHP_CURL_CLASS_SKIP_SLOW_TESTS'), ['1', 'y', 'Y']);
+        $this->skip_slow_tests = in_array(getenv('PHP_CURL_CLASS_SKIP_SLOW_TESTS'), ['1', 'y', 'Y'], true);
     }
 
     public function testExtensionsLoaded()
@@ -3546,7 +3546,7 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
             [
                 'args' => [
                     'url' => 'https://www.example.com/?a=base',
-                    'mixed_data' => 'b=2&c=3'
+                    'mixed_data' => 'b=2&c=3',
                 ],
                 'expected' => 'https://www.example.com/?a=base&b=2&c=3',
             ],
@@ -4523,7 +4523,7 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
                                     'message' => 'The service is currently unavailable.',
                                     'domain' => 'global',
                                     'reason' => 'backendError',
-                                ]
+                                ],
                             ],
                             'status' => 'UNAVAILABLE',
                         ],

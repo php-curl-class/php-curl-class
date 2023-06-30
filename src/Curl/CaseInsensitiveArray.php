@@ -10,6 +10,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
 
     /**
      * @var mixed[] Data storage with lowercase keys.
+     *
      * @see offsetSet()
      * @see offsetExists()
      * @see offsetUnset()
@@ -23,6 +24,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
 
     /**
      * @var string[] Case-sensitive keys.
+     *
      * @see offsetSet()
      * @see offsetUnset()
      * @see key()
@@ -36,11 +38,8 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * case-insensitive array. Caution: Data may be lost when converting
      * case-sensitive arrays to case-insensitive arrays.
      *
-     * @param mixed[] $initial (optional) Existing array to convert.
-     *
+     * @param  mixed[]              $initial (optional) Existing array to convert.
      * @return CaseInsensitiveArray
-     *
-     * @access public
      */
     public function __construct(array $initial = null)
     {
@@ -58,14 +57,10 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * stores the case-sensitive offset and the data at the lowercase indexes in
      * $this->keys and @this->data.
      *
-     * @see https://secure.php.net/manual/en/arrayaccess.offsetset.php
-     *
-     * @param string $offset The offset to store the data at (case-insensitive).
-     * @param mixed $value The data to store at the specified offset.
-     *
+     * @param  string $offset The offset to store the data at (case-insensitive).
+     * @param  mixed  $value  The data to store at the specified offset.
      * @return void
-     *
-     * @access public
+     * @see https://secure.php.net/manual/en/arrayaccess.offsetset.php
      */
     #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
@@ -85,13 +80,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * Checks if the offset exists in data storage. The index is looked up with
      * the lowercase version of the provided offset.
      *
+     * @param  string $offset Offset to check
+     * @return bool   If the offset exists.
      * @see https://secure.php.net/manual/en/arrayaccess.offsetexists.php
-     *
-     * @param string $offset Offset to check
-     *
-     * @return bool If the offset exists.
-     *
-     * @access public
      */
     #[\ReturnTypeWillChange]
     public function offsetExists($offset)
@@ -105,13 +96,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * Unsets the specified offset. Converts the provided offset to lowercase,
      * and unsets the case-sensitive key, as well as the stored data.
      *
-     * @see https://secure.php.net/manual/en/arrayaccess.offsetunset.php
-     *
-     * @param string $offset The offset to unset.
-     *
+     * @param  string $offset The offset to unset.
      * @return void
-     *
-     * @access public
+     * @see https://secure.php.net/manual/en/arrayaccess.offsetunset.php
      */
     #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
@@ -127,13 +114,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * Return the stored data at the provided offset. The offset is converted to
      * lowercase and the lookup is done on the data store directly.
      *
+     * @param  string $offset Offset to lookup.
+     * @return mixed  The data stored at the offset.
      * @see https://secure.php.net/manual/en/arrayaccess.offsetget.php
-     *
-     * @param string $offset Offset to lookup.
-     *
-     * @return mixed The data stored at the offset.
-     *
-     * @access public
      */
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
@@ -145,13 +128,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Count
      *
-     * @see https://secure.php.net/manual/en/countable.count.php
-     *
      * @param void
-     *
-     * @return integer The number of elements stored in the array.
-     *
-     * @access public
+     * @return int The number of elements stored in the array.
+     * @see https://secure.php.net/manual/en/countable.count.php
      */
     #[\ReturnTypeWillChange]
     public function count()
@@ -162,13 +141,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Current
      *
-     * @see https://secure.php.net/manual/en/iterator.current.php
-     *
      * @param void
-     *
      * @return mixed Data at the current position.
-     *
-     * @access public
+     * @see https://secure.php.net/manual/en/iterator.current.php
      */
     #[\ReturnTypeWillChange]
     public function current()
@@ -179,13 +154,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Next
      *
-     * @see https://secure.php.net/manual/en/iterator.next.php
-     *
      * @param void
-     *
      * @return void
-     *
-     * @access public
+     * @see https://secure.php.net/manual/en/iterator.next.php
      */
     #[\ReturnTypeWillChange]
     public function next()
@@ -196,13 +167,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Key
      *
-     * @see https://secure.php.net/manual/en/iterator.key.php
-     *
      * @param void
-     *
      * @return mixed Case-sensitive key at current position.
-     *
-     * @access public
+     * @see https://secure.php.net/manual/en/iterator.key.php
      */
     #[\ReturnTypeWillChange]
     public function key()
@@ -214,11 +181,8 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Valid
      *
-     * @see https://secure.php.net/manual/en/iterator.valid.php
-     *
      * @return bool If the current position is valid.
-     *
-     * @access public
+     * @see https://secure.php.net/manual/en/iterator.valid.php
      */
     #[\ReturnTypeWillChange]
     public function valid()
@@ -229,13 +193,9 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Rewind
      *
-     * @see https://secure.php.net/manual/en/iterator.rewind.php
-     *
      * @param void
-     *
      * @return void
-     *
-     * @access public
+     * @see https://secure.php.net/manual/en/iterator.rewind.php
      */
     #[\ReturnTypeWillChange]
     public function rewind()

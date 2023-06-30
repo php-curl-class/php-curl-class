@@ -12,7 +12,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
     protected function setUp(): void
     {
-        $this->skip_slow_tests = in_array(getenv('PHP_CURL_CLASS_SKIP_SLOW_TESTS'), ['1', 'y', 'Y']);
+        $this->skip_slow_tests = in_array(getenv('PHP_CURL_CLASS_SKIP_SLOW_TESTS'), ['1', 'y', 'Y'], true);
     }
 
     public function testMultiCurlCallback()
