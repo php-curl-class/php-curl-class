@@ -1,4 +1,5 @@
 <?php
+
 $curl = new Curl();
 $curl->get('https://www.example.com/');
 

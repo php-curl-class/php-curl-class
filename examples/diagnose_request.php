@@ -1,4 +1,5 @@
 <?php
+
 // keywords: diagnose, troubleshoot, help
 
 require __DIR__ . '/../vendor/autoload.php';

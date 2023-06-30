@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="PSR2Modified">
+<ruleset name="PSR12Modified">
     <!-- Run against the PHPCompatibility ruleset. -->
     <rule ref="PHPCompatibility">
         <!-- TODO: Remove the following exclusion when this list() error is no longer incorrectly flagged. -->
@@ -7,12 +7,15 @@
     </rule>
     <config name="installed_paths" value="vendor/phpcompatibility/php-compatibility,vendor/phpcsstandards/phpcsutils/PHPCS23Utils" />
 
-    <!-- Run against the PSR2 ruleset with some exclusions. -->
-    <rule ref="PSR2">
+    <!-- Run against the PSR12 ruleset with some exclusions. -->
+    <rule ref="PSR12">
         <exclude name="Generic.Functions.FunctionCallArgumentSpacing.TooMuchSpaceAfterComma" />
 
         <!-- TODO: Remove the following exclusion when ArrayUtil functions not in camel caps format like ArrayUtil::is_array_assoc() are removed. -->
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
+
+        <!-- TODO: Remove the following exclusion when support for PHP 7.0 is dropped. As of PHP 7.1 visibility modifiers are allowed for class constants. -->
+        <exclude name="PSR12.Properties.ConstantVisibility.NotFound" />
     </rule>
 
     <!-- Disable "No PHP code was found in this file" for symlinks. -->

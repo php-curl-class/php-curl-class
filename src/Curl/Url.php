@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Curl;
 
@@ -13,7 +15,7 @@ class Url
         $this->relativeUrl = $relative_url;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->absolutizeUrl();
     }

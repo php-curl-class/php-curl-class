@@ -1,4 +1,5 @@
 <?php
+
 // Perform a post-redirect-get request (POST data and follow 303 redirections
 // using GET requests).
 $curl = new Curl();
