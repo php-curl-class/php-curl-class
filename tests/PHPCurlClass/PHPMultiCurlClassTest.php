@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace CurlTest;
 
@@ -2691,7 +2693,8 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
     public function testJsonRequest()
     {
-        foreach ([
+        foreach (
+            [
                 [
                     [
                         'key' => 'value',
@@ -2709,7 +2712,8 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
                     ],
                     '{"key":"value","strings":["a","b","c"]}',
                 ],
-            ] as $test) {
+            ] as $test
+        ) {
             list($data, $expected_response) = $test;
 
             $multi_curl = new MultiCurl();
@@ -2720,18 +2724,22 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             $multi_curl->addPost(Test::TEST_URL, json_encode($data));
             $multi_curl->start();
 
-            foreach ([
+            foreach (
+                [
                 'Content-Type',
                 'content-type',
-                'CONTENT-TYPE'] as $key) {
-                foreach ([
+                'CONTENT-TYPE'] as $key
+            ) {
+                foreach (
+                    [
                     'APPLICATION/JSON',
                     'APPLICATION/JSON; CHARSET=UTF-8',
                     'APPLICATION/JSON;CHARSET=UTF-8',
                     'application/json',
                     'application/json; charset=utf-8',
                     'application/json;charset=UTF-8',
-                    ] as $value) {
+                    ] as $value
+                ) {
                     $multi_curl = new MultiCurl();
                     $multi_curl->setHeader('X-DEBUG-TEST', 'post_json');
                     $multi_curl->setHeader($key, $value);
@@ -3034,7 +3042,8 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $filesize = filesize($filename);
 
-        foreach ([
+        foreach (
+            [
                 false,
                 0,
                 1,
@@ -3065,7 +3074,8 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
                 $filesize + 2,
                 $filesize + 3,
 
-            ] as $length) {
+            ] as $length
+        ) {
             $source = Test::TEST_URL;
             $destination = \Helper\get_tmp_file_path();
 
@@ -3971,7 +3981,8 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
     public function testSetRateLimitUnits()
     {
-        foreach ([
+        foreach (
+            [
                 [
                     'rate_limit' => '1/s',
                     'expected' => [
@@ -4102,7 +4113,8 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
                         'interval_seconds' => '86400',
                     ],
                 ],
-            ] as $test) {
+            ] as $test
+        ) {
             $multi_curl = new MultiCurl();
             $multi_curl->setRateLimit($test['rate_limit']);
 

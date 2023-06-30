@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Curl;
 
@@ -142,7 +144,8 @@ class Curl extends BaseCurl
         $binary_data = false;
 
         // Return JSON-encoded string when the request's content-type is JSON and the data is serializable.
-        if (isset($this->headers['Content-Type']) &&
+        if (
+            isset($this->headers['Content-Type']) &&
             preg_match($this->jsonPattern, $this->headers['Content-Type']) &&
             (
                 is_array($data) ||
@@ -151,7 +154,8 @@ class Curl extends BaseCurl
                     interface_exists('JsonSerializable', false) &&
                     $data instanceof \JsonSerializable
                 )
-            )) {
+            )
+        ) {
             $data = \Curl\Encoder::encodeJson($data);
         } elseif (is_array($data)) {
             // Manually build a single-dimensional array from a multi-dimensional array as using curl_setopt($ch,
@@ -179,12 +183,14 @@ class Curl extends BaseCurl
             }
         }
 
-        if (!$binary_data &&
+        if (
+            !$binary_data &&
             (is_array($data) || is_object($data)) &&
             (
                 !isset($this->headers['Content-Type']) ||
                 !preg_match('/^multipart\/form-data/', $this->headers['Content-Type'])
-            )) {
+            )
+        ) {
             // Avoid using http_build_query() as keys with null values are
             // unexpectedly excluded from the resulting string.
             //
@@ -1310,10 +1316,12 @@ class Curl extends BaseCurl
 
             echo 'Request contained ' . ($request_body_empty ? 'no body' : 'a body') . '.' . "\n";
 
-            if ($request_headers_count === 0 && (
+            if (
+                $request_headers_count === 0 && (
                 $this->getOpt(CURLOPT_VERBOSE) ||
                 !$this->getOpt(CURLINFO_HEADER_OUT)
-            )) {
+                )
+            ) {
                 echo
                     'Warning: Request headers (Curl::requestHeaders) are expected to be empty ' .
                     '(CURLOPT_VERBOSE was enabled or CURLINFO_HEADER_OUT was disabled).' . "\n";
@@ -1378,8 +1386,10 @@ class Curl extends BaseCurl
                     echo 'Response content length (calculated): ' . $response_calculated_length . "\n";
                 }
 
-                if (isset($this->responseHeaders['Content-Type']) &&
-                    preg_match($this->jsonPattern, $this->responseHeaders['Content-Type'])) {
+                if (
+                    isset($this->responseHeaders['Content-Type']) &&
+                    preg_match($this->jsonPattern, $this->responseHeaders['Content-Type'])
+                ) {
                     $parsed_response = json_decode($this->rawResponse, true);
                     if ($parsed_response !== null) {
                         $messages = [];
@@ -1617,8 +1627,10 @@ class Curl extends BaseCurl
     public function __get($name)
     {
         $return = null;
-        if (in_array($name, self::$deferredProperties, true) &&
-            is_callable([$this, $getter = 'get' . ucfirst($name)])) {
+        if (
+            in_array($name, self::$deferredProperties, true) &&
+            is_callable([$this, $getter = 'get' . ucfirst($name)])
+        ) {
             $return = $this->$name = $this->$getter();
         }
         return $return;
@@ -1915,8 +1927,10 @@ class Curl extends BaseCurl
             }
         }
 
-        if (isset($response_headers['Content-Encoding']) && $response_headers['Content-Encoding'] === 'gzip' &&
-            is_string($response)) {
+        if (
+            isset($response_headers['Content-Encoding']) && $response_headers['Content-Encoding'] === 'gzip' &&
+            is_string($response)
+        ) {
             // Use @ to suppress message "Warning gzdecode(): data error".
             $decoded_response = @gzdecode($response);
             if ($decoded_response !== false) {

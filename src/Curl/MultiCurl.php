@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Curl;
 
@@ -519,8 +521,10 @@ class MultiCurl extends BaseCurl
         // unexpectedly changing the request url after is has been specified.
         if ($option === CURLOPT_URL) {
             foreach ($this->queuedCurls as $curl_id => $curl) {
-                if (!isset($this->instanceSpecificOptions[$curl_id][$option]) ||
-                    $this->instanceSpecificOptions[$curl_id][$option] === null) {
+                if (
+                    !isset($this->instanceSpecificOptions[$curl_id][$option]) ||
+                    $this->instanceSpecificOptions[$curl_id][$option] === null
+                ) {
                     $this->instanceSpecificOptions[$curl_id][$option] = $value;
                 }
             }
@@ -644,7 +648,8 @@ class MultiCurl extends BaseCurl
         $this->currentRequestCount = 0;
 
         do {
-            while (count($this->queuedCurls) &&
+            while (
+                count($this->queuedCurls) &&
                 count($this->activeCurls) < $this->concurrency &&
                 (!$this->rateLimitEnabled || $this->hasRequestQuota())
             ) {
@@ -690,8 +695,10 @@ class MultiCurl extends BaseCurl
                 }
             }
 
-            while ((is_resource($this->multiCurl) || $this->multiCurl instanceof \CurlMultiHandle) &&
-                (($info_array = curl_multi_info_read($this->multiCurl)) !== false)) {
+            while (
+                (is_resource($this->multiCurl) || $this->multiCurl instanceof \CurlMultiHandle) &&
+                (($info_array = curl_multi_info_read($this->multiCurl)) !== false)
+            ) {
                 if ($info_array['msg'] === CURLMSG_DONE) {
                     foreach ($this->activeCurls as $key => $curl) {
                         if ($curl->curl === $info_array['handle']) {

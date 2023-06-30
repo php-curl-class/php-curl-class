@@ -1,4 +1,5 @@
 <?php
+
 require __DIR__ . '/../vendor/autoload.php';
 
 // Note: The server needs to send a content-length header for progress to work.

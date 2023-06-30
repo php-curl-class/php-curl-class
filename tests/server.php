@@ -1,9 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 $server_start = microtime(true);
 
 // Prevent direct access unless testing.
-if (getenv('PHP_CURL_CLASS_TEST_MODE_ENABLED') !== 'yes' &&
-    @$_SERVER['PHP_CURL_CLASS_TEST_MODE_ENABLED'] !== 'yes') {
+if (
+    getenv('PHP_CURL_CLASS_TEST_MODE_ENABLED') !== 'yes' &&
+    @$_SERVER['PHP_CURL_CLASS_TEST_MODE_ENABLED'] !== 'yes'
+) {
     exit;
 }
 
