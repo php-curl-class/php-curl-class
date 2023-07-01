@@ -8,6 +8,12 @@
 #   2. Install hooks
 #     $ pre-commit install
 repos:
+- repo: https://github.com/psf/black
+  rev: 23.3.0
+  hooks:
+  - id: black
+    name: black
+    entry: black --skip-string-normalization
 - repo: local
   hooks:
   - id: composer-validate
