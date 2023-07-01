@@ -76,14 +76,6 @@ if [[ ! -z "${trailing_whitespace}" ]]; then
     errors+=("${result}")
 fi
 
-# Prohibit long lines in php files.
-long_lines=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" ! -path "*/www/*" -exec awk '{print FILENAME":"NR" "length}' {} \; | awk '$2 > 120')
-if [[ ! -z "${long_lines}" ]]; then
-    result="$(echo -e "${long_lines}" | perl -pe 's/^(.*)$/Long lines found in \1/')"
-    echo "${result}"
-    errors+=("${result}")
-fi
-
 # Require identical comparison operators (===, not ==) in php files.
 equal=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --extended-regexp --line-number -H "[^!=]==[^=]" {} \;)
 if [[ ! -z "${equal}" ]]; then

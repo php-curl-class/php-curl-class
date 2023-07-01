@@ -18,6 +18,13 @@
         <exclude name="PSR12.Properties.ConstantVisibility.NotFound" />
     </rule>
 
+    <!-- Prohibit long lines in php files. -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="absoluteLineLimit" value="120"/>
+        </properties>
+    </rule>
+
     <!-- Disable "No PHP code was found in this file" for symlinks. -->
     <rule ref="Internal.NoCodeFound">
         <severity>0</severity>
