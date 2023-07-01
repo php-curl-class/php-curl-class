@@ -11,6 +11,10 @@
     "authors": [
         {
             "name": "Zach Borboa"
+        },
+        {
+            "name": "Contributors",
+            "homepage": "https://github.com/php-curl-class/php-curl-class/graphs/contributors"
         }
     ],
     "require": {
