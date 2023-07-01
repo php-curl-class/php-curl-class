@@ -136,7 +136,11 @@ with open('urls.csv', 'wt') as f:
                     first_url = first_domain + first_path + first_query + first_fragment
                     if second_domain and not second_path.startswith('/'):
                         second_path = '/' + second_path
-                    second_url = second_domain + second_path + second_query + second_fragment
+                    second_url = (
+                        second_domain + second_path + second_query + second_fragment
+                    )
                     if first_url != second_url:
-                        expected_url = remove_dot_segments(urljoin(first_url, second_url))
+                        expected_url = remove_dot_segments(
+                            urljoin(first_url, second_url)
+                        )
                         csvwriter.writerow([first_url, second_url, expected_url])

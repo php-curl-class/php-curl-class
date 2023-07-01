@@ -35,7 +35,9 @@ def main():
     #   git tag --list | sort --reverse --version-sort
     tags = sorted(
         local_repo.tags,
-        key=lambda tag: list(map(int, tag.name.split('.'))), reverse=True)
+        key=lambda tag: list(map(int, tag.name.split('.'))),
+        reverse=True,
+    )
 
     most_recent_tag = tags[0]
     print('most_recent_tag: {}'.format(most_recent_tag))
@@ -82,9 +84,7 @@ def main():
             # print(pull.html_url)
             continue
 
-        pull_labels = {
-            label.name for label in pull.labels
-        }
+        pull_labels = {label.name for label in pull.labels}
         if 'major-incompatible-changes' in pull_labels:
             group_name = 'major'
         elif 'minor-backwards-compatible-added-functionality' in pull_labels:
@@ -120,9 +120,12 @@ def main():
     if pulls_missing_semver_label:
         error_message = (
             'Merged pull request(s) found without semantic version label:\n'
-            '{}'.format('\n'.join(
-                '  {}'.format(pull.html_url)
-                for pull in pulls_missing_semver_label)))
+            '{}'.format(
+                '\n'.join(
+                    '  {}'.format(pull.html_url) for pull in pulls_missing_semver_label
+                )
+            )
+        )
         raise Exception(error_message)
 
     # pprint.pprint(pull_request_by_type)
@@ -143,7 +146,9 @@ def main():
     # Bump version and get next semantic version.
     command = ['php', php_file_path]
     print('running command: {}'.format(command))
-    proc = subprocess.Popen(command, shell=False, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    proc = subprocess.Popen(
+        command, shell=False, stdout=subprocess.PIPE, stdin=subprocess.PIPE
+    )
     stdout, stderr = proc.communicate()
     print('stdout: {}'.format(stdout))
     print('stderr: {}'.format(stderr))
@@ -160,10 +165,12 @@ def main():
     release_title = '{} - {}'.format(release_version, release_date)
     print('release_title: {}'.format(release_title))
 
-    release_content = (
-        '## {}\n'
-        '\n'
-        '{}'
+    release_content = ''.join(
+        [
+            '## {}\n',
+            '\n',
+            '{}',
+        ]
     ).format(release_title, '\n'.join(pull_request_changes))
 
     old_content = CHANGELOG_PATH.read_text()
@@ -191,17 +198,21 @@ def main():
         message=result['message'],
         author='{} <{}>'.format(
             local_repo.git.config('--get', 'user.name'),
-            local_repo.git.config('--get', 'user.email')))
+            local_repo.git.config('--get', 'user.email'),
+        ),
+    )
 
     print('diff after commit:')
     # git log --max-count=1 --patch --color=always
     print(local_repo.git.log(max_count='1', patch=True, color='always'))
 
     # Push local changes.
-    server = 'https://{}@github.com/{}.git'.format(
-        GITHUB_TOKEN, GITHUB_REPOSITORY)
-    print('pushing changes to branch "{}" of repository "{}"'.format(
-        GITHUB_REF_NAME, GITHUB_REPOSITORY))
+    server = 'https://{}@github.com/{}.git'.format(GITHUB_TOKEN, GITHUB_REPOSITORY)
+    print(
+        'pushing changes to branch "{}" of repository "{}"'.format(
+            GITHUB_REF_NAME, GITHUB_REPOSITORY
+        )
+    )
     local_repo.git.push(server, GITHUB_REF_NAME)
 
     # Create tag and release.
@@ -213,7 +224,9 @@ def main():
         '\n'
         'https://github.com/php-curl-class/php-curl-class/compare/{}...{}'.format(
             result['old_version'],
-            result['new_version']))
+            result['new_version'],
+        )
+    )
     commit_sha = local_repo.head.commit.hexsha
     print('tag: {}'.format(tag))
     print('tag_message: "{}"'.format(tag_message))
