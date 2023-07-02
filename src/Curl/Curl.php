@@ -377,8 +377,7 @@ class Curl extends BaseCurl
             return false;
         }
 
-        $content_length = isset($curl->responseHeaders['Content-Length']) ?
-            $curl->responseHeaders['Content-Length'] : null;
+        $content_length = $curl->responseHeaders['Content-Length'] ?? null;
 
         // Use a regular download when content length could not be determined.
         if (!$content_length) {
@@ -839,7 +838,7 @@ class Curl extends BaseCurl
      */
     public function getResponseCookie($key)
     {
-        return isset($this->responseCookies[$key]) ? $this->responseCookies[$key] : null;
+        return $this->responseCookies[$key] ?? null;
     }
 
     /**
@@ -1282,8 +1281,7 @@ class Curl extends BaseCurl
             $request_options_count = count($this->options);
             $request_headers_count = count($this->requestHeaders);
             $request_body_empty = empty($this->getOpt(CURLOPT_POSTFIELDS));
-            $response_header_length = isset($this->responseHeaders['Content-Length']) ?
-                $this->responseHeaders['Content-Length'] : '(not specified in response header)';
+            $response_header_length = $this->responseHeaders['Content-Length'] ?? '(not specified in response header)';
             $response_calculated_length = is_string($this->rawResponse) ?
                 strlen($this->rawResponse) : '(' . var_export($this->rawResponse, true) . ')';
             $response_headers_count = count($this->responseHeaders);
@@ -1865,7 +1863,7 @@ class Curl extends BaseCurl
             }
         }
 
-        return [isset($raw_headers['0']) ? $raw_headers['0'] : '', $http_headers];
+        return [$raw_headers['0'] ?? '', $http_headers];
     }
 
     /**

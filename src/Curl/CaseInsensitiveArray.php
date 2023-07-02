@@ -123,7 +123,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     public function offsetGet($offset)
     {
         $offsetlower = strtolower($offset);
-        return isset($this->data[$offsetlower]) ? $this->data[$offsetlower] : null;
+        return $this->data[$offsetlower] ?? null;
     }
 
     /**
@@ -176,7 +176,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     public function key()
     {
         $key = key($this->data);
-        return isset($this->keys[$key]) ? $this->keys[$key] : $key;
+        return $this->keys[$key] ?? $key;
     }
 
     /**
