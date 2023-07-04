@@ -6,6 +6,11 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.17.3 - 2023-07-04
+
+- Update PHP_CodeSniffer ruleset: PSR2 → PSR12 ([#797](https://github.com/php-curl-class/php-curl-class/pull/797))
+- Add additional coding standard checks ([#796](https://github.com/php-curl-class/php-curl-class/pull/796))
+
 ## 9.17.2 - 2023-06-27
 
 - Use short array syntax ([#793](https://github.com/php-curl-class/php-curl-class/pull/793))
