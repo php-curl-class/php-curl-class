@@ -75,6 +75,7 @@ $config
         'short_scalar_cast' => true,
         'strict_comparison' => true,
         'strict_param' => true,
+        'ternary_to_null_coalescing' => true,
         'trailing_comma_in_multiline' => true,
         'yoda_style' => [
             'equal' => false,
