@@ -21,11 +21,11 @@ $_PUT = [];
 $_PATCH = [];
 $_DELETE = [];
 
-$request_method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
+$request_method = $_SERVER['REQUEST_METHOD'] ?? '';
 if (!array_key_exists('CONTENT_TYPE', $_SERVER) && array_key_exists('HTTP_CONTENT_TYPE', $_SERVER)) {
     $_SERVER['CONTENT_TYPE'] = $_SERVER['HTTP_CONTENT_TYPE'];
 }
-$content_type = isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : '';
+$content_type = $_SERVER['CONTENT_TYPE'] ?? '';
 $data_values = $_GET;
 if ($request_method === 'POST') {
     $data_values = $_POST;
@@ -52,7 +52,7 @@ if (isset($_SERVER['HTTP_X_DEBUG_TEST'])) {
 } elseif (isset($_GET['test'])) {
     $test = $_GET['test'];
 }
-$key = isset($data_values['key']) ? $data_values['key'] : '';
+$key = $data_values['key'] ?? '';
 
 if ($test === 'http_basic_auth') {
     if (!isset($_SERVER['PHP_AUTH_USER'])) {
@@ -300,7 +300,7 @@ if ($test === 'http_basic_auth') {
     if (isset($_GET['http_response_code'])) {
         http_response_code((int) $_GET['http_response_code']);
     }
-    $bytes = isset($_GET['bytes']) ? $_GET['bytes'] : 1234;
+    $bytes = $_GET['bytes'] ?? 1234;
     $str = str_repeat('.', (int) $bytes);
     header('Content-Type: application/octet-stream');
     header('Content-Length: ' . strlen($str));
@@ -456,7 +456,7 @@ if (!empty($test)) {
         $value = http_build_query($data);
     } else {
         // Return individual value when a key is specified.
-        $value = isset($data[$key]) ? $data[$key] : '';
+        $value = $data[$key] ?? '';
     }
     echo $value;
 }
