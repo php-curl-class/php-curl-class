@@ -127,29 +127,29 @@ class Url
         $target = [];
         if (isset($r['scheme'])) {
             $target['scheme'] = $r['scheme'];
-            $target['host'] = isset($r['host']) ? $r['host'] : null;
-            $target['port'] = isset($r['port']) ? $r['port'] : null;
-            $target['user'] = isset($r['user']) ? $r['user'] : null;
-            $target['pass'] = isset($r['pass']) ? $r['pass'] : null;
+            $target['host'] = $r['host'] ?? null;
+            $target['port'] = $r['port'] ?? null;
+            $target['user'] = $r['user'] ?? null;
+            $target['pass'] = $r['pass'] ?? null;
             $target['path'] = isset($r['path']) ? self::removeDotSegments($r['path']) : null;
-            $target['query'] = isset($r['query']) ? $r['query'] : null;
+            $target['query'] = $r['query'] ?? null;
         } else {
-            $target['scheme'] = isset($b['scheme']) ? $b['scheme'] : null;
+            $target['scheme'] = $b['scheme'] ?? null;
             if ($r['authorized']) {
-                $target['host'] = isset($r['host']) ? $r['host'] : null;
-                $target['port'] = isset($r['port']) ? $r['port'] : null;
-                $target['user'] = isset($r['user']) ? $r['user'] : null;
-                $target['pass'] = isset($r['pass']) ? $r['pass'] : null;
+                $target['host'] = $r['host'] ?? null;
+                $target['port'] = $r['port'] ?? null;
+                $target['user'] = $r['user'] ?? null;
+                $target['pass'] = $r['pass'] ?? null;
                 $target['path'] = isset($r['path']) ? self::removeDotSegments($r['path']) : null;
-                $target['query'] = isset($r['query']) ? $r['query'] : null;
+                $target['query'] = $r['query'] ?? null;
             } else {
-                $target['host'] = isset($b['host']) ? $b['host'] : null;
-                $target['port'] = isset($b['port']) ? $b['port'] : null;
-                $target['user'] = isset($b['user']) ? $b['user'] : null;
-                $target['pass'] = isset($b['pass']) ? $b['pass'] : null;
+                $target['host'] = $b['host'] ?? null;
+                $target['port'] = $b['port'] ?? null;
+                $target['user'] = $b['user'] ?? null;
+                $target['pass'] = $b['pass'] ?? null;
                 if (!isset($r['path']) || $r['path'] === '') {
                     $target['path'] = $b['path'];
-                    $target['query'] = isset($r['query']) ? $r['query'] : (isset($b['query']) ? $b['query'] : null);
+                    $target['query'] = $r['query'] ?? $b['query'] ?? null;
                 } else {
                     if (StringUtil::startsWith($r['path'], '/')) {
                         $target['path'] = self::removeDotSegments($r['path']);
@@ -160,14 +160,14 @@ class Url
                         }
                         $target['path'] = self::removeDotSegments($base . '/' . $r['path']);
                     }
-                    $target['query'] = isset($r['query']) ? $r['query'] : null;
+                    $target['query'] = $r['query'] ?? null;
                 }
             }
         }
         if ($this->relativeUrl === '') {
-            $target['fragment'] = isset($b['fragment']) ? $b['fragment'] : null;
+            $target['fragment'] = $b['fragment'] ?? null;
         } else {
-            $target['fragment'] = isset($r['fragment']) ? $r['fragment'] : null;
+            $target['fragment'] = $r['fragment'] ?? null;
         }
         $absolutized_url = $this->unparseUrl($target);
         return $absolutized_url;
@@ -239,12 +239,12 @@ class Url
     private function unparseUrl($parsed_url)
     {
         $scheme   = isset($parsed_url['scheme'])   ?       $parsed_url['scheme'] . '://' : '';
-        $user     = isset($parsed_url['user'])     ?       $parsed_url['user']           : '';
+        $user     = $parsed_url['user']                                                 ?? '';
         $pass     = isset($parsed_url['pass'])     ? ':' . $parsed_url['pass']           : '';
         $pass     = ($user || $pass)               ?       $pass . '@'                   : '';
-        $host     = isset($parsed_url['host'])     ?       $parsed_url['host']           : '';
+        $host     = $parsed_url['host']                                                 ?? '';
         $port     = isset($parsed_url['port'])     ? ':' . $parsed_url['port']           : '';
-        $path     = isset($parsed_url['path'])     ?       $parsed_url['path']           : '';
+        $path     = $parsed_url['path']                                                 ?? '';
         $query    = isset($parsed_url['query'])    ? '?' . $parsed_url['query']          : '';
         $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment']       : '';
         $unparsed_url =  $scheme . $user . $pass . $host . $port . $path . $query . $fragment;

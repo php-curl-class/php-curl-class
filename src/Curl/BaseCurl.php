@@ -62,7 +62,7 @@ abstract class BaseCurl
      */
     public function getOpt($option)
     {
-        return isset($this->options[$option]) ? $this->options[$option] : null;
+        return $this->options[$option] ?? null;
     }
 
     /**
