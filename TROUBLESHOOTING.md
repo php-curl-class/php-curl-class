@@ -5,7 +5,7 @@
 ```php
 $curl = new Curl();
 $curl->get('https://www.example.com/');
-$curl->diagnose(); // <-- HERE
+$curl->diagnose(); // ← HERE
 ```
 
 ### Debug the entire curl instance
@@ -13,7 +13,7 @@ $curl->diagnose(); // <-- HERE
 ```php
 $curl = new Curl();
 $curl->get('https://www.example.com/');
-var_dump($curl); // <-- HERE
+var_dump($curl); // ← HERE
 ```
 
 ### Ensure you have the latest version of the library installed
