@@ -6,6 +6,11 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.17.4 - 2023-07-10
+
+- Add coding standards rule to use the null coalescing operator ?? where possible ([#801](https://github.com/php-curl-class/php-curl-class/pull/801))
+- Replace isset with null coalescing operator ([#800](https://github.com/php-curl-class/php-curl-class/pull/800))
+
 ## 9.17.3 - 2023-07-04
 
 - Update PHP_CodeSniffer ruleset: PSR2 → PSR12 ([#797](https://github.com/php-curl-class/php-curl-class/pull/797))
