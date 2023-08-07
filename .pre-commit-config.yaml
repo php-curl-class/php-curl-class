@@ -7,6 +7,9 @@
 #
 #   2. Install hooks
 #     $ pre-commit install
+#
+#   3. Optionally, enable automatic updates
+#     $ pre-commit autoupdate
 repos:
 - repo: https://github.com/psf/black
   rev: 23.3.0
