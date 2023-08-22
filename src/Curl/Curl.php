@@ -526,11 +526,6 @@ class Curl extends BaseCurl
             $this->curlErrorMessage = $curl_error_message;
         }
 
-        $this->httpStatusCode = $this->getInfo(CURLINFO_HTTP_CODE);
-        $this->httpError = in_array((int) floor($this->httpStatusCode / 100), [4, 5], true);
-        $this->error = $this->curlError || $this->httpError;
-        $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;
-
         // NOTE: CURLINFO_HEADER_OUT set to true is required for requestHeaders
         // to not be empty (e.g. $curl->setOpt(CURLINFO_HEADER_OUT, true);).
         if ($this->getOpt(CURLINFO_HEADER_OUT) === true) {
@@ -538,6 +533,24 @@ class Curl extends BaseCurl
         }
         $this->responseHeaders = $this->parseResponseHeaders($this->rawResponseHeaders);
         $this->response = $this->parseResponse($this->responseHeaders, $this->rawResponse);
+
+        $this->httpStatusCode = $this->getInfo(CURLINFO_HTTP_CODE);
+        $this->httpError = in_array((int) floor($this->httpStatusCode / 100), [4, 5], true);
+
+        if ($this->errorDecider === null) {
+            $this->error = $this->curlError || $this->httpError;
+        } else {
+            $this->error = null;
+            $this->call($this->errorDecider);
+            if (!in_array($this->error, [true, false], true)) {
+                trigger_error(
+                    '$instance->error MUST be set to true or false inside the setError() function',
+                    E_USER_WARNING
+                );
+            }
+        }
+
+        $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;
 
         $this->httpErrorMessage = '';
         if ($this->error) {

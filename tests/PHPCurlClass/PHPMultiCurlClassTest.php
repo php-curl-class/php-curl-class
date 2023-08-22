@@ -5452,4 +5452,39 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(5, $instance->retries);
         $this->assertFalse($instance->error);
     }
+
+    public function testSetErrorAttemptCount()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setRetry(10);
+        $multi_curl->setError(function ($instance) {
+            if ($instance->attempts < 5) {
+                $instance->error = true;
+            } else {
+                $instance->error = false;
+            }
+        });
+        $multi_curl->setHeader('X-DEBUG-TEST', 'json_response');
+        $instance = $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->start();
+        $this->assertEquals(5, $instance->attempts);
+        $this->assertEquals(4, $instance->retries);
+        $this->assertFalse($instance->error);
+    }
+
+    public function testSetErrorResponseMessage()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setOpt(CURLOPT_COOKIEJAR, '/dev/null');
+        $multi_curl->setRetry(5);
+        $multi_curl->setError(function ($instance) {
+            $instance->error = $instance->response->message !== '202 Accepted';
+        });
+        $multi_curl->setHeader('X-DEBUG-TEST', 'retry');
+        $instance = $multi_curl->addGet(Test::TEST_URL, ['failures' => 3]);
+        $multi_curl->start();
+        $this->assertEquals(4, $instance->attempts);
+        $this->assertEquals(3, $instance->retries);
+        $this->assertFalse($instance->error);
+    }
 }
