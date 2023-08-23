@@ -4920,4 +4920,35 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('foo', $test->curl->response->{'abc'});
         $this->assertEquals('bar', $test->curl->response->{'123'});
     }
+
+    public function testSetErrorAttemptCount()
+    {
+        $test = new Test();
+        $test->curl->setRetry(10);
+        $test->curl->setError(function ($instance) {
+            if ($instance->attempts < 5) {
+                $instance->error = true;
+            } else {
+                $instance->error = false;
+            }
+        });
+        $test->server('json_response', 'GET');
+        $this->assertEquals(5, $test->curl->attempts);
+        $this->assertEquals(4, $test->curl->retries);
+        $this->assertFalse($test->curl->error);
+    }
+
+    public function testSetErrorResponseMessage()
+    {
+        $test = new Test();
+        $test->curl->setOpt(CURLOPT_COOKIEJAR, '/dev/null');
+        $test->curl->setRetry(5);
+        $test->curl->setError(function ($instance) {
+            $instance->error = $instance->response->message !== '202 Accepted';
+        });
+        $test->server('retry', 'GET', ['failures' => 3]);
+        $this->assertEquals(4, $test->curl->attempts);
+        $this->assertEquals(3, $test->curl->retries);
+        $this->assertFalse($test->curl->error);
+    }
 }
