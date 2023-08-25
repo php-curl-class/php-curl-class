@@ -536,18 +536,12 @@ class Curl extends BaseCurl
 
         $this->httpStatusCode = $this->getInfo(CURLINFO_HTTP_CODE);
         $this->httpError = in_array((int) floor($this->httpStatusCode / 100), [4, 5], true);
+        $this->error = $this->curlError || $this->httpError;
 
-        if ($this->errorDecider === null) {
-            $this->error = $this->curlError || $this->httpError;
-        } else {
-            $this->error = null;
-            $this->call($this->errorDecider);
-            if (!in_array($this->error, [true, false], true)) {
-                trigger_error(
-                    '$instance->error MUST be set to true or false inside the setError() function',
-                    E_USER_WARNING
-                );
-            }
+        $this->call($this->afterSendCallback);
+
+        if (!in_array($this->error, [true, false], true)) {
+            trigger_error('$instance->error MUST be set to true or false', E_USER_WARNING);
         }
 
         $this->errorCode = $this->error ? ($this->curlError ? $this->curlErrorCode : $this->httpStatusCode) : 0;

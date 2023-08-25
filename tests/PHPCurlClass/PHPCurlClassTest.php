@@ -4921,11 +4921,11 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('bar', $test->curl->response->{'123'});
     }
 
-    public function testSetErrorAttemptCount()
+    public function testAfterSendAttemptCount()
     {
         $test = new Test();
         $test->curl->setRetry(10);
-        $test->curl->setError(function ($instance) {
+        $test->curl->afterSend(function ($instance) {
             if ($instance->attempts < 5) {
                 $instance->error = true;
             } else {
@@ -4938,12 +4938,12 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($test->curl->error);
     }
 
-    public function testSetErrorResponseMessage()
+    public function testAfterSendResponseMessage()
     {
         $test = new Test();
         $test->curl->setOpt(CURLOPT_COOKIEJAR, '/dev/null');
         $test->curl->setRetry(5);
-        $test->curl->setError(function ($instance) {
+        $test->curl->afterSend(function ($instance) {
             $instance->error = $instance->response->message !== '202 Accepted';
         });
         $test->server('retry', 'GET', ['failures' => 3]);
