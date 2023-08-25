@@ -24,7 +24,7 @@ $multi_curl->success(function ($instance) {
         'after ' . $instance->attempts . ' attempt(s).' . "\n";
 });
 
-$multi_curl->setError(function ($instance) {
+$multi_curl->afterSend(function ($instance) {
     $random_number = (int)$instance->response->args->number;
     $lucky = $random_number === 7;
     $instance->error = !$lucky;
@@ -37,7 +37,7 @@ $multi_curl->setError(function ($instance) {
 $multi_curl->addGet('https://httpbin.org/get?number=' . random_int(0, 10));
 $multi_curl->start();
 
-// $ php multi_curl_set_error.php
+// $ php multi_curl_after_send.php
 // about to make request to https://httpbin.org/get?number=4
 // about to make request to https://httpbin.org/get?number=7
 // success!
