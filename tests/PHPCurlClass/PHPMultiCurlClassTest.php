@@ -5453,11 +5453,11 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($instance->error);
     }
 
-    public function testSetErrorAttemptCount()
+    public function testAfterSendAttemptCount()
     {
         $multi_curl = new MultiCurl();
         $multi_curl->setRetry(10);
-        $multi_curl->setError(function ($instance) {
+        $multi_curl->afterSend(function ($instance) {
             if ($instance->attempts < 5) {
                 $instance->error = true;
             } else {
@@ -5472,12 +5472,12 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($instance->error);
     }
 
-    public function testSetErrorResponseMessage()
+    public function testAfterSendResponseMessage()
     {
         $multi_curl = new MultiCurl();
         $multi_curl->setOpt(CURLOPT_COOKIEJAR, '/dev/null');
         $multi_curl->setRetry(5);
-        $multi_curl->setError(function ($instance) {
+        $multi_curl->afterSend(function ($instance) {
             $instance->error = $instance->response->message !== '202 Accepted';
         });
         $multi_curl->setHeader('X-DEBUG-TEST', 'retry');

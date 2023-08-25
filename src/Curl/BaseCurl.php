@@ -7,7 +7,7 @@ namespace Curl;
 abstract class BaseCurl
 {
     public $beforeSendCallback = null;
-    public $errorDecider = null;
+    public $afterSendCallback = null;
     public $successCallback = null;
     public $errorCallback = null;
     public $completeCallback = null;
@@ -140,24 +140,25 @@ abstract class BaseCurl
     }
 
     /**
-     * Set Error
+     * After Send
      *
-     * Use this function to override the default implemention for determining
-     * whether or not the request errored. The instance is passed as the first
-     * argument to the function and the instance has attributes like
-     * $instance->httpStatusCode and $instance->response to help decide if the
-     * request errored. Set $instance->error to true or false within the
-     * function.
+     * This function is called after the request has been sent.
+     *
+     * It can be used to override whether or not the request errored. The
+     * instance is passed as the first argument to the function and the instance
+     * has attributes like $instance->httpStatusCode and $instance->response to
+     * help decide if the request errored. Set $instance->error to true or false
+     * within the function.
      *
      * When $instance->error is true indicating a request error, the error
      * callback set by Curl::error() is called. When $instance->error is false,
      * the success callback set by Curl::success() is called.
      *
-     * @param $function callable
+     * @param $callback callable|null
      */
-    public function setError($function)
+    public function afterSend($callback)
     {
-        $this->errorDecider = $function;
+        $this->afterSendCallback = $callback;
     }
 
     /**
