@@ -112,11 +112,9 @@ def main():
 
     # pprint.pprint(pull_request_changes)
 
-    if not pull_request_changes:
-        print("No merged pull requests since the most recent tag release were found")
-        return
-
     # Raise error if any pull request is missing a semantic version change type.
+    # Do this check before checking for any pull request changes as all the pull
+    # requests changes might be missing semver labels.
     if pulls_missing_semver_label:
         error_message = (
             "Merged pull request(s) found without semantic version label:\n"
@@ -127,6 +125,10 @@ def main():
             )
         )
         raise Exception(error_message)
+
+    if not pull_request_changes:
+        print("No merged pull requests since the most recent tag release were found")
+        return
 
     # pprint.pprint(pull_request_by_type)
     if pull_request_by_type.get("major"):
