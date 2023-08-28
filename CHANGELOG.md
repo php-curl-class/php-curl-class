@@ -6,6 +6,11 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.18.0 - 2023-08-28
+
+- Implement Curl::setError() and MultiCurl::setError() ([#805](https://github.com/php-curl-class/php-curl-class/pull/805))
+- Rename ::setError() to ::afterSend() ([#807](https://github.com/php-curl-class/php-curl-class/pull/807))
+
 ## 9.17.4 - 2023-07-10
 
 - Add coding standards rule to use the null coalescing operator ?? where possible ([#801](https://github.com/php-curl-class/php-curl-class/pull/801))
