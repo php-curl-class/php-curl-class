@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.18.1 - 2023-08-29
+
+- Add additional check for decoding gzip-encoded responses ([#808](https://github.com/php-curl-class/php-curl-class/pull/808))
+
 ## 9.18.0 - 2023-08-28
 
 - Implement Curl::setError() and MultiCurl::setError() ([#805](https://github.com/php-curl-class/php-curl-class/pull/805))
