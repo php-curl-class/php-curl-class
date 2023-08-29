@@ -4885,6 +4885,36 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('hello', $test->curl->response);
     }
 
+    public function testGzipAlreadyDecodedWithHeader()
+    {
+        $test = new Test();
+
+        // Send header containing all supported encoding types by setting
+        // CURLOPT_ENCODING to an empty string.
+        $test->curl->setOpt(CURLOPT_ENCODING, '');
+
+        $test->server('json_response', 'POST', [
+            'key' => 'content-encoding',
+            'value' => 'gzip',
+            'body' => gzencode('hello'),
+        ]);
+        $this->assertEquals('hello', $test->curl->response);
+    }
+
+    public function testGzipAlreadyDecodedWithoutHeader()
+    {
+        $test = new Test();
+
+        // Send header containing all supported encoding types by setting
+        // CURLOPT_ENCODING to an empty string.
+        $test->curl->setOpt(CURLOPT_ENCODING, '');
+
+        $test->server('json_response', 'POST', [
+            'body' => gzencode('hello'),
+        ]);
+        $this->assertEquals('hello', $test->curl->response);
+    }
+
     public function testGzipDecodingFailureWithoutWarning()
     {
         $test = new Test();
@@ -4919,6 +4949,158 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('gzip', $test->curl->responseHeaders['content-encoding']);
         $this->assertEquals('foo', $test->curl->response->{'abc'});
         $this->assertEquals('bar', $test->curl->response->{'123'});
+    }
+
+    public function testGzipContentEncoding()
+    {
+        // [
+        //     [
+        //         'Response header content-encoding: "gzip"',
+        //         'Response header content-encoding: "notgzip"',
+        //         'Response header content-encoding: "" (empty)',
+        //         'Response header without content-encoding',
+        //     ],
+        //     [
+        //         'Content is valid gzip-encoded',
+        //         'Content is not valid gzip-encoded',
+        //         'Content is not gzip-encoded',
+        //     ],
+        // ]
+
+        $tests = [
+            // Response header content-encoding: "gzip"
+            // Content is valid gzip-encoded
+            [
+                'data' => [
+                    'key' => 'content-encoding',
+                    'value' => 'gzip',
+                    'body' => gzencode('hello'),
+                ],
+                'expect_response' => 'hello',
+            ],
+
+            // Response header content-encoding: "gzip"
+            // Content is not valid gzip-encoded
+            [
+                'data' => [
+                    'key' => 'content-encoding',
+                    'value' => 'gzip',
+                    'body' => 'not-gzip-encoded',
+                ],
+                'expect_response' => 'not-gzip-encoded',
+            ],
+
+            // Response header content-encoding: "gzip"
+            // Content is not gzip-encoded
+            [
+                'data' => [
+                    'headers' => [
+                        'content-type: text/html; charset=utf-8',
+                        'content-encoding: gzip',
+                    ],
+                    'body' => '<html><body>not gzip-encoded</body></html>',
+                ],
+                'expect_response' => '<html><body>not gzip-encoded</body></html>',
+            ],
+
+            // Response header content-encoding: "notgzip"
+            // Content is valid gzip-encoded
+            [
+                'data' => [
+                    'key' => 'content-encoding',
+                    'value' => 'notgzip',
+                    'body' => gzencode('hello'),
+                ],
+                'expect_response' => 'hello',
+            ],
+
+            // Response header content-encoding: "notgzip"
+            // Content is not valid gzip-encoded
+            [
+                'data' => [
+                    'key' => 'content-encoding',
+                    'value' => 'notgzip',
+                    'body' => base64_encode('not-valid-gzip-encoded'),
+                ],
+                'expect_response' => base64_encode('not-valid-gzip-encoded'),
+            ],
+
+            // Response header content-encoding: "notgzip"
+            // Content is not gzip-encoded
+            [
+                'data' => [
+                    'key' => 'content-encoding',
+                    'value' => 'notgzip',
+                    'body' => 'not-gzip-encoded',
+                ],
+                'expect_response' => 'not-gzip-encoded',
+            ],
+
+            // Response header content-encoding: "" (empty)
+            // Content is valid gzip-encoded
+            [
+                'data' => [
+                    'key' => 'content-encoding',
+                    'value' => '',
+                    'body' => gzencode('hello'),
+                ],
+                'expect_response' => 'hello',
+            ],
+
+            // Response header content-encoding: "" (empty)
+            // Content is not valid gzip-encoded
+            [
+                'data' => [
+                    'key' => 'content-encoding',
+                    'value' => '',
+                    'body' => base64_encode('not-valid-gzip-encoded'),
+                ],
+                'expect_response' => base64_encode('not-valid-gzip-encoded'),
+            ],
+
+            // Response header content-encoding: "" (empty)
+            // Content is not gzip-encoded
+            [
+                'data' => [
+                    'key' => 'content-encoding',
+                    'value' => '',
+                    'body' => 'not-gzip-encoded',
+                ],
+                'expect_response' => 'not-gzip-encoded',
+            ],
+
+            // Response header without content-encoding
+            // Content is valid gzip-encoded
+            [
+                'data' => [
+                    'body' => gzencode('hello'),
+                ],
+                'expect_response' => 'hello',
+            ],
+
+            // Response header without content-encoding
+            // Content is not valid gzip-encoded
+            [
+                'data' => [
+                    'body' => base64_encode('not-valid-gzip-encoded'),
+                ],
+                'expect_response' => base64_encode('not-valid-gzip-encoded'),
+            ],
+
+            // Response header without content-encoding
+            // Content is not gzip-encoded
+            [
+                'data' => [
+                    'body' => 'not-gzip-encoded',
+                ],
+                'expect_response' => 'not-gzip-encoded',
+            ],
+        ];
+        foreach ($tests as $test_data) {
+            $test = new Test();
+            $test->server('json_response', 'POST', $test_data['data']);
+            $this->assertEquals($test_data['expect_response'], $test->curl->response);
+        }
     }
 
     public function testAfterSendAttemptCount()
