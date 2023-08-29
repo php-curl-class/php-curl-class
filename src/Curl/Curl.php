@@ -1933,8 +1933,22 @@ class Curl extends BaseCurl
         }
 
         if (
-            isset($response_headers['Content-Encoding']) && $response_headers['Content-Encoding'] === 'gzip' &&
-            is_string($response)
+            (
+                // Ensure that the server says the response is compressed with
+                // gzip and the response has not already been decoded. Use
+                // is_string() to ensure that $response is a string being passed
+                // to mb_strpos() and gzdecode().
+                isset($response_headers['Content-Encoding']) &&
+                $response_headers['Content-Encoding'] === 'gzip' &&
+                is_string($response) &&
+                mb_strpos($response, "\x1f" . "\x8b" . "\x08", 0, 'US-ASCII') === 0
+            ) || (
+                // Or ensure that the response looks like it is compressed with
+                // gzip. Use is_string() to ensure that $response is a string
+                // being passed to mb_strpos() and gzdecode().
+                is_string($response) &&
+                mb_strpos($response, "\x1f" . "\x8b" . "\x08", 0, 'US-ASCII') === 0
+            )
         ) {
             // Use @ to suppress message "Warning gzdecode(): data error".
             $decoded_response = @gzdecode($response);
