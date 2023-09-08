@@ -3,12 +3,12 @@ import os
 import pprint
 import subprocess
 from copy import copy
-from datetime import datetime, timezone
+from datetime import datetime
+from datetime import timezone
 from pathlib import Path
 
 import git
 from github import Github
-
 
 # The owner and repository name. For example, octocat/Hello-World.
 GITHUB_REPOSITORY = os.getenv("GITHUB_REPOSITORY")

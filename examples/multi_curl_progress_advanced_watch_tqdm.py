@@ -15,7 +15,6 @@ import sys
 
 from tqdm import tqdm
 
-
 FIFO = "/tmp/myfifo"
 
 

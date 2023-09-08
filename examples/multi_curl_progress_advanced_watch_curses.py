@@ -13,7 +13,6 @@ import curses
 import json
 import os
 
-
 FIFO = "/tmp/myfifo"
 
 
