@@ -5,9 +5,9 @@
 # See multi_curl_progress_advanced.php
 #
 # $ ipython multi_curl_progress_advanced_watch_tqdm.py
-# php_manual_en.html.gz:  56%|████████████████████████                   | 2.99M/5.34M [00:02<00:02, 1.14MB/s]
-# php_manual_en.tar.gz:  23%|██████████▎                                  | 2.37M/10.4M [00:02<00:08, 901kB/s]
-# php_manual_en.chm:  15%|███████▏                                        | 2.06M/13.7M [00:02<00:14, 783kB/s]
+# php_manual_en.html.gz:  56%|████████████████████████         | 2.99M/5.34M [00:02<00:02, 1.14MB/s]
+# php_manual_en.tar.gz:  23%|██████████▎                       | 2.37M/10.4M [00:02<00:08, 901kB/s]
+# php_manual_en.chm:  15%|███████▏                             | 2.06M/13.7M [00:02<00:14, 783kB/s]
 
 import json
 import os
