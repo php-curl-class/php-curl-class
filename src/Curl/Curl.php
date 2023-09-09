@@ -1937,16 +1937,27 @@ class Curl extends BaseCurl
                 // Ensure that the server says the response is compressed with
                 // gzip and the response has not already been decoded. Use
                 // is_string() to ensure that $response is a string being passed
-                // to mb_strpos() and gzdecode().
+                // to mb_strpos() and gzdecode(). Use extension_loaded() to
+                // ensure that mb_strpos() uses the mbstring extension and not a
+                // polyfill.
                 isset($response_headers['Content-Encoding']) &&
                 $response_headers['Content-Encoding'] === 'gzip' &&
                 is_string($response) &&
-                mb_strpos($response, "\x1f" . "\x8b" . "\x08", 0, 'US-ASCII') === 0
+                (
+                    (
+                        extension_loaded('mbstring') &&
+                        mb_strpos($response, "\x1f" . "\x8b" . "\x08", 0, 'US-ASCII') === 0
+                    ) ||
+                    !extension_loaded('mbstring')
+                )
             ) || (
                 // Or ensure that the response looks like it is compressed with
                 // gzip. Use is_string() to ensure that $response is a string
-                // being passed to mb_strpos() and gzdecode().
+                // being passed to mb_strpos() and gzdecode(). Use
+                // extension_loaded() to ensure that mb_strpos() uses the
+                // mbstring extension and not a polyfill.
                 is_string($response) &&
+                extension_loaded('mbstring') &&
                 mb_strpos($response, "\x1f" . "\x8b" . "\x08", 0, 'US-ASCII') === 0
             )
         ) {
