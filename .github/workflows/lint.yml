@@ -7,10 +7,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install black
-        run: pip install black
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Get changed python files
         id: changed-files
@@ -18,6 +16,28 @@ jobs:
         with:
           files: "**/*.py"
 
-      - name: Check changed files
+      - name: Install requirements
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: black --check --color --diff --quiet ${{ steps.changed-files.outputs.all_changed_files }}
+        run: pip install black flake8 isort
+
+      - name: black changed files
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          black --check --color --diff --quiet ${{ steps.changed-files.outputs.all_changed_files }}
+
+      - name: flake8 changed files
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          flake8 ${{ steps.changed-files.outputs.all_changed_files }}
+
+      - name: isort changed files
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          set +e
+          isort --check-only --force-single-line-imports --profile black ${{ steps.changed-files.outputs.all_changed_files }}
+          exit_code="${?}"
+          if [[ "${exit_code}" -ne 0 ]]; then
+            isort --force-single-line-imports --profile black ${{ steps.changed-files.outputs.all_changed_files }}
+            git diff --color
+            exit "${exit_code}"
+          fi

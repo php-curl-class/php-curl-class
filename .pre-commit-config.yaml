@@ -17,12 +17,16 @@ repos:
   - id: black
     name: black
     entry: black
+- repo: https://github.com/pycqa/flake8
+  rev: 6.1.0
+  hooks:
+  - id: flake8
 - repo: https://github.com/pycqa/isort
   rev: 5.12.0
   hooks:
   - id: isort
     name: isort
-    args: [--force-single-line-imports]
+    args: ["--force-single-line-imports", "--profile", "black"]
 - repo: local
   hooks:
   - id: composer-validate
@@ -37,4 +41,4 @@ repos:
   - id: pip-compile
     name: pip-compile scripts/make_release_requirements.in
     files: ^(.*/)?make_release_requirements\.(in|txt)$
-    args: [--output-file=scripts/make_release_requirements.txt, scripts/make_release_requirements.in]
+    args: ["--output-file=scripts/make_release_requirements.txt", "scripts/make_release_requirements.in"]

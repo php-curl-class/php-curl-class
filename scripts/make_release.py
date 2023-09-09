@@ -222,7 +222,8 @@ def main():
     tag_message = result["message"]
     release_name = "Release {}".format(release_version)
     release_message = (
-        "See [change log](https://github.com/php-curl-class/php-curl-class/blob/master/CHANGELOG.md) for changes.\n"
+        "See [change log]"
+        "(https://github.com/php-curl-class/php-curl-class/blob/master/CHANGELOG.md) for changes.\n"
         "\n"
         "https://github.com/php-curl-class/php-curl-class/compare/{}...{}".format(
             result["old_version"],
