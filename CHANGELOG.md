@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.18.2 - 2023-09-11
+
+- Fix use of mb_strpos() causing error when polyfill is used ([#813](https://github.com/php-curl-class/php-curl-class/pull/813))
+
 ## 9.18.1 - 2023-08-29
 
 - Add additional check for decoding gzip-encoded responses ([#808](https://github.com/php-curl-class/php-curl-class/pull/808))
