@@ -68,25 +68,181 @@ class Curl extends BaseCurl
         // SP             = <US-ASCII SP, space (32)>
         // HT             = <US-ASCII HT, horizontal-tab (9)>
         // <">            = <US-ASCII double-quote mark (34)>
-        '!', '#', '$', '%', '&', "'", '*', '+', '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B',
-        'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
-        'Y', 'Z', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
-        'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '|', '~',
+        '!',
+        '#',
+        '$',
+        '%',
+        '&',
+        "'",
+        '*',
+        '+',
+        '-',
+        '.',
+        '0',
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+        'A',
+        'B',
+        'C',
+        'D',
+        'E',
+        'F',
+        'G',
+        'H',
+        'I',
+        'J',
+        'K',
+        'L',
+        'M',
+        'N',
+        'O',
+        'P',
+        'Q',
+        'R',
+        'S',
+        'T',
+        'U',
+        'V',
+        'W',
+        'X',
+        'Y',
+        'Z',
+        '^',
+        '_',
+        '`',
+        'a',
+        'b',
+        'c',
+        'd',
+        'e',
+        'f',
+        'g',
+        'h',
+        'i',
+        'j',
+        'k',
+        'l',
+        'm',
+        'n',
+        'o',
+        'p',
+        'q',
+        'r',
+        's',
+        't',
+        'u',
+        'v',
+        'w',
+        'x',
+        'y',
+        'z',
+        '|',
+        '~',
     ];
     public static $RFC6265 = [
         // RFC 6265: "US-ASCII characters excluding CTLs, whitespace DQUOTE, comma, semicolon, and backslash".
         // %x21
         '!',
         // %x23-2B
-        '#', '$', '%', '&', "'", '(', ')', '*', '+',
+        '#',
+        '$',
+        '%',
+        '&',
+        "'",
+        '(',
+        ')',
+        '*',
+        '+',
         // %x2D-3A
-        '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':',
+        '-',
+        '.',
+        '/',
+        '0',
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+        ':',
         // %x3C-5B
-        '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
-        'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[',
+        '<',
+        '=',
+        '>',
+        '?',
+        '@',
+        'A',
+        'B',
+        'C',
+        'D',
+        'E',
+        'F',
+        'G',
+        'H',
+        'I',
+        'J',
+        'K',
+        'L',
+        'M',
+        'N',
+        'O',
+        'P',
+        'Q',
+        'R',
+        'S',
+        'T',
+        'U',
+        'V',
+        'W',
+        'X',
+        'Y',
+        'Z',
+        '[',
         // %x5D-7E
-        ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
-        's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',
+        ']',
+        '^',
+        '_',
+        '`',
+        'a',
+        'b',
+        'c',
+        'd',
+        'e',
+        'f',
+        'g',
+        'h',
+        'i',
+        'j',
+        'k',
+        'l',
+        'm',
+        'n',
+        'o',
+        'p',
+        'q',
+        'r',
+        's',
+        't',
+        'u',
+        'v',
+        'w',
+        'x',
+        'y',
+        'z',
+        '{',
+        '|',
+        '}',
+        '~',
     ];
 
     public $curlErrorCodeConstant;
@@ -214,7 +370,7 @@ class Curl extends BaseCurl
                 // php_url_encode()
                 // https://github.com/php/php-src/blob/master/ext/standard/http.c
                 return urlencode(strval($k)) . '=' . urlencode(strval($v));
-            }, array_keys((array)$data), array_values((array)$data)));
+            }, array_keys((array) $data), array_values((array) $data)));
         }
 
         return $data;
@@ -241,6 +397,12 @@ class Curl extends BaseCurl
         if (is_resource($this->curl) || $this->curl instanceof \CurlHandle) {
             curl_close($this->curl);
         }
+
+        $this->resetProperties();
+    }
+
+    private function resetProperties()
+    {
         $this->curl = null;
         $this->options = null;
         $this->userSetOptions = null;
@@ -282,7 +444,7 @@ class Curl extends BaseCurl
         if (is_array($url)) {
             $data = $query_parameters;
             $query_parameters = $url;
-            $url = (string)$this->url;
+            $url = (string) $this->url;
         }
 
         $this->setUrl($url, $query_parameters);
@@ -349,7 +511,7 @@ class Curl extends BaseCurl
         $this->setFile($this->fileHandle);
         $this->get($url);
 
-        return ! $this->error;
+        return !$this->error;
     }
 
     /**
@@ -606,7 +768,7 @@ class Curl extends BaseCurl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = (string)$this->url;
+            $url = (string) $this->url;
         }
         $this->setUrl($url, $data);
         $this->setOptInternal(CURLOPT_CUSTOMREQUEST, 'GET');
@@ -643,7 +805,7 @@ class Curl extends BaseCurl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = (string)$this->url;
+            $url = (string) $this->url;
         }
         $this->setUrl($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
@@ -662,7 +824,7 @@ class Curl extends BaseCurl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = (string)$this->url;
+            $url = (string) $this->url;
         }
         $this->setUrl($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
@@ -680,7 +842,7 @@ class Curl extends BaseCurl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = (string)$this->url;
+            $url = (string) $this->url;
         }
 
         if (is_array($data) && empty($data)) {
@@ -722,9 +884,9 @@ class Curl extends BaseCurl
     public function post($url, $data = '', $follow_303_with_post = false)
     {
         if (is_array($url)) {
-            $follow_303_with_post = (bool)$data;
+            $follow_303_with_post = (bool) $data;
             $data = $url;
-            $url = (string)$this->url;
+            $url = (string) $this->url;
         }
 
         $this->setUrl($url);
@@ -758,7 +920,7 @@ class Curl extends BaseCurl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = (string)$this->url;
+            $url = (string) $this->url;
         }
         $this->setUrl($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -785,7 +947,7 @@ class Curl extends BaseCurl
     {
         if (is_array($url)) {
             $data = $url;
-            $url = (string)$this->url;
+            $url = (string) $this->url;
         }
         $this->setUrl($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'SEARCH');
@@ -1198,9 +1360,9 @@ class Curl extends BaseCurl
         $built_url = Url::buildUrl($url, $mixed_data);
 
         if ($this->url === null) {
-            $this->url = (string)new Url($built_url);
+            $this->url = (string) new Url($built_url);
         } else {
-            $this->url = (string)new Url($this->url, $built_url);
+            $this->url = (string) new Url($this->url, $built_url);
         }
 
         $this->setOpt(CURLOPT_URL, $this->url);
@@ -1307,7 +1469,7 @@ class Curl extends BaseCurl
             }
 
             echo
-                'Sent an HTTP '   . $request_method . ' request to "' . $request_url . '".' . "\n" .
+                'Sent an HTTP ' . $request_method . ' request to "' . $request_url . '".' . "\n" .
                 'Request contained ' . $request_headers_count . ' ' . (
                     $request_headers_count === 1 ? 'header:' : 'headers:'
                 ) . "\n";
@@ -1323,8 +1485,8 @@ class Curl extends BaseCurl
 
             if (
                 $request_headers_count === 0 && (
-                $this->getOpt(CURLOPT_VERBOSE) ||
-                !$this->getOpt(CURLINFO_HEADER_OUT)
+                    $this->getOpt(CURLOPT_VERBOSE) ||
+                    !$this->getOpt(CURLINFO_HEADER_OUT)
                 )
             ) {
                 echo
@@ -1980,7 +2142,7 @@ class Curl extends BaseCurl
     private function parseResponseHeaders($raw_response_headers)
     {
         $response_header_array = explode("\r\n\r\n", $raw_response_headers);
-        $response_header  = '';
+        $response_header = '';
         for ($i = count($response_header_array) - 1; $i >= 0; $i--) {
             if (isset($response_header_array[$i]) && stripos($response_header_array[$i], 'HTTP/') === 0) {
                 $response_header = $response_header_array[$i];
@@ -2166,15 +2328,7 @@ function createHeaderCallback($header_callback_data)
  */
 function createStopRequestFunction($header_callback_data)
 {
-    return function (
-        $resource,
-        $download_size,
-        $downloaded,
-        $upload_size,
-        $uploaded
-    ) use (
-        $header_callback_data
-    ) {
+    return function ($resource, $download_size, $downloaded, $upload_size, $uploaded) use ($header_callback_data) {
         // Abort the transfer when the stop request flag has been set by returning a non-zero value.
         return $header_callback_data->stopRequest ? 1 : 0;
     };
