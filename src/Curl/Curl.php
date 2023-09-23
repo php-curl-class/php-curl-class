@@ -1307,7 +1307,7 @@ class Curl extends BaseCurl
             }
 
             echo
-                'Sent an HTTP '   . $request_method . ' request to "' . $request_url . '".' . "\n" .
+                'Sent an HTTP ' . $request_method . ' request to "' . $request_url . '".' . "\n" .
                 'Request contained ' . $request_headers_count . ' ' . (
                     $request_headers_count === 1 ? 'header:' : 'headers:'
                 ) . "\n";
@@ -1980,7 +1980,7 @@ class Curl extends BaseCurl
     private function parseResponseHeaders($raw_response_headers)
     {
         $response_header_array = explode("\r\n\r\n", $raw_response_headers);
-        $response_header  = '';
+        $response_header = '';
         for ($i = count($response_header_array) - 1; $i >= 0; $i--) {
             if (isset($response_header_array[$i]) && stripos($response_header_array[$i], 'HTTP/') === 0) {
                 $response_header = $response_header_array[$i];
