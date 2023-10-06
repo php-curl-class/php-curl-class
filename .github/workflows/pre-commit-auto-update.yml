@@ -21,6 +21,6 @@ jobs:
       - name: Create pull request
         uses: peter-evans/create-pull-request@v5
         with:
-            commit-message: Update pre-commit dependencies
-            title: Update pre-commit dependencies
-            labels: cleanup-no-release-required, dependencies, github_actions
+          commit-message: Update pre-commit dependencies
+          labels: cleanup-no-release-required, dependencies, github_actions
+          title: Update pre-commit dependencies
