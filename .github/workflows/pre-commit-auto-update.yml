@@ -1,6 +1,8 @@
 name: Pre-commit auto-update
 
 on:
+  schedule:
+    - cron: '0 18 * * 1-4'
   workflow_dispatch:
 
 jobs:
