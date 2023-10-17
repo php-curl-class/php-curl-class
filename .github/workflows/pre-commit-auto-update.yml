@@ -26,7 +26,10 @@ jobs:
         run: |
           git diff --color
           changes="$(git diff)"
-          echo "changes=${changes}" >> $GITHUB_OUTPUT
+          delimiter="$(openssl rand -hex 8)"
+          echo "changes<<${delimiter}" >> "${GITHUB_OUTPUT}"
+          echo "${changes}" >> "${GITHUB_OUTPUT}"
+          echo "${delimiter}" >> "${GITHUB_OUTPUT}"
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v5
