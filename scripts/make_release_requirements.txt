@@ -34,7 +34,7 @@ requests==2.31.0
     # via pygithub
 smmap==5.0.0
     # via gitdb
-urllib3==2.0.6
+urllib3==2.0.7
     # via requests
 wrapt==1.15.0
     # via deprecated
