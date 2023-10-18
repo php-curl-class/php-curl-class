@@ -49,3 +49,10 @@ jobs:
         if: ${{ steps.cpr.outputs.pull-request-number }}
         run: |
           echo "Pull request: ${{ steps.cpr.outputs.pull-request-url }}"
+
+      - name: Approve update
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          gh pr review --approve "${{ steps.cpr.outputs.pull-request-url }}"
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
