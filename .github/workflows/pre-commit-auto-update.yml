@@ -32,6 +32,7 @@ jobs:
           echo "${delimiter}" >> "${GITHUB_OUTPUT}"
 
       - name: Create pull request
+        id: cpr
         uses: peter-evans/create-pull-request@v5
         with:
           commit-message: Update pre-commit dependencies
@@ -41,3 +42,8 @@ jobs:
             ```diff
             ${{ steps.gather-changes.outputs.changes }}
             ```
+
+      - name: Pull request created
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          echo "Pull request: ${{ steps.cpr.outputs.pull-request-url }}"
