@@ -15,7 +15,7 @@ foreach ($curl->getUserSetOptions() as $option => $value) {
 }
 
 // user set option 10018:
-// CURLOPT_USERAGENT: some agent
+// CURLOPT_USERAGENT: "some agent"
 //
 // user set option 13:
 // CURLOPT_TIMEOUT: 60
