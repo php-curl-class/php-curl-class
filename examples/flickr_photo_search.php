@@ -22,7 +22,7 @@ $curl->get('https://api.flickr.com/services/rest/', $data);
 foreach ($curl->response->photos->photo as $photo) {
     $size = 's';
     $ext = 'jpg';
-    $url = 'http://farm' . $photo->farm . '.staticflickr.com/' .  $photo->server . '/' .
+    $url = 'https://farm' . $photo->farm . '.staticflickr.com/' .  $photo->server . '/' .
         $photo->id . '_' . $photo->secret . '_' . $size . '.' . $ext;
     echo '<img alt="" src="' . $url . '" height="75" width="75" />';
 }

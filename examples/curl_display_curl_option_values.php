@@ -21,7 +21,7 @@ foreach ($curl->getOptions() as $option => $value) {
 // CURLOPT_REDIR_PROTOCOLS: 3 (CURLPROTO_HTTP | CURLPROTO_HTTPS)
 //
 // option 10018:
-// CURLOPT_USERAGENT: some agent
+// CURLOPT_USERAGENT: "some agent"
 //
 // option 13:
 // CURLOPT_TIMEOUT: 60

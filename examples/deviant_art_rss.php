@@ -5,7 +5,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Curl\Curl;
 
 $curl = new Curl();
-$curl->get('http://backend.deviantart.com/rss.xml', [
+$curl->get('https://backend.deviantart.com/rss.xml', [
     'q' => 'boost:popular in:photography/people/fashion',
     'type' => 'deviation',
 ]);
