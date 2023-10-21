@@ -1701,7 +1701,7 @@ class Curl extends BaseCurl
         }
 
         if (is_string($value)) {
-            echo ' ' . $value . "\n";
+            echo ' "' . $value . '"' . "\n";
         } elseif (is_int($value)) {
             echo ' ' . $value;
 
