@@ -11,7 +11,7 @@ import git
 from github import Github
 
 # The owner and repository name. For example, octocat/Hello-World.
-GITHUB_REPOSITORY = os.getenv("GITHUB_REPOSITORY")
+GITHUB_REPOSITORY = os.getenv("GITHUB_REPOSITORY", "")
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 GITHUB_REF_NAME = os.getenv("GITHUB_REF_NAME")
