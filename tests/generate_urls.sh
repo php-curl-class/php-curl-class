@@ -3,7 +3,7 @@ cd "${SCRIPT_DIR}"
 
 set -x
 
-python "generate_urls.py" &&
+python3 "generate_urls.py" &&
     ([[ -f "urls.csv.gz" ]] && rm --verbose "urls.csv.gz" || exit 0) &&
     gzip --verbose --best --no-name "urls.csv" &&
     gzip --verbose --test "urls.csv.gz" &&
