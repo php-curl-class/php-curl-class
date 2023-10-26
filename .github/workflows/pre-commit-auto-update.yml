@@ -44,6 +44,7 @@ jobs:
             ```
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           committer: GitHub <noreply@github.com>
+          delete-branch: true
 
       - name: Pull request created
         if: ${{ steps.cpr.outputs.pull-request-number }}
