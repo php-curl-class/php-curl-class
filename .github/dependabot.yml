@@ -8,6 +8,10 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    labels:
+      - "cleanup-no-release-required"
+      - "dependencies"
+      - "github_actions"
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
