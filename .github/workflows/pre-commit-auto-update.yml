@@ -55,4 +55,4 @@ jobs:
         run: |
           gh pr review --approve "${{ steps.cpr.outputs.pull-request-url }}"
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.PHP_CURL_CLASS_TOKEN }}
