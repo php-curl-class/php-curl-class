@@ -23,7 +23,7 @@ LIBRARY_FILE_PATH = ROOT / "src/Curl/Curl.php"
 
 # TODO: Adjust number of recent pull requests to include likely number of
 # pull requests since the last release.
-RECENT_PULL_REQUEST_LIMIT = 10
+RECENT_PULL_REQUEST_LIMIT = 50
 
 
 def main():
@@ -44,8 +44,10 @@ def main():
     most_recent_tag_datetime = most_recent_tag.commit.committed_datetime
     print("most_recent_tag_datetime: {}".format(most_recent_tag_datetime))
 
+    g = Github(login_or_token=GITHUB_TOKEN)
+
     # Find merged pull requests since the most recent tag.
-    github_repo = Github(login_or_token=GITHUB_TOKEN).get_repo(GITHUB_REPOSITORY)
+    github_repo = g.get_repo(GITHUB_REPOSITORY)
     recent_pulls = github_repo.get_pulls(
         state="closed",
         sort="updated",
