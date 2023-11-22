@@ -54,6 +54,13 @@ jobs:
       - name: Approve update
         if: ${{ steps.cpr.outputs.pull-request-number }}
         run: |
-          gh pr review --approve "${{ steps.cpr.outputs.pull-request-url }}"
+          review_status="$(
+              gh pr view "${{ steps.cpr.outputs.pull-request-url }}" \
+                  --json="reviewDecision" \
+                  --jq=".reviewDecision"
+          )"
+          if [[ "${review_status}" != "APPROVED" ]]; then
+              gh pr review --approve "${{ steps.cpr.outputs.pull-request-url }}"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.PHP_CURL_CLASS_TOKEN }}
