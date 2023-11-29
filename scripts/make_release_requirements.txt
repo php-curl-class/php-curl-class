@@ -12,22 +12,24 @@ cffi==1.15.1
     #   pynacl
 charset-normalizer==3.2.0
     # via requests
-cryptography==41.0.4
+cryptography==41.0.6
     # via pyjwt
 deprecated==1.2.14
     # via pygithub
 gitdb==4.0.10
     # via gitpython
 gitpython==3.1.40
-    # via -r scripts/make_release_requirements.in
+    # via -r make_release_requirements.in
 idna==3.4
     # via requests
 pycparser==2.21
     # via cffi
 pygithub==2.1.1
-    # via -r scripts/make_release_requirements.in
+    # via -r make_release_requirements.in
 pyjwt[crypto]==2.8.0
-    # via pygithub
+    # via
+    #   pygithub
+    #   pyjwt
 pynacl==1.5.0
     # via pygithub
 python-dateutil==2.8.2
