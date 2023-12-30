@@ -241,9 +241,9 @@ class MultiCurl extends BaseCurl
      * @param         $url
      * @param         $data
      * @param         $follow_303_with_post
-     *                                      If true, will cause 303 redirections to be followed using a POST request
-     *                                      (default: false). Note: Redirections are only followed if the
-     *                                      CURLOPT_FOLLOWLOCATION option is set to true.
+     *                                     If true, will cause 303 redirections to be followed using a POST request
+     *                                     (default: false). Note: Redirections are only followed if the
+     *                                     CURLOPT_FOLLOWLOCATION option is set to true.
      * @return object
      */
     public function addPost($url, $data = '', $follow_303_with_post = false)
@@ -499,7 +499,7 @@ class MultiCurl extends BaseCurl
      * used for the request.
      *
      * @param $proxies array - A list of HTTP proxies to tunnel requests
-     *                  through. May include port number.
+     *                 through. May include port number.
      */
     public function setProxies($proxies)
     {
