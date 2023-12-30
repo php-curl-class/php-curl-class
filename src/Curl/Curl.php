@@ -699,20 +699,20 @@ class Curl extends BaseCurl
      * @param        $url
      * @param        $data
      * @param        $follow_303_with_post
-     *                                     If true, will cause 303 redirections to be followed using a POST request
-     *                                     (default: false).
-     *                                     Notes:
-     *                                     - Redirections are only followed if the CURLOPT_FOLLOWLOCATION option is set
-     *                                     to true.
-     *                                     - According to the HTTP specs (see [1]), a 303 redirection should be followed
-     *                                     using the GET method. 301 and 302 must not.
-     *                                     - In order to force a 303 redirection to be performed using the same method,
-     *                                     the underlying cURL object must be set in a special state (the
-     *                                     CURLOPT_CUSTOMREQUEST option must be set to the method to use after the
-     *                                     redirection). Due to a limitation of the cURL extension of PHP < 5.5.11 ([2],
-     *                                     [3]), it is not possible to reset this option. Using these PHP engines, it is
-     *                                     therefore impossible to restore this behavior on an existing php-curl-class
-     *                                     Curl object.
+     *                                    If true, will cause 303 redirections to be followed using a POST request
+     *                                    (default: false).
+     *                                    Notes:
+     *                                    - Redirections are only followed if the CURLOPT_FOLLOWLOCATION option is set
+     *                                    to true.
+     *                                    - According to the HTTP specs (see [1]), a 303 redirection should be followed
+     *                                    using the GET method. 301 and 302 must not.
+     *                                    - In order to force a 303 redirection to be performed using the same method,
+     *                                    the underlying cURL object must be set in a special state (the
+     *                                    CURLOPT_CUSTOMREQUEST option must be set to the method to use after the
+     *                                    redirection). Due to a limitation of the cURL extension of PHP < 5.5.11 ([2],
+     *                                    [3]), it is not possible to reset this option. Using these PHP engines, it is
+     *                                    therefore impossible to restore this behavior on an existing php-curl-class
+     *                                    Curl object.
      * @return mixed Returns the value provided by exec.
      *
      * [1] https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.2
