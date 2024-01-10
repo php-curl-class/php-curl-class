@@ -45,6 +45,8 @@ jobs:
           author: php-curl-class-bot <153653761+php-curl-class-bot@users.noreply.github.com>
           committer: GitHub <noreply@github.com>
           delete-branch: true
+          token: ${{ secrets.PHP_CURL_CLASS_BOT_TOKEN }}
+          push-to-fork: php-curl-class-bot/php-curl-class
         env:
           GITHUB_TOKEN: ${{ secrets.PHP_CURL_CLASS_BOT_TOKEN }}
 
