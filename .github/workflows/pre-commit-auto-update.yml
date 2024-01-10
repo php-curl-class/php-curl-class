@@ -42,7 +42,7 @@ jobs:
             ```diff
             ${{ steps.gather-changes.outputs.changes }}
             ```
-          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          author: php-curl-class-bot <153653761+php-curl-class-bot@users.noreply.github.com>
           committer: GitHub <noreply@github.com>
           delete-branch: true
         env:
