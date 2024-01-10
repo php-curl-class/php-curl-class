@@ -58,7 +58,10 @@ jobs:
       - name: Enable auto-merge for pull request
         if: ${{ steps.cpr.outputs.pull-request-number }}
         run: |
+          set -x
           gh repo set-default --view
+          default_repo="$(gh repo set-default --view)"
+          echo "default_repo: ${default_repo}"
           gh pr merge --auto --merge "${{ steps.cpr.outputs.pull-request-url }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
