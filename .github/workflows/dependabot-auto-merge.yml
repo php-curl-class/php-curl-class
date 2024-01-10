@@ -14,20 +14,26 @@ jobs:
       - name: Dependabot metadata
         id: dependabot-metadata
         uses: dependabot/fetch-metadata@v1.6.0
-      - name: Approve and merge Dependabot patch updates
-        if: ${{steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch'}}
+
+      - name: Approve and label updates
         run: |
           gh pr review --approve "$PR_URL"
           gh pr edit --add-label "cleanup-no-release-required" "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge Dependabot patch updates
+        if: ${{steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch'}}
+        run: |
           gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Approve and merge Dependabot minor updates
+
+      - name: Merge Dependabot minor updates
         if: ${{steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor'}}
         run: |
-          gh pr review --approve "$PR_URL"
-          gh pr edit --add-label "cleanup-no-release-required" "$PR_URL"
           gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
