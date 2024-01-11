@@ -46,7 +46,7 @@ jobs:
           committer: GitHub <noreply@github.com>
           delete-branch: true
           token: ${{ secrets.PHP_CURL_CLASS_BOT_TOKEN }}
-          push-to-fork: php-curl-class-bot/php-curl-class
+          push-to-fork: php-curl-class-helper/php-curl-class
         env:
           GITHUB_TOKEN: ${{ secrets.PHP_CURL_CLASS_BOT_TOKEN }}
 
