@@ -62,6 +62,10 @@ jobs:
           gh repo set-default --view
           default_repo="$(gh repo set-default --view)"
           echo "default_repo: ${default_repo}"
+          gh repo set-default php-curl-class/php-curl-class
+          gh repo set-default --view
+          current_default_repo="$(gh repo set-default --view)"
+          echo "current_default_repo: ${current_default_repo}"
           gh pr merge --auto --merge "${{ steps.cpr.outputs.pull-request-url }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
