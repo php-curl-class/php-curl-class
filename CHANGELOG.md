@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.19.0 - 2024-01-18
+
+- Allow displaying curl option value without specifying value ([#837](https://github.com/php-curl-class/php-curl-class/pull/837))
+
 ## 9.18.2 - 2023-09-11
 
 - Fix use of mb_strpos() causing error when polyfill is used ([#813](https://github.com/php-curl-class/php-curl-class/pull/813))
