@@ -1692,8 +1692,18 @@ class Curl extends BaseCurl
         return $curl_const_by_code;
     }
 
-    public function displayCurlOptionValue($option, $value)
+    /**
+     * Display Curl Option Value.
+     *
+     * @param $option
+     * @param $value
+     */
+    public function displayCurlOptionValue($option, $value = null)
     {
+        if ($value === null) {
+            $value = $this->getOpt($option);
+        }
+
         if (isset($this->curlOptionCodeConstants[$option])) {
             echo $this->curlOptionCodeConstants[$option] . ':';
         } else {
