@@ -12,6 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: 'master'
           persist-credentials: false
 
       - name: Update dependencies
