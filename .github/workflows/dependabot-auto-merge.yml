@@ -20,29 +20,29 @@ jobs:
           gh pr review --approve "$PR_URL"
           gh pr edit --add-label "cleanup-no-release-required" "$PR_URL"
         env:
-          PR_URL: ${{github.event.pull_request.html_url}}
+          PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Merge Dependabot patch updates
-        if: ${{steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch'}}
+        if: ${{ steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' }}
         run: |
           gh pr merge --auto --merge "$PR_URL"
         env:
-          PR_URL: ${{github.event.pull_request.html_url}}
+          PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Merge Dependabot minor updates
-        if: ${{steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor'}}
+        if: ${{ steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor' }}
         run: |
           gh pr merge --auto --merge "$PR_URL"
         env:
-          PR_URL: ${{github.event.pull_request.html_url}}
+          PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Merge Dependabot indirect dependency updates
-        if: ${{steps.dependabot-metadata.outputs.dependency-type == 'indirect'}}
+        if: ${{ steps.dependabot-metadata.outputs.dependency-type == 'indirect' }}
         run: |
           gh pr merge --auto --merge "$PR_URL"
         env:
-          PR_URL: ${{github.event.pull_request.html_url}}
+          PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
