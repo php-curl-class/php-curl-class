@@ -20,46 +20,55 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
     public function testMultiCurlCallback()
     {
         $delete_before_send_called = false;
+        $delete_after_send_called = false;
         $delete_success_called = false;
         $delete_error_called = false;
         $delete_complete_called = false;
 
         $download_before_send_called = false;
+        $download_after_send_called = false;
         $download_success_called = false;
         $download_error_called = false;
         $download_complete_called = false;
 
         $get_before_send_called = false;
+        $get_after_send_called = false;
         $get_success_called = false;
         $get_error_called = false;
         $get_complete_called = false;
 
         $head_before_send_called = false;
+        $head_after_send_called = false;
         $head_success_called = false;
         $head_error_called = false;
         $head_complete_called = false;
 
         $options_before_send_called = false;
+        $options_after_send_called = false;
         $options_success_called = false;
         $options_error_called = false;
         $options_complete_called = false;
 
         $patch_before_send_called = false;
+        $patch_after_send_called = false;
         $patch_success_called = false;
         $patch_error_called = false;
         $patch_complete_called = false;
 
         $post_before_send_called = false;
+        $post_after_send_called = false;
         $post_success_called = false;
         $post_error_called = false;
         $post_complete_called = false;
 
         $put_before_send_called = false;
+        $put_after_send_called = false;
         $put_success_called = false;
         $put_error_called = false;
         $put_complete_called = false;
 
         $search_before_send_called = false;
+        $search_after_send_called = false;
         $search_success_called = false;
         $search_error_called = false;
         $search_complete_called = false;
@@ -67,38 +76,47 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         $multi_curl = new MultiCurl();
         $multi_curl->beforeSend(function ($instance) use (
             &$delete_before_send_called,
+            &$delete_after_send_called,
             &$delete_success_called,
             &$delete_error_called,
             &$delete_complete_called,
             &$download_before_send_called,
+            &$download_after_send_called,
             &$download_success_called,
             &$download_error_called,
             &$download_complete_called,
             &$get_before_send_called,
+            &$get_after_send_called,
             &$get_success_called,
             &$get_error_called,
             &$get_complete_called,
             &$head_before_send_called,
+            &$head_after_send_called,
             &$head_success_called,
             &$head_error_called,
             &$head_complete_called,
             &$options_before_send_called,
+            &$options_after_send_called,
             &$options_success_called,
             &$options_error_called,
             &$options_complete_called,
             &$patch_before_send_called,
+            &$patch_after_send_called,
             &$patch_success_called,
             &$patch_error_called,
             &$patch_complete_called,
             &$post_before_send_called,
+            &$post_after_send_called,
             &$post_success_called,
             &$post_error_called,
             &$post_complete_called,
             &$put_before_send_called,
+            &$put_after_send_called,
             &$put_success_called,
             &$put_error_called,
             &$put_complete_called,
             &$search_before_send_called,
+            &$search_after_send_called,
             &$search_success_called,
             &$search_error_called,
             &$search_complete_called
@@ -107,6 +125,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             $request_method = \Helper\get_request_method($instance);
             if ($request_method === 'DELETE') {
                 \PHPUnit\Framework\Assert::assertFalse($delete_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($delete_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_complete_called);
@@ -114,12 +133,14 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($instance->downloadFileName !== null) {
                 \PHPUnit\Framework\Assert::assertFalse($download_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($download_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_complete_called);
                 $download_before_send_called = true;
             } elseif ($request_method === 'GET') {
                 \PHPUnit\Framework\Assert::assertFalse($get_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($get_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_complete_called);
@@ -127,6 +148,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'HEAD') {
                 \PHPUnit\Framework\Assert::assertFalse($head_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($head_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_complete_called);
@@ -134,6 +156,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'OPTIONS') {
                 \PHPUnit\Framework\Assert::assertFalse($options_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($options_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_complete_called);
@@ -141,6 +164,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'PATCH') {
                 \PHPUnit\Framework\Assert::assertFalse($patch_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($patch_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_complete_called);
@@ -148,6 +172,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'POST') {
                 \PHPUnit\Framework\Assert::assertFalse($post_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($post_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_complete_called);
@@ -155,6 +180,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'PUT') {
                 \PHPUnit\Framework\Assert::assertFalse($put_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($put_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_complete_called);
@@ -162,46 +188,56 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'SEARCH') {
                 \PHPUnit\Framework\Assert::assertFalse($search_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
                 $search_before_send_called = true;
             }
         });
-        $multi_curl->success(function ($instance) use (
+        $multi_curl->afterSend(function ($instance) use (
             &$delete_before_send_called,
+            &$delete_after_send_called,
             &$delete_success_called,
             &$delete_error_called,
             &$delete_complete_called,
             &$download_before_send_called,
+            &$download_after_send_called,
             &$download_success_called,
             &$download_error_called,
             &$download_complete_called,
             &$get_before_send_called,
+            &$get_after_send_called,
             &$get_success_called,
             &$get_error_called,
             &$get_complete_called,
             &$head_before_send_called,
+            &$head_after_send_called,
             &$head_success_called,
             &$head_error_called,
             &$head_complete_called,
             &$options_before_send_called,
+            &$options_after_send_called,
             &$options_success_called,
             &$options_error_called,
             &$options_complete_called,
             &$patch_before_send_called,
+            &$patch_after_send_called,
             &$patch_success_called,
             &$patch_error_called,
             &$patch_complete_called,
             &$post_before_send_called,
+            &$post_after_send_called,
             &$post_success_called,
             &$post_error_called,
             &$post_complete_called,
             &$put_before_send_called,
+            &$put_after_send_called,
             &$put_success_called,
             &$put_error_called,
             &$put_complete_called,
             &$search_before_send_called,
+            &$search_after_send_called,
             &$search_success_called,
             &$search_error_called,
             &$search_complete_called
@@ -210,6 +246,128 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             $request_method = \Helper\get_request_method($instance);
             if ($request_method === 'DELETE') {
                 \PHPUnit\Framework\Assert::assertTrue($delete_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($delete_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($delete_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($delete_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($delete_complete_called);
+                $delete_after_send_called = true;
+            }
+            if ($instance->downloadFileName !== null) {
+                \PHPUnit\Framework\Assert::assertTrue($download_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($download_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($download_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($download_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($download_complete_called);
+                $download_after_send_called = true;
+            } elseif ($request_method === 'GET') {
+                \PHPUnit\Framework\Assert::assertTrue($get_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($get_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($get_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($get_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($get_complete_called);
+                $get_after_send_called = true;
+            }
+            if ($request_method === 'HEAD') {
+                \PHPUnit\Framework\Assert::assertTrue($head_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($head_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($head_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($head_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($head_complete_called);
+                $head_after_send_called = true;
+            }
+            if ($request_method === 'OPTIONS') {
+                \PHPUnit\Framework\Assert::assertTrue($options_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($options_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($options_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($options_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($options_complete_called);
+                $options_after_send_called = true;
+            }
+            if ($request_method === 'PATCH') {
+                \PHPUnit\Framework\Assert::assertTrue($patch_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($patch_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($patch_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($patch_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($patch_complete_called);
+                $patch_after_send_called = true;
+            }
+            if ($request_method === 'POST') {
+                \PHPUnit\Framework\Assert::assertTrue($post_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($post_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($post_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($post_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($post_complete_called);
+                $post_after_send_called = true;
+            }
+            if ($request_method === 'PUT') {
+                \PHPUnit\Framework\Assert::assertTrue($put_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($put_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($put_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($put_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($put_complete_called);
+                $put_after_send_called = true;
+            }
+            if ($request_method === 'SEARCH') {
+                \PHPUnit\Framework\Assert::assertTrue($search_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
+                $search_after_send_called = true;
+            }
+        });
+        $multi_curl->success(function ($instance) use (
+            &$delete_before_send_called,
+            &$delete_after_send_called,
+            &$delete_success_called,
+            &$delete_error_called,
+            &$delete_complete_called,
+            &$download_before_send_called,
+            &$download_after_send_called,
+            &$download_success_called,
+            &$download_error_called,
+            &$download_complete_called,
+            &$get_before_send_called,
+            &$get_after_send_called,
+            &$get_success_called,
+            &$get_error_called,
+            &$get_complete_called,
+            &$head_before_send_called,
+            &$head_after_send_called,
+            &$head_success_called,
+            &$head_error_called,
+            &$head_complete_called,
+            &$options_before_send_called,
+            &$options_after_send_called,
+            &$options_success_called,
+            &$options_error_called,
+            &$options_complete_called,
+            &$patch_before_send_called,
+            &$patch_after_send_called,
+            &$patch_success_called,
+            &$patch_error_called,
+            &$patch_complete_called,
+            &$post_before_send_called,
+            &$post_after_send_called,
+            &$post_success_called,
+            &$post_error_called,
+            &$post_complete_called,
+            &$put_before_send_called,
+            &$put_after_send_called,
+            &$put_success_called,
+            &$put_error_called,
+            &$put_complete_called,
+            &$search_before_send_called,
+            &$search_after_send_called,
+            &$search_success_called,
+            &$search_error_called,
+            &$search_complete_called
+        ) {
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            $request_method = \Helper\get_request_method($instance);
+            if ($request_method === 'DELETE') {
+                \PHPUnit\Framework\Assert::assertTrue($delete_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($delete_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_complete_called);
@@ -217,12 +375,14 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($instance->downloadFileName !== null) {
                 \PHPUnit\Framework\Assert::assertTrue($download_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($download_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_complete_called);
                 $download_success_called = true;
             } elseif ($request_method === 'GET') {
                 \PHPUnit\Framework\Assert::assertTrue($get_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($get_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_complete_called);
@@ -230,6 +390,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'HEAD') {
                 \PHPUnit\Framework\Assert::assertTrue($head_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($head_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_complete_called);
@@ -237,6 +398,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'OPTIONS') {
                 \PHPUnit\Framework\Assert::assertTrue($options_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($options_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_complete_called);
@@ -244,6 +406,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'PATCH') {
                 \PHPUnit\Framework\Assert::assertTrue($patch_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($patch_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_complete_called);
@@ -251,6 +414,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'POST') {
                 \PHPUnit\Framework\Assert::assertTrue($post_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($post_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_complete_called);
@@ -258,6 +422,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'PUT') {
                 \PHPUnit\Framework\Assert::assertTrue($put_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($put_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_complete_called);
@@ -265,6 +430,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'SEARCH') {
                 \PHPUnit\Framework\Assert::assertTrue($search_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($search_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
@@ -294,38 +460,47 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         });
         $multi_curl->complete(function ($instance) use (
             &$delete_before_send_called,
+            &$delete_after_send_called,
             &$delete_success_called,
             &$delete_error_called,
             &$delete_complete_called,
             &$download_before_send_called,
+            &$download_after_send_called,
             &$download_success_called,
             &$download_error_called,
             &$download_complete_called,
             &$get_before_send_called,
+            &$get_after_send_called,
             &$get_success_called,
             &$get_error_called,
             &$get_complete_called,
             &$head_before_send_called,
+            &$head_after_send_called,
             &$head_success_called,
             &$head_error_called,
             &$head_complete_called,
             &$options_before_send_called,
+            &$options_after_send_called,
             &$options_success_called,
             &$options_error_called,
             &$options_complete_called,
             &$patch_before_send_called,
+            &$patch_after_send_called,
             &$patch_success_called,
             &$patch_error_called,
             &$patch_complete_called,
             &$post_before_send_called,
+            &$post_after_send_called,
             &$post_success_called,
             &$post_error_called,
             &$post_complete_called,
             &$put_before_send_called,
+            &$put_after_send_called,
             &$put_success_called,
             &$put_error_called,
             &$put_complete_called,
             &$search_before_send_called,
+            &$search_after_send_called,
             &$search_success_called,
             &$search_error_called,
             &$search_complete_called
@@ -334,6 +509,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             $request_method = \Helper\get_request_method($instance);
             if ($request_method === 'DELETE') {
                 \PHPUnit\Framework\Assert::assertTrue($delete_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($delete_after_send_called);
                 \PHPUnit\Framework\Assert::assertTrue($delete_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_complete_called);
@@ -341,12 +517,14 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($instance->downloadFileName !== null) {
                 \PHPUnit\Framework\Assert::assertTrue($download_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($download_after_send_called);
                 \PHPUnit\Framework\Assert::assertTrue($download_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_complete_called);
                 $download_complete_called = true;
             } elseif ($request_method === 'GET') {
                 \PHPUnit\Framework\Assert::assertTrue($get_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($get_after_send_called);
                 \PHPUnit\Framework\Assert::assertTrue($get_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_complete_called);
@@ -354,6 +532,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'HEAD') {
                 \PHPUnit\Framework\Assert::assertTrue($head_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($head_after_send_called);
                 \PHPUnit\Framework\Assert::assertTrue($head_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_complete_called);
@@ -361,6 +540,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'OPTIONS') {
                 \PHPUnit\Framework\Assert::assertTrue($options_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($options_after_send_called);
                 \PHPUnit\Framework\Assert::assertTrue($options_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_complete_called);
@@ -368,6 +548,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'PATCH') {
                 \PHPUnit\Framework\Assert::assertTrue($patch_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($patch_after_send_called);
                 \PHPUnit\Framework\Assert::assertTrue($patch_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_complete_called);
@@ -375,6 +556,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'POST') {
                 \PHPUnit\Framework\Assert::assertTrue($post_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($post_after_send_called);
                 \PHPUnit\Framework\Assert::assertTrue($post_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_complete_called);
@@ -382,6 +564,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'PUT') {
                 \PHPUnit\Framework\Assert::assertTrue($put_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($put_after_send_called);
                 \PHPUnit\Framework\Assert::assertTrue($put_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_complete_called);
@@ -389,6 +572,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'SEARCH') {
                 \PHPUnit\Framework\Assert::assertTrue($search_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($search_after_send_called);
                 \PHPUnit\Framework\Assert::assertTrue($search_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
@@ -409,47 +593,56 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         $multi_curl->start();
 
         $this->assertTrue($delete_before_send_called);
+        $this->assertTrue($delete_after_send_called);
         $this->assertTrue($delete_success_called);
         $this->assertFalse($delete_error_called);
         $this->assertTrue($delete_complete_called);
 
         $this->assertTrue($download_before_send_called);
+        $this->assertTrue($download_after_send_called);
         $this->assertTrue($download_success_called);
         $this->assertFalse($download_error_called);
         $this->assertTrue($download_complete_called);
         $this->assertTrue(unlink($download_file_path));
 
         $this->assertTrue($get_before_send_called);
+        $this->assertTrue($get_after_send_called);
         $this->assertTrue($get_success_called);
         $this->assertFalse($get_error_called);
         $this->assertTrue($get_complete_called);
 
         $this->assertTrue($head_before_send_called);
+        $this->assertTrue($head_after_send_called);
         $this->assertTrue($head_success_called);
         $this->assertFalse($head_error_called);
         $this->assertTrue($head_complete_called);
 
         $this->assertTrue($options_before_send_called);
+        $this->assertTrue($options_after_send_called);
         $this->assertTrue($options_success_called);
         $this->assertFalse($options_error_called);
         $this->assertTrue($options_complete_called);
 
         $this->assertTrue($patch_before_send_called);
+        $this->assertTrue($patch_after_send_called);
         $this->assertTrue($patch_success_called);
         $this->assertFalse($patch_error_called);
         $this->assertTrue($patch_complete_called);
 
         $this->assertTrue($post_before_send_called);
+        $this->assertTrue($post_after_send_called);
         $this->assertTrue($post_success_called);
         $this->assertFalse($post_error_called);
         $this->assertTrue($post_complete_called);
 
         $this->assertTrue($put_before_send_called);
+        $this->assertTrue($put_after_send_called);
         $this->assertTrue($put_success_called);
         $this->assertFalse($put_error_called);
         $this->assertTrue($put_complete_called);
 
         $this->assertTrue($search_before_send_called);
+        $this->assertTrue($search_after_send_called);
         $this->assertTrue($search_success_called);
         $this->assertFalse($search_error_called);
         $this->assertTrue($search_complete_called);
@@ -462,46 +655,55 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         }
 
         $delete_before_send_called = false;
+        $delete_after_send_called = false;
         $delete_success_called = false;
         $delete_error_called = false;
         $delete_complete_called = false;
 
         $download_before_send_called = false;
+        $download_after_send_called = false;
         $download_success_called = false;
         $download_error_called = false;
         $download_complete_called = false;
 
         $get_before_send_called = false;
+        $get_after_send_called = false;
         $get_success_called = false;
         $get_error_called = false;
         $get_complete_called = false;
 
         $head_before_send_called = false;
+        $head_after_send_called = false;
         $head_success_called = false;
         $head_error_called = false;
         $head_complete_called = false;
 
         $options_before_send_called = false;
+        $options_after_send_called = false;
         $options_success_called = false;
         $options_error_called = false;
         $options_complete_called = false;
 
         $patch_before_send_called = false;
+        $patch_after_send_called = false;
         $patch_success_called = false;
         $patch_error_called = false;
         $patch_complete_called = false;
 
         $post_before_send_called = false;
+        $post_after_send_called = false;
         $post_success_called = false;
         $post_error_called = false;
         $post_complete_called = false;
 
         $put_before_send_called = false;
+        $put_after_send_called = false;
         $put_success_called = false;
         $put_error_called = false;
         $put_complete_called = false;
 
         $search_before_send_called = false;
+        $search_after_send_called = false;
         $search_success_called = false;
         $search_error_called = false;
         $search_complete_called = false;
@@ -509,38 +711,47 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         $multi_curl = new MultiCurl();
         $multi_curl->beforeSend(function ($instance) use (
             &$delete_before_send_called,
+            &$delete_after_send_called,
             &$delete_success_called,
             &$delete_error_called,
             &$delete_complete_called,
             &$download_before_send_called,
+            &$download_after_send_called,
             &$download_success_called,
             &$download_error_called,
             &$download_complete_called,
             &$get_before_send_called,
+            &$get_after_send_called,
             &$get_success_called,
             &$get_error_called,
             &$get_complete_called,
             &$head_before_send_called,
+            &$head_after_send_called,
             &$head_success_called,
             &$head_error_called,
             &$head_complete_called,
             &$options_before_send_called,
+            &$options_after_send_called,
             &$options_success_called,
             &$options_error_called,
             &$options_complete_called,
             &$patch_before_send_called,
+            &$patch_after_send_called,
             &$patch_success_called,
             &$patch_error_called,
             &$patch_complete_called,
             &$post_before_send_called,
+            &$post_after_send_called,
             &$post_success_called,
             &$post_error_called,
             &$post_complete_called,
             &$put_before_send_called,
+            &$put_after_send_called,
             &$put_success_called,
             &$put_error_called,
             &$put_complete_called,
             &$search_before_send_called,
+            &$search_after_send_called,
             &$search_success_called,
             &$search_error_called,
             &$search_complete_called
@@ -549,6 +760,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             $request_method = \Helper\get_request_method($instance);
             if ($request_method === 'DELETE') {
                 \PHPUnit\Framework\Assert::assertFalse($delete_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($delete_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_complete_called);
@@ -556,12 +768,14 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($instance->downloadFileName !== null) {
                 \PHPUnit\Framework\Assert::assertFalse($download_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($download_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_complete_called);
                 $download_before_send_called = true;
             } elseif ($request_method === 'GET') {
                 \PHPUnit\Framework\Assert::assertFalse($get_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($get_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_complete_called);
@@ -569,6 +783,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'HEAD') {
                 \PHPUnit\Framework\Assert::assertFalse($head_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($head_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_complete_called);
@@ -576,6 +791,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'OPTIONS') {
                 \PHPUnit\Framework\Assert::assertFalse($options_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($options_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_complete_called);
@@ -583,6 +799,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'PATCH') {
                 \PHPUnit\Framework\Assert::assertFalse($patch_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($patch_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_complete_called);
@@ -590,6 +807,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'POST') {
                 \PHPUnit\Framework\Assert::assertFalse($post_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($post_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_complete_called);
@@ -597,6 +815,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'PUT') {
                 \PHPUnit\Framework\Assert::assertFalse($put_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($put_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_complete_called);
@@ -604,10 +823,132 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'SEARCH') {
                 \PHPUnit\Framework\Assert::assertFalse($search_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
                 $search_before_send_called = true;
+            }
+        });
+        $multi_curl->afterSend(function ($instance) use (
+            &$delete_before_send_called,
+            &$delete_after_send_called,
+            &$delete_success_called,
+            &$delete_error_called,
+            &$delete_complete_called,
+            &$download_before_send_called,
+            &$download_after_send_called,
+            &$download_success_called,
+            &$download_error_called,
+            &$download_complete_called,
+            &$get_before_send_called,
+            &$get_after_send_called,
+            &$get_success_called,
+            &$get_error_called,
+            &$get_complete_called,
+            &$head_before_send_called,
+            &$head_after_send_called,
+            &$head_success_called,
+            &$head_error_called,
+            &$head_complete_called,
+            &$options_before_send_called,
+            &$options_after_send_called,
+            &$options_success_called,
+            &$options_error_called,
+            &$options_complete_called,
+            &$patch_before_send_called,
+            &$patch_after_send_called,
+            &$patch_success_called,
+            &$patch_error_called,
+            &$patch_complete_called,
+            &$post_before_send_called,
+            &$post_after_send_called,
+            &$post_success_called,
+            &$post_error_called,
+            &$post_complete_called,
+            &$put_before_send_called,
+            &$put_after_send_called,
+            &$put_success_called,
+            &$put_error_called,
+            &$put_complete_called,
+            &$search_before_send_called,
+            &$search_after_send_called,
+            &$search_success_called,
+            &$search_error_called,
+            &$search_complete_called
+        ) {
+            \PHPUnit\Framework\Assert::assertInstanceOf('Curl\Curl', $instance);
+            $request_method = \Helper\get_request_method($instance);
+            if ($request_method === 'DELETE') {
+                \PHPUnit\Framework\Assert::assertTrue($delete_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($delete_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($delete_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($delete_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($delete_complete_called);
+                $delete_after_send_called = true;
+            }
+            if ($instance->downloadFileName !== null) {
+                \PHPUnit\Framework\Assert::assertTrue($download_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($download_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($download_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($download_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($download_complete_called);
+                $download_after_send_called = true;
+            } elseif ($request_method === 'GET') {
+                \PHPUnit\Framework\Assert::assertTrue($get_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($get_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($get_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($get_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($get_complete_called);
+                $get_after_send_called = true;
+            }
+            if ($request_method === 'HEAD') {
+                \PHPUnit\Framework\Assert::assertTrue($head_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($head_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($head_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($head_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($head_complete_called);
+                $head_after_send_called = true;
+            }
+            if ($request_method === 'OPTIONS') {
+                \PHPUnit\Framework\Assert::assertTrue($options_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($options_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($options_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($options_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($options_complete_called);
+                $options_after_send_called = true;
+            }
+            if ($request_method === 'PATCH') {
+                \PHPUnit\Framework\Assert::assertTrue($patch_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($patch_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($patch_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($patch_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($patch_complete_called);
+                $patch_after_send_called = true;
+            }
+            if ($request_method === 'POST') {
+                \PHPUnit\Framework\Assert::assertTrue($post_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($post_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($post_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($post_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($post_complete_called);
+                $post_after_send_called = true;
+            }
+            if ($request_method === 'PUT') {
+                \PHPUnit\Framework\Assert::assertTrue($put_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($put_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($put_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($put_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($put_complete_called);
+                $put_after_send_called = true;
+            }
+            if ($request_method === 'SEARCH') {
+                \PHPUnit\Framework\Assert::assertTrue($search_before_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_after_send_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_success_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_error_called);
+                \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
+                $search_after_send_called = true;
             }
         });
         $multi_curl->success(function ($instance) use (
@@ -632,38 +973,47 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         });
         $multi_curl->error(function ($instance) use (
             &$delete_before_send_called,
+            &$delete_after_send_called,
             &$delete_success_called,
             &$delete_error_called,
             &$delete_complete_called,
             &$download_before_send_called,
+            &$download_after_send_called,
             &$download_success_called,
             &$download_error_called,
             &$download_complete_called,
             &$get_before_send_called,
+            &$get_after_send_called,
             &$get_success_called,
             &$get_error_called,
             &$get_complete_called,
             &$head_before_send_called,
+            &$head_after_send_called,
             &$head_success_called,
             &$head_error_called,
             &$head_complete_called,
             &$options_before_send_called,
+            &$options_after_send_called,
             &$options_success_called,
             &$options_error_called,
             &$options_complete_called,
             &$patch_before_send_called,
+            &$patch_after_send_called,
             &$patch_success_called,
             &$patch_error_called,
             &$patch_complete_called,
             &$post_before_send_called,
+            &$post_after_send_called,
             &$post_success_called,
             &$post_error_called,
             &$post_complete_called,
             &$put_before_send_called,
+            &$put_after_send_called,
             &$put_success_called,
             &$put_error_called,
             &$put_complete_called,
             &$search_before_send_called,
+            &$search_after_send_called,
             &$search_success_called,
             &$search_error_called,
             &$search_complete_called
@@ -672,6 +1022,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             $request_method = \Helper\get_request_method($instance);
             if ($request_method === 'DELETE') {
                 \PHPUnit\Framework\Assert::assertTrue($delete_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($delete_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_complete_called);
@@ -679,12 +1030,14 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($instance->downloadFileName !== null) {
                 \PHPUnit\Framework\Assert::assertTrue($download_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($download_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_complete_called);
                 $download_error_called = true;
             } elseif ($request_method === 'GET') {
                 \PHPUnit\Framework\Assert::assertTrue($get_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($get_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_complete_called);
@@ -692,6 +1045,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'HEAD') {
                 \PHPUnit\Framework\Assert::assertTrue($head_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($head_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_complete_called);
@@ -699,6 +1053,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'OPTIONS') {
                 \PHPUnit\Framework\Assert::assertTrue($options_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($options_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_complete_called);
@@ -706,6 +1061,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'PATCH') {
                 \PHPUnit\Framework\Assert::assertTrue($patch_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($patch_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_complete_called);
@@ -713,6 +1069,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'POST') {
                 \PHPUnit\Framework\Assert::assertTrue($post_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($post_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_complete_called);
@@ -720,6 +1077,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'PUT') {
                 \PHPUnit\Framework\Assert::assertTrue($put_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($put_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_complete_called);
@@ -727,6 +1085,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'SEARCH') {
                 \PHPUnit\Framework\Assert::assertTrue($search_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($search_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_success_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
@@ -735,38 +1094,47 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         });
         $multi_curl->complete(function ($instance) use (
             &$delete_before_send_called,
+            &$delete_after_send_called,
             &$delete_success_called,
             &$delete_error_called,
             &$delete_complete_called,
             &$download_before_send_called,
+            &$download_after_send_called,
             &$download_success_called,
             &$download_error_called,
             &$download_complete_called,
             &$get_before_send_called,
+            &$get_after_send_called,
             &$get_success_called,
             &$get_error_called,
             &$get_complete_called,
             &$head_before_send_called,
+            &$head_after_send_called,
             &$head_success_called,
             &$head_error_called,
             &$head_complete_called,
             &$options_before_send_called,
+            &$options_after_send_called,
             &$options_success_called,
             &$options_error_called,
             &$options_complete_called,
             &$patch_before_send_called,
+            &$patch_after_send_called,
             &$patch_success_called,
             &$patch_error_called,
             &$patch_complete_called,
             &$post_before_send_called,
+            &$post_after_send_called,
             &$post_success_called,
             &$post_error_called,
             &$post_complete_called,
             &$put_before_send_called,
+            &$put_after_send_called,
             &$put_success_called,
             &$put_error_called,
             &$put_complete_called,
             &$search_before_send_called,
+            &$search_after_send_called,
             &$search_success_called,
             &$search_error_called,
             &$search_complete_called
@@ -775,6 +1143,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             $request_method = \Helper\get_request_method($instance);
             if ($request_method === 'DELETE') {
                 \PHPUnit\Framework\Assert::assertTrue($delete_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($delete_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_success_called);
                 \PHPUnit\Framework\Assert::assertTrue($delete_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($delete_complete_called);
@@ -782,12 +1151,14 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($instance->downloadFileName !== null) {
                 \PHPUnit\Framework\Assert::assertTrue($download_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($download_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_success_called);
                 \PHPUnit\Framework\Assert::assertTrue($download_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($download_complete_called);
                 $download_complete_called = true;
             } elseif ($request_method === 'GET') {
                 \PHPUnit\Framework\Assert::assertTrue($get_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($get_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_success_called);
                 \PHPUnit\Framework\Assert::assertTrue($get_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($get_complete_called);
@@ -795,6 +1166,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'HEAD') {
                 \PHPUnit\Framework\Assert::assertTrue($head_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($head_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_success_called);
                 \PHPUnit\Framework\Assert::assertTrue($head_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($head_complete_called);
@@ -802,6 +1174,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'OPTIONS') {
                 \PHPUnit\Framework\Assert::assertTrue($options_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($options_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_success_called);
                 \PHPUnit\Framework\Assert::assertTrue($options_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($options_complete_called);
@@ -809,6 +1182,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'PATCH') {
                 \PHPUnit\Framework\Assert::assertTrue($patch_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($patch_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_success_called);
                 \PHPUnit\Framework\Assert::assertTrue($patch_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($patch_complete_called);
@@ -816,6 +1190,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'POST') {
                 \PHPUnit\Framework\Assert::assertTrue($post_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($post_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_success_called);
                 \PHPUnit\Framework\Assert::assertTrue($post_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($post_complete_called);
@@ -823,6 +1198,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'PUT') {
                 \PHPUnit\Framework\Assert::assertTrue($put_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($put_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_success_called);
                 \PHPUnit\Framework\Assert::assertTrue($put_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($put_complete_called);
@@ -830,6 +1206,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             }
             if ($request_method === 'SEARCH') {
                 \PHPUnit\Framework\Assert::assertTrue($search_before_send_called);
+                \PHPUnit\Framework\Assert::assertTrue($search_after_send_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_success_called);
                 \PHPUnit\Framework\Assert::assertTrue($search_error_called);
                 \PHPUnit\Framework\Assert::assertFalse($search_complete_called);
@@ -863,47 +1240,56 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         $multi_curl->start();
 
         $this->assertTrue($delete_before_send_called);
+        $this->assertTrue($delete_after_send_called);
         $this->assertFalse($delete_success_called);
         $this->assertTrue($delete_error_called);
         $this->assertTrue($delete_complete_called);
 
         $this->assertTrue($download_before_send_called);
+        $this->assertTrue($download_after_send_called);
         $this->assertFalse($download_success_called);
         $this->assertTrue($download_error_called);
         $this->assertTrue($download_complete_called);
         $this->assertTrue(unlink($download_file_path));
 
         $this->assertTrue($get_before_send_called);
+        $this->assertTrue($get_after_send_called);
         $this->assertFalse($get_success_called);
         $this->assertTrue($get_error_called);
         $this->assertTrue($get_complete_called);
 
         $this->assertTrue($head_before_send_called);
+        $this->assertTrue($head_after_send_called);
         $this->assertFalse($head_success_called);
         $this->assertTrue($head_error_called);
         $this->assertTrue($head_complete_called);
 
         $this->assertTrue($options_before_send_called);
+        $this->assertTrue($options_after_send_called);
         $this->assertFalse($options_success_called);
         $this->assertTrue($options_error_called);
         $this->assertTrue($options_complete_called);
 
         $this->assertTrue($patch_before_send_called);
+        $this->assertTrue($patch_after_send_called);
         $this->assertFalse($patch_success_called);
         $this->assertTrue($patch_error_called);
         $this->assertTrue($patch_complete_called);
 
         $this->assertTrue($post_before_send_called);
+        $this->assertTrue($post_after_send_called);
         $this->assertFalse($post_success_called);
         $this->assertTrue($post_error_called);
         $this->assertTrue($post_complete_called);
 
         $this->assertTrue($put_before_send_called);
+        $this->assertTrue($put_after_send_called);
         $this->assertFalse($put_success_called);
         $this->assertTrue($put_error_called);
         $this->assertTrue($put_complete_called);
 
         $this->assertTrue($search_before_send_called);
+        $this->assertTrue($search_after_send_called);
         $this->assertFalse($search_success_called);
         $this->assertTrue($search_error_called);
         $this->assertTrue($search_complete_called);
