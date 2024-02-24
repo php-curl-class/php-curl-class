@@ -844,7 +844,7 @@ class MultiCurl extends BaseCurl
         if ($curl->beforeSendCallback === null) {
             $curl->beforeSend($this->beforeSendCallback);
         }
-        if ($curl->afterSend === null) {
+        if ($curl->afterSendCallback === null) {
             $curl->afterSend($this->afterSendCallback);
         }
         if ($curl->successCallback === null) {
