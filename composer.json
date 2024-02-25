@@ -29,7 +29,7 @@
         "phpcsstandards/phpcsutils": "@alpha",
         "phpunit/phpunit": "*",
         "squizlabs/php_codesniffer": "*",
-        "vimeo/psalm": "*"
+        "vimeo/psalm": ">=5"
     },
     "suggest": {
         "ext-mbstring": "*"
