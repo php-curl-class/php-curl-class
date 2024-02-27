@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 9.19.1 - 2024-02-27
+
+- Fix afterSend not being called ([#848](https://github.com/php-curl-class/php-curl-class/pull/848))
+
 ## 9.19.0 - 2024-01-18
 
 - Allow displaying curl option value without specifying value ([#837](https://github.com/php-curl-class/php-curl-class/pull/837))
