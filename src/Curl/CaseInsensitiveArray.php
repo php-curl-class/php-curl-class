@@ -42,7 +42,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * @param  mixed[]              $initial (optional) Existing array to convert.
      * @return CaseInsensitiveArray
      */
-    public function __construct(array $initial = null)
+    public function __construct(?array $initial = null)
     {
         if ($initial !== null) {
             foreach ($initial as $key => $value) {
