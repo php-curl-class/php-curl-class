@@ -42,7 +42,12 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * @param  mixed[]              $initial (optional) Existing array to convert.
      * @return CaseInsensitiveArray
      */
-    public function __construct(array $initial = null)
+    // TODO: Use a nullable type declaration when supported versions >= PHP 7.1.
+    //   Trying to use the nullable type declaration on PHP 7.0:
+    //     public function __construct(?array $initial = null)
+    //   results in:
+    //     ParseError: syntax error, unexpected '?', expecting variable (T_VARIABLE)
+    public function __construct($initial = null)
     {
         if ($initial !== null) {
             foreach ($initial as $key => $value) {
