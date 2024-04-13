@@ -23,7 +23,6 @@ class MultiCurl extends BaseCurl
 
     private $rateLimit = null;
     private $rateLimitEnabled = false;
-    private $rateLimitReached = false;
     private $maxRequests = null;
     private $interval = null;
     private $intervalSeconds = null;
@@ -903,19 +902,14 @@ class MultiCurl extends BaseCurl
                 $micro_time = microtime(true);
                 $elapsed_seconds = $micro_time - $this->currentStartTime;
                 if ($elapsed_seconds <= $this->intervalSeconds) {
-                    $this->rateLimitReached = true;
                     return false;
-                } elseif ($this->rateLimitReached) {
-                    $this->rateLimitReached = false;
+                } else {
                     $this->currentStartTime = $micro_time;
                     $this->currentRequestCount = 0;
                 }
             }
-
-            return true;
-        } else {
-            return true;
         }
+        return true;
     }
 
     /**
