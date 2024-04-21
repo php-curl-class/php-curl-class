@@ -4,6 +4,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    versioning-strategy: "increase"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -12,7 +14,9 @@ updates:
       - "cleanup-no-release-required"
       - "dependencies"
       - "github_actions"
+
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "daily"
+    versioning-strategy: "increase"
