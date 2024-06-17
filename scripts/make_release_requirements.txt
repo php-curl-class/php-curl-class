@@ -36,7 +36,7 @@ smmap==5.0.1
     # via gitdb
 typing-extensions==4.11.0
     # via pygithub
-urllib3==2.2.1
+urllib3==2.2.2
     # via
     #   pygithub
     #   requests
