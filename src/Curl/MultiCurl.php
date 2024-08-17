@@ -942,4 +942,9 @@ class MultiCurl extends BaseCurl
 
         $this->currentRequestCount = 0;
     }
+
+    public function getActiveCurls()
+    {
+        return $this->activeCurls;
+    }
 }
