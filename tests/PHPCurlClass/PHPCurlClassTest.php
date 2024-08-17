@@ -3401,12 +3401,6 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 
     public function testMemoryLeak()
     {
-        // Skip memory leak test failing for PHP 7.
-        // "Failed asserting that 8192 is less than 1000."
-        if (getenv('CI_PHP_VERSION') === '7.0') {
-            $this->markTestSkipped();
-        }
-
         ob_start();
         echo '[';
         for ($i = 0; $i < 10; $i++) {

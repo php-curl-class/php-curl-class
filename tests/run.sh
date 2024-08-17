@@ -57,18 +57,6 @@ phpunit_v10_shim() {
     remove_expectWarning
 }
 
-php_v7_0_shim() {
-    # -protected function setUp(): void
-    # +protected function setUp()
-    find='protected function setUp(): void'
-    replace='protected function setUp()'
-    if sed v < /dev/null 2> /dev/null; then
-        sed -i"" -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
-    else
-        sed -i "" -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
-    fi
-}
-
 set -x
 
 # Use composer's phpunit and phpcs by adding composer bin directory to the path environment variable.
@@ -127,10 +115,6 @@ elif [[ "${phpunit_version}" == "9."* ]]; then
 elif [[ "${phpunit_version}" == "10."* ]]; then
     phpunit_v10_shim
     phpunit_args=" --display-incomplete --display-skipped --display-deprecations --display-errors --display-notices --display-warnings --fail-on-risky ${extra_args}"
-fi
-
-if [[ "${CI_PHP_VERSION}" == "7.0" ]]; then
-    php_v7_0_shim
 fi
 
 # Run tests.
