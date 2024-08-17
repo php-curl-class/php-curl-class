@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=make_release_requirements.txt make_release_requirements.in
 #
-certifi==2024.2.2
+certifi==2024.7.4
     # via requests
 cffi==1.16.0
     # via
@@ -36,7 +36,7 @@ smmap==5.0.1
     # via gitdb
 typing-extensions==4.11.0
     # via pygithub
-urllib3==2.2.1
+urllib3==2.2.2
     # via
     #   pygithub
     #   requests
