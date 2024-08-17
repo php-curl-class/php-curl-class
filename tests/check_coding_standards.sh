@@ -93,8 +93,7 @@ if [[ ! -z "${elses}" ]]; then
 fi
 
 # Run PHP_CodeSniffer.
-if   [[ "${CI_PHP_VERSION}" == "7.0" ]]; then :
-elif [[ "${CI_PHP_VERSION}" == "7.1" ]]; then :
+if   [[ "${CI_PHP_VERSION}" == "7.1" ]]; then :
 else
 
     # Determine which phpcs to use.
@@ -121,8 +120,7 @@ else
 fi
 
 # Run PHP-CS-Fixer.
-if   [[ "${CI_PHP_VERSION}" == "7.0" ]]; then :
-elif [[ "${CI_PHP_VERSION}" == "7.1" ]]; then :
+if   [[ "${CI_PHP_VERSION}" == "7.1" ]]; then :
 elif [[ "${CI_PHP_VERSION}" == "7.2" ]]; then :
 elif [[ "${CI_PHP_VERSION}" == "7.3" ]]; then :
 else
