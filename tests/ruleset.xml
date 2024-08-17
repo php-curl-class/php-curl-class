@@ -13,9 +13,6 @@
 
         <!-- TODO: Remove the following exclusion when ArrayUtil functions not in camel caps format like ArrayUtil::is_array_assoc() are removed. -->
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
-
-        <!-- TODO: Remove the following exclusion when support for PHP 7.0 is dropped. As of PHP 7.1 visibility modifiers are allowed for class constants. -->
-        <exclude name="PSR12.Properties.ConstantVisibility.NotFound" />
     </rule>
 
     <!-- Prohibit long lines in php files. -->
