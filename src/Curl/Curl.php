@@ -6,7 +6,7 @@ namespace Curl;
 
 class Curl extends BaseCurl
 {
-    public const VERSION = '9.19.2';
+    public const VERSION = '10.0.0';
     public const DEFAULT_TIMEOUT = 30;
 
     public $curl = null;
