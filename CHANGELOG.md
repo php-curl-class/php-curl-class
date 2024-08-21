@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 10.0.1 - 2024-08-21
+
+- Use nullable type declaration ([#882](https://github.com/php-curl-class/php-curl-class/pull/882))
+
 ## 10.0.0 - 2024-08-20
 
 - Drop support for PHP 7.0 ([#880](https://github.com/php-curl-class/php-curl-class/pull/880))
