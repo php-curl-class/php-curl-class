@@ -93,35 +93,29 @@ if [[ ! -z "${elses}" ]]; then
 fi
 
 # Run PHP_CodeSniffer.
-if   [[ "${CI_PHP_VERSION}" == "7.1" ]]; then :
+# Determine which phpcs to use.
+if [[ -f "vendor/bin/phpcs" ]]; then
+    phpcs_to_use="vendor/bin/phpcs"
 else
+    phpcs_to_use="phpcs"
+fi
 
-    # Determine which phpcs to use.
-    if [[ -f "vendor/bin/phpcs" ]]; then
-        phpcs_to_use="vendor/bin/phpcs"
-    else
-        phpcs_to_use="phpcs"
-    fi
-
-    # Detect coding standard violations.
-    "${phpcs_to_use}" --version
-    "${phpcs_to_use}" \
-        --extensions="php" \
-        --ignore="*/vendor/*" \
-        --standard="tests/ruleset.xml" \
-        -p \
-        -s \
-        .
-    if [[ "${?}" -ne 0 ]]; then
-        echo "Error: found PHP_CodeSniffer coding standard violation(s)"
-        errors+=("found PHP_CodeSniffer coding standard violation(s)")
-    fi
-
+# Detect coding standard violations.
+"${phpcs_to_use}" --version
+"${phpcs_to_use}" \
+    --extensions="php" \
+    --ignore="*/vendor/*" \
+    --standard="tests/ruleset.xml" \
+    -p \
+    -s \
+    .
+if [[ "${?}" -ne 0 ]]; then
+    echo "Error: found PHP_CodeSniffer coding standard violation(s)"
+    errors+=("found PHP_CodeSniffer coding standard violation(s)")
 fi
 
 # Run PHP-CS-Fixer.
-if   [[ "${CI_PHP_VERSION}" == "7.1" ]]; then :
-elif [[ "${CI_PHP_VERSION}" == "7.2" ]]; then :
+if   [[ "${CI_PHP_VERSION}" == "7.2" ]]; then :
 elif [[ "${CI_PHP_VERSION}" == "7.3" ]]; then :
 else
     vendor/bin/php-cs-fixer --version
