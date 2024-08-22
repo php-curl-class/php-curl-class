@@ -115,8 +115,7 @@ if [[ "${?}" -ne 0 ]]; then
 fi
 
 # Run PHP-CS-Fixer.
-if   [[ "${CI_PHP_VERSION}" == "7.2" ]]; then :
-elif [[ "${CI_PHP_VERSION}" == "7.3" ]]; then :
+if   [[ "${CI_PHP_VERSION}" == "7.3" ]]; then :
 else
     vendor/bin/php-cs-fixer --version
     vendor/bin/php-cs-fixer fix --ansi --config="tests/.php-cs-fixer.php" --diff --dry-run
