@@ -15,7 +15,6 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - '7.1'
           - '7.2'
           - '7.3'
           - '7.4'
@@ -50,4 +49,4 @@ jobs:
 
       - name: Static analysis
         run: 'vendor/bin/psalm --config="tests/psalm.xml"'
-        if: ${{ !matrix.future-release && matrix.php-version >= 7.1 }}
+        if: ${{ !matrix.future-release }}
