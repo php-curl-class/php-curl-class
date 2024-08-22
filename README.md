@@ -37,7 +37,7 @@ Installation instructions to use the `composer` command can be found on https://
 
 ### Requirements
 
-PHP Curl Class works with PHP 8.3, 8.2, 8.1, 8.0, 7.4, and 7.3.
+PHP Curl Class works with PHP 8.3, 8.2, 8.1, 8.0, and 7.4.
 
 ### Quick Start and Examples
 
