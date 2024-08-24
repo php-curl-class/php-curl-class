@@ -51,7 +51,8 @@ script=$(cat <<'EOF'
     preg_match_all('/^### (.*)/m', $data, $matches);
     $toc = [];
     foreach ($matches['1'] as $match) {
-        $href = '#' . str_replace(' ', '-', strtolower($match));
+        $slug = strtolower(preg_replace('/[^A-Za-z-]/', '', str_replace(' ', '-', $match)));
+        $href = '#' . $slug;
         $toc[] = '- [' . $match . '](' . $href . ')';
     }
     $toc = implode("\n", $toc);
