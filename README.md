@@ -12,12 +12,12 @@ PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.
 
 ---
 
-- [⚙️ Installation](#-installation)
+- [⚙️ Installation](#%EF%B8%8F-installation)
 - [📋 Requirements](#-requirements)
 - [🚀 Quick Start and Examples](#-quick-start-and-examples)
 - [📖 Available Methods](#-available-methods)
 - [🔒 Security](#-security)
-- [🛠️ Troubleshooting](#-troubleshooting)
+- [🛠️ Troubleshooting](#%EF%B8%8F-troubleshooting)
 - [🧪 Testing](#-testing)
 - [🤝 Contributing](#-contributing)
 

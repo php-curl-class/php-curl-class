@@ -51,7 +51,19 @@ script=$(cat <<'EOF'
     preg_match_all('/^### (.*)/m', $data, $matches);
     $toc = [];
     foreach ($matches['1'] as $match) {
-        $slug = strtolower(preg_replace('/[^A-Za-z-]/', '', str_replace(' ', '-', $match)));
+        $slug = urlencode(
+            strtolower(
+                str_replace(
+                    ' ',
+                    '-',
+                    preg_replace(
+                        '/[^A-Za-z\x{FE0F} ]/u',
+                        '',
+                        $match,
+                    ),
+                )
+            )
+        );
         $href = '#' . $slug;
         $toc[] = '- [' . $match . '](' . $href . ')';
     }
