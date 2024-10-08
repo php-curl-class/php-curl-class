@@ -11,8 +11,12 @@ class UrlTest extends \PHPUnit\Framework\TestCase
     public function testUrlPaths()
     {
         $urls_file = gzopen(__DIR__ . '/urls.csv.gz', 'r');
-        fgetcsv($urls_file); // header
-        while (($test = fgetcsv($urls_file)) !== false) {
+        $length = null;
+        $separator = ",";
+        $enclosure = "\"";
+        $escape = "\\";
+        fgetcsv($urls_file, $length, $separator, $enclosure, $escape); // header
+        while (($test = fgetcsv($urls_file, $length, $separator, $enclosure, $escape)) !== false) {
             $url = new Url($test[0], $test[1]);
             $actual_url = (string)$url;
             $expected_url = $test[2];
