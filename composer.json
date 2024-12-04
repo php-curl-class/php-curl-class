@@ -28,8 +28,7 @@
         "phpcompatibility/php-compatibility": "dev-develop",
         "phpcsstandards/phpcsutils": "@alpha",
         "phpunit/phpunit": "*",
-        "squizlabs/php_codesniffer": "*",
-        "vimeo/psalm": ">=5.26.1"
+        "squizlabs/php_codesniffer": "*"
     },
     "suggest": {
         "ext-mbstring": "*"
