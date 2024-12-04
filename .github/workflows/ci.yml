@@ -20,9 +20,10 @@ jobs:
           - '8.1'
           - '8.2'
           - '8.3'
+          - '8.4'
         future-release: [false]
         include:
-          - php-version: '8.4'
+          - php-version: '8.5'
             future-release: true
       fail-fast: false
     name: PHP ${{ matrix.php-version }}
@@ -47,4 +48,6 @@ jobs:
 
       - name: Static analysis
         run: 'vendor/bin/psalm --config="tests/psalm.xml"'
-        if: ${{ !matrix.future-release }}
+        # TODO: Remove exclusion that skips running psalm on PHP 8.4 when psalm
+        # supports PHP 8.4 (https://github.com/vimeo/psalm/issues/11107).
+        if: ${{ !matrix.future-release && matrix.php-version < 8.4 }}

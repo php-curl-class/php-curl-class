@@ -60,6 +60,19 @@ phpunit_v10_shim() {
 set -x
 
 composer self-update
+
+# TODO: Add "vimeo/psalm" back into composer.json under "require-dev" when
+# vimeo/psalm supports PHP 8.4 (https://github.com/vimeo/psalm/issues/11107):
+#     "require-dev": {
+#         "vimeo/psalm": ">=5.26.1"
+#     },
+#
+# TODO: Remove this workaround that only installs vimeo/psalm on PHP < 8.4 when
+# vimeo/psalm supports PHP 8.4 (https://github.com/vimeo/psalm/issues/11107):
+if [[ $(echo "${CI_PHP_VERSION} < 8.4" | bc -l) -eq 1 ]]; then
+    composer require --dev "vimeo/psalm:>=5.26.1"
+fi
+
 composer install --prefer-source --no-interaction
 
 # Use composer's phpunit and phpcs by adding composer bin directory to the path environment variable.
