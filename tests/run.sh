@@ -27,9 +27,9 @@ replace_assertMatchesRegularExpression() {
     find='->assertMatchesRegularExpression('
     replace='->assertRegExp('
     if sed v < /dev/null 2> /dev/null; then
-        sed -i"" -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+        sed -i"" -e "s/${find}/${replace}/" "./PHPCurlClass/PHP"*
     else
-        sed -i "" -e"s/${find}/${replace}/" "./PHPCurlClass/PHP"*
+        sed -i "" -e "s/${find}/${replace}/" "./PHPCurlClass/PHP"*
     fi
 }
 
