@@ -27,6 +27,7 @@
         "friendsofphp/php-cs-fixer": "*",
         "phpcompatibility/php-compatibility": "dev-develop",
         "phpcsstandards/phpcsutils": "@alpha",
+        "phpstan/phpstan": "*",
         "phpunit/phpunit": "*",
         "squizlabs/php_codesniffer": "*"
     },

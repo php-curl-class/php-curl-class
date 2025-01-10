@@ -1,0 +1,13 @@
+parameters:
+    ignoreErrors:
+        -
+            message: '#^Class CurlHandle not found\.$#'
+            identifier: class.notFound
+            count: 2
+            path: src/Curl/Curl.php
+
+        -
+            message: '#^Class CurlMultiHandle not found\.$#'
+            identifier: class.notFound
+            count: 2
+            path: src/Curl/MultiCurl.php
