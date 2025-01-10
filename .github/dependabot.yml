@@ -4,12 +4,16 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    commit-message:
+      prefix: ⬆
     versioning-strategy: "increase"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
+    commit-message:
+      prefix: ⬆
     labels:
       - "cleanup-no-release-required"
       - "dependencies"
@@ -19,4 +23,6 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    commit-message:
+      prefix: ⬆
     versioning-strategy: "increase"
