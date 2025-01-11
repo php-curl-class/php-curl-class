@@ -161,7 +161,7 @@ fi
 
 # Stop test servers.
 for pid in "${pids[@]}"; do
-  kill "${pid}" &> /dev/null &
+    kill "${pid}" &> /dev/null &
 done
 
 if [[ "${CI_PHP_FUTURE_RELEASE}" != "true" ]]; then
