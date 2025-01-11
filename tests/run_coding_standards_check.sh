@@ -3,6 +3,8 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}"
 
+source "set_vars.inc.sh"
+
 # Run commands from the project root directory.
 pushd ..
 

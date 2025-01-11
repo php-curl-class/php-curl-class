@@ -27,6 +27,8 @@ export PATH="${PWD}/vendor/bin:${PATH}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}"
 
+source "set_vars.inc.sh"
+
 echo "CI_PHP_VERSION: ${CI_PHP_VERSION}"
 echo "CI_PHP_FUTURE_RELEASE: ${CI_PHP_FUTURE_RELEASE}"
 php -r "var_dump(phpversion());"
@@ -39,6 +41,10 @@ source "run_syntax_check.sh"
 source "run_coding_standards_check.sh"
 
 source "run_phpunit.sh"
+
+source "run_static_analysis_check_phpstan.sh"
+
+source "run_static_analysis_check_psalm.sh"
 
 source "display_errors.inc.sh"
 
