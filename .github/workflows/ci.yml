@@ -47,11 +47,11 @@ jobs:
           CI_PHP_FUTURE_RELEASE: ${{ matrix.future-release }}
 
       - name: Static analysis - Psalm
-        run: bash tests/check_static_analysis_psalm.sh
+        run: bash tests/run_static_analysis_check_psalm.sh
         # TODO: Remove exclusion that skips running psalm on PHP 8.4 when psalm
         # supports PHP 8.4 (https://github.com/vimeo/psalm/issues/11107).
         if: ${{ matrix.php-version < 8.4 }}
 
       - name: Static analysis - PHPStan
-        run: bash tests/check_static_analysis_phpstan.sh
+        run: bash tests/run_static_analysis_check_phpstan.sh
         if: ${{ matrix.php-version >= 7.4 }}

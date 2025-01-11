@@ -34,9 +34,9 @@ php -r "var_dump(curl_version());"
 
 errors=()
 
-source "check_syntax.sh"
+source "run_syntax_check.sh"
 
-source "check_coding_standards.sh"
+source "run_coding_standards_check.sh"
 
 source "run_phpunit.sh"
 
