@@ -41,7 +41,7 @@ jobs:
           persist-credentials: false
 
       - name: Test
-        run: bash tests/ci.sh
+        run: bash tests/run.sh
         env:
           CI_PHP_VERSION: ${{ matrix.php-version }}
           CI_PHP_FUTURE_RELEASE: ${{ matrix.future-release }}

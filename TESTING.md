@@ -30,4 +30,4 @@ cd php-curl-class/
 
 ### Continuous Integration Tests
 
-Continuous integration runs [tests/ci.sh](https://github.com/php-curl-class/php-curl-class/blob/master/tests/ci.sh) on supported PHP versions and is configured with [.github/workflows/ci.yml](https://github.com/php-curl-class/php-curl-class/blob/master/.github/workflows/ci.yml).
+Continuous integration runs [tests/run.sh](https://github.com/php-curl-class/php-curl-class/blob/master/tests/run.sh) on supported PHP versions and is configured with [.github/workflows/ci.yml](https://github.com/php-curl-class/php-curl-class/blob/master/.github/workflows/ci.yml).
