@@ -1,8 +1,12 @@
+#!/usr/bin/env bash
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}"
 
+source "set_vars.inc.sh"
+
 # Run commands from the project root directory.
-cd ..
+pushd ..
 
 # Enforce line ending consistency in php files.
 crlf_file=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --files-with-matches $'\r' {} \;)
@@ -128,3 +132,5 @@ if [[ "${?}" -ne 0 ]]; then
 fi
 
 fi
+
+popd
