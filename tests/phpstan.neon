@@ -9,7 +9,7 @@ parameters:
 
     # TODO: Remove all exclusions except vendor/ and fix related errors.
     excludePaths:
-        - examples/*
-        - tests/*
-        - vendor/*
-        - www/*
+        - ../examples/*
+        - ../tests/*
+        - ../vendor/*
+        - ../www/*
