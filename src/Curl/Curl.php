@@ -1812,9 +1812,11 @@ class Curl extends BaseCurl
         if (count($this->cookies)) {
             // Avoid using http_build_query() as unnecessary encoding is performed.
             // http_build_query($this->cookies, '', '; ');
-            $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function ($k, $v) {
-                return $k . '=' . $v;
-            }, array_keys($this->cookies), array_values($this->cookies))));
+            $cookies = [];
+            foreach ($this->cookies as $key => $value) {
+                $cookies[] = $key . '=' . $value;
+            }
+            $this->setOpt(CURLOPT_COOKIE, implode('; ', $cookies));
         }
     }
 

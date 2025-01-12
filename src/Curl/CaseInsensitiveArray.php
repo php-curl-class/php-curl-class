@@ -88,7 +88,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
-        return (bool) array_key_exists(strtolower($offset), $this->data);
+        return array_key_exists(strtolower($offset), $this->data);
     }
 
     /**
@@ -135,7 +135,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     #[\ReturnTypeWillChange]
     public function count()
     {
-        return (int) count($this->data);
+        return count($this->data);
     }
 
     /**
@@ -184,7 +184,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     #[\ReturnTypeWillChange]
     public function valid()
     {
-        return (bool) (key($this->data) !== null);
+        return (key($this->data) !== null);
     }
 
     /**
