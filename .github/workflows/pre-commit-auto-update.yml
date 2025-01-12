@@ -20,7 +20,7 @@ jobs:
           set -x
           python -m pip install --upgrade pip
           pip install pre-commit
-          pre-commit autoupdate
+          pre-commit autoupdate --config="tests/.pre-commit-config.yaml"
 
       - name: Gather changes
         id: gather-changes
