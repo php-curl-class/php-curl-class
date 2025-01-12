@@ -18,7 +18,7 @@ class Decoder
     {
         $args = func_get_args();
         $response = call_user_func_array('json_decode', $args);
-        if ($response === null) {
+        if ($response === null && isset($args['0'])) {
             $response = $args['0'];
         }
         return $response;
@@ -37,7 +37,7 @@ class Decoder
     {
         $args = func_get_args();
         $response = @call_user_func_array('simplexml_load_string', $args);
-        if ($response === false) {
+        if ($response === false && array_key_exists('0', $args)) {
             $response = $args['0'];
         }
         return $response;

@@ -129,7 +129,6 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Count
      *
-     * @param void
      * @return int The number of elements stored in the array.
      * @see https://secure.php.net/manual/en/countable.count.php
      */
@@ -142,7 +141,6 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Current
      *
-     * @param void
      * @return mixed Data at the current position.
      * @see https://secure.php.net/manual/en/iterator.current.php
      */
@@ -155,7 +153,6 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Next
      *
-     * @param void
      * @return void
      * @see https://secure.php.net/manual/en/iterator.next.php
      */
@@ -168,7 +165,6 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Key
      *
-     * @param void
      * @return mixed Case-sensitive key at current position.
      * @see https://secure.php.net/manual/en/iterator.key.php
      */
@@ -194,7 +190,6 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Rewind
      *
-     * @param void
      * @return void
      * @see https://secure.php.net/manual/en/iterator.rewind.php
      */

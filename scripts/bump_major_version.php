@@ -5,7 +5,7 @@ require __DIR__ . '/../src/Curl/Curl.php';
 
 $current_version = Curl\Curl::VERSION;
 list($major, $_, $__) = explode('.', $current_version);
-$new_version = implode('.', [(string)((int)$major += 1), '0', '0']);
+$new_version = implode('.', [(string)((int)$major + 1), '0', '0']);
 
 foreach (
     [
