@@ -5,7 +5,7 @@ parameters:
     reportUnmatchedIgnoredErrors: false
 
     # TODO: Increase rule level to be more strict.
-    level: 1
+    level: 2
 
     # TODO: Remove all exclusions except vendor/ and fix related errors.
     excludePaths:
