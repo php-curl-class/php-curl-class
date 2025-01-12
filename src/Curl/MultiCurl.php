@@ -578,6 +578,7 @@ class MultiCurl extends BaseCurl
         $unit = strtolower($matches['3']);
 
         // Convert interval to seconds based on unit.
+        $interval_seconds = '';
         if ($unit === 's') {
             $interval_seconds = $interval * 1;
         } elseif ($unit === 'm') {
