@@ -11,7 +11,7 @@ pushd ..
 set -x
 
 if [[ $(echo "${CI_PHP_VERSION} >= 7.4" | bc -l) -eq 1 ]]; then
-    vendor/bin/phpstan analyse --ansi --configuration="phpstan.neon" .
+    vendor/bin/phpstan analyse --ansi --configuration="tests/phpstan.neon" .
     if [[ "${?}" -ne 0 ]]; then
         echo "Error: phpstan static analysis check failed"
         errors+=("phpstan static analysis check failed")
