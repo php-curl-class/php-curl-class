@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!-- TODO: Use errorLevel="1" -->
+<psalm
+    errorLevel="4"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    errorBaseline="psalm-baseline.xml"
+>
+    <projectFiles>
+        <directory name="../src" />
+        <ignoreFiles>
+            <directory name="../vendor" />
+        </ignoreFiles>
+    </projectFiles>
+    <issueHandlers>
+        <PossiblyUnusedMethod>
+            <errorLevel type="suppress">
+                <directory name="../src/" />
+            </errorLevel>
+        </PossiblyUnusedMethod>
+        <PossiblyUnusedProperty>
+            <errorLevel type="suppress">
+                <directory name="../src/" />
+            </errorLevel>
+        </PossiblyUnusedProperty>
+        <PossiblyUnusedReturnValue>
+            <errorLevel type="suppress">
+                <directory name="../src/" />
+            </errorLevel>
+        </PossiblyUnusedReturnValue>
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <referencedClass name="CurlHandle" />
+                <file name="../src/Curl/Curl.php" />
+            </errorLevel>
+            <errorLevel type="suppress">
+                <referencedClass name="CurlMultiHandle" />
+                <file name="../src/Curl/MultiCurl.php" />
+            </errorLevel>
+            <errorLevel type="suppress">
+                <referencedClass name="CURLStringFile" />
+                <file name="../src/Curl/ArrayUtil.php" />
+            </errorLevel>
+        </UndefinedClass>
+        <UnusedClass>
+            <errorLevel type="suppress">
+                <directory name="../src/" />
+            </errorLevel>
+        </UnusedClass>
+        <UnusedClosureParam>
+            <errorLevel type="suppress">
+                <directory name="../src/" />
+            </errorLevel>
+        </UnusedClosureParam>
+        <UnusedForeachValue>
+            <errorLevel type="suppress">
+                <directory name="../src/" />
+            </errorLevel>
+        </UnusedForeachValue>
+        <UnusedMethod>
+            <errorLevel type="suppress">
+                <directory name="../src/" />
+            </errorLevel>
+        </UnusedMethod>
+        <UnusedProperty>
+            <errorLevel type="suppress">
+                <directory name="../src/" />
+            </errorLevel>
+        </UnusedProperty>
+    </issueHandlers>
+</psalm>
