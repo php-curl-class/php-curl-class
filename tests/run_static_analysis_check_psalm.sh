@@ -13,6 +13,7 @@ set -x
 # TODO: Remove exclusion that skips running psalm on PHP 8.4 when psalm
 # supports PHP 8.4 (https://github.com/vimeo/psalm/issues/11107).
 if [[ $(echo "${CI_PHP_VERSION} < 8.4" | bc -l) -eq 1 ]]; then
+    vendor/bin/psalm --version
     vendor/bin/psalm --config="tests/psalm.xml"
     if [[ "${?}" -ne 0 ]]; then
         echo "Error: psalm static analysis check failed"
