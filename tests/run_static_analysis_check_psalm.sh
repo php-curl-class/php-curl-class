@@ -10,16 +10,17 @@ pushd ..
 
 set -x
 
-# TODO: Remove exclusion that skips running psalm on PHP 8.4 when psalm
-# supports PHP 8.4 (https://github.com/vimeo/psalm/issues/11107).
-if [[ $(echo "${CI_PHP_VERSION} < 8.4" | bc -l) -eq 1 ]]; then
-    vendor/bin/psalm --config="tests/psalm.xml"
-    if [[ "${?}" -ne 0 ]]; then
-        echo "Error: psalm static analysis check failed"
-        errors+=("psalm static analysis check failed")
-    fi
+vendor/bin/psalm --version
+
+if [[ $(echo "${CI_PHP_VERSION} == 7.4" | bc -l) -eq 1 ]]; then
+    vendor/bin/psalm --config="tests/psalm_7.4.xml"
 else
-    echo "Skipped running psalm check"
+    vendor/bin/psalm --config="tests/psalm.xml"
+fi
+
+if [[ "${?}" -ne 0 ]]; then
+    echo "Error: psalm static analysis check failed"
+    errors+=("psalm static analysis check failed")
 fi
 
 popd

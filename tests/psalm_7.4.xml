@@ -30,6 +30,20 @@
                 <directory name="../src/" />
             </errorLevel>
         </PossiblyUnusedReturnValue>
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <referencedClass name="CurlHandle" />
+                <file name="../src/Curl/Curl.php" />
+            </errorLevel>
+            <errorLevel type="suppress">
+                <referencedClass name="CurlMultiHandle" />
+                <file name="../src/Curl/MultiCurl.php" />
+            </errorLevel>
+            <errorLevel type="suppress">
+                <referencedClass name="CURLStringFile" />
+                <file name="../src/Curl/ArrayUtil.php" />
+            </errorLevel>
+        </UndefinedClass>
         <UnusedClass>
             <errorLevel type="suppress">
                 <directory name="../src/" />
