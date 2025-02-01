@@ -6,6 +6,26 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 11.0.1 - 2025-01-13
+
+- Increase Psalm strictness ([#909](https://github.com/php-curl-class/php-curl-class/pull/909))
+- Increase PHPStan strictness ([#908](https://github.com/php-curl-class/php-curl-class/pull/908))
+
+## 11.0.0 - 2024-08-22
+
+- Drop support for PHP 7.3 ([#889](https://github.com/php-curl-class/php-curl-class/pull/889))
+- Drop support for PHP 7.2 ([#888](https://github.com/php-curl-class/php-curl-class/pull/888))
+- Drop support for PHP 7.1 ([#887](https://github.com/php-curl-class/php-curl-class/pull/887))
+
+## 10.0.1 - 2024-08-21
+
+- Use nullable type declaration ([#882](https://github.com/php-curl-class/php-curl-class/pull/882))
+
+## 10.0.0 - 2024-08-20
+
+- Drop support for PHP 7.0 ([#880](https://github.com/php-curl-class/php-curl-class/pull/880))
+- Add public method getActiveCurls ([#871](https://github.com/php-curl-class/php-curl-class/pull/871))
+
 ## 9.19.2 - 2024-04-09
 
 - Fix CI: Use nullable type declaration ([#859](https://github.com/php-curl-class/php-curl-class/pull/859))

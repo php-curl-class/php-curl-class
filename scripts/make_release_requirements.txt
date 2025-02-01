@@ -4,41 +4,41 @@
 #
 #    pip-compile --output-file=make_release_requirements.txt make_release_requirements.in
 #
-certifi==2023.7.22
+certifi==2024.7.4
     # via requests
-cffi==1.15.1
+cffi==1.16.0
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.2.0
+charset-normalizer==3.3.2
     # via requests
-cryptography==42.0.4
+cryptography==43.0.1
     # via pyjwt
 deprecated==1.2.14
     # via pygithub
-gitdb==4.0.10
+gitdb==4.0.11
     # via gitpython
-gitpython==3.1.43
-    # via -r make_release_requirements.in
+gitpython==3.1.44
+    # via -r scripts/make_release_requirements.in
 idna==3.7
     # via requests
-pycparser==2.21
+pycparser==2.22
     # via cffi
-pygithub==2.3.0
-    # via -r make_release_requirements.in
+pygithub==2.5.0
+    # via -r scripts/make_release_requirements.in
 pyjwt[crypto]==2.8.0
     # via pygithub
 pynacl==1.5.0
     # via pygithub
-requests==2.31.0
+requests==2.32.0
     # via pygithub
-smmap==5.0.0
+smmap==5.0.1
     # via gitdb
-typing-extensions==4.8.0
+typing-extensions==4.11.0
     # via pygithub
-urllib3==2.0.7
+urllib3==2.2.2
     # via
     #   pygithub
     #   requests
-wrapt==1.15.0
+wrapt==1.16.0
     # via deprecated

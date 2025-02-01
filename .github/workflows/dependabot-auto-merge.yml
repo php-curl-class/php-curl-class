@@ -13,11 +13,19 @@ jobs:
     steps:
       - name: Dependabot metadata
         id: dependabot-metadata
-        uses: dependabot/fetch-metadata@v2.0.0
+        uses: dependabot/fetch-metadata@v2.3.0
 
       - name: Approve and label updates
         run: |
-          gh pr review --approve "$PR_URL"
+          review_status="$(
+              gh pr view "$PR_URL" \
+                  --json="reviewDecision" \
+                  --jq=".reviewDecision"
+          )"
+          echo "Pull request review status: ${review_status}"
+          if [[ "${review_status}" != "APPROVED" ]]; then
+              gh pr review --approve "$PR_URL"
+          fi
           gh pr edit --add-label "cleanup-no-release-required" "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}

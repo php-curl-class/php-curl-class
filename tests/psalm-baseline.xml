@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files>
+  <file src="../src/Curl/Curl.php">
+    <ForbiddenCode>
+      <code><![CDATA[var_dump($value)]]></code>
+      <code><![CDATA[var_dump($value)]]></code>
+    </ForbiddenCode>
+  </file>
+</files>

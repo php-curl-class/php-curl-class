@@ -6,8 +6,8 @@ namespace Curl;
 
 class Curl extends BaseCurl
 {
-    const VERSION = '9.19.2';
-    const DEFAULT_TIMEOUT = 30;
+    public const VERSION = '11.0.1';
+    public const DEFAULT_TIMEOUT = 30;
 
     public $curl = null;
     public $id = null;
@@ -1812,9 +1812,11 @@ class Curl extends BaseCurl
         if (count($this->cookies)) {
             // Avoid using http_build_query() as unnecessary encoding is performed.
             // http_build_query($this->cookies, '', '; ');
-            $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function ($k, $v) {
-                return $k . '=' . $v;
-            }, array_keys($this->cookies), array_values($this->cookies))));
+            $cookies = [];
+            foreach ($this->cookies as $key => $value) {
+                $cookies[] = $key . '=' . $value;
+            }
+            $this->setOpt(CURLOPT_COOKIE, implode('; ', $cookies));
         }
     }
 

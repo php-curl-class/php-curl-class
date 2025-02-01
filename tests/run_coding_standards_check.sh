@@ -1,8 +1,12 @@
+#!/usr/bin/env bash
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}"
 
+source "set_vars.inc.sh"
+
 # Run commands from the project root directory.
-cd ..
+pushd ..
 
 # Enforce line ending consistency in php files.
 crlf_file=$(find . -type "f" -iname "*.php" ! -path "*/vendor/*" -exec grep --color=always --files-with-matches $'\r' {} \;)
@@ -93,43 +97,40 @@ if [[ ! -z "${elses}" ]]; then
 fi
 
 # Run PHP_CodeSniffer.
-if   [[ "${CI_PHP_VERSION}" == "7.0" ]]; then :
-elif [[ "${CI_PHP_VERSION}" == "7.1" ]]; then :
+# Determine which phpcs to use.
+if [[ -f "vendor/bin/phpcs" ]]; then
+    phpcs_to_use="vendor/bin/phpcs"
 else
-
-    # Determine which phpcs to use.
-    if [[ -f "vendor/bin/phpcs" ]]; then
-        phpcs_to_use="vendor/bin/phpcs"
-    else
-        phpcs_to_use="phpcs"
-    fi
-
-    # Detect coding standard violations.
-    "${phpcs_to_use}" --version
-    "${phpcs_to_use}" \
-        --extensions="php" \
-        --ignore="*/vendor/*" \
-        --standard="tests/ruleset.xml" \
-        -p \
-        -s \
-        .
-    if [[ "${?}" -ne 0 ]]; then
-        echo "Error: found PHP_CodeSniffer coding standard violation(s)"
-        errors+=("found PHP_CodeSniffer coding standard violation(s)")
-    fi
-
+    phpcs_to_use="phpcs"
 fi
+
+# Detect coding standard violations.
+"${phpcs_to_use}" --version
+"${phpcs_to_use}" \
+    --extensions="php" \
+    --ignore="*/vendor/*" \
+    --standard="tests/ruleset.xml" \
+    -p \
+    -s \
+    .
+if [[ "${?}" -ne 0 ]]; then
+    echo "Error: found PHP_CodeSniffer coding standard violation(s)"
+    errors+=("found PHP_CodeSniffer coding standard violation(s)")
+fi
+
+# TODO: Remove this workaround that only runs php-cs-fixer on PHP < 8.4 when
+# php-cs-fixer supports PHP 8.4.
+# https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/pull/8300
+if [[ $(echo "${CI_PHP_VERSION} < 8.4" | bc -l) -eq 1 ]]; then
 
 # Run PHP-CS-Fixer.
-if   [[ "${CI_PHP_VERSION}" == "7.0" ]]; then :
-elif [[ "${CI_PHP_VERSION}" == "7.1" ]]; then :
-elif [[ "${CI_PHP_VERSION}" == "7.2" ]]; then :
-elif [[ "${CI_PHP_VERSION}" == "7.3" ]]; then :
-else
-    vendor/bin/php-cs-fixer --version
-    vendor/bin/php-cs-fixer fix --ansi --config="tests/.php-cs-fixer.php" --diff --dry-run
-    if [[ "${?}" -ne 0 ]]; then
-        echo "Error: found PHP-CS-Fixer coding standard violation(s)"
-        errors+=("found PHP-CS-Fixer coding standard violation(s)")
-    fi
+vendor/bin/php-cs-fixer --version
+vendor/bin/php-cs-fixer fix --ansi --config="tests/.php-cs-fixer.php" --diff --dry-run
+if [[ "${?}" -ne 0 ]]; then
+    echo "Error: found PHP-CS-Fixer coding standard violation(s)"
+    errors+=("found PHP-CS-Fixer coding standard violation(s)")
 fi
+
+fi
+
+popd

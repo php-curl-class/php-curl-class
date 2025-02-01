@@ -15,18 +15,15 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - '7.0'
-          - '7.1'
-          - '7.2'
-          - '7.3'
           - '7.4'
           - '8.0'
           - '8.1'
           - '8.2'
           - '8.3'
+          - '8.4'
         future-release: [false]
         include:
-          - php-version: '8.4'
+          - php-version: '8.5'
             future-release: true
       fail-fast: false
     name: PHP ${{ matrix.php-version }}
@@ -44,11 +41,7 @@ jobs:
           persist-credentials: false
 
       - name: Test
-        run: bash tests/ci.sh
+        run: bash tests/run.sh
         env:
           CI_PHP_VERSION: ${{ matrix.php-version }}
           CI_PHP_FUTURE_RELEASE: ${{ matrix.future-release }}
-
-      - name: Static analysis
-        run: 'vendor/bin/psalm --config="tests/psalm.xml"'
-        if: ${{ !matrix.future-release && matrix.php-version >= 7.1 }}
