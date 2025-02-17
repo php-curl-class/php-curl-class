@@ -57,6 +57,14 @@ phpunit_v10_shim() {
     remove_expectWarning
 }
 
+phpunit_v11_shim() {
+    :;
+}
+
+phpunit_v12_shim() {
+    remove_expectWarning
+}
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}"
 
@@ -100,6 +108,12 @@ elif [[ "${phpunit_version}" == "9."* ]]; then
     phpunit_args=" --debug --verbose --fail-on-risky ${extra_args}"
 elif [[ "${phpunit_version}" == "10."* ]]; then
     phpunit_v10_shim
+    phpunit_args=" --display-incomplete --display-skipped --display-deprecations --display-errors --display-notices --display-warnings --fail-on-risky ${extra_args}"
+elif [[ "${phpunit_version}" == "11."* ]]; then
+    phpunit_v11_shim
+    phpunit_args=" --display-incomplete --display-skipped --display-deprecations --display-errors --display-notices --display-warnings --fail-on-risky ${extra_args}"
+elif [[ "${phpunit_version}" == "12."* ]]; then
+    phpunit_v12_shim
     phpunit_args=" --display-incomplete --display-skipped --display-deprecations --display-errors --display-notices --display-warnings --fail-on-risky ${extra_args}"
 fi
 
