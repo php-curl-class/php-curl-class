@@ -111,7 +111,7 @@ class MultiCurl extends BaseCurl
             // Attempt to resume download only when a temporary download file exists and is not empty.
             if (is_file($download_filename) && $filesize = filesize($download_filename)) {
                 $first_byte_position = $filesize;
-                $range = $first_byte_position . '-';
+                $range = (string)$first_byte_position . '-';
                 $curl->setRange($range);
                 $curl->fileHandle = fopen($download_filename, 'ab');
 
@@ -587,7 +587,7 @@ class MultiCurl extends BaseCurl
             $interval_seconds = $interval * 3600;
         }
 
-        $this->rateLimit = $max_requests . '/' . $interval . $unit;
+        $this->rateLimit = (string)$max_requests . '/' . (string)$interval . $unit;
         $this->rateLimitEnabled = true;
         $this->maxRequests = $max_requests;
         $this->interval = $interval;
