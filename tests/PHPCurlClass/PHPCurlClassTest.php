@@ -3959,7 +3959,10 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($original_user_agent, $user_agent);
     }
 
-    public function testMock()
+    /**
+     * @requires PHPUnit < 12
+     */
+    public function testMockPHPUnitLessThan12()
     {
         $curl = $this->getMockBuilder('Curl\Curl')
                      ->getMock();
@@ -3967,6 +3970,18 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $curl->expects($this->once())
              ->method('getRawResponse')
              ->will($this->returnValue('[]'));
+
+        $this->assertEquals('[]', $curl->getRawResponse());
+    }
+
+    public function testMockPHPUnitGreaterThanOrEqualTo12()
+    {
+        $curl = $this->getMockBuilder('Curl\Curl')
+                     ->getMock();
+
+        $curl->expects($this->once())
+             ->method('getRawResponse')
+             ->willReturn('[]');
 
         $this->assertEquals('[]', $curl->getRawResponse());
     }
