@@ -3966,7 +3966,7 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $curl->expects($this->once())
              ->method('getRawResponse')
-             ->will($this->returnValue('[]'));
+             ->willReturn('[]');
 
         $this->assertEquals('[]', $curl->getRawResponse());
     }
