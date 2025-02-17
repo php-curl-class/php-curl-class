@@ -33,6 +33,8 @@ source "run_static_analysis_check_phpstan.sh"
 
 source "run_static_analysis_check_psalm.sh"
 
+set +x
+
 source "display_errors.inc.sh"
 
 if [[ "${CI_PHP_FUTURE_RELEASE}" != "true" ]]; then
