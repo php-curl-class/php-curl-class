@@ -3187,20 +3187,9 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @requires PHPUnit < 10
-     * @expectedException \PHPUnit\Framework\Error\Warning
-     */
-    public function testRequiredOptionCurlOptReturnTransferEmitsWarningPHPUnitLessThan10()
-    {
-        $this->expectWarning(\PHPUnit\Framework\Error\Warning::class);
-
-        $curl = new Curl();
-        $curl->setOpt(CURLOPT_RETURNTRANSFER, false);
-    }
-
-    /**
      * @requires PHPUnit >= 10
      */
+    #[RequiresPhpunit('>= 10')]
     public function testRequiredOptionCurlOptReturnTransferEmitsWarningPHPUnit10Plus()
     {
         set_error_handler(static function (int $errno, string $errstr): never {
