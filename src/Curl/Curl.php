@@ -328,7 +328,7 @@ class Curl extends BaseCurl
             // Attempt to resume download only when a temporary download file exists and is not empty.
             if (is_file($download_filename) && $filesize = filesize($download_filename)) {
                 $first_byte_position = $filesize;
-                $range = $first_byte_position . '-';
+                $range = (string)$first_byte_position . '-';
                 $this->setRange($range);
                 $this->fileHandle = fopen($download_filename, 'ab');
             } else {
@@ -385,7 +385,7 @@ class Curl extends BaseCurl
         }
 
         // Divide chunk_size across the number of connections.
-        $chunk_size = ceil($content_length / $connections);
+        $chunk_size = (int)ceil($content_length / $connections);
 
         // Keep track of file name parts.
         $part_file_names = [];
@@ -399,9 +399,9 @@ class Curl extends BaseCurl
             if ($part_number === $connections) {
                 $range_end = '';
             }
-            $range = $range_start . '-' . $range_end;
+            $range = (string)$range_start . '-' . (string)$range_end;
 
-            $part_file_name = $filename . '.part' . $part_number;
+            $part_file_name = $filename . '.part' . (string)$part_number;
 
             // Save the file name of this part.
             $part_file_names[] = $part_file_name;
@@ -1294,13 +1294,13 @@ class Curl extends BaseCurl
             $response_headers_count = count($this->responseHeaders);
 
             echo
-                'Request contained ' . $request_options_count . ' ' . (
+                'Request contained ' . (string)$request_options_count . ' ' . (
                     $request_options_count === 1 ? 'option:' : 'options:'
                 ) . "\n";
             if ($request_options_count) {
                 $i = 1;
                 foreach ($this->options as $option => $value) {
-                    echo '    ' . $i . ' ';
+                    echo '    ' . (string)$i . ' ';
                     $this->displayCurlOptionValue($option, $value);
                     $i += 1;
                 }
@@ -1308,13 +1308,13 @@ class Curl extends BaseCurl
 
             echo
                 'Sent an HTTP ' . $request_method . ' request to "' . $request_url . '".' . "\n" .
-                'Request contained ' . $request_headers_count . ' ' . (
+                'Request contained ' . (string)$request_headers_count . ' ' . (
                     $request_headers_count === 1 ? 'header:' : 'headers:'
                 ) . "\n";
             if ($request_headers_count) {
                 $i = 1;
                 foreach ($this->requestHeaders as $key => $value) {
-                    echo '    ' . $i . ' ' . $key . ': ' . $value . "\n";
+                    echo '    ' . (string)$i . ' ' . $key . ': ' . $value . "\n";
                     $i += 1;
                 }
             }
@@ -1346,13 +1346,13 @@ class Curl extends BaseCurl
             }
 
             echo
-                'Response contains ' . $response_headers_count . ' ' . (
+                'Response contains ' . (string)$response_headers_count . ' ' . (
                     $response_headers_count === 1 ? 'header:' : 'headers:'
                 ) . "\n";
             if ($this->responseHeaders !== null) {
                 $i = 1;
                 foreach ($this->responseHeaders as $key => $value) {
-                    echo '    ' . $i . ' ' . $key . ': ' . $value . "\n";
+                    echo '    ' . (string)$i . ' ' . $key . ': ' . $value . "\n";
                     $i += 1;
                 }
             }
@@ -1409,12 +1409,13 @@ class Curl extends BaseCurl
                         $messages_count = count($messages);
                         if ($messages_count) {
                             echo
-                                'Found ' . $messages_count . ' ' . ($messages_count === 1 ? 'message' : 'messages') .
+                                'Found ' . (string)$messages_count . ' ' .
+                                ($messages_count === 1 ? 'message' : 'messages') .
                                 ' in response:' . "\n";
 
                             $i = 1;
                             foreach ($messages as $message) {
-                                echo '    ' . $i . ' ' . $message . "\n";
+                                echo '    ' . (string)$i . ' ' . $message . "\n";
                                 $i += 1;
                             }
                         }
@@ -1713,7 +1714,7 @@ class Curl extends BaseCurl
         if (is_string($value)) {
             echo ' "' . $value . '"' . "\n";
         } elseif (is_int($value)) {
-            echo ' ' . $value;
+            echo ' ' . (string)$value;
 
             $bit_flag_lookups = [
                 'CURLOPT_HTTPAUTH' => 'CURLAUTH_',
