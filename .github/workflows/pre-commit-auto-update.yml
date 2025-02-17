@@ -38,7 +38,7 @@ jobs:
         with:
           commit-message: Update pre-commit dependencies
           labels: cleanup-no-release-required, dependencies, github_actions
-          title: Update pre-commit dependencies
+          title: ⬆ Update pre-commit dependencies
           body: |
             ```diff
             ${{ steps.gather-changes.outputs.changes }}
