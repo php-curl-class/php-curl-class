@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <!-- TODO: Use errorLevel="1" -->
 <psalm
-    ensureOverrideAttribute="false"
     errorLevel="4"
     resolveFromConfigFile="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
