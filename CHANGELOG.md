@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 11.0.2 - 2025-02-18
+
+- Fix CI (PHPUnit) ([#918](https://github.com/php-curl-class/php-curl-class/pull/918))
+
 ## 11.0.1 - 2025-01-13
 
 - Increase Psalm strictness ([#909](https://github.com/php-curl-class/php-curl-class/pull/909))
