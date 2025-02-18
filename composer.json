@@ -30,7 +30,7 @@
         "phpstan/phpstan": "*",
         "phpunit/phpunit": "*",
         "squizlabs/php_codesniffer": "*",
-        "vimeo/psalm": ">=5.26.1,<6.7"
+        "vimeo/psalm": ">=5.26.1"
     },
     "suggest": {
         "ext-mbstring": "*"
