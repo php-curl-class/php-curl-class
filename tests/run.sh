@@ -2,11 +2,16 @@
 
 set -x
 
+errors=()
+
 if [[ "${CI}" == "true" ]]; then
     composer self-update
     composer install --prefer-source --no-interaction
+    if [[ "${?}" -ne 0 ]]; then
+        echo "Error: composer install failed"
+        errors+=("composer install failed")
+    fi
 fi
-
 
 # Use composer's phpunit and phpcs by adding composer bin directory to the path environment variable.
 export PATH="${PWD}/vendor/bin:${PATH}"
@@ -20,8 +25,6 @@ echo "CI_PHP_VERSION: ${CI_PHP_VERSION}"
 echo "CI_PHP_FUTURE_RELEASE: ${CI_PHP_FUTURE_RELEASE}"
 php -r "var_dump(phpversion());"
 php -r "var_dump(curl_version());"
-
-errors=()
 
 source "run_syntax_check.sh"
 
