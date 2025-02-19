@@ -1887,7 +1887,7 @@ class Curl extends BaseCurl
         $raw_headers_count = count($raw_headers);
         for ($i = 1; $i < $raw_headers_count; $i++) {
             if (strpos($raw_headers[$i], ':') !== false) {
-                list($key, $value) = explode(':', $raw_headers[$i], 2);
+                list($key, $value) = array_pad(explode(':', $raw_headers[$i], 2), 2, '');
                 $key = trim($key);
                 $value = trim($value);
                 // Use isset() as array_key_exists() and ArrayAccess are not compatible.
