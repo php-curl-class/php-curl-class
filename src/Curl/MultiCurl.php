@@ -348,6 +348,7 @@ class MultiCurl extends BaseCurl
     /**
      * Close
      */
+    #[\Override]
     public function close()
     {
         foreach ($this->queuedCurls as $curl) {
@@ -376,6 +377,7 @@ class MultiCurl extends BaseCurl
      * @param $key
      * @param $value
      */
+    #[\Override]
     public function setCookie($key, $value)
     {
         $this->cookies[$key] = $value;
@@ -386,6 +388,7 @@ class MultiCurl extends BaseCurl
      *
      * @param $cookies
      */
+    #[\Override]
     public function setCookies($cookies)
     {
         foreach ($cookies as $key => $value) {
@@ -398,6 +401,7 @@ class MultiCurl extends BaseCurl
      *
      * @param $string
      */
+    #[\Override]
     public function setCookieString($string)
     {
         $this->setOpt(CURLOPT_COOKIE, $string);
@@ -408,6 +412,7 @@ class MultiCurl extends BaseCurl
      *
      * @param $cookie_file
      */
+    #[\Override]
     public function setCookieFile($cookie_file)
     {
         $this->setOpt(CURLOPT_COOKIEFILE, $cookie_file);
@@ -418,6 +423,7 @@ class MultiCurl extends BaseCurl
      *
      * @param $cookie_jar
      */
+    #[\Override]
     public function setCookieJar($cookie_jar)
     {
         $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
@@ -431,6 +437,7 @@ class MultiCurl extends BaseCurl
      * @param $key
      * @param $value
      */
+    #[\Override]
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
@@ -444,6 +451,7 @@ class MultiCurl extends BaseCurl
      *
      * @param $headers
      */
+    #[\Override]
     public function setHeaders($headers)
     {
         if (ArrayUtil::isArrayAssoc($headers)) {
@@ -469,6 +477,7 @@ class MultiCurl extends BaseCurl
      *
      * @param $mixed boolean|callable
      */
+    #[\Override]
     public function setJsonDecoder($mixed)
     {
         if ($mixed === false) {
@@ -483,6 +492,7 @@ class MultiCurl extends BaseCurl
      *
      * @param $mixed boolean|callable
      */
+    #[\Override]
     public function setXmlDecoder($mixed)
     {
         if ($mixed === false) {
@@ -512,6 +522,7 @@ class MultiCurl extends BaseCurl
      * @param $option
      * @param $value
      */
+    #[\Override]
     public function setOpt($option, $value)
     {
         $this->options[$option] = $value;
@@ -536,6 +547,7 @@ class MultiCurl extends BaseCurl
      *
      * @param $options
      */
+    #[\Override]
     public function setOpts($options)
     {
         foreach ($options as $option => $value) {
@@ -608,6 +620,7 @@ class MultiCurl extends BaseCurl
      *
      * @param $mixed
      */
+    #[\Override]
     public function setRetry($mixed)
     {
         $this->retry = $mixed;
@@ -619,6 +632,7 @@ class MultiCurl extends BaseCurl
      * @param $url
      * @param $mixed_data
      */
+    #[\Override]
     public function setUrl($url, $mixed_data = '')
     {
         $built_url = Url::buildUrl($url, $mixed_data);
@@ -748,6 +762,7 @@ class MultiCurl extends BaseCurl
     /**
      * Stop
      */
+    #[\Override]
     public function stop()
     {
         // Remove any queued curl requests.
@@ -775,6 +790,7 @@ class MultiCurl extends BaseCurl
      *
      * @param $key
      */
+    #[\Override]
     public function unsetHeader($key)
     {
         unset($this->headers[$key]);

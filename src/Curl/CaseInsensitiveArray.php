@@ -63,6 +63,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * @return void
      * @see https://secure.php.net/manual/en/arrayaccess.offsetset.php
      */
+    #[\Override]
     #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
@@ -85,6 +86,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * @return bool   If the offset exists.
      * @see https://secure.php.net/manual/en/arrayaccess.offsetexists.php
      */
+    #[\Override]
     #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
@@ -101,6 +103,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * @return void
      * @see https://secure.php.net/manual/en/arrayaccess.offsetunset.php
      */
+    #[\Override]
     #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
@@ -119,6 +122,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * @return mixed  The data stored at the offset.
      * @see https://secure.php.net/manual/en/arrayaccess.offsetget.php
      */
+    #[\Override]
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
@@ -132,6 +136,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * @return int The number of elements stored in the array.
      * @see https://secure.php.net/manual/en/countable.count.php
      */
+    #[\Override]
     #[\ReturnTypeWillChange]
     public function count()
     {
@@ -144,6 +149,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * @return mixed Data at the current position.
      * @see https://secure.php.net/manual/en/iterator.current.php
      */
+    #[\Override]
     #[\ReturnTypeWillChange]
     public function current()
     {
@@ -156,6 +162,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * @return void
      * @see https://secure.php.net/manual/en/iterator.next.php
      */
+    #[\Override]
     #[\ReturnTypeWillChange]
     public function next()
     {
@@ -168,6 +175,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * @return mixed Case-sensitive key at current position.
      * @see https://secure.php.net/manual/en/iterator.key.php
      */
+    #[\Override]
     #[\ReturnTypeWillChange]
     public function key()
     {
@@ -181,6 +189,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * @return bool If the current position is valid.
      * @see https://secure.php.net/manual/en/iterator.valid.php
      */
+    #[\Override]
     #[\ReturnTypeWillChange]
     public function valid()
     {
@@ -193,6 +202,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      * @return void
      * @see https://secure.php.net/manual/en/iterator.rewind.php
      */
+    #[\Override]
     #[\ReturnTypeWillChange]
     public function rewind()
     {

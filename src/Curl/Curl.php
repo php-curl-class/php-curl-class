@@ -236,6 +236,7 @@ class Curl extends BaseCurl
     /**
      * Close
      */
+    #[\Override]
     public function close()
     {
         if (is_resource($this->curl) || $this->curl instanceof \CurlHandle) {
@@ -807,6 +808,7 @@ class Curl extends BaseCurl
      * @param $key
      * @param $value
      */
+    #[\Override]
     public function setCookie($key, $value)
     {
         $this->setEncodedCookie($key, $value);
@@ -818,6 +820,7 @@ class Curl extends BaseCurl
      *
      * @param $cookies
      */
+    #[\Override]
     public function setCookies($cookies)
     {
         foreach ($cookies as $key => $value) {
@@ -868,6 +871,7 @@ class Curl extends BaseCurl
      * @param       $string
      * @return bool
      */
+    #[\Override]
     public function setCookieString($string)
     {
         return $this->setOpt(CURLOPT_COOKIE, $string);
@@ -879,6 +883,7 @@ class Curl extends BaseCurl
      * @param       $cookie_file
      * @return bool
      */
+    #[\Override]
     public function setCookieFile($cookie_file)
     {
         return $this->setOpt(CURLOPT_COOKIEFILE, $cookie_file);
@@ -890,6 +895,7 @@ class Curl extends BaseCurl
      * @param       $cookie_jar
      * @return bool
      */
+    #[\Override]
     public function setCookieJar($cookie_jar)
     {
         return $this->setOpt(CURLOPT_COOKIEJAR, $cookie_jar);
@@ -996,6 +1002,7 @@ class Curl extends BaseCurl
      * @param $key
      * @param $value
      */
+    #[\Override]
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
@@ -1013,6 +1020,7 @@ class Curl extends BaseCurl
      *
      * @param $headers
      */
+    #[\Override]
     public function setHeaders($headers)
     {
         if (ArrayUtil::isArrayAssoc($headers)) {
@@ -1043,6 +1051,7 @@ class Curl extends BaseCurl
      *
      * @param $mixed boolean|callable
      */
+    #[\Override]
     public function setJsonDecoder($mixed)
     {
         if ($mixed === false || is_callable($mixed)) {
@@ -1056,6 +1065,7 @@ class Curl extends BaseCurl
      *
      * @param $mixed boolean|callable
      */
+    #[\Override]
     public function setXmlDecoder($mixed)
     {
         if ($mixed === false || is_callable($mixed)) {
@@ -1071,6 +1081,7 @@ class Curl extends BaseCurl
      * @param       $value
      * @return bool
      */
+    #[\Override]
     public function setOpt($option, $value)
     {
         $required_options = [
@@ -1096,6 +1107,7 @@ class Curl extends BaseCurl
      * @param       $value
      * @return bool
      */
+    #[\Override]
     protected function setOptInternal($option, $value)
     {
         $success = curl_setopt($this->curl, $option, $value);
@@ -1115,6 +1127,7 @@ class Curl extends BaseCurl
      *              returned, ignoring any future options in the options array.
      *              Similar to curl_setopt_array().
      */
+    #[\Override]
     public function setOpts($options)
     {
         if (!count($options)) {
@@ -1159,6 +1172,7 @@ class Curl extends BaseCurl
      *
      * @param $mixed
      */
+    #[\Override]
     public function setRetry($mixed)
     {
         if (is_callable($mixed)) {
@@ -1193,6 +1207,7 @@ class Curl extends BaseCurl
      * @param $url
      * @param $mixed_data
      */
+    #[\Override]
     public function setUrl($url, $mixed_data = '')
     {
         $built_url = Url::buildUrl($url, $mixed_data);
@@ -1235,6 +1250,7 @@ class Curl extends BaseCurl
      *
      * @param $key
      */
+    #[\Override]
     public function unsetHeader($key)
     {
         unset($this->headers[$key]);
@@ -2132,6 +2148,7 @@ class Curl extends BaseCurl
      *
      * Used by MultiCurl::stop() when making multiple parallel requests.
      */
+    #[\Override]
     public function stop()
     {
         $this->headerCallbackData->stopRequest = true;
