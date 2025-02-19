@@ -1404,7 +1404,7 @@ class Curl extends BaseCurl
                 if (isset($this->responseHeaders['Content-Length'])) {
                     echo 'Response content length (from content-length header): ' . $response_header_length . "\n";
                 } else {
-                    echo 'Response content length (calculated): ' . $response_calculated_length . "\n";
+                    echo 'Response content length (calculated): ' . (string)$response_calculated_length . "\n";
                 }
 
                 if (
