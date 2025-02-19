@@ -1031,7 +1031,7 @@ class Curl extends BaseCurl
             }
         } else {
             foreach ($headers as $header) {
-                list($key, $value) = explode(':', $header, 2);
+                list($key, $value) = array_pad(explode(':', $header, 2), 2, '');
                 $key = trim($key);
                 $value = trim($value);
                 $this->headers[$key] = $value;
