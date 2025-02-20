@@ -449,6 +449,9 @@ class Curl extends BaseCurl
 
         // Combine downloaded chunks into a single file.
         $main_file_handle = fopen($filename, 'w');
+        if ($main_file_handle === false) {
+            return false;
+        }
 
         foreach ($part_file_names as $part_file_name) {
             if (!is_file($part_file_name)) {
