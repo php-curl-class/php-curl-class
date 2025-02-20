@@ -430,8 +430,10 @@ class Curl extends BaseCurl
 
             $curl->downloadCompleteCallback = function ($instance, $tmpfile) use ($part_file_name) {
                 $fh = fopen($part_file_name, 'wb');
-                stream_copy_to_stream($tmpfile, $fh);
-                fclose($fh);
+                if ($fh !== false) {
+                    stream_copy_to_stream($tmpfile, $fh);
+                    fclose($fh);
+                }
             };
 
             $multi_curl->addCurl($curl);
