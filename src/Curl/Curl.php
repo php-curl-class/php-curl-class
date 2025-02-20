@@ -1886,8 +1886,11 @@ class Curl extends BaseCurl
      */
     private function parseHeaders($raw_headers)
     {
-        $raw_headers = preg_split('/\r\n/', (string) $raw_headers, -1, PREG_SPLIT_NO_EMPTY);
         $http_headers = new CaseInsensitiveArray();
+        $raw_headers = preg_split('/\r\n/', (string) $raw_headers, -1, PREG_SPLIT_NO_EMPTY);
+        if ($raw_headers === false) {
+            return ['', $http_headers];
+        }
 
         $raw_headers_count = count($raw_headers);
         for ($i = 1; $i < $raw_headers_count; $i++) {
