@@ -127,7 +127,10 @@ class MultiCurl extends BaseCurl
             } else {
                 $curl->fileHandle = fopen('php://temp', 'wb');
                 $curl->downloadCompleteCallback = function ($instance, $fh) use ($filename) {
-                    file_put_contents($filename, stream_get_contents($fh));
+                    $contents = stream_get_contents($fh);
+                    if ($contents !== false) {
+                        file_put_contents($filename, $contents);
+                    }
                 };
             }
         }
@@ -462,7 +465,7 @@ class MultiCurl extends BaseCurl
             }
         } else {
             foreach ($headers as $header) {
-                list($key, $value) = explode(':', $header, 2);
+                list($key, $value) = array_pad(explode(':', $header, 2), 2, '');
                 $key = trim($key);
                 $value = trim($value);
                 $this->headers[$key] = $value;
@@ -946,7 +949,13 @@ class MultiCurl extends BaseCurl
         $sleep_seconds = $sleep_until - microtime(true);
 
         // Avoid using time_sleep_until() as it appears to be less precise and not sleep long enough.
-        usleep((int) $sleep_seconds * 1000000);
+        // Avoid using usleep(): "Values larger than 1000000 (i.e. sleeping for
+        //   more than a second) may not be supported by the operating system.
+        //   Use sleep() instead."
+        $sleep_seconds_int = (int)$sleep_seconds;
+        if ($sleep_seconds_int >= 1) {
+            sleep($sleep_seconds_int);
+        }
 
         // Ensure that enough time has passed as usleep() may not have waited long enough.
         $this->currentStartTime = microtime(true);

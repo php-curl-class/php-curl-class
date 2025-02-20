@@ -430,8 +430,10 @@ class Curl extends BaseCurl
 
             $curl->downloadCompleteCallback = function ($instance, $tmpfile) use ($part_file_name) {
                 $fh = fopen($part_file_name, 'wb');
-                stream_copy_to_stream($tmpfile, $fh);
-                fclose($fh);
+                if ($fh !== false) {
+                    stream_copy_to_stream($tmpfile, $fh);
+                    fclose($fh);
+                }
             };
 
             $multi_curl->addCurl($curl);
@@ -447,6 +449,9 @@ class Curl extends BaseCurl
 
         // Combine downloaded chunks into a single file.
         $main_file_handle = fopen($filename, 'w');
+        if ($main_file_handle === false) {
+            return false;
+        }
 
         foreach ($part_file_names as $part_file_name) {
             if (!is_file($part_file_name)) {
@@ -1031,7 +1036,7 @@ class Curl extends BaseCurl
             }
         } else {
             foreach ($headers as $header) {
-                list($key, $value) = explode(':', $header, 2);
+                list($key, $value) = array_pad(explode(':', $header, 2), 2, '');
                 $key = trim($key);
                 $value = trim($value);
                 $this->headers[$key] = $value;
@@ -1404,7 +1409,7 @@ class Curl extends BaseCurl
                 if (isset($this->responseHeaders['Content-Length'])) {
                     echo 'Response content length (from content-length header): ' . $response_header_length . "\n";
                 } else {
-                    echo 'Response content length (calculated): ' . $response_calculated_length . "\n";
+                    echo 'Response content length (calculated): ' . (string)$response_calculated_length . "\n";
                 }
 
                 if (
@@ -1859,13 +1864,15 @@ class Curl extends BaseCurl
         // Fix "PHP Notice: Use of undefined constant STDOUT" when reading the
         // PHP script from stdin. Using null causes "Warning: curl_setopt():
         // supplied argument is not a valid File-Handle resource".
-        if (!defined('STDOUT')) {
-            define('STDOUT', fopen('php://stdout', 'w'));
+        if (defined('STDOUT')) {
+            $output = STDOUT;
+        } else {
+            $output = fopen('php://stdout', 'w');
         }
 
         // Reset CURLOPT_FILE with STDOUT to avoid: "curl_exec(): CURLOPT_FILE
         // resource has gone away, resetting to default".
-        $this->setFile(STDOUT);
+        $this->setFile($output);
 
         // Reset CURLOPT_RETURNTRANSFER to tell cURL to return subsequent
         // responses as the return value of curl_exec(). Without this,
@@ -1881,13 +1888,16 @@ class Curl extends BaseCurl
      */
     private function parseHeaders($raw_headers)
     {
-        $raw_headers = preg_split('/\r\n/', (string) $raw_headers, -1, PREG_SPLIT_NO_EMPTY);
         $http_headers = new CaseInsensitiveArray();
+        $raw_headers = preg_split('/\r\n/', (string) $raw_headers, -1, PREG_SPLIT_NO_EMPTY);
+        if ($raw_headers === false) {
+            return ['', $http_headers];
+        }
 
         $raw_headers_count = count($raw_headers);
         for ($i = 1; $i < $raw_headers_count; $i++) {
             if (strpos($raw_headers[$i], ':') !== false) {
-                list($key, $value) = explode(':', $raw_headers[$i], 2);
+                list($key, $value) = array_pad(explode(':', $raw_headers[$i], 2), 2, '');
                 $key = trim($key);
                 $value = trim($value);
                 // Use isset() as array_key_exists() and ArrayAccess are not compatible.

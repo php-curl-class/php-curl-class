@@ -404,10 +404,11 @@ abstract class BaseCurl
     public function verbose($on = true, $output = 'STDERR')
     {
         if ($output === 'STDERR') {
-            if (!defined('STDERR')) {
-                define('STDERR', fopen('php://stderr', 'wb'));
+            if (defined('STDERR')) {
+                $output = STDERR;
+            } else {
+                $output = fopen('php://stderr', 'wb');
             }
-            $output = STDERR;
         }
 
         // Turn off CURLINFO_HEADER_OUT for verbose to work. This has the side

@@ -5,5 +5,22 @@
       <code><![CDATA[var_dump($value)]]></code>
       <code><![CDATA[var_dump($value)]]></code>
     </ForbiddenCode>
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$this->curl]]></code>
+      <code><![CDATA[$this->curl]]></code>
+    </PossiblyInvalidArgument>
+    <PossiblyInvalidOperand>
+      <code><![CDATA[$const_value]]></code>
+      <code><![CDATA[$value]]></code>
+    </PossiblyInvalidOperand>
+  </file>
+  <file src="../src/Curl/MultiCurl.php">
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$this->multiCurl]]></code>
+      <code><![CDATA[$this->multiCurl]]></code>
+      <code><![CDATA[$this->multiCurl]]></code>
+      <code><![CDATA[$this->multiCurl]]></code>
+      <code><![CDATA[$this->multiCurl]]></code>
+    </PossiblyInvalidArgument>
   </file>
 </files>
