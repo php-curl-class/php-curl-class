@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 11.0.4 - 2025-02-20
+
+- Increase psalm strictness ([#925](https://github.com/php-curl-class/php-curl-class/pull/925))
+
 ## 11.0.3 - 2025-02-19
 
 - Use default for Psalm ensureOverrideAttribute ([#923](https://github.com/php-curl-class/php-curl-class/pull/923))
