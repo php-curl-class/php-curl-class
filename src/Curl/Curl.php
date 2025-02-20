@@ -1864,13 +1864,15 @@ class Curl extends BaseCurl
         // Fix "PHP Notice: Use of undefined constant STDOUT" when reading the
         // PHP script from stdin. Using null causes "Warning: curl_setopt():
         // supplied argument is not a valid File-Handle resource".
-        if (!defined('STDOUT')) {
-            define('STDOUT', fopen('php://stdout', 'w'));
+        if (defined('STDOUT')) {
+            $output = STDOUT;
+        } else {
+            $output = fopen('php://stdout', 'w');
         }
 
         // Reset CURLOPT_FILE with STDOUT to avoid: "curl_exec(): CURLOPT_FILE
         // resource has gone away, resetting to default".
-        $this->setFile(STDOUT);
+        $this->setFile($output);
 
         // Reset CURLOPT_RETURNTRANSFER to tell cURL to return subsequent
         // responses as the return value of curl_exec(). Without this,
