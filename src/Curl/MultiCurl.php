@@ -127,7 +127,10 @@ class MultiCurl extends BaseCurl
             } else {
                 $curl->fileHandle = fopen('php://temp', 'wb');
                 $curl->downloadCompleteCallback = function ($instance, $fh) use ($filename) {
-                    file_put_contents($filename, stream_get_contents($fh));
+                    $contents = stream_get_contents($fh);
+                    if ($contents !== false) {
+                        file_put_contents($filename, $contents);
+                    }
                 };
             }
         }
