@@ -13,20 +13,18 @@ set -x
 if [[ ! -f "vendor/bin/psalm" ]]; then
     echo "⚠️ Skipped running psalm static analysis check"
 else
+    vendor/bin/psalm --version
 
-vendor/bin/psalm --version
+    if [[ $(echo "${CI_PHP_VERSION} == 7.4" | bc -l) -eq 1 ]]; then
+        vendor/bin/psalm --config="tests/psalm_7.4.xml"
+    else
+        vendor/bin/psalm --config="tests/psalm.xml"
+    fi
 
-if [[ $(echo "${CI_PHP_VERSION} == 7.4" | bc -l) -eq 1 ]]; then
-    vendor/bin/psalm --config="tests/psalm_7.4.xml"
-else
-    vendor/bin/psalm --config="tests/psalm.xml"
-fi
-
-if [[ "${?}" -ne 0 ]]; then
-    echo "❌ Error: psalm static analysis check failed"
-    errors+=("psalm static analysis check failed")
-fi
-
+    if [[ "${?}" -ne 0 ]]; then
+        echo "❌ Error: psalm static analysis check failed"
+        errors+=("psalm static analysis check failed")
+    fi
 fi
 
 popd

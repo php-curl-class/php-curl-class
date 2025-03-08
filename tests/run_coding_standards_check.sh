@@ -123,14 +123,15 @@ fi
 # https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/pull/8300
 if [[ $(echo "${CI_PHP_VERSION} < 8.4" | bc -l) -eq 1 ]]; then
 
-# Run PHP-CS-Fixer.
-vendor/bin/php-cs-fixer --version
-vendor/bin/php-cs-fixer fix --ansi --config="tests/.php-cs-fixer.php" --diff --dry-run
-if [[ "${?}" -ne 0 ]]; then
-    echo "❌ Error: found PHP-CS-Fixer coding standard violation(s)"
-    errors+=("found PHP-CS-Fixer coding standard violation(s)")
-fi
-
+    # Run PHP-CS-Fixer.
+    vendor/bin/php-cs-fixer --version
+    vendor/bin/php-cs-fixer fix --ansi --config="tests/.php-cs-fixer.php" --diff --dry-run
+    if [[ "${?}" -ne 0 ]]; then
+        echo "❌ Error: found PHP-CS-Fixer coding standard violation(s)"
+        errors+=("found PHP-CS-Fixer coding standard violation(s)")
+    fi
+else
+    echo "⚠️ Skipped running PHP-CS-Fixer coding standards check"
 fi
 
 popd
