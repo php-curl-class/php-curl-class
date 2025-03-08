@@ -132,6 +132,7 @@ if [[ $(echo "${CI_PHP_VERSION} < 8.4" | bc -l) -eq 1 ]]; then
     fi
 else
     echo "⚠️ Skipped running PHP-CS-Fixer coding standards check"
+    warnings+=("Skipped running PHP-CS-Fixer coding standards check")
 fi
 
 popd
