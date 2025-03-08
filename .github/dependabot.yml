@@ -19,6 +19,14 @@ updates:
       - "dependencies"
       - "github_actions"
 
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: ⬆
+    versioning-strategy: "increase"
+
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
