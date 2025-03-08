@@ -29,8 +29,7 @@
         "phpcsstandards/phpcsutils": "@alpha",
         "phpstan/phpstan": "*",
         "phpunit/phpunit": "*",
-        "squizlabs/php_codesniffer": "*",
-        "vimeo/psalm": ">=5.26.1"
+        "squizlabs/php_codesniffer": "*"
     },
     "suggest": {
         "ext-mbstring": "*"
