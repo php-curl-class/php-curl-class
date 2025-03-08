@@ -12,6 +12,7 @@ set -x
 
 if [[ ! -f "vendor/bin/psalm" ]]; then
     echo "⚠️ Skipped running psalm static analysis check"
+    warnings+=("Skipped running psalm static analysis check")
 else
     vendor/bin/psalm --version
 

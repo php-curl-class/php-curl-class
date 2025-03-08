@@ -2,6 +2,7 @@
 
 set -x
 
+warnings=()
 errors=()
 
 if [[ "${CI}" == "true" ]]; then
@@ -55,6 +56,7 @@ source "run_static_analysis_check_psalm.sh"
 
 set +x
 
+source "display_warnings.inc.sh"
 source "display_errors.inc.sh"
 
 if [[ "${CI_PHP_FUTURE_RELEASE}" != "true" ]]; then

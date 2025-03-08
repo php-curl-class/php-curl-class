@@ -27,6 +27,7 @@ if [[ $(echo "${CI_PHP_VERSION} >= 7.4" | bc -l) -eq 1 ]]; then
     fi
 else
     echo "⚠️ Skipped running phpstan check"
+    warnings+=("Skipped running phpstan check")
 fi
 
 popd
