@@ -11,13 +11,22 @@ pushd ..
 set -x
 
 if [[ $(echo "${CI_PHP_VERSION} >= 7.4" | bc -l) -eq 1 ]]; then
-    vendor/bin/phpstan analyse --ansi --configuration="tests/phpstan.neon" .
+
+    phpstan_args=(--ansi --configuration="tests/phpstan.neon")
+
+    # Increase memory limit on local development.
+    if [[ "${CI}" != "true" ]]; then
+        phpstan_args+=(--memory-limit=256M)
+    fi
+
+    vendor/bin/phpstan --version
+    vendor/bin/phpstan analyse "${phpstan_args[@]}" .
     if [[ "${?}" -ne 0 ]]; then
-        echo "Error: phpstan static analysis check failed"
+        echo "❌ Error: phpstan static analysis check failed"
         errors+=("phpstan static analysis check failed")
     fi
 else
-    echo "Skipped running phpstan check"
+    echo "⚠️ Skipped running phpstan check"
 fi
 
 popd

@@ -19,7 +19,7 @@ else
 fi
 
 if [[ "${?}" -ne 0 ]]; then
-    echo "Error: psalm static analysis check failed"
+    echo "❌ Error: psalm static analysis check failed"
     errors+=("psalm static analysis check failed")
 fi
 

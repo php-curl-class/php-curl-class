@@ -123,7 +123,7 @@ fi
     --configuration "phpunit.xml" \
     ${phpunit_args}
 if [[ "${?}" -ne 0 ]]; then
-    echo "Error: phpunit command failed"
+    echo "❌ Error: phpunit command failed"
     errors+=("phpunit command failed")
 fi
 

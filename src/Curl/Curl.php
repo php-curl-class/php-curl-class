@@ -91,11 +91,6 @@ class Curl extends BaseCurl
 
     public $curlErrorCodeConstant;
     public $curlErrorCodeConstants;
-    public $curlOptionCodeConstants;
-    public $effectiveUrl;
-    public $rfc2616;
-    public $rfc6265;
-    public $totalTime;
 
     private static $deferredProperties = [
         'curlErrorCodeConstant',
@@ -106,6 +101,7 @@ class Curl extends BaseCurl
         'rfc6265',
         'totalTime',
     ];
+    private array $deferredValues = [];
 
     /**
      * Construct
@@ -120,13 +116,13 @@ class Curl extends BaseCurl
             throw new \ErrorException('cURL library is not loaded');
         }
 
-        unset($this->curlErrorCodeConstant);
-        unset($this->curlErrorCodeConstants);
-        unset($this->curlOptionCodeConstants);
-        unset($this->effectiveUrl);
-        unset($this->rfc2616);
-        unset($this->rfc6265);
-        unset($this->totalTime);
+        unset($this->deferredValues['curlErrorCodeConstant']);
+        unset($this->deferredValues['curlErrorCodeConstants']);
+        unset($this->deferredValues['curlOptionCodeConstants']);
+        unset($this->deferredValues['effectiveUrl']);
+        unset($this->deferredValues['rfc2616']);
+        unset($this->deferredValues['rfc6265']);
+        unset($this->deferredValues['totalTime']);
 
         $this->curl = curl_init();
         $this->initialize($base_url, $options);
@@ -521,7 +517,7 @@ class Curl extends BaseCurl
         if ($this->curlError) {
             $curl_error_message = curl_strerror($this->curlErrorCode);
 
-            if ($this->curlErrorCodeConstant !== '') {
+            if (isset($this->curlErrorCodeConstant)) {
                 $curl_error_message .= ' (' . $this->curlErrorCodeConstant . ')';
             }
 
@@ -561,9 +557,9 @@ class Curl extends BaseCurl
         $this->errorMessage = $this->curlError ? $this->curlErrorMessage : $this->httpErrorMessage;
 
         // Reset select deferred properties so that they may be recalculated.
-        unset($this->curlErrorCodeConstant);
-        unset($this->effectiveUrl);
-        unset($this->totalTime);
+        unset($this->deferredValues['curlErrorCodeConstant']);
+        unset($this->deferredValues['effectiveUrl']);
+        unset($this->deferredValues['totalTime']);
 
         // Reset content-length header possibly set from a PUT or SEARCH request.
         $this->unsetHeader('Content-Length');
@@ -1653,14 +1649,32 @@ class Curl extends BaseCurl
 
     public function __get($name)
     {
-        $return = null;
-        if (
-            in_array($name, self::$deferredProperties, true) &&
-            is_callable([$this, $getter = 'get' . ucfirst($name)])
-        ) {
-            $return = $this->$name = $this->$getter();
+        if (in_array($name, self::$deferredProperties, true)) {
+            if (isset($this->deferredValues[$name])) {
+                return $this->deferredValues[$name];
+            } elseif (is_callable([$this, $getter = 'get' . ucfirst($name)])) {
+                $this->deferredValues[$name] = $this->$getter();
+                return $this->deferredValues[$name];
+            }
         }
-        return $return;
+
+        return null;
+    }
+
+    public function __isset($name)
+    {
+        if (in_array($name, self::$deferredProperties, true)) {
+            if (isset($this->deferredValues[$name])) {
+                return true;
+            } elseif (is_callable([$this, $getter = 'get' . ucfirst($name)])) {
+                $this->deferredValues[$name] = $this->$getter();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return isset($this->$name);
     }
 
     /**
@@ -1685,7 +1699,7 @@ class Curl extends BaseCurl
      */
     private function getCurlErrorCodeConstant()
     {
-        $curl_const_by_code = $this->curlErrorCodeConstants;
+        $curl_const_by_code = $this->curlErrorCodeConstants ?? [];
         if (isset($curl_const_by_code[$this->curlErrorCode])) {
             return $curl_const_by_code[$this->curlErrorCode];
         }

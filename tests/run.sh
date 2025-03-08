@@ -8,7 +8,7 @@ if [[ "${CI}" == "true" ]]; then
     composer self-update
     composer install --prefer-source --no-interaction
     if [[ "${?}" -ne 0 ]]; then
-        echo "Error: composer install failed"
+        echo "❌ Error: composer install failed"
         errors+=("composer install failed")
     fi
 fi
@@ -43,5 +43,5 @@ source "display_errors.inc.sh"
 if [[ "${CI_PHP_FUTURE_RELEASE}" != "true" ]]; then
     exit "${#errors[@]}"
 elif [[ "${#errors[@]}" -ne 0 ]]; then
-    echo "One or more tests failed, but allowed as the CI_PHP_FUTURE_RELEASE flag is on for PHP version ${CI_PHP_VERSION}."
+    echo "⚠️ One or more tests failed, but allowed as the CI_PHP_FUTURE_RELEASE flag is on for PHP version ${CI_PHP_VERSION}."
 fi
