@@ -6,6 +6,6 @@ if [[ "${error_count}" -ge 1 ]]; then
     for value in "${errors[@]}"; do
         ((iter++))
         echo -e "\nError ${iter} of ${error_count}:"
-        echo "${value}" | perl -pe 's/^(.*)$/\t\1/'
+        echo "❌ ${value}" | perl -pe 's/^(.*)$/\t\1/'
     done
 fi
