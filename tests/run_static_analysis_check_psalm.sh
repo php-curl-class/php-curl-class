@@ -10,6 +10,10 @@ pushd ..
 
 set -x
 
+if [[ ! -f "vendor/bin/psalm" ]]; then
+    echo "⚠️ Skipped running psalm static analysis check"
+else
+
 vendor/bin/psalm --version
 
 if [[ $(echo "${CI_PHP_VERSION} == 7.4" | bc -l) -eq 1 ]]; then
@@ -21,6 +25,8 @@ fi
 if [[ "${?}" -ne 0 ]]; then
     echo "❌ Error: psalm static analysis check failed"
     errors+=("psalm static analysis check failed")
+fi
+
 fi
 
 popd

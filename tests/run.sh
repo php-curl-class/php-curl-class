@@ -6,6 +6,23 @@ errors=()
 
 if [[ "${CI}" == "true" ]]; then
     composer self-update
+
+    # Skip attempting to install psalm on future PHP releases to avoid the
+    # following error that would otherwise block the remaining tests from
+    # running:
+    #   Your requirements could not be resolved to an installable set of packages.
+    #
+    #     Problem 1
+    #       - Root composer.json requires vimeo/psalm >=5.26.1 -> satisfiable by vimeo/psalm[5.26.1, 6.0.0, ..., 6.8.8].
+    #       - vimeo/psalm 5.26.1 requires php ^7.4 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 -> your php version (8.5.0-dev) does not satisfy that requirement.
+    #       - vimeo/psalm[6.0.0, ..., 6.5.0] require php ~8.1.17 || ~8.2.4 || ~8.3.0 || ~8.4.0 -> your php version (8.5.0-dev) does not satisfy that requirement.
+    #       - vimeo/psalm[6.5.1, ..., 6.8.8] require php ~8.1.31 || ~8.2.27 || ~8.3.16 || ~8.4.3 -> your php version (8.5.0-dev) does not satisfy that requirement.
+    #
+    #   Error: Your requirements could not be resolved to an installable set of packages.
+    if ! "${CI_PHP_FUTURE_RELEASE}"; then
+        composer require --dev "vimeo/psalm:>=5.26.1"
+    fi
+
     composer install --prefer-source --no-interaction
     if [[ "${?}" -ne 0 ]]; then
         echo "❌ Error: composer install failed"
