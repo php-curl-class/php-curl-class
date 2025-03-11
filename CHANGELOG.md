@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 11.0.5 - 2025-03-11
+
+- Fix PHPStan static analysis errors ([#929](https://github.com/php-curl-class/php-curl-class/pull/929))
+
 ## 11.0.4 - 2025-02-20
 
 - Increase psalm strictness ([#925](https://github.com/php-curl-class/php-curl-class/pull/925))
