@@ -4,6 +4,7 @@
 [![](https://img.shields.io/github/license/php-curl-class/php-curl-class.svg?style=for-the-badge)](https://github.com/php-curl-class/php-curl-class/blob/master/LICENSE)
 [![](https://img.shields.io/github/actions/workflow/status/php-curl-class/php-curl-class/ci.yml?style=for-the-badge&label=build&branch=master)](https://github.com/php-curl-class/php-curl-class/actions/workflows/ci.yml)
 [![](https://img.shields.io/github/actions/workflow/status/php-curl-class/php-curl-class/release.yml?style=for-the-badge&label=release&branch=master)](https://github.com/php-curl-class/php-curl-class/releases/)
+[![](https://img.shields.io/github/actions/workflow/status/php-curl-class/php-curl-class/dependabot/dependabot-updates?style=for-the-badge&label=Dependabot&branch=master)](https://github.com/php-curl-class/php-curl-class/actions/workflows/dependabot/dependabot-updates)
 [![](https://img.shields.io/packagist/dt/php-curl-class/php-curl-class.svg?style=for-the-badge)](https://github.com/php-curl-class/php-curl-class/releases/)
 
 PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.
