@@ -20,7 +20,7 @@ updates:
       - "github_actions"
 
   - package-ecosystem: "npm"
-    directory: "/"
+    directory: "/www/scripts/"
     schedule:
       interval: "daily"
     commit-message:
