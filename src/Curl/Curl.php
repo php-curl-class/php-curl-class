@@ -276,6 +276,12 @@ class Curl extends BaseCurl
      */
     public function delete($url, $query_parameters = [], $data = [])
     {
+        $this->setDelete($url, $query_parameters, $data);
+        return $this->exec();
+    }
+
+    public function setDelete($url, $query_parameters = [], $data = [])
+    {
         if (is_array($url)) {
             $data = $query_parameters;
             $query_parameters = $url;
@@ -295,7 +301,6 @@ class Curl extends BaseCurl
         if (!empty($data)) {
             $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
         }
-        return $this->exec();
     }
 
     /**
@@ -606,6 +611,12 @@ class Curl extends BaseCurl
      */
     public function get($url, $data = [])
     {
+        $this->setGet($url, $data);
+        return $this->exec();
+    }
+
+    public function setGet($url, $data = [])
+    {
         if (is_array($url)) {
             $data = $url;
             $url = (string)$this->url;
@@ -613,7 +624,6 @@ class Curl extends BaseCurl
         $this->setUrl($url, $data);
         $this->setOptInternal(CURLOPT_CUSTOMREQUEST, 'GET');
         $this->setOptInternal(CURLOPT_HTTPGET, true);
-        return $this->exec();
     }
 
     /**
@@ -643,6 +653,12 @@ class Curl extends BaseCurl
      */
     public function head($url, $data = [])
     {
+        $this->setHead($url, $data);
+        return $this->exec();
+    }
+
+    public function setHead($url, $data = [])
+    {
         if (is_array($url)) {
             $data = $url;
             $url = (string)$this->url;
@@ -650,7 +666,6 @@ class Curl extends BaseCurl
         $this->setUrl($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'HEAD');
         $this->setOpt(CURLOPT_NOBODY, true);
-        return $this->exec();
     }
 
     /**
@@ -662,13 +677,18 @@ class Curl extends BaseCurl
      */
     public function options($url, $data = [])
     {
+        $this->setOptions($url, $data);
+        return $this->exec();
+    }
+
+    public function setOptions($url, $data = [])
+    {
         if (is_array($url)) {
             $data = $url;
             $url = (string)$this->url;
         }
         $this->setUrl($url, $data);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'OPTIONS');
-        return $this->exec();
     }
 
     /**
@@ -679,6 +699,12 @@ class Curl extends BaseCurl
      * @return mixed Returns the value provided by exec.
      */
     public function patch($url, $data = [])
+    {
+        $this->setPatch($url, $data);
+        return $this->exec();
+    }
+
+    public function setPatch($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;
@@ -692,7 +718,6 @@ class Curl extends BaseCurl
         $this->setUrl($url);
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
         $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
-        return $this->exec();
     }
 
     /**
@@ -723,6 +748,12 @@ class Curl extends BaseCurl
      */
     public function post($url, $data = '', $follow_303_with_post = false)
     {
+        $this->setPost($url, $data, $follow_303_with_post);
+        return $this->exec();
+    }
+
+    public function setPost($url, $data = '', $follow_303_with_post = false)
+    {
         if (is_array($url)) {
             $follow_303_with_post = (bool)$data;
             $data = $url;
@@ -746,7 +777,6 @@ class Curl extends BaseCurl
 
         $this->setOpt(CURLOPT_POST, true);
         $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
-        return $this->exec();
     }
 
     /**
@@ -757,6 +787,12 @@ class Curl extends BaseCurl
      * @return mixed Returns the value provided by exec.
      */
     public function put($url, $data = [])
+    {
+        $this->setPut($url, $data);
+        return $this->exec();
+    }
+
+    public function setPut($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;
@@ -773,7 +809,6 @@ class Curl extends BaseCurl
         if (!empty($put_data)) {
             $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
         }
-        return $this->exec();
     }
 
     /**
@@ -784,6 +819,12 @@ class Curl extends BaseCurl
      * @return mixed Returns the value provided by exec.
      */
     public function search($url, $data = [])
+    {
+        $this->setSearch($url, $data);
+        return $this->exec();
+    }
+
+    public function setSearch($url, $data = [])
     {
         if (is_array($url)) {
             $data = $url;
@@ -800,7 +841,6 @@ class Curl extends BaseCurl
         if (!empty($put_data)) {
             $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
         }
-        return $this->exec();
     }
 
     /**
