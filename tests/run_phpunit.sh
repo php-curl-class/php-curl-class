@@ -74,13 +74,13 @@ export PHP_CURL_CLASS_TEST_MODE_ENABLED="yes"
 # Start test servers. Run servers on different ports to allow simultaneous
 # requests without blocking.
 server_count=7
-declare -A pids
-for i in $(seq 0 $(("${server_count}" - 1))); do
+pids=()
+for i in $(seq 0 "$(echo "${server_count} - 1" | bc)"); do
     port=8000
     (( port += $i ))
 
     php -S "127.0.0.1:${port}" server.php &> /dev/null &
-    pids["${i}"]="${!}"
+    pids+=("${!}")
 done
 
 # Determine which phpunit to use.
