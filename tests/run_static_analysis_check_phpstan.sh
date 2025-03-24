@@ -10,7 +10,7 @@ pushd ..
 
 set -x
 
-if [[ $(echo "${CI_PHP_VERSION} >= 7.4" | bc -l) -eq 1 ]]; then
+if true; then
 
     phpstan_args=(--ansi --configuration="tests/phpstan.neon")
 
