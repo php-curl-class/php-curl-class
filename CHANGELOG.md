@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 11.1.0 - 2025-03-24
+
+- Add methods like Curl::setGet() for each HTTP request method ([#936](https://github.com/php-curl-class/php-curl-class/pull/936))
+
 ## 11.0.5 - 2025-03-11
 
 - Fix PHPStan static analysis errors ([#929](https://github.com/php-curl-class/php-curl-class/pull/929))
