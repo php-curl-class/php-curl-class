@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 12.0.0 - 2025-03-25
+
+- Drop support for PHP 7.4 ([#937](https://github.com/php-curl-class/php-curl-class/pull/937))
+
 ## 11.1.0 - 2025-03-24
 
 - Add methods like Curl::setGet() for each HTTP request method ([#936](https://github.com/php-curl-class/php-curl-class/pull/936))
