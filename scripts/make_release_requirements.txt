@@ -19,18 +19,18 @@ deprecated==1.2.14
 gitdb==4.0.11
     # via gitpython
 gitpython==3.1.44
-    # via -r scripts/make_release_requirements.in
+    # via -r make_release_requirements.in
 idna==3.7
     # via requests
 pycparser==2.22
     # via cffi
 pygithub==2.6.1
-    # via -r scripts/make_release_requirements.in
+    # via -r make_release_requirements.in
 pyjwt[crypto]==2.8.0
     # via pygithub
 pynacl==1.5.0
     # via pygithub
-requests==2.32.0
+requests==2.32.4
     # via pygithub
 smmap==5.0.1
     # via gitdb
