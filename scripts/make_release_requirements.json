@@ -1,6 +1,6 @@
 [
   {
-    "outdated_count": "50"
+    "outdated_count": "45"
   },
   {
     "name": "attrs",
@@ -45,12 +45,6 @@
     "latest_filetype": "wheel"
   },
   {
-    "name": "cffi",
-    "version": "1.16.0",
-    "latest_version": "1.17.1",
-    "latest_filetype": "wheel"
-  },
-  {
     "name": "click",
     "version": "8.1.6",
     "latest_version": "8.2.1",
@@ -63,28 +57,10 @@
     "latest_filetype": "wheel"
   },
   {
-    "name": "cryptography",
-    "version": "44.0.1",
-    "latest_version": "45.0.4",
-    "latest_filetype": "wheel"
-  },
-  {
     "name": "dbus-python",
     "version": "1.3.2",
     "latest_version": "1.4.0",
     "latest_filetype": "sdist"
-  },
-  {
-    "name": "Deprecated",
-    "version": "1.2.14",
-    "latest_version": "1.2.18",
-    "latest_filetype": "wheel"
-  },
-  {
-    "name": "gitdb",
-    "version": "4.0.11",
-    "latest_version": "4.0.12",
-    "latest_filetype": "wheel"
   },
   {
     "name": "httplib2",
@@ -270,12 +246,6 @@
     "name": "Twisted",
     "version": "24.3.0",
     "latest_version": "25.5.0",
-    "latest_filetype": "wheel"
-  },
-  {
-    "name": "typing_extensions",
-    "version": "4.11.0",
-    "latest_version": "4.14.0",
     "latest_filetype": "wheel"
   },
   {
