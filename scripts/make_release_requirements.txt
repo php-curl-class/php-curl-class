@@ -12,7 +12,7 @@ cffi==1.16.0
     #   pynacl
 charset-normalizer==3.4.2
     # via requests
-cryptography==44.0.1
+cryptography==45.0.4
     # via pyjwt
 deprecated==1.2.14
     # via pygithub
@@ -34,7 +34,7 @@ requests==2.32.4
     # via pygithub
 smmap==5.0.2
     # via gitdb
-typing-extensions==4.11.0
+typing-extensions==4.14.0
     # via pygithub
 urllib3==2.5.0
     # via
