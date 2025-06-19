@@ -18,15 +18,15 @@ jobs:
       - name: Approve and label updates
         run: |
           review_status="$(
-              gh pr view "$PR_URL" \
+              gh pr view "${PR_URL}" \
                   --json="reviewDecision" \
                   --jq=".reviewDecision"
           )"
           echo "Pull request review status: ${review_status}"
           if [[ "${review_status}" != "APPROVED" ]]; then
-              gh pr review --approve "$PR_URL"
+              gh pr review --approve "${PR_URL}"
           fi
-          gh pr edit --add-label "cleanup-no-release-required" "$PR_URL"
+          gh pr edit --add-label "cleanup-no-release-required" "${PR_URL}"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -34,7 +34,7 @@ jobs:
       - name: Merge Dependabot patch updates
         if: ${{ steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' }}
         run: |
-          gh pr merge --auto --merge "$PR_URL"
+          gh pr merge --auto --merge "${PR_URL}"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -42,7 +42,7 @@ jobs:
       - name: Merge Dependabot minor updates
         if: ${{ steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor' }}
         run: |
-          gh pr merge --auto --merge "$PR_URL"
+          gh pr merge --auto --merge "${PR_URL}"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -50,7 +50,7 @@ jobs:
       - name: Merge Dependabot indirect dependency updates
         if: ${{ steps.dependabot-metadata.outputs.dependency-type == 'indirect' }}
         run: |
-          gh pr merge --auto --merge "$PR_URL"
+          gh pr merge --auto --merge "${PR_URL}"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
