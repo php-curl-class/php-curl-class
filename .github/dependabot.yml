@@ -34,3 +34,5 @@ updates:
     commit-message:
       prefix: ⬆
     versioning-strategy: "increase"
+    allow:
+      - dependency-type: "all"
