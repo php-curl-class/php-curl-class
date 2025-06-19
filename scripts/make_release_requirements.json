@@ -1,6 +1,6 @@
 [
   {
-    "outdated_count": "55"
+    "outdated_count": "50"
   },
   {
     "name": "attrs",
@@ -45,21 +45,9 @@
     "latest_filetype": "wheel"
   },
   {
-    "name": "certifi",
-    "version": "2024.7.4",
-    "latest_version": "2025.6.15",
-    "latest_filetype": "wheel"
-  },
-  {
     "name": "cffi",
     "version": "1.16.0",
     "latest_version": "1.17.1",
-    "latest_filetype": "wheel"
-  },
-  {
-    "name": "charset-normalizer",
-    "version": "3.3.2",
-    "latest_version": "3.4.2",
     "latest_filetype": "wheel"
   },
   {
@@ -102,12 +90,6 @@
     "name": "httplib2",
     "version": "0.20.4",
     "latest_version": "0.22.0",
-    "latest_filetype": "wheel"
-  },
-  {
-    "name": "idna",
-    "version": "3.7",
-    "latest_version": "3.10",
     "latest_filetype": "wheel"
   },
   {
@@ -285,12 +267,6 @@
     "latest_filetype": "wheel"
   },
   {
-    "name": "smmap",
-    "version": "5.0.1",
-    "latest_version": "5.0.2",
-    "latest_filetype": "wheel"
-  },
-  {
     "name": "Twisted",
     "version": "24.3.0",
     "latest_version": "25.5.0",
@@ -312,12 +288,6 @@
     "name": "wheel",
     "version": "0.42.0",
     "latest_version": "0.45.1",
-    "latest_filetype": "wheel"
-  },
-  {
-    "name": "wrapt",
-    "version": "1.16.0",
-    "latest_version": "1.17.2",
     "latest_filetype": "wheel"
   },
   {
