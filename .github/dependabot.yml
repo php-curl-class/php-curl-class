@@ -36,3 +36,4 @@ updates:
     versioning-strategy: "increase"
     allow:
       - dependency-type: "all"
+    open-pull-requests-limit: 10
