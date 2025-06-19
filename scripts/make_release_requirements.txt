@@ -16,7 +16,7 @@ cryptography==45.0.4
     # via pyjwt
 deprecated==1.2.18
     # via pygithub
-gitdb==4.0.11
+gitdb==4.0.12
     # via gitpython
 gitpython==3.1.44
     # via -r scripts/make_release_requirements.in
