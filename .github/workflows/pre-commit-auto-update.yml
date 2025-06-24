@@ -44,6 +44,7 @@ jobs:
             ${{ steps.gather-changes.outputs.changes }}
             ```
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          branch: create-pull-request/pre-commit
           committer: GitHub <noreply@github.com>
           delete-branch: true
           token: ${{ secrets.PHP_CURL_CLASS_BOT_TOKEN }}
