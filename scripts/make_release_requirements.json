@@ -35,13 +35,13 @@
   {
     "name": "boto3",
     "version": "1.34.46",
-    "latest_version": "1.38.39",
+    "latest_version": "1.38.41",
     "latest_filetype": "wheel"
   },
   {
     "name": "botocore",
     "version": "1.34.46",
-    "latest_version": "1.38.39",
+    "latest_version": "1.38.41",
     "latest_filetype": "wheel"
   },
   {
@@ -131,7 +131,7 @@
   {
     "name": "oauthlib",
     "version": "3.2.2",
-    "latest_version": "3.3.0",
+    "latest_version": "3.3.1",
     "latest_filetype": "wheel"
   },
   {
@@ -155,7 +155,7 @@
   {
     "name": "Pygments",
     "version": "2.17.2",
-    "latest_version": "2.19.1",
+    "latest_version": "2.19.2",
     "latest_filetype": "wheel"
   },
   {
