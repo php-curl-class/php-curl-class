@@ -1,6 +1,12 @@
 [
   {
-    "outdated_count": "1"
+    "outdated_count": "2"
+  },
+  {
+    "name": "cryptography",
+    "version": "45.0.4",
+    "latest_version": "45.0.5",
+    "latest_filetype": "wheel"
   },
   {
     "name": "PyJWT",
