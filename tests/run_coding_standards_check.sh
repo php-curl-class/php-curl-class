@@ -118,12 +118,12 @@ if [[ "${?}" -ne 0 ]]; then
     errors+=("found PHP_CodeSniffer coding standard violation(s)")
 fi
 
-    # Run PHP-CS-Fixer.
-    vendor/bin/php-cs-fixer --version
-    vendor/bin/php-cs-fixer fix --ansi --config="tests/.php-cs-fixer.php" --diff --dry-run
-    if [[ "${?}" -ne 0 ]]; then
-        echo "❌ Error: found PHP-CS-Fixer coding standard violation(s)"
-        errors+=("found PHP-CS-Fixer coding standard violation(s)")
-    fi
+# Run PHP-CS-Fixer.
+vendor/bin/php-cs-fixer --version
+vendor/bin/php-cs-fixer fix --ansi --config="tests/.php-cs-fixer.php" --diff --dry-run
+if [[ "${?}" -ne 0 ]]; then
+    echo "❌ Error: found PHP-CS-Fixer coding standard violation(s)"
+    errors+=("found PHP-CS-Fixer coding standard violation(s)")
+fi
 
 popd
