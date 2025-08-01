@@ -14,8 +14,6 @@ charset-normalizer==3.4.2
     # via requests
 cryptography==45.0.5
     # via pyjwt
-deprecated==1.2.18
-    # via pygithub
 gitdb==4.0.12
     # via gitpython
 gitpython==3.1.45
@@ -24,7 +22,7 @@ idna==3.10
     # via requests
 pycparser==2.22
     # via cffi
-pygithub==2.6.1
+pygithub==2.7.0
     # via -r scripts/make_release_requirements.in
 pyjwt[crypto]==2.8.0
     # via pygithub
@@ -40,5 +38,3 @@ urllib3==2.5.0
     # via
     #   pygithub
     #   requests
-wrapt==1.17.2
-    # via deprecated
