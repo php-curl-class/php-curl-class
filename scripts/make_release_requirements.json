@@ -1,12 +1,6 @@
 [
   {
-    "outdated_count": "2"
-  },
-  {
-    "name": "PyGithub",
-    "version": "2.6.1",
-    "latest_version": "2.7.0",
-    "latest_filetype": "wheel"
+    "outdated_count": "1"
   },
   {
     "name": "PyJWT",
