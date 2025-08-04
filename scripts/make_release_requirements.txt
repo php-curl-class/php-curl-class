@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=make_release_requirements.txt make_release_requirements.in
 #
-certifi==2025.7.14
+certifi==2025.8.3
     # via requests
 cffi==1.17.1
     # via
