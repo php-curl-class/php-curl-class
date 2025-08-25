@@ -1,6 +1,6 @@
 [
   {
-    "outdated_count": "2"
+    "outdated_count": "3"
   },
   {
     "name": "PyJWT",
@@ -12,6 +12,12 @@
     "name": "requests",
     "version": "2.32.4",
     "latest_version": "2.32.5",
+    "latest_filetype": "wheel"
+  },
+  {
+    "name": "typing_extensions",
+    "version": "4.14.1",
+    "latest_version": "4.15.0",
     "latest_filetype": "wheel"
   }
 ]
