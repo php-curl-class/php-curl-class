@@ -3,9 +3,9 @@
     "outdated_count": "2"
   },
   {
-    "name": "cryptography",
-    "version": "45.0.6",
-    "latest_version": "45.0.7",
+    "name": "PyGithub",
+    "version": "2.7.0",
+    "latest_version": "2.8.1",
     "latest_filetype": "wheel"
   },
   {
