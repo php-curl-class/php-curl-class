@@ -22,7 +22,7 @@ idna==3.10
     # via requests
 pycparser==2.22
     # via cffi
-pygithub==2.7.0
+pygithub==2.8.1
     # via -r scripts/make_release_requirements.in
 pyjwt[crypto]==2.8.0
     # via pygithub
