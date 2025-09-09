@@ -1,6 +1,12 @@
 [
   {
-    "outdated_count": "1"
+    "outdated_count": "2"
+  },
+  {
+    "name": "pycparser",
+    "version": "2.22",
+    "latest_version": "2.23",
+    "latest_filetype": "wheel"
   },
   {
     "name": "PyJWT",
