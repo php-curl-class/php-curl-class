@@ -17,6 +17,11 @@
         <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine" />
     </rule>
 
+    <!-- Allow side effects and symbols within files in the examples directory. -->
+    <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+        <exclude-pattern>./examples/*</exclude-pattern>
+    </rule>
+
     <!-- Prohibit long lines in php files. -->
     <rule ref="Generic.Files.LineLength">
         <properties>
