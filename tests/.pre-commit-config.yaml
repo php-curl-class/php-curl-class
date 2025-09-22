@@ -12,7 +12,7 @@
 #     $ pre-commit autoupdate --config="tests/.pre-commit-config.yaml"
 repos:
 - repo: https://github.com/psf/black
-  rev: 25.1.0
+  rev: 25.9.0
   hooks:
   - id: black
     name: black
