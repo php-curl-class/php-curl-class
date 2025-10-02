@@ -37,7 +37,7 @@ repos:
     files: 'composer\.json'
     pass_filenames: true
 - repo: https://github.com/jazzband/pip-tools
-  rev: v7.5.0
+  rev: v7.5.1
   hooks:
   - id: pip-compile
     name: pip-compile make_release_requirements.in
