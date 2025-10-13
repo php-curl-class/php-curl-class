@@ -18,7 +18,7 @@ gitdb==4.0.12
     # via gitpython
 gitpython==3.1.45
     # via -r scripts/make_release_requirements.in
-idna==3.10
+idna==3.11
     # via requests
 pycparser==2.23
     # via cffi
