@@ -123,7 +123,6 @@ function mime_type($file_path)
 {
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime_type = finfo_file($finfo, $file_path);
-    finfo_close($finfo);
     return $mime_type;
 }
 
