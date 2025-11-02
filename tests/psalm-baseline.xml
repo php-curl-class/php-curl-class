@@ -7,7 +7,6 @@
     </ForbiddenCode>
     <PossiblyInvalidArgument>
       <code><![CDATA[$this->curl]]></code>
-      <code><![CDATA[$this->curl]]></code>
     </PossiblyInvalidArgument>
     <PossiblyInvalidOperand>
       <code><![CDATA[$const_value]]></code>
