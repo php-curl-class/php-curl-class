@@ -235,9 +235,6 @@ class Curl extends BaseCurl
     #[\Override]
     public function close()
     {
-        if (is_resource($this->curl) || $this->curl instanceof \CurlHandle) {
-            curl_close($this->curl);
-        }
         $this->curl = null;
         $this->options = null;
         $this->userSetOptions = null;
