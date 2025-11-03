@@ -6,6 +6,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 12.0.1 - 2025-11-03
+
+- Remove calls to deprecated functions ([#1005](https://github.com/php-curl-class/php-curl-class/pull/1005))
+
 ## 12.0.0 - 2025-03-25
 
 - Drop support for PHP 7.4 ([#937](https://github.com/php-curl-class/php-curl-class/pull/937))
