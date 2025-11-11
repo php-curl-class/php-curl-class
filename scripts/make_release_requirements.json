@@ -1,5 +1,11 @@
 [
   {
-    "outdated_count": "0"
+    "outdated_count": "1"
+  },
+  {
+    "name": "PyNaCl",
+    "version": "1.6.0",
+    "latest_version": "1.6.1",
+    "latest_filetype": "wheel"
   }
 ]
