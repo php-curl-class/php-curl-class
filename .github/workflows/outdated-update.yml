@@ -1,0 +1,37 @@
+name: Update outdated dependencies
+
+on:
+    schedule:
+        - cron: '0 20 * * 1-4'
+    workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Install pip-tools
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          python -m pip install --upgrade pip pip-tools
+
+      - name: Read outdated dependencies
+        id: read-outdated
+        run: |
+          OUTDATED="$(jq -r '.[1:][]' 'scripts/make_release_requirements.json')"
+          echo "::set-output name=outdated::$OUTDATED"
+
+      - name: Upgrade outdated dependencies
+        if: steps.read-outdated.outputs.outdated != ''
+        run: |
+          for package in ${{ steps.read-outdated.outputs.outdated }}; do
+            echo "found outdated package: ${package}"
+            # TODO: Attempt to upgrade the package.
+          done
+
+          echo "done"
