@@ -1,4 +1,4 @@
-name: Update outdated dependencies
+name: Update outdated packages
 
 on:
     schedule:
@@ -20,7 +20,7 @@ jobs:
           source venv/bin/activate
           python -m pip install --upgrade pip pip-tools
 
-      - name: Upgrade outdated dependencies
+      - name: Upgrade outdated packages
         run: |
           items=($(
               jq -r '.[1:]' "scripts/make_release_requirements.json" |
@@ -31,7 +31,15 @@ jobs:
               echo "found outdated package:"
               echo "name: ${package_name}"
               echo "version: ${package_version}"
-              # TODO: Attempt to upgrade the package.
+              curl
+                --request "POST" \
+                --silent \
+                --header "Accept: application/vnd.github+json" \
+                --header "Authorization: Bearer ${TOKEN}" \
+                "https://api.github.com/repos/php-curl-class/php-curl-class/actions/workflows/outdated-update-package.yml/dispatches" \
+                --data "{\"ref\":\"main\",\"inputs\":{\"package_name\":\"${package_name}\",\"package_version\":\"${package_version}\"}}"
           done
 
           echo "done"
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
