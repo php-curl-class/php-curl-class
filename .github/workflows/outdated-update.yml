@@ -37,7 +37,7 @@ jobs:
                 --header "Accept: application/vnd.github+json" \
                 --header "Authorization: Bearer ${TOKEN}" \
                 "https://api.github.com/repos/php-curl-class/php-curl-class/actions/workflows/outdated-update-package.yml/dispatches" \
-                --data "{\"ref\":\"main\",\"inputs\":{\"package_name\":\"${package_name}\",\"package_version\":\"${package_version}\"}}"
+                --data "{\"ref\":\"master\",\"inputs\":{\"package_name\":\"${package_name}\",\"package_version\":\"${package_version}\"}}"
           done
 
           echo "done"
