@@ -31,7 +31,7 @@ jobs:
               echo "found outdated package:"
               echo "name: ${package_name}"
               echo "version: ${package_version}"
-              curl
+              curl \
                 --request "POST" \
                 --silent \
                 --header "Accept: application/vnd.github+json" \
