@@ -60,9 +60,6 @@ jobs:
       - name: Enable auto-merge for pull request
         if: ${{ steps.cpr.outputs.pull-request-number }}
         run: |
-          set -x
-          gh repo set-default php-curl-class/php-curl-class
-          gh repo set-default --view
           gh pr merge --auto --merge "${PR_URL}"
         env:
           PR_URL: ${{ steps.cpr.outputs.pull-request-url }}

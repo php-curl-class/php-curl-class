@@ -65,10 +65,23 @@ jobs:
       - name: Enable auto-merge for pull request
         if: ${{ steps.cpr.outputs.pull-request-number }}
         run: |
-          set -x
-          gh repo set-default php-curl-class/php-curl-class
-          gh repo set-default --view
           gh pr merge --auto --merge "${PR_URL}"
         env:
           PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Approve update
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          review_status="$(
+              gh pr view "${PR_URL}" \
+                  --json="reviewDecision" \
+                  --jq=".reviewDecision"
+          )"
+          echo "Pull request review status: ${review_status}"
+          if [[ "${review_status}" != "APPROVED" ]]; then
+              gh pr review --approve "${PR_URL}"
+          fi
+        env:
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          GITHUB_TOKEN: ${{ secrets.PHP_CURL_CLASS_TOKEN }}
