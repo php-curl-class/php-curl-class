@@ -41,6 +41,7 @@ jobs:
               "scripts/make_release_requirements.in"
 
       - name: Create or update pull request
+        id: cpr
         uses: peter-evans/create-pull-request@v7
         with:
           commit-message: "Update package ${{ github.event.inputs.package_name }}"
@@ -55,3 +56,19 @@ jobs:
           push-to-fork: php-curl-class-helper/php-curl-class
         env:
           GITHUB_TOKEN: ${{ secrets.PHP_CURL_CLASS_BOT_TOKEN }}
+
+      - name: Pull request created or updated
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          echo "Pull request: ${{ steps.cpr.outputs.pull-request-url }}"
+
+      - name: Enable auto-merge for pull request
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          set -x
+          gh repo set-default php-curl-class/php-curl-class
+          gh repo set-default --view
+          gh pr merge --auto --merge "${PR_URL}"
+        env:
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
