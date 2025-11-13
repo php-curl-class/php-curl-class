@@ -49,7 +49,7 @@ jobs:
           title: ⬆ Update ${{ github.event.inputs.package_name }}
           body: "Updating ${{ github.event.inputs.package_name }}"
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          branch: "create-pull-request/upgrade-${{ github.event.inputs.package_name }}-${{ github.run_id }}"
+          branch: "create-pull-request/upgrade-${{ github.event.inputs.package_name }}"
           committer: GitHub <noreply@github.com>
           delete-branch: true
           token: ${{ secrets.PHP_CURL_CLASS_BOT_TOKEN }}
