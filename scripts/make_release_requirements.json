@@ -1,17 +1,5 @@
 [
   {
-    "outdated_count": "2"
-  },
-  {
-    "name": "certifi",
-    "version": "2025.10.5",
-    "latest_version": "2025.11.12",
-    "latest_filetype": "wheel"
-  },
-  {
-    "name": "PyNaCl",
-    "version": "1.6.0",
-    "latest_version": "1.6.1",
-    "latest_filetype": "wheel"
+    "outdated_count": "0"
   }
 ]
