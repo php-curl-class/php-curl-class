@@ -14,12 +14,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install pip-tools
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          python -m pip install --upgrade pip pip-tools
-
       - name: Upgrade outdated packages
         run: |
           items=($(
