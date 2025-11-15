@@ -5020,7 +5020,7 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
             );
             $this->assertEquals(
                 $test['expected']['max_requests'],
-                \Helper\get_multi_curl_property_value($multi_curl, 'maxRequests')
+                \Helper\get_multi_curl_property_value($multi_curl, 'maxRequestsPerInterval')
             );
             $this->assertEquals(
                 $test['expected']['interval'],

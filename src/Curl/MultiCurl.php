@@ -24,7 +24,7 @@ class MultiCurl extends BaseCurl
     private $rateLimit = null;
     private $rateLimitEnabled = false;
     private $rateLimitReached = false;
-    private $maxRequests = null;
+    private $maxRequestsPerInterval = null;
     private $interval = null;
     private $intervalSeconds = null;
     private $unit = null;
@@ -579,12 +579,12 @@ class MultiCurl extends BaseCurl
             '';
         if (!preg_match($rate_limit_pattern, $rate_limit, $matches)) {
             throw new \UnexpectedValueException(
-                'rate limit must be formatted as $max_requests/$interval(s|m|h) ' .
+                'rate limit must be formatted as $max_requests_per_interval/$interval(s|m|h) ' .
                 '(e.g. "60/1m" for a maximum of 60 requests per 1 minute)'
             );
         }
 
-        $max_requests = (int)$matches['1'];
+        $max_requests_per_interval = (int)$matches['1'];
         if ($matches['2'] === '') {
             $interval = 1;
         } else {
@@ -602,9 +602,9 @@ class MultiCurl extends BaseCurl
             $interval_seconds = $interval * 3600;
         }
 
-        $this->rateLimit = (string)$max_requests . '/' . (string)$interval . $unit;
+        $this->rateLimit = (string)$max_requests_per_interval . '/' . (string)$interval . $unit;
         $this->rateLimitEnabled = true;
-        $this->maxRequests = $max_requests;
+        $this->maxRequestsPerInterval = $max_requests_per_interval;
         $this->interval = $interval;
         $this->intervalSeconds = $interval_seconds;
         $this->unit = $unit;
@@ -919,23 +919,22 @@ class MultiCurl extends BaseCurl
         // Calculate if there's request quota since ratelimiting is enabled.
         if ($this->rateLimitEnabled) {
             // Determine if the limit of requests per interval has been reached.
-            if ($this->currentRequestCount >= $this->maxRequests) {
+            if ($this->currentRequestCount >= $this->maxRequestsPerInterval) {
                 $micro_time = microtime(true);
                 $elapsed_seconds = $micro_time - $this->currentStartTime;
                 if ($elapsed_seconds <= $this->intervalSeconds) {
-                    $this->rateLimitReached = true;
+                    // Rate limit reached.
                     return false;
-                } elseif ($this->rateLimitReached) {
-                    $this->rateLimitReached = false;
+                } else {
+                    // Rate limit not reached. Rate limit interval has passed,
+                    // reset counters.
                     $this->currentStartTime = $micro_time;
                     $this->currentRequestCount = 0;
                 }
             }
-
-            return true;
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     /**
