@@ -923,13 +923,17 @@ class MultiCurl extends BaseCurl
                 $micro_time = microtime(true);
                 $elapsed_seconds = $micro_time - $this->currentStartTime;
                 if ($elapsed_seconds <= $this->intervalSeconds) {
+                    // Rate limit reached.
                     return false;
                 } else {
+                    // Rate limit not reached. Rate limit interval has passed,
+                    // reset counters.
                     $this->currentStartTime = $micro_time;
                     $this->currentRequestCount = 0;
                 }
             }
         }
+
         return true;
     }
 
