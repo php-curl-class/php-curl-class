@@ -687,7 +687,7 @@ class MultiCurl extends BaseCurl
                 // pending requests to have more accurate start times. Without a shorter timeout, it can be nearly a
                 // full second before available request quota is rechecked and pending requests can be initialized.
                 if (curl_multi_select($this->multiCurl, 0.2) === -1) {
-                    usleep(100000);
+                    usleep(100_000);
                 }
 
                 curl_multi_exec($this->multiCurl, $active);
@@ -960,7 +960,7 @@ class MultiCurl extends BaseCurl
         $this->currentStartTime = microtime(true);
         if ($this->currentStartTime < $sleep_until) {
             do {
-                usleep(1000000 / 4);
+                usleep(1_000_000 / 4);
                 $this->currentStartTime = microtime(true);
             } while ($this->currentStartTime < $sleep_until);
         }

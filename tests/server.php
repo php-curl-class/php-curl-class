@@ -323,7 +323,7 @@ if ($test === 'http_basic_auth') {
 
     $dots_printed = 0;
     while (true) {
-        usleep(1000000 / 100);
+        usleep(1_000_000 / 100);
 
         $elapsed = microtime(true) - $start;
         $dots_to_print = floor($elapsed) - $dots_printed;
