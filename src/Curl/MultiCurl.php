@@ -944,27 +944,28 @@ class MultiCurl extends BaseCurl
      */
     private function waitUntilRequestQuotaAvailable()
     {
-        $sleep_until = (float)($this->currentStartTime + $this->intervalSeconds);
-        $sleep_seconds = $sleep_until - microtime(true);
+        $sleep_until = TimeUtil::getSleepUntilMicrotime(
+            $this->currentStartTime,
+            $this->intervalSeconds,
+        );
 
-        // Avoid using time_sleep_until() as it appears to be less precise and not sleep long enough.
-        // Avoid using usleep(): "Values larger than 1000000 (i.e. sleeping for
-        //   more than a second) may not be supported by the operating system.
-        //   Use sleep() instead."
-        $sleep_seconds_int = (int)$sleep_seconds;
-        if ($sleep_seconds_int >= 1) {
-            sleep($sleep_seconds_int);
+        $current_microtime = microtime(true);
+        $sleep_seconds = TimeUtil::getSleepSecondsUntilMicrotime(
+            $sleep_until,
+            $current_microtime,
+        );
+
+        list($whole_seconds, $microseconds_remainder) = TimeUtil::getWholeAndRemainderSeconds($sleep_seconds);
+
+        if ($whole_seconds >= 1) {
+            sleep($whole_seconds);
         }
 
-        // Ensure that enough time has passed as usleep() may not have waited long enough.
+        if ($microseconds_remainder > 0) {
+            usleep($microseconds_remainder);
+        }
+
         $this->currentStartTime = microtime(true);
-        if ($this->currentStartTime < $sleep_until) {
-            do {
-                usleep(1_000_000 / 4);
-                $this->currentStartTime = microtime(true);
-            } while ($this->currentStartTime < $sleep_until);
-        }
-
         $this->currentRequestCount = 0;
     }
 
