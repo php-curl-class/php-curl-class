@@ -9,3 +9,4 @@
 /.gitignore export-ignore
 /TESTING.md export-ignore
 /TROUBLESHOOTING.md export-ignore
+/composer.json export-ignore
