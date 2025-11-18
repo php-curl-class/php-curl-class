@@ -8,6 +8,11 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 12.0.2 - 2025-11-18
+
+- Improve MultiCurl::waitUntilRequestQuotaAvailable ([#1016](https://github.com/php-curl-class/php-curl-class/pull/1016))
+- Fix rate limit ([#1015](https://github.com/php-curl-class/php-curl-class/pull/1015))
+
 ## 12.0.1 - 2025-11-03
 
 - Remove calls to deprecated functions ([#1005](https://github.com/php-curl-class/php-curl-class/pull/1005))
