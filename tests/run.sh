@@ -20,7 +20,17 @@ if [[ "${CI}" == "true" ]]; then
     #       - vimeo/psalm[6.5.1, ..., 6.8.8] require php ~8.1.31 || ~8.2.27 || ~8.3.16 || ~8.4.3 -> your php version (8.5.0-dev) does not satisfy that requirement.
     #
     #   Error: Your requirements could not be resolved to an installable set of packages.
-    if ! "${CI_PHP_FUTURE_RELEASE}"; then
+    if "${CI_PHP_FUTURE_RELEASE}"; then
+        install_psalm=false
+    # Skip attempting to install psalm on PHP version 8.5 and higher as psalm
+    # does not yet support these versions.
+    elif [[ $(echo "${CI_PHP_VERSION} >= 8.5" | bc) -eq 1 ]]; then
+        install_psalm=false
+    else
+        install_psalm=true
+    fi
+
+    if ${install_psalm}; then
         composer require --dev "vimeo/psalm:>=5.26.1"
     fi
 
