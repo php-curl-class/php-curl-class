@@ -22,6 +22,10 @@ if [[ "${CI}" == "true" ]]; then
     #   Error: Your requirements could not be resolved to an installable set of packages.
     if "${CI_PHP_FUTURE_RELEASE}"; then
         install_psalm=false
+    # Skip attempting to install psalm on PHP version 8.5 and higher as psalm
+    # does not yet support these versions.
+    elif [[ $(echo "${CI_PHP_VERSION} >= 8.5" | bc) -eq 1 ]]; then
+        install_psalm=false
     else
         install_psalm=true
     fi
