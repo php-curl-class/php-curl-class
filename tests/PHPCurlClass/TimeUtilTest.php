@@ -14,10 +14,6 @@ class TimeUtilTest extends \PHPUnit\Framework\TestCase
         // [...]ime = microtime(true);
         $start_time = (float)1_750_000_000.123456;
 
-        // Use a fixed current time that occurs after the start time.
-        // [...]_microtime = (float)1_750_000_045.000001;
-        $current_microtime = (float)1_750_000_044.999999;
-
         $interval_seconds = 60;
         $sleep_until_microtime = TimeUtil::getSleepUntilMicrotime(
             $start_time,
@@ -33,6 +29,8 @@ class TimeUtilTest extends \PHPUnit\Framework\TestCase
     public function testGetSleepSecondsUntilMicrotime()
     {
         $sleep_until_microtime = (float)1_750_000_060.123456;
+
+        // Use a fixed current time that occurs after the start time.
         $current_microtime = (float)1_750_000_044.999999;
 
         $sleep_seconds = TimeUtil::getSleepSecondsUntilMicrotime(
