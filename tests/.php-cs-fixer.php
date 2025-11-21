@@ -4,6 +4,13 @@ $finder = PhpCsFixer\Finder::create()
     ->in(dirname(__DIR__));
 
 $config = new PhpCsFixer\Config();
+
+// Turn on unsupported PHP versions when the method exists for compatibility
+// with older PHP CS Fixer versions.
+if (is_callable([$config, 'setUnsupportedPhpVersionAllowed'])) {
+    $config->setUnsupportedPhpVersionAllowed(true);
+}
+
 $config
     ->setRiskyAllowed(true)
     ->setRules([
