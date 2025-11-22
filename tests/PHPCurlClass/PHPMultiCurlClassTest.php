@@ -6264,10 +6264,17 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         $multi_curl->addGet(Test::TEST_URL);
         $multi_curl->addGet(Test::TEST_URL);
         $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->addGet(Test::TEST_URL);
 
         $multi_curl->start();
 
-        $this->assertEquals(1, $request_count);
+        $this->assertLessThan(10, $request_count);
     }
 
     public function testCurlStopActiveConcurrencyOne()

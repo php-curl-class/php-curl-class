@@ -735,12 +735,20 @@ class MultiCurl extends BaseCurl
     #[\Override]
     public function stop()
     {
+        if (!$this->isStarted) {
+            return;
+        }
+
         // Remove any queued curl requests.
         while (count($this->queuedCurls)) {
             $curl = array_pop($this->queuedCurls);
             $curl->close();
         }
 
+        /**
+         * @var \CurlHandle $native_handle
+         * @var \Curl\Curl  $curl
+         */
         // Attempt to stop active curl requests.
         foreach ($this->activeCurls as $native_handle => $curl) {
             // Remove active curl handle.
@@ -751,6 +759,9 @@ class MultiCurl extends BaseCurl
 
             $curl->stop();
         }
+
+        $this->isStarted = false;
+        $this->stopTime = microtime(true);
     }
 
     /**
