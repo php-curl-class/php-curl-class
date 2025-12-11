@@ -180,7 +180,11 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     public function key()
     {
         $key = key($this->data);
-        return $this->keys[$key] ?? $key;
+        if ($key === null) {
+            return null;
+        } else {
+            return $this->keys[$key] ?? $key;
+        }
     }
 
     /**
