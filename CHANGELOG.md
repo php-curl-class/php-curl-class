@@ -8,6 +8,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 12.0.4 - 2025-12-11
+
+- Fix psalm error ([#1027](https://github.com/php-curl-class/php-curl-class/pull/1027))
+
 ## 12.0.3 - 2025-11-24
 
 - Simplify MultiCurl execution loop ([#1017](https://github.com/php-curl-class/php-curl-class/pull/1017))
