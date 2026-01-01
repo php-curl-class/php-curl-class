@@ -1,5 +1,17 @@
 [
   {
-    "outdated_count": "0"
+    "outdated_count": "2"
+  },
+  {
+    "name": "GitPython",
+    "version": "3.1.45",
+    "latest_version": "3.1.46",
+    "latest_filetype": "wheel"
+  },
+  {
+    "name": "PyNaCl",
+    "version": "1.6.1",
+    "latest_version": "1.6.2",
+    "latest_filetype": "wheel"
   }
 ]
