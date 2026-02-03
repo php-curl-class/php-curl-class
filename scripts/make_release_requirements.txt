@@ -24,7 +24,7 @@ pycparser==3.0
     # via cffi
 pygithub==2.8.1
     # via -r scripts/make_release_requirements.in
-pyjwt[crypto]==2.10.1
+pyjwt[crypto]==2.11.0
     # via pygithub
 pynacl==1.6.2
     # via pygithub
