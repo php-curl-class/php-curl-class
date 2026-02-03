@@ -23,7 +23,9 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-          python -m pip install --upgrade pip pip-tools
+          # TODO: Remove version contraint on "pip".
+          # https://github.com/jazzband/pip-tools/issues/2319
+          python -m pip install "pip<26.0" pip-tools
 
       - name: Upgrade outdated package
         env:
