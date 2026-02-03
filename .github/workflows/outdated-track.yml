@@ -75,7 +75,7 @@ jobs:
       - name: Enable auto-merge for outdated dependencies pull request
         if: ${{ steps.cpr.outputs.pull-request-number }}
         run: |
-          gh pr merge --auto --merge "${PR_URL}"
+          gh pr merge --auto --squash "${PR_URL}"
         env:
           PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
           GITHUB_TOKEN: ${{ secrets.PHP_CURL_CLASS_TOKEN }}
