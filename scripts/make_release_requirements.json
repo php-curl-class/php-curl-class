@@ -1,5 +1,11 @@
 [
   {
-    "outdated_count": "0"
+    "outdated_count": "1"
+  },
+  {
+    "name": "PyJWT",
+    "version": "2.10.1",
+    "latest_version": "2.11.0",
+    "latest_filetype": "wheel"
   }
 ]
