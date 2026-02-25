@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=scripts/make_release_requirements.txt scripts/make_release_requirements.in
 #
-certifi==2026.1.4
+certifi==2026.2.25
     # via requests
 cffi==2.0.0
     # via
@@ -17,13 +17,13 @@ cryptography==46.0.5
 gitdb==4.0.12
     # via gitpython
 gitpython==3.1.46
-    # via -r make_release_requirements.in
+    # via -r scripts/make_release_requirements.in
 idna==3.11
     # via requests
 pycparser==3.0
     # via cffi
 pygithub==2.8.1
-    # via -r make_release_requirements.in
+    # via -r scripts/make_release_requirements.in
 pyjwt[crypto]==2.11.0
     # via pygithub
 pynacl==1.6.2
