@@ -4645,7 +4645,7 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 
     public function testStopRequest()
     {
-        $response_length_bytes = 1e6; // 1e6 = 1 megabyte
+        $response_length_bytes = 1e7; // 1e7 = 10 megabytes.
 
         $stop_request_early = function ($ch, $header) {
             // Stop requests returning error responses early without downloading the
@@ -4686,6 +4686,11 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 
         // Verify that full response is not fetched for an error.
         $test_2 = new Test();
+        // Limit the download speed (in bytes per second) to increase the
+        // likelihood that the request will be stopped before the full response
+        // is downloaded.
+        // 51200 bytes/s = 50 kilobits/s.
+        $test_2->setOpt(CURLOPT_MAX_RECV_SPEED_LARGE, 51200);
         $test_2->curl->setStop($stop_request_early);
         $test_2->server('download_file_size', 'GET', [
             'bytes' => $response_length_bytes,
