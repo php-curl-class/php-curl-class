@@ -4690,7 +4690,7 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         // likelihood that the request will be stopped before the full response
         // is downloaded.
         // 51200 bytes/s = 50 kilobits/s.
-        $test_2->setOpt(CURLOPT_MAX_RECV_SPEED_LARGE, 51200);
+        $test_2->curl->setOpt(CURLOPT_MAX_RECV_SPEED_LARGE, 51200);
         $test_2->curl->setStop($stop_request_early);
         $test_2->server('download_file_size', 'GET', [
             'bytes' => $response_length_bytes,
