@@ -30,7 +30,7 @@ pynacl==1.6.2
     # via pygithub
 requests==2.32.5
     # via pygithub
-smmap==5.0.2
+smmap==5.0.3
     # via gitdb
 typing-extensions==4.15.0
     # via pygithub
