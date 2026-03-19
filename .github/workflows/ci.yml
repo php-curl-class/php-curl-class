@@ -5,6 +5,8 @@ on:
     branches:
       - master
       - php5.x-master
+    paths-ignore:
+      - "scripts/make_release_requirements.json"
   pull_request:
   schedule:
     - cron: '0 17 * * *'
