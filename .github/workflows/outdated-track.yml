@@ -23,7 +23,10 @@ jobs:
           pip install --requirement scripts/make_release_requirements.txt
           outdated="$(pip list --outdated --format json | jq)"
           outdated_count="$(echo "$outdated" | jq 'length')"
-          echo "${outdated}" | jq "[{\"outdated_count\":\"${outdated_count}\"}] + ." > scripts/make_release_requirements.json
+          outdated="$(echo "${outdated}" | jq "[{\"outdated_count\":\"${outdated_count}\"}] + .")"
+          outdated="$(echo "${outdated}" | jq 'map(if .latest_filetype == "wheel" then del(.latest_filetype) else . end)')"
+          echo -e "${outdated}" |
+            npx --yes prettier --parser jsonc --trailing-comma all > scripts/make_release_requirements.json
           git diff --color
           changes="$(git diff)"
           delimiter="$(openssl rand -hex 8)"
