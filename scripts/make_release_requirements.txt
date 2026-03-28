@@ -12,7 +12,7 @@ cffi==2.0.0
     #   pynacl
 charset-normalizer==3.4.6
     # via requests
-cryptography==46.0.5
+cryptography==46.0.6
     # via pyjwt
 gitdb==4.0.12
     # via gitpython
@@ -28,7 +28,7 @@ pyjwt[crypto]==2.12.1
     # via pygithub
 pynacl==1.6.2
     # via pygithub
-requests==2.32.5
+requests==2.33.0
     # via pygithub
 smmap==5.0.3
     # via gitdb
