@@ -28,7 +28,7 @@ pyjwt[crypto]==2.12.1
     # via pygithub
 pynacl==1.6.2
     # via pygithub
-requests==2.33.0
+requests==2.33.1
     # via pygithub
 smmap==5.0.3
     # via gitdb
