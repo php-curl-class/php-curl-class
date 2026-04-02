@@ -1,5 +1,10 @@
 [
   {
-    "outdated_count": "0",
+    "outdated_count": "1",
+  },
+  {
+    "name": "charset-normalizer",
+    "version": "3.4.6",
+    "latest_version": "3.4.7",
   },
 ]
