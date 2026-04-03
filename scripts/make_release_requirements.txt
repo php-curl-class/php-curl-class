@@ -10,7 +10,7 @@ cffi==2.0.0
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.4.6
+charset-normalizer==3.4.7
     # via requests
 cryptography==46.0.6
     # via pyjwt
