@@ -61,7 +61,7 @@ source "run_syntax_check.sh"
 
 source "run_coding_standards_check.sh"
 
-source "run_phpunit.sh"
+source "run_phpunit.sh" "$@"
 
 source "run_static_analysis_check_phpstan.sh"
 
