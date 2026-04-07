@@ -115,6 +115,8 @@ elif [[ "${phpunit_version}" == "11."* ]]; then
 elif [[ "${phpunit_version}" == "12."* ]]; then
     phpunit_v12_shim
     phpunit_args=" --display-incomplete --display-skipped --display-deprecations --display-errors --display-notices --display-warnings --fail-on-risky ${extra_args}"
+elif [[ "${phpunit_version}" == "13."* ]]; then
+    phpunit_args=" --display-incomplete --display-skipped --display-deprecations --display-errors --display-notices --display-warnings --fail-on-risky ${extra_args}"
 else
     echo "❌ Error: unhandled phpunit version: ${phpunit_version}"
     errors+=("unhandled phpunit version: ${phpunit_version}")
