@@ -1238,6 +1238,27 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('mouthwatering', $test->curl->responseCookies['cookie2']);
     }
 
+    public function testEncodedCookieResponse()
+    {
+        $test = new Test();
+        $test->server('encoded_cookie', 'GET');
+
+        // Ensure decoded key lookup returns decoded values.
+        $this->assertEquals('foo;bar', $test->curl->getCookie('dingus'));
+        $this->assertEquals('foo;bar', $test->curl->getCookie('a;b'));
+
+        // Ensure encoded key lookup still works for backwards compatibility.
+        $this->assertEquals('foo;bar', $test->curl->getCookie('a%3Bb'));
+
+        // Ensure direct property access works with both decoded and encoded keys.
+        $this->assertEquals('foo;bar', $test->curl->responseCookies['a;b']);
+        $this->assertEquals('foo;bar', $test->curl->responseCookies['a%3Bb']);
+
+        // Ensure responseCookies stores decoded keys only without duplicates.
+        $cookies = $test->curl->getResponseCookies();
+        $this->assertCount(2, $cookies);
+    }
+
     public function testDefaultTimeout()
     {
         if ($this->skip_slow_tests) {
