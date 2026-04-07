@@ -8,6 +8,8 @@ on:
     paths-ignore:
       - "scripts/make_release_requirements.json"
   pull_request:
+    paths-ignore:
+      - "scripts/make_release_requirements.json"
   schedule:
     - cron: '0 17 * * *'
 

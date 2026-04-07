@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  pull_request:
+    paths:
+      - "scripts/make_release_requirements.json"
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version:
+          - '8.0'
+          - '8.1'
+          - '8.2'
+          - '8.3'
+          - '8.4'
+          - '8.5'
+        future-release: [false]
+        include:
+          - php-version: '8.6'
+            future-release: true
+      fail-fast: false
+    name: PHP ${{ matrix.php-version }}
+
+    steps:
+      - name: No-op
+        run: exit 0
