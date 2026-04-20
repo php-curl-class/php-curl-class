@@ -176,6 +176,11 @@ if ($test === 'http_basic_auth') {
     setcookie('cookie1', 'scrumptious');
     setcookie('cookie2', 'mouthwatering');
     exit;
+} elseif ($test === 'encoded_cookie') {
+    header('Set-Cookie: dingus=foo%3Bbar; path=/');
+    header('Set-Cookie: a%3Bb=foo%3Bbar; path=/', false);
+    header('Set-Cookie: spaced=hello%20world; path=/', false);
+    exit;
 } elseif ($test === 'response_header') {
     header('Content-Type: application/json');
     header('ETag: ' . md5('worldpeace'));
