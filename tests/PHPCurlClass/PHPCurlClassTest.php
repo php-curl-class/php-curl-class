@@ -1238,6 +1238,49 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('mouthwatering', $test->curl->responseCookies['cookie2']);
     }
 
+    public function testEncodedCookieResponse()
+    {
+        $test = new Test();
+        $test->server('encoded_cookie', 'GET');
+
+        // Ensure decoded key lookup returns decoded values.
+        $this->assertEquals('foo;bar', $test->curl->getCookie('dingus'));
+        $this->assertEquals('foo;bar', $test->curl->getCookie('a;b'));
+
+        // Ensure encoded key lookup still works for backwards compatibility.
+        $this->assertEquals('foo;bar', $test->curl->getCookie('a%3Bb'));
+
+        // Ensure percent-encoded spaces in values are decoded.
+        $this->assertEquals('hello world', $test->curl->getCookie('spaced'));
+
+        // Ensure missing cookies return null.
+        $this->assertNull($test->curl->getCookie('nonexistent'));
+
+        // Ensure direct property access works with both decoded and encoded keys.
+        $this->assertEquals('foo;bar', $test->curl->responseCookies['a;b']);
+        $this->assertEquals('foo;bar', $test->curl->responseCookies['a%3Bb']);
+
+        // Ensure isset() works with both decoded and encoded keys.
+        $this->assertTrue(isset($test->curl->responseCookies['a;b']));
+        $this->assertTrue(isset($test->curl->responseCookies['a%3Bb']));
+        $this->assertFalse(isset($test->curl->responseCookies['nonexistent']));
+
+        // Ensure iteration yields decoded keys only.
+        $iterated_keys = [];
+        foreach ($test->curl->responseCookies as $key => $value) {
+            $iterated_keys[] = $key;
+        }
+        $this->assertEqualsCanonicalizing(['dingus', 'a;b', 'spaced'], $iterated_keys);
+
+        // Ensure unset() via the encoded key removes the decoded entry.
+        unset($test->curl->responseCookies['a%3Bb']);
+        $this->assertFalse(isset($test->curl->responseCookies['a;b']));
+        $this->assertFalse(isset($test->curl->responseCookies['a%3Bb']));
+
+        // Ensure responseCookies stores decoded keys only without duplicates.
+        $this->assertCount(2, $test->curl->getResponseCookies());
+    }
+
     public function testDefaultTimeout()
     {
         if ($this->skip_slow_tests) {

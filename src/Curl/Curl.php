@@ -29,7 +29,7 @@ class Curl extends BaseCurl
 
     public $responseHeaders = null;
     public $rawResponseHeaders = '';
-    public $responseCookies = [];
+    public $responseCookies = null;
     public $response = null;
     public $rawResponse = null;
 
@@ -489,7 +489,7 @@ class Curl extends BaseCurl
         }
 
         if ($ch === null) {
-            $this->responseCookies = [];
+            $this->responseCookies = new CookieArray();
             $this->call($this->beforeSendCallback);
             $this->rawResponse = curl_exec($this->curl);
             $this->curlErrorCode = curl_errno($this->curl);
@@ -511,7 +511,7 @@ class Curl extends BaseCurl
         $this->rawResponseHeaders = $this->headerCallbackData->rawResponseHeaders;
         $this->responseCookies = $this->headerCallbackData->responseCookies;
         $this->headerCallbackData->rawResponseHeaders = '';
-        $this->headerCallbackData->responseCookies = [];
+        $this->headerCallbackData->responseCookies = new CookieArray();
         $this->headerCallbackData->stopRequestDecider = null;
         $this->headerCallbackData->stopRequest = false;
 
@@ -2150,7 +2150,7 @@ class Curl extends BaseCurl
         // Create a placeholder to temporarily store the header callback data.
         $header_callback_data = new \stdClass();
         $header_callback_data->rawResponseHeaders = '';
-        $header_callback_data->responseCookies = [];
+        $header_callback_data->responseCookies = new CookieArray();
         $header_callback_data->stopRequestDecider = null;
         $header_callback_data->stopRequest = false;
         $this->headerCallbackData = $header_callback_data;
@@ -2159,6 +2159,7 @@ class Curl extends BaseCurl
 
         $this->setOptInternal(CURLOPT_RETURNTRANSFER, true);
         $this->headers = new CaseInsensitiveArray();
+        $this->responseCookies = new CookieArray();
 
         if ($base_url !== null) {
             $this->setUrl($base_url);
@@ -2230,7 +2231,7 @@ function createHeaderCallback($header_callback_data)
 {
     return function ($ch, $header) use ($header_callback_data) {
         if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]+)/mi', $header, $cookie) === 1) {
-            $header_callback_data->responseCookies[$cookie[1]] = trim($cookie[2], " \n\r\t\0\x0B");
+            $header_callback_data->responseCookies[$cookie[1]] = rawurldecode(trim($cookie[2], " \n\r\t\0\x0B"));
         }
 
         if ($header_callback_data->stopRequestDecider !== null) {

@@ -56,7 +56,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
      *
      * Set data at a specified offset. Converts the offset to lowercase, and
      * stores the case-sensitive offset and the data at the lowercase indexes in
-     * $this->keys and @this->data.
+     * $this->keys and $this->data.
      *
      * @param  string $offset The offset to store the data at (case-insensitive).
      * @param  mixed  $value  The data to store at the specified offset.
