@@ -21,10 +21,6 @@ ROOT = CURRENT_FILE.parents[1]
 CHANGELOG_PATH = ROOT / "CHANGELOG.md"
 LIBRARY_FILE_PATH = ROOT / "src/Curl/Curl.php"
 
-# TODO: Adjust number of recent pull requests to include likely number of
-# pull requests since the last release.
-RECENT_PULL_REQUEST_LIMIT = 50
-
 
 def main():
     # Find most recent tag and timestamp.
@@ -52,7 +48,7 @@ def main():
         state="closed",
         sort="updated",
         direction="desc",
-    )[:RECENT_PULL_REQUEST_LIMIT]
+    )
 
     pull_request_changes = []
 
@@ -71,16 +67,22 @@ def main():
     for pull in recent_pulls:
         # print('-' * 10)
 
+        # Skip this and remaining pull requests as this one's last update
+        # predates the most recent tag. Results are sorted by updated desc, so
+        # no later entry in the list could have been merged after the tag
+        # either.
+        pull_updated_at = copy(pull.updated_at).replace(tzinfo=timezone.utc)
+        if pull_updated_at < most_recent_tag_datetime:
+            break
+
+        # Skip this pull request as it's not merged.
         if not pull.merged:
             # print('skipping since not merged: {}'.format(pull.title))
             # print(pull.html_url)
             continue
 
-        # Make merged_at timestamp offset-aware. Without this, the following
-        # error will appear:
-        #   TypeError: can't compare offset-naive and offset-aware datetimes
+        # Skip this pull request as it was merged before the most recent tag.
         pull_merged_at = copy(pull.merged_at).replace(tzinfo=timezone.utc)
-
         if pull_merged_at < most_recent_tag_datetime:
             # print('skipping since merged prior to last release: {}'.format(pull.title))
             # print(pull.html_url)
