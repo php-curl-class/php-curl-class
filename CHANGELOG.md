@@ -8,6 +8,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 13.0.0 - 2026-04-20
+
+- Implement CookieArray for handling decoded cookie names and values ([#1078](https://github.com/php-curl-class/php-curl-class/pull/1078))
+
 ## 12.0.4 - 2025-12-11
 
 - Fix psalm error ([#1027](https://github.com/php-curl-class/php-curl-class/pull/1027))
