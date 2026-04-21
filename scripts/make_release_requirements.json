@@ -1,5 +1,10 @@
 [
   {
-    "outdated_count": "0",
+    "outdated_count": "1",
+  },
+  {
+    "name": "idna",
+    "version": "3.11",
+    "latest_version": "3.12",
   },
 ]
