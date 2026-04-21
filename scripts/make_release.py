@@ -65,27 +65,30 @@ def main():
     pulls_missing_semver_label = []
 
     for pull in recent_pulls:
-        # print('-' * 10)
+        print("-" * 10)
+        print("pull.title: {}".format(pull.title))
+        print("pull.html_url: {}".format(pull.html_url))
 
         # Skip this and remaining pull requests as this one's last update
         # predates the most recent tag. Results are sorted by updated desc, so
         # no later entry in the list could have been merged after the tag
         # either.
         pull_updated_at = copy(pull.updated_at).replace(tzinfo=timezone.utc)
+        print("pull_updated_at: {}".format(pull_updated_at))
         if pull_updated_at < most_recent_tag_datetime:
+            print("stopping: updated_at predates most recent tag")
             break
 
         # Skip this pull request as it's not merged.
         if not pull.merged:
-            # print('skipping since not merged: {}'.format(pull.title))
-            # print(pull.html_url)
+            print("skipping: not merged")
             continue
 
         # Skip this pull request as it was merged before the most recent tag.
         pull_merged_at = copy(pull.merged_at).replace(tzinfo=timezone.utc)
+        print("pull_merged_at: {}".format(pull_merged_at))
         if pull_merged_at < most_recent_tag_datetime:
-            # print('skipping since merged prior to last release: {}'.format(pull.title))
-            # print(pull.html_url)
+            print("skipping: merged prior to last release")
             continue
 
         pull_labels = {label.name for label in pull.labels}
