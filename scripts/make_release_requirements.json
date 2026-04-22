@@ -1,10 +1,15 @@
 [
   {
-    "outdated_count": "1",
+    "outdated_count": "2",
+  },
+  {
+    "name": "certifi",
+    "version": "2026.2.25",
+    "latest_version": "2026.4.22",
   },
   {
     "name": "idna",
-    "version": "3.11",
-    "latest_version": "3.12",
+    "version": "3.12",
+    "latest_version": "3.13",
   },
 ]
