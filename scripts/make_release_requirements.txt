@@ -16,7 +16,7 @@ cryptography==46.0.7
     # via pyjwt
 gitdb==4.0.12
     # via gitpython
-gitpython==3.1.46
+gitpython==3.1.47
     # via -r scripts/make_release_requirements.in
 idna==3.12
     # via requests
