@@ -15,10 +15,13 @@ jobs:
           ref: 'master'
           persist-credentials: false
 
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v8.1.0
+      - name: Set up Python
+        uses: actions/setup-python@v6
         with:
           python-version-file: .python-version
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8.1.0
 
       - name: Update dependencies
         run: |
