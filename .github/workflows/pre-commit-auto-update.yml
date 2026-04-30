@@ -17,6 +17,8 @@ jobs:
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v8
+        with:
+          python-version-file: .python-version
 
       - name: Update dependencies
         run: |
