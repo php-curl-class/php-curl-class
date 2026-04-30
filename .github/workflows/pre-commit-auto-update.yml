@@ -16,7 +16,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@v8
+        uses: astral-sh/setup-uv@v8.1.0
         with:
           python-version-file: .python-version
 
