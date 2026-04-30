@@ -15,11 +15,15 @@ jobs:
           ref: 'master'
           persist-credentials: false
 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8
+        with:
+          python-version-file: .python-version
+
       - name: Update dependencies
         run: |
           set -x
-          python -m pip install --upgrade pip
-          pip install pre-commit packaging
+          uv pip install --system pre-commit packaging
           python scripts/pre_commit_stable.py autoupdate --config="tests/.pre-commit-config.yaml"
 
       - name: Gather changes
