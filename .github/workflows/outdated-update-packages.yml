@@ -18,7 +18,8 @@ jobs:
         run: |
           set -eo pipefail
           items=($(
-              jq -r '.[1:]' "scripts/make_release_requirements.json" |
+              npx --yes prettier --parser json scripts/make_release_requirements.json |
+              jq -r '.[1:]' |
               jq -r '.[] | "\(.name)|\(.version)|\(.latest_version)"'
           ))
           for item in "${items[@]}"; do
