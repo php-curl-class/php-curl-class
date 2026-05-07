@@ -16,6 +16,7 @@ jobs:
 
       - name: Upgrade outdated packages
         run: |
+          set -eo pipefail
           items=($(
               jq -r '.[1:]' "scripts/make_release_requirements.json" |
               jq -r '.[] | "\(.name)|\(.version)|\(.latest_version)"'
