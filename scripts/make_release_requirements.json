@@ -1,10 +1,5 @@
 [
   {
-    "outdated_count": "1",
-  },
-  {
-    "name": "urllib3",
-    "version": "2.6.3",
-    "latest_version": "2.7.0",
+    "outdated_count": "0",
   },
 ]
