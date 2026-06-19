@@ -40,7 +40,7 @@ jobs:
           php-version: ${{ matrix.php-version }}
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
