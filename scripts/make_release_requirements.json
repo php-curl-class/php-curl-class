@@ -1,15 +1,5 @@
 [
   {
-    "outdated_count": "2",
-  },
-  {
-    "name": "cffi",
-    "version": "2.0.0",
-    "latest_version": "2.1.0",
-  },
-  {
-    "name": "charset-normalizer",
-    "version": "3.4.8",
-    "latest_version": "3.4.9",
+    "outdated_count": "0",
   },
 ]
