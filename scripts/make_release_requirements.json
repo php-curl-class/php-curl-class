@@ -1,5 +1,10 @@
 [
   {
-    "outdated_count": "0",
+    "outdated_count": "1",
+  },
+  {
+    "name": "GitPython",
+    "version": "3.1.52",
+    "latest_version": "3.1.53",
   },
 ]
