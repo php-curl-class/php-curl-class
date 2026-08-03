@@ -1,5 +1,10 @@
 [
   {
-    "outdated_count": "0",
+    "outdated_count": "1",
+  },
+  {
+    "name": "cryptography",
+    "version": "49.0.0",
+    "latest_version": "50.0.0",
   },
 ]
