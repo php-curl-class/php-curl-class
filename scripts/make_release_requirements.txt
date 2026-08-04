@@ -4,19 +4,19 @@
 #
 #    pip-compile --output-file=scripts/make_release_requirements.txt scripts/make_release_requirements.in
 #
-certifi==2026.6.17
+certifi==2026.7.22
     # via requests
-cffi==2.1.0
+cffi==2.1.1
     # via
     #   cryptography
     #   pynacl
 charset-normalizer==3.4.9
     # via requests
-cryptography==49.0.0
+cryptography==50.0.0
     # via pyjwt
 gitdb==4.0.12
     # via gitpython
-gitpython==3.1.53
+gitpython==3.1.58
     # via -r scripts/make_release_requirements.in
 idna==3.18
     # via requests

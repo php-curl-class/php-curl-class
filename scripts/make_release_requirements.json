@@ -1,5 +1,15 @@
 [
   {
-    "outdated_count": "0",
+    "outdated_count": "2",
+  },
+  {
+    "name": "cffi",
+    "version": "2.1.0",
+    "latest_version": "2.1.1",
+  },
+  {
+    "name": "GitPython",
+    "version": "3.1.57",
+    "latest_version": "3.1.58",
   },
 ]
