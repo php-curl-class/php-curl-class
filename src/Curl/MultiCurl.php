@@ -825,7 +825,6 @@ class MultiCurl extends BaseCurl
     /**
      * Init Handle
      *
-     * @param                  $curl
      * @throws \ErrorException
      */
     private function initHandle()
