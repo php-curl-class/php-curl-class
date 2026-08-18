@@ -3,8 +3,8 @@
     "outdated_count": "1",
   },
   {
-    "name": "charset-normalizer",
-    "version": "3.5.0",
-    "latest_version": "3.5.1",
+    "name": "idna",
+    "version": "3.18",
+    "latest_version": "3.19",
   },
 ]
