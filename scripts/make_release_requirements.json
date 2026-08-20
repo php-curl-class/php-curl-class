@@ -1,5 +1,10 @@
 [
   {
-    "outdated_count": "0",
+    "outdated_count": "1",
+  },
+  {
+    "name": "PyGithub",
+    "version": "2.9.1",
+    "latest_version": "2.10.0",
   },
 ]
