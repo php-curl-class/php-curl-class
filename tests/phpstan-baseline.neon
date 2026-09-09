@@ -11,3 +11,17 @@ parameters:
             identifier: class.notFound
             count: 2
             path: ../src/Curl/MultiCurl.php
+
+        # TODO: Remove this entry once the minimum PHP version is above 8.0. CURLStringFile was added in PHP 8.1.
+        -
+            message: '#^Class CURLStringFile not found\.$#'
+            identifier: class.notFound
+            count: 1
+            path: ../src/Curl/ArrayUtil.php
+
+        # TODO: Remove this entry once the minimum PHP version is above 8.0. CURLStringFile was added in PHP 8.1.
+        -
+            message: '#^Class CURLStringFile not found\.$#'
+            identifier: class.notFound
+            count: 1
+            path: ../src/Curl/Curl.php
