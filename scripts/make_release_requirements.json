@@ -1,5 +1,10 @@
 [
   {
-    "outdated_count": "0",
+    "outdated_count": "1",
+  },
+  {
+    "name": "PyJWT",
+    "version": "2.13.0",
+    "latest_version": "2.14.0",
   },
 ]
