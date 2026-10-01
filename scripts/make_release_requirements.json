@@ -1,11 +1,6 @@
 [
   {
-    "outdated_count": "3",
-  },
-  {
-    "name": "charset-normalizer",
-    "version": "3.5.1",
-    "latest_version": "3.5.2",
+    "outdated_count": "2",
   },
   {
     "name": "cryptography",
