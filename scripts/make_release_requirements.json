@@ -1,15 +1,5 @@
 [
   {
-    "outdated_count": "2",
-  },
-  {
-    "name": "cryptography",
-    "version": "50.0.1",
-    "latest_version": "50.0.2",
-  },
-  {
-    "name": "GitPython",
-    "version": "3.1.62",
-    "latest_version": "3.2.0",
+    "outdated_count": "0",
   },
 ]
