@@ -295,7 +295,7 @@ class Curl extends BaseCurl
         //   The presence of a message-body in a request is signaled by the
         //   inclusion of a Content-Length or Transfer-Encoding header field in
         //   the request's message-headers.
-        if (!empty($data)) {
+        if (!empty($data) || $data === '0') {
             $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
         }
     }
@@ -803,7 +803,7 @@ class Curl extends BaseCurl
                 $this->setHeader('Content-Length', strlen($put_data));
             }
         }
-        if (!empty($put_data)) {
+        if (!empty($put_data) || $put_data === '0') {
             $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
         }
     }
@@ -835,7 +835,7 @@ class Curl extends BaseCurl
                 $this->setHeader('Content-Length', strlen($put_data));
             }
         }
-        if (!empty($put_data)) {
+        if (!empty($put_data) || $put_data === '0') {
             $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
         }
     }
