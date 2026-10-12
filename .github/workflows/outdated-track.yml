@@ -2,6 +2,8 @@ name: Track outdated dependencies
 
 on:
   schedule:
+    # Stagger from the other scheduled workflows that write to master so each PR merges before the next one opens.
+    # Run before outdated-update-packages.yml, which reads the JSON this job updates.
     - cron: '0 18 * * 1-4'
   workflow_dispatch:
 
