@@ -1,10 +1,5 @@
 [
   {
-    "outdated_count": "1",
-  },
-  {
-    "name": "pycparser",
-    "version": "3.1",
-    "latest_version": "3.11",
+    "outdated_count": "0",
   },
 ]
