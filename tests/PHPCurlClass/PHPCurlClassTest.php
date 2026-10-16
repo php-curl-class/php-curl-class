@@ -575,6 +575,16 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('image/png', $test->curl->response);
     }
 
+    public function testPutZeroRequestBody()
+    {
+        $test = new Test();
+        $test->curl->setTimeout(2);
+        $test->server('put', 'PUT', '0');
+
+        $this->assertFalse($test->curl->error, $test->message);
+        $this->assertSame('0', $test->curl->rawResponse);
+    }
+
     public function testMultipartFormDataContentType()
     {
         // Use a PUT request instead of a POST request so the request
@@ -655,6 +665,16 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $test = new Test();
         $test->server('request_method', 'DELETE', [], $request_body);
         $this->assertEquals(strlen($request_body), $test->curl->requestHeaders['content-length']);
+    }
+
+    public function testDeleteZeroRequestBody()
+    {
+        $test = new Test();
+        $test->curl->setTimeout(2);
+        $test->server('post_json', 'DELETE', [], '0');
+
+        $this->assertFalse($test->curl->error, $test->message);
+        $this->assertSame('0', $test->curl->rawResponse);
     }
 
     public function testDeleteContentLengthUnsetWithoutBody()
@@ -4881,6 +4901,16 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('SEARCH / HTTP/1.1', $curl->requestHeaders['Request-Line']);
         $this->assertEquals(Test::TEST_URL, $curl->url);
         $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
+    }
+
+    public function testSearchZeroRequestBody()
+    {
+        $test = new Test();
+        $test->curl->setTimeout(2);
+        $test->server('search', 'SEARCH', '0');
+
+        $this->assertFalse($test->curl->error, $test->message);
+        $this->assertSame('0', $test->curl->rawResponse);
     }
 
     public function testBeforeSendEachRequest()
