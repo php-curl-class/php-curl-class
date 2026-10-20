@@ -2,6 +2,7 @@ name: Update outdated packages
 
 on:
     schedule:
+        # Stagger from the other scheduled workflows that write to master so each PR merges before the next one opens.
         - cron: '0 20 * * 1-4'
     workflow_dispatch:
 

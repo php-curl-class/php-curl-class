@@ -12,7 +12,7 @@
 #     $ pre-commit autoupdate --config="tests/.pre-commit-config.yaml"
 repos:
 - repo: https://github.com/psf/black
-  rev: 26.5.1
+  rev: 26.10.1
   hooks:
   - id: black
     name: black
@@ -23,7 +23,7 @@ repos:
   - id: flake8
     args: ["--config", "tests/setup.cfg"]
 - repo: https://github.com/pycqa/isort
-  rev: 9.0.1
+  rev: 9.0.2
   hooks:
   - id: isort
     name: isort
@@ -37,7 +37,7 @@ repos:
     files: 'composer\.json'
     pass_filenames: true
 - repo: https://github.com/jazzband/pip-tools
-  rev: v7.6.1
+  rev: v7.6.2
   hooks:
   - id: pip-compile
     name: pip-compile make_release_requirements.in

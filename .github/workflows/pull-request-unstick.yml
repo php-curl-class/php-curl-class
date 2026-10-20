@@ -1,0 +1,94 @@
+name: Unstick auto-merge pull requests
+
+on:
+  schedule:
+    # Poll while the PRs from the other scheduled workflows that write to master are opening and merging.
+    - cron: '45 18-23 * * 1-4'
+  workflow_dispatch:
+
+concurrency:
+  group: pull-request-unstick
+
+jobs:
+  unstick:
+    # Prevent this workflow from running elsewhere.
+    if: github.repository_owner == 'php-curl-class'
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update oldest pull request held back only by being behind master
+        run: |
+          set -eo pipefail
+
+          # List the PRs opened by the scheduled update workflows.
+          pull_requests="$(
+              gh pr list \
+                  --author="php-curl-class-helper" \
+                  --json="autoMergeRequest,createdAt,mergeStateStatus,number,reviewDecision,statusCheckRollup" \
+                  --repo="${GITHUB_REPOSITORY}" \
+                  --state="open"
+          )"
+
+          # Count a PR with no checks yet as running. Checks take a few seconds to register after a push.
+          running="$(
+              echo "${pull_requests}" |
+                  jq --compact-output '[
+                      .[] |
+                      select(.autoMergeRequest != null) |
+                      select(
+                          (.statusCheckRollup | length) == 0 or
+                          any(
+                              .statusCheckRollup[];
+                              if .__typename == "CheckRun" then
+                                  .status != "COMPLETED"
+                              else
+                                  .state == "PENDING" or .state == "EXPECTED"
+                              end
+                          )
+                      ) |
+                      .number
+                  ]'
+          )"
+          echo "Pull requests with checks running: ${running}"
+
+          # Update one PR at a time so a second one isn't left behind when the first merges.
+          if [[ "${running}" != "[]" ]]; then
+              exit 0
+          fi
+
+          pick="$(
+              echo "${pull_requests}" |
+                  jq '[
+                      .[] |
+                      select(.autoMergeRequest != null) |
+                      select(.reviewDecision == "APPROVED") |
+                      # TODO: Confirm GitHub reports BEHIND, not BLOCKED, for a green, approved PR behind master.
+                      select(.mergeStateStatus == "BEHIND") |
+                      select(
+                          all(
+                              .statusCheckRollup[];
+                              if .__typename == "CheckRun" then
+                                  .conclusion == "SUCCESS" or .conclusion == "SKIPPED" or .conclusion == "NEUTRAL"
+                              else
+                                  .state == "SUCCESS"
+                              end
+                          )
+                      )
+                  ] |
+                  sort_by(.createdAt) |
+                  first |
+                  .number // empty'
+          )"
+          echo "Pull request to update: ${pick:-none}"
+
+          if [[ -n "${pick}" ]]; then
+              # Use the bot token so the new merge commit starts CI. GITHUB_TOKEN pushes don't trigger workflows.
+              # TODO: Confirm the bot token can update branches on the php-curl-class-helper fork.
+              GH_TOKEN="${BOT_TOKEN}" \
+              gh pr update-branch \
+                  --repo="${GITHUB_REPOSITORY}" \
+                  "${pick}"
+          fi
+        env:
+          BOT_TOKEN: ${{ secrets.PHP_CURL_CLASS_BOT_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

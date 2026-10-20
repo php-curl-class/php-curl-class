@@ -2,7 +2,8 @@ name: Pre-commit auto-update
 
 on:
   schedule:
-    - cron: '0 18 * * 1-4'
+    # Stagger from the other scheduled workflows that write to master so each PR merges before the next one opens.
+    - cron: '0 19 * * 1-4'
   workflow_dispatch:
 
 jobs:
@@ -23,7 +24,7 @@ jobs:
           python-version-file: .python-version
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@v10.2.0
+        uses: astral-sh/setup-uv@v10.3.0
 
       - name: Update dependencies
         run: |
