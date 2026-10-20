@@ -585,6 +585,16 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('0', $test->curl->rawResponse);
     }
 
+    public function testPutIntegerZeroRequestBody()
+    {
+        $test = new Test();
+        $test->curl->setTimeout(2);
+        $test->server('put', 'PUT', 0);
+
+        $this->assertFalse($test->curl->error, $test->message);
+        $this->assertSame('0', $test->curl->rawResponse);
+    }
+
     public function testMultipartFormDataContentType()
     {
         // Use a PUT request instead of a POST request so the request
@@ -672,6 +682,16 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $test = new Test();
         $test->curl->setTimeout(2);
         $test->server('post_json', 'DELETE', [], '0');
+
+        $this->assertFalse($test->curl->error, $test->message);
+        $this->assertSame('0', $test->curl->rawResponse);
+    }
+
+    public function testDeleteIntegerZeroRequestBody()
+    {
+        $test = new Test();
+        $test->curl->setTimeout(2);
+        $test->server('post_json', 'DELETE', [], 0);
 
         $this->assertFalse($test->curl->error, $test->message);
         $this->assertSame('0', $test->curl->rawResponse);
@@ -4908,6 +4928,16 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $test = new Test();
         $test->curl->setTimeout(2);
         $test->server('search', 'SEARCH', '0');
+
+        $this->assertFalse($test->curl->error, $test->message);
+        $this->assertSame('0', $test->curl->rawResponse);
+    }
+
+    public function testSearchIntegerZeroRequestBody()
+    {
+        $test = new Test();
+        $test->curl->setTimeout(2);
+        $test->server('search', 'SEARCH', 0);
 
         $this->assertFalse($test->curl->error, $test->message);
         $this->assertSame('0', $test->curl->rawResponse);

@@ -217,6 +217,29 @@ class Curl extends BaseCurl
     }
 
     /**
+     * Is Empty Body
+     *
+     * Check whether the data represents an absent request body. Avoid empty() as it also treats falsy bodies like
+     * '0' and 0 as absent.
+     *
+     * @param       $data
+     * @return bool
+     */
+    private function isEmptyBody($data)
+    {
+        if ($data === null) {
+            return true;
+        } elseif ($data === false) {
+            return true;
+        } elseif ($data === '') {
+            return true;
+        } elseif ($data === []) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Call
      */
     public function call()
@@ -295,7 +318,7 @@ class Curl extends BaseCurl
         //   The presence of a message-body in a request is signaled by the
         //   inclusion of a Content-Length or Transfer-Encoding header field in
         //   the request's message-headers.
-        if (!empty($data) || $data === '0') {
+        if (!$this->isEmptyBody($data)) {
             $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
         }
     }
@@ -803,7 +826,7 @@ class Curl extends BaseCurl
                 $this->setHeader('Content-Length', strlen($put_data));
             }
         }
-        if (!empty($put_data) || $put_data === '0') {
+        if (!$this->isEmptyBody($put_data)) {
             $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
         }
     }
@@ -835,7 +858,7 @@ class Curl extends BaseCurl
                 $this->setHeader('Content-Length', strlen($put_data));
             }
         }
-        if (!empty($put_data) || $put_data === '0') {
+        if (!$this->isEmptyBody($put_data)) {
             $this->setOpt(CURLOPT_POSTFIELDS, $put_data);
         }
     }
