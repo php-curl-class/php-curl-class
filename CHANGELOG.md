@@ -8,6 +8,12 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 13.0.1 - 2026-10-21
+
+- Fix MultiCurl DELETE sending empty body when no data given ([#1225](https://github.com/php-curl-class/php-curl-class/pull/1225))
+- Replace empty() request-body checks with isEmptyBody() ([#1222](https://github.com/php-curl-class/php-curl-class/pull/1222))
+- Fix zero-valued raw request bodies ([#1205](https://github.com/php-curl-class/php-curl-class/pull/1205))
+
 ## 13.0.0 - 2026-04-20
 
 - Implement CookieArray for handling decoded cookie names and values ([#1078](https://github.com/php-curl-class/php-curl-class/pull/1078))
