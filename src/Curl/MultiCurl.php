@@ -73,9 +73,7 @@ class MultiCurl extends BaseCurl
         $curl = new Curl($this->baseUrl, $this->options);
         $this->queueHandle($curl);
         $this->setUrl($url, $query_parameters);
-        $curl->setUrl($url, $query_parameters);
-        $curl->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
-        $curl->setOpt(CURLOPT_POSTFIELDS, $curl->buildPostData($data));
+        $curl->setDelete($url, $query_parameters, $data);
         return $curl;
     }
 
