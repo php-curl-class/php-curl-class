@@ -4081,6 +4081,36 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($download_callback_called);
     }
 
+    public function testDeleteContentLengthSetWithBody()
+    {
+        $request_body = 'a=1&b=2&c=3';
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'request_method');
+        $delete = $multi_curl->addDelete(Test::TEST_URL, [], $request_body);
+        $multi_curl->start();
+        $this->assertEquals(strlen($request_body), $delete->requestHeaders['content-length']);
+    }
+
+    public function testDeleteContentLengthUnsetWithoutBody()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'request_method');
+        $delete = $multi_curl->addDelete(Test::TEST_URL, [], []);
+        $multi_curl->start();
+        $this->assertFalse(isset($delete->requestHeaders['content-length']));
+    }
+
+    public function testDeleteZeroRequestBody()
+    {
+        $multi_curl = new MultiCurl();
+        $multi_curl->setTimeout(2);
+        $multi_curl->setHeader('X-DEBUG-TEST', 'post_json');
+        $delete = $multi_curl->addDelete(Test::TEST_URL, [], '0');
+        $multi_curl->start();
+        $this->assertFalse($delete->error);
+        $this->assertSame('0', $delete->rawResponse);
+    }
+
     public function testSetUrlInConstructor()
     {
         $data = ['key' => 'value'];
