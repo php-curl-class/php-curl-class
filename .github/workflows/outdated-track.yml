@@ -16,13 +16,18 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: scripts/make_release_requirements.txt
+
       - name: Gather requirements
         id: check-outdated
         run: |
-          python -m venv venv
+          uv venv --seed venv
           source venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install --requirement scripts/make_release_requirements.txt
+          uv pip install --requirement scripts/make_release_requirements.txt
           outdated="$(pip list --outdated --format json | jq)"
           outdated_count="$(echo "$outdated" | jq 'length')"
           outdated="$(echo "${outdated}" | jq "[{\"outdated_count\":\"${outdated_count}\"}] + .")"
