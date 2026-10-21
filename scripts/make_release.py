@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 import pprint
@@ -216,13 +217,28 @@ def main():
     print(local_repo.git.log(max_count="1", patch=True, color="always"))
 
     # Push local changes.
-    server = "https://{}@github.com/{}.git".format(GITHUB_TOKEN, GITHUB_REPOSITORY)
+    server = "https://github.com/{}.git".format(GITHUB_REPOSITORY)
     print(
         'pushing changes to branch "{}" of repository "{}"'.format(
             GITHUB_REF_NAME, GITHUB_REPOSITORY
         )
     )
-    local_repo.git.push(server, GITHUB_REF_NAME)
+    # Send the token as a header rather than in the URL. Newer libcurl strips URL
+    # credentials from the effective URL, which git reads as a redirect and drops them.
+    # Pass it through the environment so it stays out of the logged command line.
+    basic_auth = base64.b64encode(
+        "x-access-token:{}".format(GITHUB_TOKEN).encode()
+    ).decode()
+    # Mask the encoded header too; Actions masks only the raw secret.
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        print("::add-mask::{}".format(basic_auth), flush=True)
+    push_env = {
+        "GIT_CONFIG_COUNT": "1",
+        "GIT_CONFIG_KEY_0": "http.extraHeader",
+        "GIT_CONFIG_VALUE_0": "Authorization: Basic {}".format(basic_auth),
+        "GIT_TERMINAL_PROMPT": "0",
+    }
+    local_repo.git.push(server, GITHUB_REF_NAME, env=push_env)
 
     # Create tag and release.
     tag = result["new_version"]
