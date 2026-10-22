@@ -20,7 +20,7 @@ gitpython==3.2.1
     # via -r scripts/make_release_requirements.in
 idna==3.20
     # via requests
-pycparser==3.11
+pycparser==3.12
     # via cffi
 pygithub==2.10.0
     # via -r scripts/make_release_requirements.in
