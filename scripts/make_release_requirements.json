@@ -3,8 +3,8 @@
     "outdated_count": "1",
   },
   {
-    "name": "pycparser",
-    "version": "3.11",
-    "latest_version": "3.12",
+    "name": "certifi",
+    "version": "2026.10.19",
+    "latest_version": "2026.10.23",
   },
 ]
