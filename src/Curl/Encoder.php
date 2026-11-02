@@ -21,7 +21,11 @@ class Encoder
     {
         $args = func_get_args();
         $value = call_user_func_array('json_encode', $args);
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if ($value === false) {
+            $error_message = 'json_encode error: ' . json_last_error_msg();
+            throw new \ErrorException($error_message);
+        } elseif (json_last_error() !== JSON_ERROR_NONE) {
+            // Reject partial output too, which JSON_PARTIAL_OUTPUT_ON_ERROR returns as a string.
             $error_message = 'json_encode error: ' . json_last_error_msg();
             throw new \ErrorException($error_message);
         }
