@@ -31,6 +31,9 @@ class Curl extends BaseCurl
     public $rawResponseHeaders = '';
     public $responseCookies = null;
     public $response = null;
+    /**
+     * @var bool|string|null
+     */
     public $rawResponse = null;
 
     public $downloadCompleteCallback = null;
@@ -1469,6 +1472,7 @@ class Curl extends BaseCurl
                 }
 
                 if (
+                    is_string($this->rawResponse) &&
                     isset($this->responseHeaders['Content-Type']) &&
                     preg_match($this->jsonPattern, $this->responseHeaders['Content-Type'])
                 ) {
