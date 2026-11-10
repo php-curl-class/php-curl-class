@@ -8,8 +8,15 @@ on:
 
 jobs:
   release:
-    # Prevent this workflow from running elsewhere.
-    if: github.repository_owner == 'php-curl-class'
+    # Prevent this workflow from running elsewhere: forks, or a manual dispatch from a non-default branch.
+    # Run from the default branch only, since the release script pushes the version bump to the triggering branch and tags it.
+    # Exempt schedule, which lacks event.repository and always runs on the default branch.
+    if: >-
+      github.repository_owner == 'php-curl-class' &&
+      (
+        github.event_name == 'schedule' ||
+        github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+      )
 
     runs-on: ubuntu-latest
     steps:
