@@ -8,6 +8,10 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 13.0.2 - 2026-11-10
+
+- Actually fix Psalm 7 static analysis errors ([#1236](https://github.com/php-curl-class/php-curl-class/pull/1236))
+
 ## 13.0.1 - 2026-10-21
 
 - Fix MultiCurl DELETE sending empty body when no data given ([#1225](https://github.com/php-curl-class/php-curl-class/pull/1225))
