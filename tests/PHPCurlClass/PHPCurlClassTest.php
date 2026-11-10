@@ -1403,6 +1403,15 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('HTTP/1.1 401 Unauthorized', $test->curl->errorMessage);
     }
 
+    public function testCurlErrorMessageIncludesErrorCodeConstant()
+    {
+        $curl = new Curl();
+        $curl->get('unsupported://127.0.0.1/');
+        $this->assertEquals(CURLE_UNSUPPORTED_PROTOCOL, $curl->curlErrorCode);
+        $this->assertEquals('CURLE_UNSUPPORTED_PROTOCOL', $curl->curlErrorCodeConstant);
+        $this->assertStringContainsString('(CURLE_UNSUPPORTED_PROTOCOL)', $curl->curlErrorMessage);
+    }
+
     public function testRequestHeaderCaseSensitivity()
     {
         $content_type = 'application/json';
