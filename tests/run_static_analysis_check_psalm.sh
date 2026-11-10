@@ -11,8 +11,8 @@ pushd ..
 set -x
 
 if [[ ! -f "vendor/bin/psalm" ]]; then
-    echo "⚠️ Skipped running psalm static analysis check"
-    warnings+=("Skipped running psalm static analysis check")
+    echo "⚠️ Skipped running psalm static analysis check: vendor/bin/psalm not found"
+    warnings+=("Skipped running psalm static analysis check: vendor/bin/psalm not found")
 else
     vendor/bin/psalm --version
     vendor/bin/psalm --config="tests/psalm.xml"
