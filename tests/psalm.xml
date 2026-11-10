@@ -20,16 +20,6 @@
                 <directory name="../src/" />
             </errorLevel>
         </PossiblyUnusedMethod>
-        <PossiblyUnusedProperty>
-            <errorLevel type="suppress">
-                <directory name="../src/" />
-            </errorLevel>
-        </PossiblyUnusedProperty>
-        <PossiblyUnusedReturnValue>
-            <errorLevel type="suppress">
-                <directory name="../src/" />
-            </errorLevel>
-        </PossiblyUnusedReturnValue>
         <UnusedClass>
             <errorLevel type="suppress">
                 <directory name="../src/" />
@@ -45,15 +35,5 @@
                 <directory name="../src/" />
             </errorLevel>
         </UnusedForeachValue>
-        <UnusedMethod>
-            <errorLevel type="suppress">
-                <directory name="../src/" />
-            </errorLevel>
-        </UnusedMethod>
-        <UnusedProperty>
-            <errorLevel type="suppress">
-                <directory name="../src/" />
-            </errorLevel>
-        </UnusedProperty>
     </issueHandlers>
 </psalm>
