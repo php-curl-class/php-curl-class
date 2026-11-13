@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Curl;
 
+/**
+ * @property-read string             $curlErrorCodeConstant
+ * @property-read array<int, string> $curlErrorCodeConstants
+ */
 class Curl extends BaseCurl
 {
     public const VERSION = '13.0.2';
@@ -91,9 +95,6 @@ class Curl extends BaseCurl
         ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
         's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',
     ];
-
-    public $curlErrorCodeConstant;
-    public $curlErrorCodeConstants;
 
     private static $deferredProperties = [
         'curlErrorCodeConstant',
