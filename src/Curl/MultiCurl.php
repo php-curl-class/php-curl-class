@@ -659,8 +659,8 @@ class MultiCurl extends BaseCurl
         }
 
         $this->isStarted = true;
-        $this->startTime = microtime(true);
-        $this->currentStartTime = microtime(true);
+        $this->startTime = $this->getCurrentMicrotime();
+        $this->currentStartTime = $this->getCurrentMicrotime();
         $this->currentRequestCount = 0;
 
         do {
@@ -724,7 +724,7 @@ class MultiCurl extends BaseCurl
         } while ($active || count($this->activeCurls) || count($this->queuedCurls));
 
         $this->isStarted = false;
-        $this->stopTime = microtime(true);
+        $this->stopTime = $this->getCurrentMicrotime();
     }
 
     /**
@@ -759,7 +759,7 @@ class MultiCurl extends BaseCurl
         }
 
         $this->isStarted = false;
-        $this->stopTime = microtime(true);
+        $this->stopTime = $this->getCurrentMicrotime();
     }
 
     /**
@@ -896,7 +896,7 @@ class MultiCurl extends BaseCurl
         if ($this->rateLimitEnabled) {
             // Determine if the limit of requests per interval has been reached.
             if ($this->currentRequestCount >= $this->maxRequestsPerInterval) {
-                $micro_time = microtime(true);
+                $micro_time = $this->getCurrentMicrotime();
                 $elapsed_seconds = $micro_time - $this->currentStartTime;
                 if ($elapsed_seconds <= $this->intervalSeconds) {
                     // Rate limit reached.
@@ -925,12 +925,41 @@ class MultiCurl extends BaseCurl
             $this->intervalSeconds,
         );
 
-        $current_microtime = microtime(true);
+        $current_microtime = $this->getCurrentMicrotime();
         $sleep_seconds = TimeUtil::getSleepSecondsUntilMicrotime(
             $sleep_until,
             $current_microtime,
         );
 
+        $this->sleepSeconds($sleep_seconds);
+
+        $this->currentStartTime = $this->getCurrentMicrotime();
+        $this->currentRequestCount = 0;
+    }
+
+    /**
+     * Get Current Microtime
+     *
+     * Reads the clock used for rate limiting and request timing. Override to
+     * substitute another clock (e.g. in tests).
+     *
+     * @return float The current time in seconds with microsecond precision.
+     */
+    protected function getCurrentMicrotime(): float
+    {
+        return microtime(true);
+    }
+
+    /**
+     * Sleep Seconds
+     *
+     * Blocks while waiting for rate limit quota. Override together with
+     * getCurrentMicrotime() to substitute another clock (e.g. in tests).
+     *
+     * @param float $sleep_seconds The number of seconds to sleep.
+     */
+    protected function sleepSeconds(float $sleep_seconds): void
+    {
         list($whole_seconds, $microseconds_remainder) = TimeUtil::getWholeAndRemainderSeconds($sleep_seconds);
 
         if ($whole_seconds >= 1) {
@@ -940,9 +969,6 @@ class MultiCurl extends BaseCurl
         if ($microseconds_remainder > 0) {
             usleep($microseconds_remainder);
         }
-
-        $this->currentStartTime = microtime(true);
-        $this->currentRequestCount = 0;
     }
 
     public function getActiveCurls()
