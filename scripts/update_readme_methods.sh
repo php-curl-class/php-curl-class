@@ -22,19 +22,19 @@ echo '```php' >> "README.md"
 curl_class_name="$(basename --suffix=".php" "${curl_path}")" &&
 curl_fns="$(
     grep --extended-regexp "^    .* function .*" "${curl_path}" |
-    grep --extended-regexp "^    public" |
-    perl -pe "s/^    public (.* )?function /${curl_class_name}::/")"
+    grep --extended-regexp "^    (public|protected)" |
+    perl -pe "s/^    (?:public|protected) (.* )?function /${curl_class_name}::/")"
 
 multicurl_class_name="$(basename --suffix=".php" "${multicurl_path}")" &&
 multicurl_fns="$(
     grep --extended-regexp "^    .* function .*" "${multicurl_path}" |
-    grep --extended-regexp "^    public" |
-    perl -pe "s/^    public (.* )?function /${multicurl_class_name}::/")"
+    grep --extended-regexp "^    (public|protected)" |
+    perl -pe "s/^    (?:public|protected) (.* )?function /${multicurl_class_name}::/")"
 
 common_fns="$(
     grep --extended-regexp "^    .* function .*" "${basecurl_path}" |
-    grep --extended-regexp "^    public" |
-    perl -pe "s/^    public .* ?function (.*)/Curl::\1\nMultiCurl::\1/")"
+    grep --extended-regexp "^    (public|protected)" |
+    perl -pe "s/^    (?:public|protected) .* ?function (.*)/Curl::\1\nMultiCurl::\1/")"
 
 echo "${curl_fns}
 ${multicurl_fns}
