@@ -356,7 +356,7 @@ class MultiCurl extends BaseCurl
             $curl->close();
         }
 
-        if (is_resource($this->multiCurl) || $this->multiCurl instanceof \CurlMultiHandle) {
+        if ($this->multiCurl instanceof \CurlMultiHandle) {
             curl_multi_close($this->multiCurl);
         }
         $this->multiCurl = null;
@@ -679,7 +679,7 @@ class MultiCurl extends BaseCurl
             curl_multi_exec($this->multiCurl, $active);
 
             while (
-                (is_resource($this->multiCurl) || $this->multiCurl instanceof \CurlMultiHandle) &&
+                $this->multiCurl instanceof \CurlMultiHandle &&
                 (($info_array = curl_multi_info_read($this->multiCurl)) !== false)
             ) {
                 if ($info_array['msg'] === CURLMSG_DONE) {
