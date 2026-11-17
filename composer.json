@@ -42,7 +42,8 @@
     "autoload-dev": {
         "files": [
             "./tests/Helper.php",
-            "./tests/User.php"
+            "./tests/User.php",
+            "./tests/VirtualClockMultiCurl.php"
         ]
     },
     "config": {
