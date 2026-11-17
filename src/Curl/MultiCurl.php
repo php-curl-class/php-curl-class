@@ -676,6 +676,13 @@ class MultiCurl extends BaseCurl
                 $this->waitUntilRequestQuotaAvailable();
             }
 
+            // Wait for socket activity instead of spinning while requests are in flight.
+            if (count($this->activeCurls)) {
+                if (curl_multi_select($this->multiCurl, $this->getSelectTimeoutSeconds()) === -1) {
+                    usleep(1_000);
+                }
+            }
+
             curl_multi_exec($this->multiCurl, $active);
 
             while (
@@ -911,6 +918,36 @@ class MultiCurl extends BaseCurl
         }
 
         return true;
+    }
+
+    /**
+     * Get Select Timeout Seconds
+     *
+     * Returns how long to wait for socket activity before checking the queue
+     * again. Shortens the wait when a queued request is waiting on rate limit
+     * quota, so it starts on time.
+     *
+     * @return float The number of seconds to wait.
+     */
+    private function getSelectTimeoutSeconds(): float
+    {
+        // Cap the wait so a stalled socket can't hold up the loop for long.
+        $max_timeout_seconds = 1.0;
+
+        if (!$this->rateLimitEnabled) {
+            return $max_timeout_seconds;
+        } elseif (!count($this->queuedCurls)) {
+            return $max_timeout_seconds;
+        } elseif ($this->currentRequestCount < $this->maxRequestsPerInterval) {
+            return $max_timeout_seconds;
+        }
+
+        $quota_available_at = TimeUtil::getSleepUntilMicrotime(
+            $this->currentStartTime,
+            $this->intervalSeconds,
+        );
+        $seconds_until_quota = $quota_available_at - $this->getCurrentMicrotime();
+        return max(0.0, min($max_timeout_seconds, $seconds_until_quota));
     }
 
     /**
