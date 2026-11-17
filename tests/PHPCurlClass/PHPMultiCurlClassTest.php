@@ -7,6 +7,7 @@ namespace CurlTest;
 use Curl\Curl;
 use Curl\MultiCurl;
 use Helper\Test;
+use Helper\VirtualClockMultiCurl;
 
 class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 {
@@ -5084,15 +5085,15 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=1');
@@ -5157,15 +5158,15 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=1');
@@ -5228,15 +5229,15 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=2');
@@ -5299,15 +5300,15 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=2');
@@ -5371,15 +5372,15 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=7');
@@ -5443,15 +5444,15 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=7');
@@ -5515,15 +5516,15 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=2');
@@ -5595,15 +5596,15 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=8');
@@ -5675,15 +5676,15 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('2/5s');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=12');
@@ -5747,14 +5748,14 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setRateLimit('1/1s');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         $multi_curl->addGet(Test::getTestUrl('8001'));
@@ -5785,15 +5786,15 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('5/30s');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         $multi_curl->addGet(Test::getTestUrl('8003') . '?seconds=15');
@@ -5819,15 +5820,15 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('1/1m');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         $multi_curl->addGet(Test::getTestUrl('8002') . '?seconds=30');
@@ -5853,15 +5854,15 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('3/1m');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         $multi_curl->addGet(Test::getTestUrl('8004') . '?seconds=20');
@@ -5885,15 +5886,15 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('3/65s');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         $multi_curl->addGet(Test::getTestUrl('8001') . '?seconds=5');
@@ -5917,15 +5918,15 @@ class PHPMultiCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $request_stats = [];
 
-        $multi_curl = new MultiCurl();
+        $multi_curl = new VirtualClockMultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'timeout');
         $multi_curl->setRateLimit('10/2m');
-        $multi_curl->beforeSend(function ($instance) use (&$request_stats) {
+        $multi_curl->beforeSend(function ($instance) use (&$request_stats, $multi_curl) {
             $request_stats[$instance->id] = [];
-            $request_stats[$instance->id]['start'] = microtime(true);
+            $request_stats[$instance->id]['start'] = $multi_curl->getCurrentMicrotime();
         });
-        $multi_curl->complete(function ($instance) use (&$request_stats) {
-            $request_stats[$instance->id]['stop'] = microtime(true);
+        $multi_curl->complete(function ($instance) use (&$request_stats, $multi_curl) {
+            $request_stats[$instance->id]['stop'] = $multi_curl->getCurrentMicrotime();
         });
 
         for ($i = 0; $i <= 30; $i++) {
