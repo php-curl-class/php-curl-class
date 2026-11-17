@@ -8,6 +8,13 @@ backwards-incompatible changes that will affect existing usage.
 
 <!-- CHANGELOG_PLACEHOLDER -->
 
+## 13.1.0 - 2026-11-17
+
+- Reduce CPU usage in MultiCurl request loop ([#1241](https://github.com/php-curl-class/php-curl-class/pull/1241))
+- Fix Psalm error from dead resource checks on multi handle ([#1240](https://github.com/php-curl-class/php-curl-class/pull/1240))
+- Speed up rate limit tests with virtual clock ([#1237](https://github.com/php-curl-class/php-curl-class/pull/1237))
+- Fix curl error messages missing error code constant ([#1238](https://github.com/php-curl-class/php-curl-class/pull/1238))
+
 ## 13.0.2 - 2026-11-10
 
 - Actually fix Psalm 7 static analysis errors ([#1236](https://github.com/php-curl-class/php-curl-class/pull/1236))
