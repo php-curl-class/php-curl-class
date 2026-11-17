@@ -13,13 +13,4 @@
       <code><![CDATA[$value]]></code>
     </PossiblyInvalidOperand>
   </file>
-  <file src="../src/Curl/MultiCurl.php">
-    <PossiblyInvalidArgument>
-      <code><![CDATA[$this->multiCurl]]></code>
-      <code><![CDATA[$this->multiCurl]]></code>
-      <code><![CDATA[$this->multiCurl]]></code>
-      <code><![CDATA[$this->multiCurl]]></code>
-      <code><![CDATA[$this->multiCurl]]></code>
-    </PossiblyInvalidArgument>
-  </file>
 </files>
