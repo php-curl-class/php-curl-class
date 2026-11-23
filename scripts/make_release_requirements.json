@@ -1,5 +1,15 @@
 [
   {
-    "outdated_count": "0",
+    "outdated_count": "2",
+  },
+  {
+    "name": "certifi",
+    "version": "2026.10.23",
+    "latest_version": "2026.11.20",
+  },
+  {
+    "name": "charset-normalizer",
+    "version": "3.5.2",
+    "latest_version": "3.5.3",
   },
 ]
